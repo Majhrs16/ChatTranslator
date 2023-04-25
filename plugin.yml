@@ -1,0 +1,18 @@
+main: majhrs16.ct.main
+version: b1.3.4
+name: ChatTranslator
+author: Majhrs16
+softdepend: [PlaceHolderAPI]
+
+commands:
+  ChatTranslator:
+    description: Comando Principal.
+  ct:
+    description: Comando Principal.
+  lang:
+    description: Cambiar tu idioma.
+
+permissions:
+  ChatTranslator.admin:
+    descriptions: Adminstra el plugin.
+    default: op
