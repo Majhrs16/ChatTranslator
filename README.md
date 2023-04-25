@@ -9,7 +9,7 @@ en Eclipse importan desde el sistema de archivos el src, y por separado importan
 
 # -- CONFIGURACION DEL PROYECTO --
 Click derecho en el proyecto > propiedades >
-|
+
 
 |__ build path > libraries, agregan los jar: spigot-1.13.2.jar, y PlaceholderAPI-2.11.3.jar.
 
