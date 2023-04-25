@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,18 +28,19 @@ public class api {
 
 	public void broadcast(CommandSender sender, String msgFormat, String msg, String sourceLang) {
 		checkSupportLang(sourceLang);
-		if (msgFormat == null) { msgFormat = "%msg%"; }
-		if (msg == null) { msg = ""; }
 
-		@SuppressWarnings("unchecked")
-		List<Player> players = (List<Player>) Bukkit.getOnlinePlayers();
+		if (msgFormat == null)
+			msgFormat = "%msg%";
 
-		msgFormat = msgFormat.replace("%sender%", sender.getName());
+		if (msg == null)
+			msg = "";
+
+		msgFormat = msgFormat.replace("%player_name%", sender.getName());
 		msgFormat = msgFormat.replace("%lang%", getLang(sender));
 
-		sendMessage(Bukkit.getConsoleSender(), msgFormat, msg, sourceLang);
-		for(int i = 0; i < players.size(); i++) {
-            sendMessage(sender, players.get(i), msgFormat, msg, sourceLang);
+		sendMessage(sender, Bukkit.getConsoleSender(), msgFormat, msg, sourceLang);
+		for(Player player2 : Bukkit.getOnlinePlayers()) {
+            sendMessage(sender, player2, msgFormat, msg, sourceLang);
         }
 	}
 
@@ -53,19 +53,25 @@ public class api {
 			throw new IllegalArgumentException(text);
 		}
 	}
-	
+
 	public void checkSupportLang(String lang) {
-		checkSupportLang(lang, "This lang '" + lang + "' no supported.");
+		checkSupportLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
 
 	public void sendMessage(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
-		checkSupportLang(sourceLang, "This sourceLang '" + sourceLang + "' no supported.");
-		checkSupportLang(targetLang, "This targetLang '" + targetLang + "' no supported.");
-		if (msgFormat == null || msgFormat == "") { msgFormat = "%msg%"; }
-		if (msg == null || msg == "") { msg = "&enull"; }
+		checkSupportLang(sourceLang, "El sourceLang '" + sourceLang + "' no esta soportado.");
+		checkSupportLang(targetLang, "El targetLang '" + targetLang + "' no esta soportado.");
+
+		if (msgFormat == null || msgFormat == "")
+			msgFormat = "%msg%";
+
+		if (msg == null || msg == "")
+			msg = "&enull";
 
 		if (util.IF("debug")) {
-			Bukkit.getConsoleSender().sendMessage("Debug: PlayerFrom: '" + playerFrom.getName() + "', source: " + sourceLang);
+			if (playerFrom == null)
+				 Bukkit.getConsoleSender().sendMessage("Debug: PlayerFrom: '" + null + "', source: " + sourceLang);
+			else Bukkit.getConsoleSender().sendMessage("Debug: PlayerFrom: '" + playerFrom.getName() + "', source: " + sourceLang);
 			Bukkit.getConsoleSender().sendMessage("Debug: PlayerTo: '" + playerTo.getName() + "', target: " + targetLang);
 			Bukkit.getConsoleSender().sendMessage("Debug: msgFormat: '" + msgFormat + "'");
 			Bukkit.getConsoleSender().sendMessage("Debug: msg: '" + msg + "'");
@@ -74,33 +80,20 @@ public class api {
 		playerTo.sendMessage(formatMsg(playerFrom, playerTo, msgFormat, msg, sourceLang, targetLang));
 	}
 
-	public void sendMessage(CommandSender playerFrom, String msgFormat, String msg, String sourceLang) {
-		sendMessage(playerFrom, playerFrom, msgFormat, msg, sourceLang, getLang(playerFrom));
-	}
-
 	public void sendMessage(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang) {
 		sendMessage(playerFrom, playerTo, msgFormat, msg, sourceLang, getLang(playerTo));
 	}
 
-	public void sendMessage(CommandSender playerFrom, String msgFormat, String msg, String sourceLang, String targetLang) {
-		sendMessage(playerFrom, playerFrom, msgFormat, msg, sourceLang, targetLang);
-	}
-
 	public String formatMsg(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
-		msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
-		msgFormat = msgFormat.replace("%sourceLang%", getLang(playerFrom));
-
-		if (playerFrom instanceof Player && util.checkPAPI() && util.IF("auto-format-messages")) {
+		if (playerFrom instanceof Player && util.checkPAPI() && util.IF("auto-format-messages") && playerFrom != null) {
+			msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
+			msgFormat = msgFormat.replace("%sourceLang%", getLang(playerFrom));
 			msgFormat = PlaceholderAPI.setPlaceholders((Player) playerFrom, msgFormat);
 		}
 
-		if (playerTo != null || playerFrom != playerTo)
+		if (playerTo instanceof Player && util.checkPAPI() && playerTo != null) {
 			msgFormat = msgFormat.replace("$targetLang$", getLang(playerTo));
-
-		if (playerTo instanceof Player && util.checkPAPI()) {
-			if (playerTo != null || playerFrom != playerTo) {
-				msgFormat = PlaceholderAPI.setPlaceholders((Player) playerTo, msgFormat.replace("$", "%"));
-			}
+			msgFormat = PlaceholderAPI.setPlaceholders((Player) playerTo, msgFormat.replace("$", "%"));
 		}
 
 		if (util.IF("auto-translate-chat")) {
@@ -126,20 +119,20 @@ public class api {
 		return msgFormat.replace("%msg%", msg);
 	}
 	
-	public String formatMsg(CommandSender playerFrom, String msgFormat, String msg, String sourceLang, String targetLang) {
-		return formatMsg(playerFrom, null, msgFormat, msg, sourceLang, targetLang);
+	public String formatMsg(CommandSender sender, String msgFormat, String msg, String sourceLang, String targetLang) {
+		return formatMsg(sender, sender, msgFormat, msg, sourceLang, targetLang);
 	}
 
 	public String getLang(CommandSender sender) {
         String lang               = null;
         FileConfiguration config  = plugin.getConfig();
-        FileConfiguration players = config; //plugin.getPlayers();
+        FileConfiguration players = plugin.getPlayers();
         String defaultLang        = config.getString("default-lang");
-        String path               = "players.";
-        String UUID               = util.getUUID(sender);
+        String path               = "";
 
-        if (players.contains(path + UUID)) {
-    		lang     = players.getString(path + UUID);
+        /*
+        if (sender instanceof Player && players.contains(path + ((Player) sender).getUniqueId())) {
+    		lang     = players.getString(path + ((Player) sender).getUniqueId());
 
     		if (sender instanceof Player && util.checkPAPI()) {
 				if (lang.equals("auto")) {
@@ -161,14 +154,31 @@ public class api {
     		} else
     			lang = defaultLang;
     	}
+        */
+
+        if (sender instanceof Player) {
+        	if (players.contains(path + ((Player) sender).getUniqueId())) {
+	    		lang     = players.getString(path + ((Player) sender).getUniqueId());
+	
+	    		if (util.checkPAPI() && lang.equals("auto")) {
+					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
+		
+	    		} else {
+	    			lang = defaultLang;
+	    		}
+        	}
+ 
+		} else {
+   			lang = defaultLang;
+    	}
 
 		if (!GT.isSupport(lang)) {
 			if (GT.isSupport(defaultLang)) {
-    			sendMessage(sender, "", plugin.name + " &7El idioma &f'&b" + lang + "&f' &cno esta soportado&f.", "es");
+    			sendMessage(null, sender, "", plugin.name + " &7El idioma &f'&b" + lang + "&f' &cno esta soportado&f.", "es");
     			lang = defaultLang;
 
 			} else {
-				sendMessage(sender, "", plugin.name + "&7El idioma por defecto &f'&b" + defaultLang + "&f' &cno esta soportado&f!.", "es");
+				sendMessage(null, sender, "", plugin.name + "&7El idioma por defecto &f'&b" + defaultLang + "&f' &cno esta soportado&f!.", "es");
 				return null;
 			}
 		}
@@ -329,23 +339,16 @@ public class api {
 	    } 
 
 	    private String peticionHttpGet(String urlParaVisitar) throws Exception {
-			// Esto es lo que vamos a devolver
 			StringBuilder resultado = new StringBuilder();
-			// Crear un objeto de tipo URL
 			URL url = new URL(urlParaVisitar);
-			// Abrir la conexión e indicar que será de tipo GET
 			HttpURLConnection conexion = (HttpURLConnection) url.openConnection();
 			conexion.setRequestMethod("GET");
-			// Búferes para leer
 			BufferedReader rd = new BufferedReader(new InputStreamReader(conexion.getInputStream()));
 			String linea;
-			// Mientras el BufferedReader se pueda leer, agregar contenido a resultado
 			while ((linea = rd.readLine()) != null) {
 				resultado.append(linea);
 			}
-			// Cerrar el BufferedReader
 			rd.close();
-			// Regresar resultado, pero como cadena, no como StringBuilder
 			return resultado.toString();
 	    }
 	}

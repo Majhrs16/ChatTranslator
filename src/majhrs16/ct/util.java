@@ -1,6 +1,7 @@
 package majhrs16.ct;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,19 +30,6 @@ public class util {
 		}
 
 		return havePAPI;
-	}
-	
-	public String getUUID(CommandSender sender) {
-		String UUID = "";
-		
-		try {
-			UUID += ((Player) sender).getUniqueId();
-
-		} catch (ClassCastException e) {
-			UUID += "0";
-		}
-		
-		return UUID;
 	}
 	
 	public boolean IF(FileConfiguration cfg, String path) {

@@ -28,7 +28,7 @@ public class mainCommand implements CommandExecutor {
 	
 				case "reload":
 					if (!sender.hasPermission("ChatTranslator.admin")) {
-						api.sendMessage(sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
+						api.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
 						return false;
 					}
 
@@ -36,7 +36,7 @@ public class mainCommand implements CommandExecutor {
 					return true;
 	
 				default:
-					api.sendMessage(sender, "", plugin.name + "&cEse comando no existe&f!", lang);
+					api.sendMessage(null, sender, "", plugin.name + "&7Ese comando &cno existe&f!", lang);
 					return false;
 			}
 
@@ -46,19 +46,19 @@ public class mainCommand implements CommandExecutor {
 			msg.add("&e  version &a%msg%&f.".replace("%msg%", "Ver version."));
 			msg.add("&e  reload &a%msg%&f.".replace("%msg%", "Recargar config."));
 			for (int i = 0; i < msg.size(); i++) {
-				api.sendMessage(sender, "", plugin.name + " " + msg.get(i), lang);
+				api.sendMessage(null, sender, "", plugin.name + " " + msg.get(i), lang);
 			}
 			return true;
 		}
 	}
 	
 	public void showVersion(CommandSender sender, String lang) {
-		api.sendMessage(sender, "", plugin.name + " &7Version&f: &a" + plugin.version, lang); 
+		api.sendMessage(null, sender, "", plugin.name + " &7Version&f: &a" + plugin.version, lang); 
 	}
 	
 	public void updateConfig(CommandSender sender, String lang) {
-		api.sendMessage(sender, "", plugin.name + "&7Recargando configuracion&f...", lang);
+		api.sendMessage(null, sender, "", plugin.name + "&7Recargando configuracion&f...", lang);
 		plugin.reloadConfig();
-		api.sendMessage(sender, "", plugin.name + "&7Recargando configuracion&f... &aOK&f.", lang);
+		api.sendMessage(null, sender, "", plugin.name + "&7Recargando configuracion&f... &aOK&f.", lang);
 	}
 }

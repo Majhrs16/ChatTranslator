@@ -11,7 +11,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-// import org.bukkit.event.player.PlayerChatEvent;
 
 public class chat implements Listener {
 	private main plugin;
@@ -49,16 +48,3 @@ public class chat implements Listener {
 		api.broadcast(player, msgFormat, msg);
     }
 }
-
-
-//try {
-//Bukkit.getPluginManager().callEvent(new PlayerChatEvent(event.getPlayer(), event.getMessage(), event.getFormat(), event.getRecipients()));
-
-//} catch (Exception e) {
-//CommandSender console = Bukkit.getConsoleSender();
-//api.sendMessage(console, "", "&cClase PlayerChatEvent no disponible&f, &aUsando AsyncPlayerChatEvent&f(&ePosible error&f).", "es");
-//AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients());
-//Bukkit.getScheduler().runTask(plugin, new Runnable() {
-//public void run() {
-//}
-//});

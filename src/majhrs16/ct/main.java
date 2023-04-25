@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,31 +33,38 @@ public class main extends JavaPlugin {
 	public String name                          = ChatColor.YELLOW + "[" + ChatColor.GREEN + pdffile.getName() + ChatColor.YELLOW + "]";
 	
 	public void onEnable() {
-		api api = new api(this);
-		CommandSender   console = Bukkit.getConsoleSender();
-		api.sendMessage(console, "", "&4<------------------------->", "es");
-		api.sendMessage(console, "", name + "&aActivado&f. &f(&a%version%&f)".replace("%version%", version), "es");
-		api.sendMessage(console, "", " ", "es");
-		updateChecker();
-		api.sendMessage(console, "", "&4<------------------------->", "es");
-
 		RegistryConfig();
-//		RegisterPlayers();
+		RegisterPlayers();
+
+		FileConfiguration config = getConfig();
+		String path = "server-uuid";
+		if (!config.contains(path)) {
+			config.set(path, "" + UUID.randomUUID());
+			saveConfig();
+		}
+
 		RegistryCommands();
 		RegistryEvents();
-		
 		chatManager();
 
+		api api = new api(this);
+		CommandSender   console = Bukkit.getConsoleSender();
+		api.sendMessage(null, console, "", "&4<------------------------->", "es");
+		api.sendMessage(null, console, "", name + "&aActivado&f. &7Version&f: &a%version%&f.".replace("%version%", version), "es");
+		api.sendMessage(null, console, "", " ", "es");
+		updateChecker();
+		api.sendMessage(null, console, "", "&4<------------------------->", "es");
+
 		if (!new util(this).checkPAPI())
-			api.sendMessage(console, "", "&cNo esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
+			api.sendMessage(null, console, "", "&cNo esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
 	}
 
 	public void onDisable() {
 		api api = new api(this);
 		CommandSender   console = Bukkit.getConsoleSender();
-		api.sendMessage(console, "", "&4<------------------------->", "es");
-		api.sendMessage(console, "", name + "&cDesactivado&f.", "es");
-		api.sendMessage(console, "", "&4<------------------------->", "es");
+		api.sendMessage(null, console, "", "&4<------------------------->", "es");
+		api.sendMessage(null, console, "", name + "&cDesactivado&f.", "es");
+		api.sendMessage(null, console, "", "&4<------------------------->", "es");
 	}
 
 	public void chatManager() {
@@ -110,19 +118,20 @@ public class main extends JavaPlugin {
 			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestversion.length() <= 7) {
 				if (!version.equals(latestversion)) {
-					api.sendMessage(console, "", name + "&e Hay una nueva version disponible&f! &f(&a%latestversion%&f)".replace("%latestversion%", latestversion), "es");
-					api.sendMessage(console, "", name + "&a   Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
-				}
+					api.sendMessage(null, console, "", name + "&e  Hay una nueva version disponible&f! &f(&a%latestversion%&f)".replace("%latestversion%", latestversion), "es");
+					api.sendMessage(null, console, "", name + "&a    Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
+
+				} else
+					api.sendMessage(null, console, "", name + "&a  Estas usando la ultima version del plugin <3", "es");
 			}
 
 		} catch (Exception ex) {
-			api.sendMessage(console, "", name + "&c Error mientras se buscaban actualizaciones&f.", "es");
+			api.sendMessage(null, console, "", name + "&c Error mientras se buscaban actualizaciones&f.", "es");
 		}
 	}
 
 	/////////////////////////////////////////
 	// Codigo para cada nuevo archivo.yml
-	// Code for mew file.yml
 
 	public FileConfiguration getPlayers() {
 		if (players == null) {
