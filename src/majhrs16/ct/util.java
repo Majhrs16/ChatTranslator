@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import majhrs16.ct.core.GoogleTranslator;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @SuppressWarnings("unused")
@@ -51,5 +52,15 @@ public class util {
 		}
 
 		return event;
+	}
+	
+	public void checkSupportLang(String lang, String text) {
+		if (new GoogleTranslator().getCode(lang) == null) {
+			throw new IllegalArgumentException(text);
+		}
+	}
+	
+	public void checkSupportLang(String lang) {
+		checkSupportLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
 }

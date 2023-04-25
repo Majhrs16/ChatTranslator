@@ -1,5 +1,5 @@
 main: majhrs16.ct.main
-version: b1.3.4.2
+version: b1.3.4.3
 name: ChatTranslator
 author: Majhrs16
 softdepend: [PlaceHolderAPI]

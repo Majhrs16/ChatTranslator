@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import majhrs16.ct.api;
 import majhrs16.ct.main;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class mainCommand implements CommandExecutor {
 	private main plugin;
@@ -42,12 +46,29 @@ public class mainCommand implements CommandExecutor {
 
 		} else {
 			ArrayList<String> msg = new ArrayList<String>();
-			msg.add("&e/ct");
-			msg.add("&e  version &a%msg%&f.".replace("%msg%", "Ver version."));
-			msg.add("&e  reload &a%msg%&f.".replace("%msg%", "Recargar config."));
+			msg.add(plugin.name);
+			msg.add("&e  /ct");
+			msg.add("&e    version\n&a  Ver version&f.");
+			msg.add("&e    reload\n&a  Recargar config&f.");
+			msg.add("&e    parse &f<&eformatMsg&f>\n&a  Procesa en tiempo real formatMsg&f(Sirve para testear ;D&f)&f.");
+
 			for (int i = 0; i < msg.size(); i++) {
-				api.sendMessage(null, sender, "", plugin.name + " " + msg.get(i), lang);
+				Player p                   = (Player) sender;
+				String[] l                 = msg.get(i).split("\n");
+			    TextComponent message      = new TextComponent(l[0]);
+			    ComponentBuilder hoverText = new ComponentBuilder("");
+
+//			    message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/comando")); // Habria q hacer parentes de comandos, mucho lio...
+			    for (int i2 = 1; i2 < l.length; i2++) {
+			        hoverText.append(api.formatMsg(null, p, "", l[i2], "es", api.getLang(p)));
+			        if (i2 < l.length - 1) {
+			            hoverText.append("\n");
+			        }
+			    }
+			    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
+			    p.spigot().sendMessage(message);
 			}
+
 			return true;
 		}
 	}

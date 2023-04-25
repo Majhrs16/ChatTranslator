@@ -9,14 +9,17 @@ import org.bukkit.entity.Player;
 
 import majhrs16.ct.main;
 import majhrs16.ct.api;
+import majhrs16.ct.util;
 
 public class setLang implements CommandExecutor {
 	private main plugin;
 	private api api;
+	private util util;
 
 	public setLang(main plugin) {
 		this.plugin = plugin;
 		this.api    = new api(plugin);
+		this.util   = new util(plugin);
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -38,7 +41,7 @@ public class setLang implements CommandExecutor {
 					*/
 
 					lang = api.GT.getCode(args[0]);
-					api.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno esta soportado&f!.");
+					util.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno esta soportado&f!.");
 
 					if (sender instanceof Player) {
 						players.set(path + ((Player) sender).getUniqueId(), lang);
@@ -66,7 +69,7 @@ public class setLang implements CommandExecutor {
 					}
 	
 					lang = args[1];
-					api.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno &7esta &csoportado&f!.");
+					util.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno &7esta &csoportado&f!.");
 					lang = api.GT.getCode(lang);
 
 					if (!sender.hasPermission("ChatTranslator.admin")) {
@@ -84,7 +87,7 @@ public class setLang implements CommandExecutor {
 					return true;
 
 				default:
-					api.checkSupportLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
+					util.checkSupportLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
 					api.sendMessage(null, sender, "", plugin.name + " &cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f[&6codigo&f]&f.", "es");
 					return false;
 			}
