@@ -6,23 +6,26 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import majhrs16.ct.core.GoogleTranslator;
-
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class api {
-	private main plugin;
-	private util util;
+public class API {
+	private Main plugin;
+	private Util Util;
 	public GoogleTranslator GT;
 
-	public api(main plugin) {
+	public API(Main plugin) {
 		this.plugin = plugin;
-		this.util   = new util(plugin);
+		this.Util   = new Util(plugin);
 		this.GT     = new GoogleTranslator();
 	}
 
 	public void broadcast(CommandSender sender, String msgFormat, String msg, String sourceLang) {
-		util.checkSupportLang(sourceLang);
+//			ejemplo: broadcast(player, "<%player_name%> %msg%", "Hola mundo!", "es", "en")
+//				Enviara a todos los jugadores presentes un mensaje diciendo "<Majhrs16> Hola mundo!" para cada player en su idioma.
+//			ejemplo: broadcast(Bukkit.getConsoleSender(), "", "Hola! Soy el server.", "es", "en")
+//				Enviara a todos los jugadores presentes un mensaje diciendo "Hola! Soy el server." para cada player en su idioma. En este caso no se podra usar PAPI con %ejemplo%.
+
+		Util.checkSupportLang(sourceLang);
 
 		if (msgFormat == "" || msgFormat == null)
 			msgFormat = "%msg%";
@@ -44,8 +47,11 @@ public class api {
 	}
 
 	public void sendMessage(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
-		util.checkSupportLang(sourceLang, "El sourceLang '" + sourceLang + "' no esta soportado.");
-		util.checkSupportLang(targetLang, "El targetLang '" + targetLang + "' no esta soportado.");
+//			ejemplo: sendMessage(Bukkit.getConsoleSender(), Majhrs16, "%msg% <%player_name%>", "Hello world!", "en", "es")
+//				Enviara al playerTo un mensaje traducido diciendo "Hola mundo! <Majhrs16>", En esta funcion se usa playerFrom para obtener las variables del enviador y pre ponerlas para todo playerTo. 
+
+		Util.checkSupportLang(sourceLang, "El sourceLang '" + sourceLang + "' no esta soportado.");
+		Util.checkSupportLang(targetLang, "El targetLang '" + targetLang + "' no esta soportado.");
 
 		if (msgFormat == null || msgFormat == "")
 			msgFormat = "%msg%";
@@ -53,7 +59,7 @@ public class api {
 		if (msg == null || msg == "")
 			msg = "&enull";
 
-		if (util.IF("debug")) {
+		if (Util.IF("debug")) {
 			if (playerFrom == null)
 				 Bukkit.getConsoleSender().sendMessage("Debug: PlayerFrom: '" + null + "', source: " + sourceLang);
 			else Bukkit.getConsoleSender().sendMessage("Debug: PlayerFrom: '" + playerFrom.getName() + "', source: " + sourceLang);
@@ -70,13 +76,16 @@ public class api {
 	}
 
 	public String formatMsg(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
+//			formatMsg(Alejo09Games, Majhrs16, "", "&eHerobrine joined the game", "en", "en")
+//				Resultado: String = "&eHerobrine joined the game" (Por favor tenga en cuenta que no puedo poner color en este archivo de texto plano, asi que imagine el ejemplo de color amarillo)
+
 		if (msgFormat == "" || msgFormat == null)
 			msgFormat = "%msg%";
 
 		if (msg == "" || msg == null)
 			msg       = "[no data]";
 
-		if (util.checkPAPI() && util.IF("auto-format-messages")) {
+		if (Util.checkPAPI() && Util.IF("auto-format-messages")) {
 			if (playerFrom != null && playerFrom instanceof Player) {
 				msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
 				msgFormat = msgFormat.replace("%sourceLang%", getLang(playerFrom));
@@ -89,7 +98,7 @@ public class api {
 			}
 		}
 
-		if (util.IF("auto-translate-chat")) {
+		if (Util.IF("auto-translate-chat")) {
 			boolean i = false;
 			if (msg.startsWith(plugin.name)) {
 				msg = msg.substring(plugin.name.length(), msg.length());
@@ -104,7 +113,7 @@ public class api {
 
 		msgFormat = ChatColor.translateAlternateColorCodes("&".charAt(0), msgFormat);
 
-		if (util.IF("message-color-personalized"))
+		if (Util.IF("message-color-personalized"))
     		msg = ChatColor.translateAlternateColorCodes("&".charAt(0), msg);
 
 		return msgFormat.replace("%msg%", msg);
@@ -115,6 +124,9 @@ public class api {
 	}
 
 	public String getLang(CommandSender sender) {
+//			Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
+//			Ejemplo: getLang(Alejo09Games) -> String = "en"
+
         String lang               = null;
         FileConfiguration config  = plugin.getConfig();
         FileConfiguration players = plugin.getPlayers();
@@ -125,7 +137,7 @@ public class api {
         if (sender instanceof Player && players.contains(path + ((Player) sender).getUniqueId())) {
     		lang     = players.getString(path + ((Player) sender).getUniqueId());
 
-    		if (sender instanceof Player && util.checkPAPI()) {
+    		if (sender instanceof Player && Util.checkPAPI()) {
 				if (lang.equals("auto")) {
 					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 				}
@@ -136,7 +148,7 @@ public class api {
 
 		} else {
     		if (sender instanceof Player) {
-        		if (util.checkPAPI())
+        		if (Util.checkPAPI())
    					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 
         		else
@@ -151,7 +163,7 @@ public class api {
         	if (players.contains(path + ((Player) sender).getUniqueId())) {
 	    		lang     = players.getString(path + ((Player) sender).getUniqueId());
 	
-	    		if (util.checkPAPI() && lang.equals("auto")) {
+	    		if (Util.checkPAPI() && lang.equals("auto")) {
 					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 		   		}
         	}

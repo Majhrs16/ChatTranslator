@@ -8,15 +8,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import majhrs16.ct.core.GoogleTranslator;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @SuppressWarnings("unused")
-public class util {
-	private main plugin;
+public class Util  {
+	private Main plugin;
 	public static ArrayList<AsyncPlayerChatEvent> chat = new ArrayList<AsyncPlayerChatEvent>();
 
-	public util(main plugin) {
+	public Util(Main plugin) {
 		this.plugin = plugin;
 	}
 
@@ -34,6 +33,7 @@ public class util {
 	}
 	
 	public boolean IF(FileConfiguration cfg, String path) {
+		// Comprobador rapido si existe y si es true una configuracion.
 		return cfg.contains(path) && cfg.getString(path).equals("true");
 	}
 
@@ -42,6 +42,7 @@ public class util {
 	}
 
 	public AsyncPlayerChatEvent popChat(int i) {
+		// Elimina el primer elemento de la cola del chat.
 		AsyncPlayerChatEvent event;
 		try {
 			event = chat.get(i);

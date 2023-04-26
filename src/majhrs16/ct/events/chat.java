@@ -1,8 +1,8 @@
 package majhrs16.ct.events;
 
-import majhrs16.ct.api;
-import majhrs16.ct.main;
-import majhrs16.ct.util;
+import majhrs16.ct.API;
+import majhrs16.ct.Main;
+import majhrs16.ct.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -12,22 +12,22 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class chat implements Listener {
-	private main plugin;
-	private api api;
-	private util util;
+public class Chat implements Listener {
+	private Main plugin;
+	private API API;
+	private Util Util;
 
-	public chat(main plugin) {
+	public Chat(Main plugin) {
 		this.plugin = plugin;
-		this.api    = new api(plugin);
-		this.util   = new util(plugin);
+		this.API    = new API(plugin);
+		this.Util   = new Util(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
     	if (event.isAsynchronous()) {
     		event.setCancelled(true);
-    		majhrs16.ct.util.chat.add(new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients()));
+    		majhrs16.ct.Util.chat.add(new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients()));
     	}
     }
 
@@ -37,7 +37,7 @@ public class chat implements Listener {
 		CommandSender player     = event.getPlayer();
 		String msg               = event.getMessage();
 
-		if (util.IF("debug")) {
+		if (Util.IF("debug")) {
 			System.out.println("Debug: PlayerFrom: '" + player.getName() + "'");
 			System.out.println("Debug: msgFormat: '" + msgFormat + "'");
 			System.out.println("Debug: msg: '" + msg + "'");
@@ -45,6 +45,6 @@ public class chat implements Listener {
 		
 		Bukkit.getPluginManager().callEvent(event);
 
-		api.broadcast(player, msgFormat, msg);
+		API.broadcast(player, msgFormat, msg);
     }
 }
