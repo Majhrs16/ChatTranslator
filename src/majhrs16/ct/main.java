@@ -72,8 +72,8 @@ public class main extends JavaPlugin {
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 		    public void run() {
-		        for (int i = 0; i < majhrs16.ct.util.chat.size(); i += 10) {
-		        	int end = Math.min(i + 10, majhrs16.ct.util.chat.size());
+		        for (int i = 0; i < majhrs16.ct.util.chat.size(); i += 30) {
+		        	int end = Math.min(i + 30, majhrs16.ct.util.chat.size());
 			    	System.out.println("DEBUG: min: " + end);
 		        	for (AsyncPlayerChatEvent event : majhrs16.ct.util.chat.subList(i, end)) {
 			    		chat.processMsg(event);

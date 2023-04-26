@@ -145,13 +145,13 @@ public class GoogleTranslator {
 
         try {
 	        String str = peticionHttpGet(
-	        	"https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + (text.replace("+", "%2B").replace(" ", "+").replace("&", "%26").replace("%", "%25"))
+	        	"https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + (text.replace("\n", "%a").replace("+", "%2B").replace(" ", "+").replace("&", "%26").replace("%", "%25"))
 	        ); // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
 	        
 	        String list1 = new JSONArray(str).get(0).toString(); // [["hola","hola",null,null,5]]
 	        String list2 = new JSONArray(list1).get(0).toString(); // ["hola","hola",null,null,5]
 	        String list3 = new JSONArray(list2).get(0).toString(); // "hola"
-	        return list3.replace("%2B", "+").replace("%26", "&").replace("%25", "%");
+	        return list3.replace("%2B", "+").replace("%26", "&").replace("%25", "%").replace("%a", "\n");
 
         } catch (Exception e) {
 //					e.printStackTrace();

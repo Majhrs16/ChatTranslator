@@ -1,4 +1,4 @@
-# ChatTranslator b1.3.4.3
+# ChatTranslator b1.3.5
 
 
 # -- IMPORTACION --

@@ -24,11 +24,11 @@ public class api {
 	public void broadcast(CommandSender sender, String msgFormat, String msg, String sourceLang) {
 		util.checkSupportLang(sourceLang);
 
-		if (msgFormat == null)
+		if (msgFormat == "" || msgFormat == null)
 			msgFormat = "%msg%";
 
-		if (msg == null)
-			msg = "";
+		if (msg == "" || msg == null)
+			msg       = "[no data]";
 
 		msgFormat = msgFormat.replace("%player_name%", sender.getName());
 		msgFormat = msgFormat.replace("%lang%", getLang(sender));
@@ -70,15 +70,23 @@ public class api {
 	}
 
 	public String formatMsg(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
-		if (playerFrom instanceof Player && util.checkPAPI() && util.IF("auto-format-messages") && playerFrom != null) {
-			msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
-			msgFormat = msgFormat.replace("%sourceLang%", getLang(playerFrom));
-			msgFormat = PlaceholderAPI.setPlaceholders((Player) playerFrom, msgFormat);
-		}
+		if (msgFormat == "" || msgFormat == null)
+			msgFormat = "%msg%";
 
-		if (playerTo instanceof Player && util.checkPAPI() && playerTo != null) {
-			msgFormat = msgFormat.replace("$targetLang$", getLang(playerTo));
-			msgFormat = PlaceholderAPI.setPlaceholders((Player) playerTo, msgFormat.replace("$", "%"));
+		if (msg == "" || msg == null)
+			msg       = "[no data]";
+
+		if (util.checkPAPI() && util.IF("auto-format-messages")) {
+			if (playerFrom != null && playerFrom instanceof Player) {
+				msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
+				msgFormat = msgFormat.replace("%sourceLang%", getLang(playerFrom));
+				msgFormat = PlaceholderAPI.setPlaceholders((Player) playerFrom, msgFormat);
+			}
+
+			if (playerTo != null && playerTo instanceof Player) {
+				msgFormat = msgFormat.replace("$targetLang$", getLang(playerTo));
+				msgFormat = PlaceholderAPI.setPlaceholders((Player) playerTo, msgFormat.replace("$", "%"));
+			}
 		}
 
 		if (util.IF("auto-translate-chat")) {
@@ -90,16 +98,14 @@ public class api {
 
     		msg     = GT.translateText(msg, sourceLang, targetLang);
 
-    		if (i) {
+    		if (i)
 				msg = plugin.name + " " + msg;
-			}
 		}
 
 		msgFormat = ChatColor.translateAlternateColorCodes("&".charAt(0), msgFormat);
-		
-		if (util.IF("chat-color-personalized")) {
+
+		if (util.IF("message-color-personalized"))
     		msg = ChatColor.translateAlternateColorCodes("&".charAt(0), msg);
-		}
 
 		return msgFormat.replace("%msg%", msg);
 	}
@@ -147,10 +153,7 @@ public class api {
 	
 	    		if (util.checkPAPI() && lang.equals("auto")) {
 					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-		
-	    		} else {
-	    			lang = defaultLang;
-	    		}
+		   		}
         	}
  
 		} else {
