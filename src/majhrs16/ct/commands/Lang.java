@@ -7,25 +7,23 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import majhrs16.ct.Main;
-import majhrs16.ct.API;
-import majhrs16.ct.Util;
+import majhrs16.ct.ChatTranslator;
+import majhrs16.ct.util;
+import majhrs16.ct.translator.API;
 
 public class Lang implements CommandExecutor {
-	private Main plugin;
+	private ChatTranslator plugin;
 	private API API;
-	private Util Util;
 
-	public Lang(Main plugin) {
+	public Lang(ChatTranslator plugin) {
 		this.plugin = plugin;
 		this.API    = new API(plugin);
-		this.Util   = new Util(plugin);
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String lang;
 		FileConfiguration config  = plugin.getConfig();
-		FileConfiguration players = plugin.getPlayers(); // config;
+		FileConfiguration players = plugin.getPlayers();
 		String path               = "";
 
 		try {
@@ -40,8 +38,7 @@ public class Lang implements CommandExecutor {
 					}
 					*/
 
-					lang = API.GT.getCode(args[0]);
-					Util.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno esta soportado&f!.");
+					lang = util.assertLang(args[0], "&7El idioma &f'&b%sourceLang%&f' &cno esta soportado&f!.");
 
 					if (sender instanceof Player) {
 						players.set(path + ((Player) sender).getUniqueId(), lang);
@@ -67,10 +64,8 @@ public class Lang implements CommandExecutor {
 						player2 = null;
 						return false;
 					}
-	
-					lang = args[1];
-					Util.checkSupportLang(lang, "&7El idioma &f'&b%lang%&f' &cno &7esta &csoportado&f!.");
-					lang = API.GT.getCode(lang);
+
+					lang = util.assertLang(args[1], "&7El idioma &f'&b%lang%&f' &cno &7esta &csoportado&f!.");
 
 					if (!sender.hasPermission("ChatTranslator.admin")) {
 						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
@@ -87,7 +82,7 @@ public class Lang implements CommandExecutor {
 					return true;
 
 				default:
-					Util.checkSupportLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
+					util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
 					API.sendMessage(null, sender, "", plugin.name + " &cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f<&6codigo&f>&f.", "es");
 					return false;
 			}

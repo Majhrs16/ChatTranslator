@@ -23,8 +23,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import majhrs16.ct.commands.CT;
 import majhrs16.ct.commands.Lang;
 import majhrs16.ct.events.Chat;
+import majhrs16.ct.translator.API;
 
-public class Main extends JavaPlugin {
+public class ChatTranslator extends JavaPlugin {
 	public String rutaConfig;
 	private FileConfiguration players           = null;
 	private File playersFile                    = null;
@@ -49,21 +50,38 @@ public class Main extends JavaPlugin {
 
 		API API = new API(this);
 		CommandSender   console = Bukkit.getConsoleSender();
-		API.sendMessage(null, console, "", "&4<------------------------->", "es");
-		API.sendMessage(null, console, "", name + "&aActivado&f. &7Version&f: &a%version%&f.".replace("%version%", version), "es");
-		API.sendMessage(null, console, "", " ", "es");
-		updateChecker();
-		API.sendMessage(null, console, "", "&4<------------------------->", "es");
 
-		if (!new Util(this).checkPAPI())
-			API.sendMessage(null, console, "", "&cNo esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
+		try {
+			Runtime.getRuntime().exec("chcp 65001 > nul");
+
+		} catch (IOException e) {
+			API.sendMessage(null, console, "", "&eAdvertencia&f, &6no se pudo establecer el formato de la consola en UTF&f-&68&f,", "es");
+			API.sendMessage(null, console, "", "&c    Podria mostrarse horrible el titulo&f.", "es");
+		}
+		
+		System.out.println("\r\n"
+				+ "╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n"
+				+ "║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
+				+ "║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
+				+ "╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝");
+		
+//		API.sendMessage(null, console, "", name, "en");
+
+		API.sendMessage(null, console, "", "&a    Activado&f. &7Version&f: &av%version%&f.".replace("%version%", version), "es");
+
+		if (!util.checkPAPI()) {
+			API.sendMessage(null, console, "", " ", "es");
+			API.sendMessage(null, console, "", "&c    No esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
+		}
+
+		updateChecker();
 	}
 
 	public void onDisable() {
 		API API = new API(this);
 		CommandSender   console = Bukkit.getConsoleSender();
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
-		API.sendMessage(null, console, "", name + "&cDesactivado&f.", "es");
+		API.sendMessage(null, console, "", name + "&c Desactivado&f.", "es");
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
 	}
 
@@ -71,15 +89,16 @@ public class Main extends JavaPlugin {
 		Chat Chat = new Chat(this);
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			int translatesPerTick = 5;
+			
 		    public void run() {
-		        for (int i = 0; i < majhrs16.ct.Util.chat.size(); i += 30) {
-		        	int end = Math.min(i + 30, majhrs16.ct.Util.chat.size());
-			    	System.out.println("DEBUG: min: " + end);
-		        	for (AsyncPlayerChatEvent event : majhrs16.ct.Util.chat.subList(i, end)) {
+		        for (int i = 0; i < majhrs16.ct.util.chat.size(); i += translatesPerTick) {
+		        	int end = Math.min(i + translatesPerTick, majhrs16.ct.util.chat.size());
+		        	for (AsyncPlayerChatEvent event : majhrs16.ct.util.chat.subList(i, end)) {
 			    		Chat.processMsg(event);
 		        	}
 
-		        	majhrs16.ct.Util.chat.subList(i, end).clear();
+		        	majhrs16.ct.util.chat.subList(i, end).clear();
 		        }
 		    }
 		}, 0L, 1L);
@@ -110,6 +129,7 @@ public class Main extends JavaPlugin {
 		API API = new API(this);
 		CommandSender console = Bukkit.getConsoleSender();
 		
+		API.sendMessage(null, console, "", " ", "es");
 		try {
 			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
 			int timed_out         = 1250;
@@ -118,15 +138,15 @@ public class Main extends JavaPlugin {
 			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestversion.length() <= 7) {
 				if (!version.equals(latestversion)) {
-					API.sendMessage(null, console, "", name + "&e  Hay una nueva version disponible&f! &f(&a%latestversion%&f)".replace("%latestversion%", latestversion), "es");
-					API.sendMessage(null, console, "", name + "&a    Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
+					API.sendMessage(null, console, "", name + "&e    Hay una nueva version disponible&f! &f(&a%latestversion%&f)".replace("%latestversion%", latestversion), "es");
+					API.sendMessage(null, console, "", name + "&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
 
 				} else
-					API.sendMessage(null, console, "", name + "&a  Estas usando la ultima version del plugin <3", "es");
+					API.sendMessage(null, console, "", name + "    &a  Estas usando la ultima version del plugin <3", "es");
 			}
 
 		} catch (Exception ex) {
-			API.sendMessage(null, console, "", name + "&c Error mientras se buscaban actualizaciones&f.", "es");
+			API.sendMessage(null, console, "", name + "&c    Error mientras se buscaban actualizaciones&f.", "es");
 		}
 	}
 

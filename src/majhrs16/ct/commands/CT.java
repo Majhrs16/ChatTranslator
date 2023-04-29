@@ -9,16 +9,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import majhrs16.ct.API;
-import majhrs16.ct.Main;
+import majhrs16.ct.ChatTranslator;
+import majhrs16.ct.translator.API;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CT implements CommandExecutor {
-	private Main plugin;
+	private ChatTranslator plugin;
 	private API API;
-	public CT(Main plugin) {
+
+	public CT(ChatTranslator plugin) {
 		this.plugin = plugin;
 		this.API    = new API(plugin);
 	}
@@ -40,9 +41,22 @@ public class CT implements CommandExecutor {
 
 					updateConfig(sender, lang);
 					return true;
+					
+				case "parse":
+					if (!sender.hasPermission("ChatTranslator.admin")) {
+						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
+						return false;
+					}
+
+					String msgFormat = "";
+					for (String slice : args)
+						msgFormat += slice;
+
+					API.sendMessage(null, sender, msgFormat.replaceFirst("parse", ""), "&eDato de ejemplo", "es");
+					return true;
 	
 				default:
-					API.sendMessage(null, sender, "", plugin.name + "&7Ese comando &cno existe&f!", lang);
+					API.sendMessage(null, sender, "", plugin.name + "&7 Ese comando &cno existe&f!", lang);
 					return false;
 			}
 
@@ -65,20 +79,23 @@ public class CT implements CommandExecutor {
 				String description = "";
 
 				if (l.length > 1)
-					description = API.formatMsg(sender, "", l[1], "es", API.getLang(sender));
+					description = API.formatMsg(null, sender, "", l[1], "es", API.getLang(sender));
 
 				if (sender instanceof Player) {
 					Player p                   = (Player) sender;
 				    TextComponent message      = new TextComponent(title);
-				    ComponentBuilder hoverText = new ComponentBuilder(description);
 
-				    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
-				    /* message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/comando")); // Habria q hacer parentes de comandos, mucho lio... */
+					if (l.length > 1) {
+					    ComponentBuilder hoverText = new ComponentBuilder(description);
+						message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
+					}
+
+					/* message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/comando")); // Habria q hacer parentes de comandos, mucho lio... */
 				    p.spigot().sendMessage(message);
 
 				} else {
 					Bukkit.getConsoleSender().sendMessage(title);
-					if (!description.equals(""))
+					if (l.length > 1)
 						Bukkit.getConsoleSender().sendMessage("\t" + description);
 				}
 			}
@@ -88,19 +105,19 @@ public class CT implements CommandExecutor {
 	}
 	
 	public void showVersion(CommandSender sender, String lang) {
-		API.sendMessage(null, sender, "", plugin.name + " &7Version&f: &a" + plugin.version, lang); 
+		API.sendMessage(null, sender, "", plugin.name + " &7 Version&f: &a" + plugin.version, lang); 
 	}
 	
 	public void updateConfig(CommandSender sender, String lang) {
 		try {
 			plugin.reloadConfig();
-			API.sendMessage(null, sender, "", plugin.name + "&7Recargado config.yml&f.", lang);
+			API.sendMessage(null, sender, "", plugin.name + "&7 Recargado config.yml&f.", lang);
 			plugin.reloadPlayers();
-			API.sendMessage(null, sender, "", plugin.name + "&7Recargado players.yml&f.", lang);
-			API.sendMessage(null, sender, "", plugin.name + "&7Config recargada &aexitosamente&f.", lang);
+			API.sendMessage(null, sender, "", plugin.name + "&7 Recargado players.yml&f.", lang);
+			API.sendMessage(null, sender, "", plugin.name + "&7 Config recargada &aexitosamente&f.", lang);
 
 		} catch (Exception e) {
-			API.sendMessage(null, sender, "", plugin.name + "&f[&4ERROR&f] &cNO se pudo recargar la config&f. &ePor favor, vea su consola &f/ &eterminal&f.", lang);
+			API.sendMessage(null, sender, "", plugin.name + "&f [&4ERROR&f] &cNO se pudo recargar la config&f. &ePor favor, vea su consola &f/ &eterminal&f.", lang);
 			e.printStackTrace();
 		}
 	}
