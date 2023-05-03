@@ -25,41 +25,56 @@ public class GoogleTranslator implements Translator {
         if(!(isSupport(sourceLang) || isSupport(targetLang)))
             return text;
 
+        String parsedJson = "NULL";
+        String json       = "NULL";
+
         try {
         	text = text
-        			.replace("ñ", "%F1") // Correccion propia
-        			.replace("Ñ", "%D1") // Correccion propia
-        			.replace("Ñ", "%d1") // Correccion propia
-        			.replace("+", "%2B")
-        			.replace("&", "%26")
-        			.replace("%", "%25")
-        			.replace("\n", "%A") // Correccion propia
-        			.replace(" ", "+");  // Correccion propia;
-	        String str = httpHandler(
+   	        	.replace("!", "%21")
+       			.replace(".", "%2e")
+        		.replace("%", "%25")
+        		.replace("ñ", "%F1")
+    			.replace("Ñ", "%D1")
+    			.replace("+", "%2B")
+    			.replace("&", "%26")
+    			.replace("\n", "%A")
+    			.replace(" ", "%20");
+
+	        json = httpHandler(
 	        	"https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text
 	        ); // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
-	        
-	        String list    = new JSONArray(str).get(0).toString();  // [["hola","hola",null,null,5]]
-	        String sublist = new JSONArray(list).get(0).toString(); // ["hola","hola",null,null,5]
-	        str = new JSONArray(sublist).get(0).toString();          // "hola"
-	        str=str	.replace("+", " ")    // Correccion propia
-	        		.replace("%2B", "+")  // Correccion propia
-	        		.replace("%26", "&")
-	        		.replace("%25", "%")
-	        		.replace("%A", "\n")  // Correccion propia
-	        		.replace("%D1", "Ñ")  // Correccion propia
-	        		.replace("%F1", "ñ"); // Correccion propia
-	        return str;
+
+	        parsedJson = new JSONArray(json).get(0).toString();       // [["hola","hola",null,null,5]]
+	        parsedJson = new JSONArray(parsedJson).get(0).toString(); // ["hola","hola",null,null,5]
+	        parsedJson = new JSONArray(parsedJson).get(0).toString(); // "hola"
+
+	        return parsedJson
+	        	.replace("%21", "!")
+       			.replace("%2e", ".")
+	        	.replace("%20", " ")
+	        	.replace("%2B", "+")
+	        	.replace("%26", "&")
+	        	.replace("%A", "\n")
+	        	.replace("%D1", "Ñ")
+	        	.replace("%F1", "ñ")
+	        	.replace("%25", "%");
 
         } catch (MalformedURLException e) {
         	e.printStackTrace();
         	return "[Err0] " + text;
 
         } catch (org.json.JSONException e) {
+        	System.out.println("[Err 1 detectado]");
         	e.printStackTrace();
-        	return "[Err1] " + text;
+        	System.out.println("Debug, text: '" + text + "'");
+        	System.out.println("Debug, Json: " + json);
+        	System.out.println("Debug, parsedJson: " + parsedJson);
+        	System.out.println("Debug, SL: " + sourceLang);
+        	System.out.println("Debug, TL: " + targetLang);
+        	return text;
 
         } catch (IOException e) {
+        	e.printStackTrace();
         	return "[NO INTERNET] " + text;
 
         } catch (Exception e) {

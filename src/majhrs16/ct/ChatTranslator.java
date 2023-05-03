@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -32,7 +33,7 @@ public class ChatTranslator extends JavaPlugin {
 	PluginDescriptionFile pdffile               = getDescription();
 	public String version                       = pdffile.getVersion();
 	public String name                          = ChatColor.YELLOW + "[" + ChatColor.GREEN + pdffile.getName() + ChatColor.YELLOW + "]";
-	
+
 	public void onEnable() {
 		RegistryConfig();
 		RegisterPlayers();
@@ -49,37 +50,46 @@ public class ChatTranslator extends JavaPlugin {
 		chatManager();
 
 		API API = new API(this);
-		CommandSender   console = Bukkit.getConsoleSender();
+		CommandSender console = Bukkit.getConsoleSender();
 
-		try {
-			Runtime.getRuntime().exec("chcp 65001 > nul");
+//			String[] args = {"chcp", "65001", ">", "nul"};
+//			Runtime.getRuntime().exec(args);
 
-		} catch (IOException e) {
-			API.sendMessage(null, console, "", "&eAdvertencia&f, &6no se pudo establecer el formato de la consola en UTF&f-&68&f,", "es");
-			API.sendMessage(null, console, "", "&c    Podria mostrarse horrible el titulo&f.", "es");
-		}
-		
-		System.out.println("\r\n"
+		API.sendMessage(null, console, "", "&4<------------------------->", "es");
+//		API.sendMessage(null, console, "\n", name, "en");
+
+		if (Charset.defaultCharset().name().equals("UTF-8")) {
+			API.sendMessage(null, console, "", "&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola en UTF&f-&c8&f.", "es");
+
+			Bukkit.getConsoleSender().sendMessage("\r\n"
 				+ "╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n"
 				+ "║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
 				+ "║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
 				+ "╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝");
-		
-//		API.sendMessage(null, console, "", name, "en");
 
-		API.sendMessage(null, console, "", "&a    Activado&f. &7Version&f: &av%version%&f.".replace("%version%", version), "es");
+//			API.sendMessage(null, console, "\n", name, "en");
+
+		} else
+			Bukkit.getConsoleSender().sendMessage(name);
+
+		API.sendMessage(null, console, "", "&a    Activado&f. &7Version&f: &b%version%&f.".replace("%version%", version), "es");
 
 		if (!util.checkPAPI()) {
-			API.sendMessage(null, console, "", " ", "es");
+			API.sendMessage(null, console, "", "\n", "es");
 			API.sendMessage(null, console, "", "&c    No esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
 		}
 
 		updateChecker();
+
+//		API.sendMessage(null, console, "\n", name, "en");
+
+		API.sendMessage(null, console, "", "&4<------------------------->", "es");
 	}
 
 	public void onDisable() {
-		API API = new API(this);
-		CommandSender   console = Bukkit.getConsoleSender();
+		API API               = new API(this);
+		CommandSender console = Bukkit.getConsoleSender();
+
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
 		API.sendMessage(null, console, "", name + "&c Desactivado&f.", "es");
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
@@ -126,10 +136,11 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void updateChecker() {
-		API API = new API(this);
+		API API               = new API(this);
 		CommandSender console = Bukkit.getConsoleSender();
-		
-		API.sendMessage(null, console, "", " ", "es");
+
+//		API.sendMessage(null, console, "", "\n", "es");
+
 		try {
 			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
 			int timed_out         = 1250;
@@ -137,12 +148,14 @@ public class ChatTranslator extends JavaPlugin {
 			con.setReadTimeout(timed_out);
 			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestversion.length() <= 7) {
-				if (!version.equals(latestversion)) {
-					API.sendMessage(null, console, "", name + "&e    Hay una nueva version disponible&f! &f(&a%latestversion%&f)".replace("%latestversion%", latestversion), "es");
-					API.sendMessage(null, console, "", name + "&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
+				if (version.equals(latestversion)) {
+					API.sendMessage(null, console, "", name + "&a    Estas usando la ultima version del plugin <3", "es");
 
-				} else
-					API.sendMessage(null, console, "", name + "    &a  Estas usando la ultima version del plugin <3", "es");
+				} else {
+					API.sendMessage(null, console, "", name + "&e    Hay una nueva version disponible&f! &f(&b%latestversion%&f)".replace("%latestversion%", latestversion), "es");
+					API.sendMessage(null, console, "", name + "&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
+				}
+
 			}
 
 		} catch (Exception ex) {

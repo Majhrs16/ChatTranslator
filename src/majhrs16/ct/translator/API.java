@@ -85,19 +85,20 @@ public class API {
 		if (msg == "" || msg == null)
 			msg	   = "[no data]";
 
+		msgFormat = msgFormat.replace("%sourceLang%", sourceLang);
+		msgFormat = msgFormat.replace("$targetLang$", targetLang);
+//		msgFormat = msgFormat.replace("\t", "        ");
+
 		FileConfiguration config = plugin.getConfig();
 
 		if (playerFrom != null && playerFrom instanceof Player) {
 			msgFormat = msgFormat.replace("%player_name%", playerFrom.getName()); // Parece rebundante, pero es necesario.
-			msgFormat = msgFormat.replace("%sourceLang%", sourceLang);
 
 			if (util.checkPAPI() && util.IF(config, "auto-format-messages"))
 				msgFormat = PlaceholderAPI.setPlaceholders((Player) playerFrom, msgFormat);
 		}
 
 		if (playerTo != null && playerTo instanceof Player) {
-			msgFormat = msgFormat.replace("$targetLang$", targetLang);
-
 			if (util.checkPAPI() && util.IF(config, "auto-format-messages"))
 				msgFormat = PlaceholderAPI.setPlaceholders((Player) playerTo, msgFormat.replace("$", "%"));
 		}

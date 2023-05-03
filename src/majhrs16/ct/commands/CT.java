@@ -61,49 +61,58 @@ public class CT implements CommandExecutor {
 			}
 
 		} else {
-			ArrayList<String> msg = new ArrayList<String>();
-			msg.add(plugin.name);
-			msg.add("&e  /lang <lang>\n&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f.\n&f  (&7Independientemente de su lenguaje en el Minecraft&f).");
-			msg.add("");
-			msg.add("&e  /ct");
-			msg.add("&e    version\n&aVisualizar version&f.");
-			msg.add("&e    reload\n&aRecargar config&f.");
-			msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.\n&e  EN DESARROLLO&f.");
-
-			for (int i = 0; i < msg.size(); i++) {
-				if (msg.get(i) == "")
-					sender.sendMessage("");
-
-				String[] l         = msg.get(i).split("\n", 2);
-				String title       = ChatColor.translateAlternateColorCodes("&".charAt(0), l[0]);
-				String description = "";
-
-				if (l.length > 1)
-					description = API.formatMsg(null, sender, "", l[1], "es", API.getLang(sender));
-
-				if (sender instanceof Player) {
-					Player p                   = (Player) sender;
-				    TextComponent message      = new TextComponent(title);
-
-					if (l.length > 1) {
-					    ComponentBuilder hoverText = new ComponentBuilder(description);
-						message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
-					}
-
-					/* message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/comando")); // Habria q hacer parentes de comandos, mucho lio... */
-				    p.spigot().sendMessage(message);
-
-				} else {
-					Bukkit.getConsoleSender().sendMessage(title);
-					if (l.length > 1)
-						Bukkit.getConsoleSender().sendMessage("\t" + description);
-				}
-			}
-
+			showHelp(sender, lang);
 			return true;
 		}
 	}
+
+	public void showHelp(CommandSender sender, String lang) {
+		ArrayList<String> msg = new ArrayList<String>();
+		msg.add(plugin.name + "\n&aTraduce tu chat de Minecraft a cualquier idioma&f!!");
+		msg.add("&e  /lang &f<&elang&f>\n&7Especifique con su codigo de idioma&f,&a para traducir el chat a su gusto&f.\n&f  (&7Independientemente de su lenguaje en el Minecraft&f).");
+		msg.add("");
+		msg.add("&e  /ct");
+		msg.add("&e    version\n&aVisualizar version&f.");
+		msg.add("&e    reload\n&aRecargar config&f.");
+		msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.\n\n&eEN DESARROLLO&f.");
+
+		showTooltip(sender, msg);
+	}
 	
+	public void showTooltip(CommandSender sender, ArrayList<String> msg) {
+		for (int i = 0; i < msg.size(); i++) {
+			if (msg.get(i) == "") {
+				sender.sendMessage("");
+				i++;
+			}
+
+			String[] l         = msg.get(i).split("\n", 2);
+			String title       = ChatColor.translateAlternateColorCodes("&".charAt(0), l[0]);
+			String description = "";
+
+			if (l.length > 1)
+				description = API.formatMsg(null, sender, "", l[1], "es", API.getLang(sender));
+
+			if (sender instanceof Player) {
+				Player p              = (Player) sender;
+			    TextComponent message = new TextComponent(title);
+
+				if (l.length > 1) {
+				    ComponentBuilder hoverText = new ComponentBuilder(description);
+					message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
+				}
+
+				/* message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/comando")); // Habria q hacer parentes de comandos, mucho lio... */
+			    p.spigot().sendMessage(message);
+
+			} else {
+				Bukkit.getConsoleSender().sendMessage(title);
+				if (l.length > 1)
+					Bukkit.getConsoleSender().sendMessage("\t" + description);
+			}
+		}
+	}
+
 	public void showVersion(CommandSender sender, String lang) {
 		API.sendMessage(null, sender, "", plugin.name + " &7 Version&f: &a" + plugin.version, lang); 
 	}

@@ -43,7 +43,7 @@ public class util  {
 
 		return event;
 	}
-	
+
 	public static String assertLang(String lang, String text) {
 		if (!new GoogleTranslator().isSupport(lang)) {
 			throw new IllegalArgumentException(text);
@@ -51,7 +51,7 @@ public class util  {
 
 		return lang;
 	}
-	
+
 	public static String assertLang(String lang) {
 		return assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}

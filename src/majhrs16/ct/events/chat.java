@@ -44,5 +44,6 @@ public class Chat implements Listener {
 		Bukkit.getPluginManager().callEvent(event);
 
 		API.broadcast(player, msgFormat, msg);
+
     }
 }
