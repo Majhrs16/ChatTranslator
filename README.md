@@ -1,5 +1,6 @@
 # ChatTranslator v1.4.1
 
+Traduce tu chat de Minecraft en tiempo real!!
 
 # -- IMPORTACION --
 git clone https://github.com/Majhrs16/ChatTranslator
