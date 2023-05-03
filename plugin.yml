@@ -1,9 +1,6 @@
-main: majhrs16.ct.ChatTranslator
-version: v1.4.1
+main: majhrs16.ct.main
+version: v1.3.2
 name: ChatTranslator
-author: Majhrs16
-softdepend: [PlaceHolderAPI]
-
 commands:
   ChatTranslator:
     description: Comando Principal.
@@ -13,6 +10,6 @@ commands:
     description: Cambiar tu idioma.
 
 permissions:
-  ChatTranslator.admin:
-    descriptions: Adminstra el plugin.
+  ChatTranslator.lang.others:
+    descriptions: Cambia el lenguaje de otro jugador.
     default: op
