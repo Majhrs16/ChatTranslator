@@ -1,2 +1,3 @@
 default-lang: "es"
 message-prefix: "<{nick}> [{lang}] "
+auto-translate-chat: true
