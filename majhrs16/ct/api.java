@@ -84,7 +84,7 @@ public class api {
     }
     
     public boolean isConsole() {
-      return this.sender instanceof org.bukkit.craftbukkit.v1_8_R3.command.ColouredConsoleSender;
+      return !isPlayer();
     }
     
     public boolean isPlayer() {
