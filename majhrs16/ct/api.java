@@ -39,6 +39,7 @@ public class api {
       Integer i = Integer.valueOf(0);
       if (msg.startsWith(this.plugin.name))
         i = Integer.valueOf(this.plugin.name.length()); 
+      System.out.println("Debug: " + sourceLang + ", " + targetLang);
       msg = (new GT()).translateText(msg.substring(i.intValue(), msg.length()), sourceLang, targetLang);
       if (i.intValue() > 0)
         msg = String.valueOf(this.plugin.name) + msg; 
@@ -56,6 +57,8 @@ public class api {
     GT g = new GT();
     if (config.contains(String.valueOf(path) + player.getUniqueId())) {
       lang = config.getString(String.valueOf(path) + player.getUniqueId());
+      if (lang.equals("auto"))
+        lang = PlaceholderAPI.setPlaceholders(player.getPlayer(), "%player_locale_short%"); 
     } else if (player.isPlayer()) {
       lang = PlaceholderAPI.setPlaceholders(player.getPlayer(), "%player_locale_short%");
     } else if (player.isConsole()) {

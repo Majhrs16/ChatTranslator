@@ -126,9 +126,8 @@ public class GT {
   public String getCode(String desiredLang) {
     if (isSupport(desiredLang))
       return desiredLang; 
-    String tmp = desiredLang.toLowerCase();
     for (Map.Entry<String, String> enter : LANGUAGE_MAP.entrySet()) {
-      if (((String)enter.getValue()).equals(tmp))
+      if (((String)enter.getValue()).equalsIgnoreCase(desiredLang))
         return enter.getKey(); 
     } 
     return null;
