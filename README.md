@@ -1,4 +1,4 @@
-# ChatTranslator v1.3.2
+# ChatTranslator b1.3.3
 Traduce tu chat de Minecraft en tiempo real!!
 
 # -- IMPORTACION --

@@ -1,6 +1,9 @@
 main: majhrs16.ct.main
-version: 1.3
+version: b1.3.3
 name: ChatTranslator
+author: Majhrs16
+softdepend: [PlaceHolderAPI]
+
 commands:
   ChatTranslator:
     description: Comando Principal.
