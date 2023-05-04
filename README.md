@@ -1,4 +1,4 @@
-# ChatTranslator v1.4.1
+# ChatTranslator v1.2.3
 Traduce tu chat de Minecraft en tiempo real!!
 
 # -- IMPORTACION --
@@ -11,7 +11,7 @@ en Eclipse importan desde el sistema de archivos el src, y por separado importan
 Click derecho en el proyecto > propiedades >
 
 
-|__ build path > libraries, agregan los jar: spigot-1.8.8.jar, y PlaceholderAPI-2.11.3.jar.
+|__ build path > libraries, agregan el jar: spigot-1.8.8.jar.
 
 \\__ Java compiler > Activan primera casilla, y Compiler compliance level = 1.8
 

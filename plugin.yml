@@ -1,5 +1,5 @@
-main: majhrs16.ct.main
-version: v1.3.2
+main: main.ct
+version: 1.2.3
 name: ChatTranslator
 commands:
   ChatTranslator:
@@ -8,8 +8,3 @@ commands:
     description: Comando Principal.
   lang:
     description: Cambiar tu idioma.
-
-permissions:
-  ChatTranslator.lang.others:
-    descriptions: Cambia el lenguaje de otro jugador.
-    default: op
