@@ -7,7 +7,6 @@ import majhrs16.ct.events.chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -56,9 +55,5 @@ public class main extends JavaPlugin {
       getConfig().options().copyDefaults(true);
       saveConfig();
     } 
-  }
-  
-  public boolean IF(FileConfiguration cfg, String path) {
-    return (cfg.contains(path) && cfg.getString(path).equals("true"));
   }
 }

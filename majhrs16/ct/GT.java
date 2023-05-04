@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONArray;
 
 public class GT {
   private static final Map<String, String> LANGUAGE_MAP = new HashMap<>();
@@ -138,8 +139,11 @@ public class GT {
       return text; 
     try {
       String str = peticionHttpGet(
-          "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text.replace(" ", "+"));
-      return str.substring(4, str.indexOf("\","));
+          "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text.replace("+", "%2B").replace(" ", "+").replace("&", "%26").replace("%", "%25"));
+      String list1 = (new JSONArray(str)).get(0).toString();
+      String list2 = (new JSONArray(list1)).get(0).toString();
+      String list3 = (new JSONArray(list2)).get(0).toString();
+      return list3.replace("%2B", "+").replace("%26", "&").replace("%25", "%");
     } catch (Exception e) {
       e.printStackTrace();
       return text;
