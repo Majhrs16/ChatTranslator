@@ -11,7 +11,7 @@ en Eclipse importan desde el sistema de archivos el src, y por separado importan
 Click derecho en el proyecto > propiedades >
 
 
-|__ build path > libraries, agregan el jar: spigot-1.8.8.jar.
+|__ build path > libraries, agregan el jar: spigot-1.8.8.jar, y PlaceholderAPI-2.11.3.jar.
 
 \\__ Java compiler > Activan primera casilla, y Compiler compliance level = 1.8
 
