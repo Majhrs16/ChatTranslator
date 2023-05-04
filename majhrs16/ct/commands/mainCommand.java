@@ -18,26 +18,26 @@ public class mainCommand implements CommandExecutor {
   }
   
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    this.api.getClass();
-    api._Sender player = new api._Sender(this.api, sender);
-    String lang = this.api.getLang(player);
+    String lang = this.api.getLang(sender);
     if (args.length > 0) {
       String str;
       switch ((str = args[0].toLowerCase()).hashCode()) {
         case -934641255:
           if (!str.equals("reload"))
             break; 
-          this.api.sendMessage(player, "", String.valueOf(this.plugin.name) + "&7Recargando configuracion&f...", lang);
-          this.plugin.reloadConfig();
-          this.api.sendMessage(player, "", String.valueOf(this.plugin.name) + "&7Recargando configuracion&f... &aOK&f.", lang);
+          if (!sender.hasPermission("ChatTranslator.admin")) {
+            this.api.sendMessage(sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
+            return false;
+          } 
+          updateConfig(sender, lang);
           return true;
         case 351608024:
           if (!str.equals("version"))
             break; 
-          this.api.sendMessage(player, "", String.valueOf(this.plugin.name) + " &7Version&f: &a" + this.plugin.version, lang);
+          showVersion(sender, lang);
           return true;
       } 
-      this.api.sendMessage(player, "", String.valueOf(this.plugin.name) + "&cEse comando no existe&f!", lang);
+      this.api.sendMessage(sender, "", String.valueOf(this.plugin.name) + "&cEse comando no existe&f!", lang);
       return false;
     } 
     ArrayList<String> msg = new ArrayList<>();
@@ -45,7 +45,17 @@ public class mainCommand implements CommandExecutor {
     msg.add("&e  version &a%msg%&f.".replace("%msg%", "Ver version."));
     msg.add("&e  reload &a%msg%&f.".replace("%msg%", "Recargar config."));
     for (int i = 0; i < msg.size(); i++)
-      this.api.sendMessage(player, "", String.valueOf(this.plugin.name) + " " + (String)msg.get(i), lang); 
+      this.api.sendMessage(sender, "", String.valueOf(this.plugin.name) + " " + (String)msg.get(i), lang); 
     return true;
+  }
+  
+  public void showVersion(CommandSender sender, String lang) {
+    this.api.sendMessage(sender, "", String.valueOf(this.plugin.name) + " &7Version&f: &a" + this.plugin.version, lang);
+  }
+  
+  public void updateConfig(CommandSender sender, String lang) {
+    this.api.sendMessage(sender, "", String.valueOf(this.plugin.name) + "&7Recargando configuracion&f...", lang);
+    this.plugin.reloadConfig();
+    this.api.sendMessage(sender, "", String.valueOf(this.plugin.name) + "&7Recargando configuracion&f... &aOK&f.", lang);
   }
 }
