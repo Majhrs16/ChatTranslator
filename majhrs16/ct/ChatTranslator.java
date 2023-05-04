@@ -57,11 +57,12 @@ public class ChatTranslator extends JavaPlugin {
     ConsoleCommandSender consoleCommandSender = Bukkit.getConsoleSender();
     try {
       Runtime.getRuntime().exec("chcp 65001 > nul");
-      System.out.println("\r\n╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝");
     } catch (IOException e) {
-      API.sendMessage(null, (CommandSender)consoleCommandSender, "", this.name, "en");
+      API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&eAdvertencia&f, &6no se pudo establecer el formato de la consola en UTF&f-&68&f,", "es");
+      API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&c    Podria mostrarse horrible el titulo&f.", "es");
     } 
-    API.sendMessage(null, (CommandSender)consoleCommandSender, "", "    &aActivado&f. &7Version&f: &av%version%&f.".replace("%version%", this.version), "es");
+    System.out.println("\r\n╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝");
+    API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&a    Activado&f. &7Version&f: &av%version%&f.".replace("%version%", this.version), "es");
     if (!util.checkPAPI().booleanValue()) {
       API.sendMessage(null, (CommandSender)consoleCommandSender, "", " ", "es");
       API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&c    No esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + this.pdffile.getName(), "es");
@@ -73,16 +74,18 @@ public class ChatTranslator extends JavaPlugin {
     API API = new API(this);
     ConsoleCommandSender consoleCommandSender = Bukkit.getConsoleSender();
     API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&4<------------------------->", "es");
-    API.sendMessage(null, (CommandSender)consoleCommandSender, "", String.valueOf(this.name) + "&cDesactivado&f.", "es");
+    API.sendMessage(null, (CommandSender)consoleCommandSender, "", String.valueOf(this.name) + "&c Desactivado&f.", "es");
     API.sendMessage(null, (CommandSender)consoleCommandSender, "", "&4<------------------------->", "es");
   }
   
   public void chatManager() {
     final Chat Chat = new Chat(this);
     Bukkit.getScheduler().scheduleSyncRepeatingTask((Plugin)this, new Runnable() {
+          int translatesPerTick = 5;
+          
           public void run() {
-            for (int i = 0; i < util.chat.size(); i += 30) {
-              int end = Math.min(i + 30, util.chat.size());
+            for (int i = 0; i < util.chat.size(); i += this.translatesPerTick) {
+              int end = Math.min(i + this.translatesPerTick, util.chat.size());
               for (AsyncPlayerChatEvent event : util.chat.subList(i, end))
                 Chat.processMsg(event); 
               util.chat.subList(i, end).clear();

@@ -29,7 +29,7 @@ public class Lang implements CommandExecutor {
       Player player2;
       switch (args.length) {
         case 1:
-          lang = util.assertLang(args[0], "&7El idioma &f'&b%lang%&f' &cno esta soportado&f!.");
+          lang = util.assertLang(args[0], "&7El idioma &f'&b%sourceLang%&f' &cno esta soportado&f!.");
           if (sender instanceof Player) {
             players.set(String.valueOf(path) + ((Player)sender).getUniqueId(), lang);
             this.plugin.savePlayers();

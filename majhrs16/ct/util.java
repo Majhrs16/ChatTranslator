@@ -37,7 +37,7 @@ public class util {
   public static String assertLang(String lang, String text) {
     if (!(new GoogleTranslator()).isSupport(lang))
       throw new IllegalArgumentException(text); 
-    return text;
+    return lang;
   }
   
   public static String assertLang(String lang) {

@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 public class GoogleTranslator implements Translator {
   public boolean isSupport(String lang) {
@@ -24,10 +25,13 @@ public class GoogleTranslator implements Translator {
       return text; 
     try {
       text = text
+        .replace("ñ", "%F1")
+        .replace("Ñ", "%D1")
+        .replace("Ñ", "%d1")
         .replace("+", "%2B")
         .replace("&", "%26")
         .replace("%", "%25")
-        .replace("\n", "%a")
+        .replace("\n", "%A")
         .replace(" ", "+");
       String str = httpHandler(
           "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text);
@@ -38,13 +42,21 @@ public class GoogleTranslator implements Translator {
         .replace("%2B", "+")
         .replace("%26", "&")
         .replace("%25", "%")
-        .replace("%a", "\n");
+        .replace("%A", "\n")
+        .replace("%D1", "Ñ")
+        .replace("%F1", "ñ");
       return str;
     } catch (MalformedURLException e) {
       e.printStackTrace();
-      return text;
+      return "[Err0] " + text;
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return "[Err1] " + text;
     } catch (IOException e) {
       return "[NO INTERNET] " + text;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "[Err3] " + text;
     } 
   }
   

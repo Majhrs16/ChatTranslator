@@ -65,16 +65,16 @@ public class API {
     if (msg == "" || msg == null)
       msg = "[no data]"; 
     FileConfiguration config = this.plugin.getConfig();
-    if (util.checkPAPI().booleanValue() && util.IF(config, "auto-format-messages")) {
-      if (playerFrom != null && playerFrom instanceof Player) {
-        msgFormat = msgFormat.replace("%player_name%", playerFrom.getName());
-        msgFormat = msgFormat.replace("%sourceLang%", sourceLang);
-        msgFormat = PlaceholderAPI.setPlaceholders((Player)playerFrom, msgFormat);
-      } 
-      if (playerTo != null && playerTo instanceof Player) {
-        msgFormat = msgFormat.replace("$targetLang$", targetLang);
-        msgFormat = PlaceholderAPI.setPlaceholders((Player)playerTo, msgFormat.replace("$", "%"));
-      } 
+    if (playerFrom != null && playerFrom instanceof Player) {
+      msgFormat = msgFormat.replace("%player_name%", playerFrom.getName());
+      msgFormat = msgFormat.replace("%sourceLang%", sourceLang);
+      if (util.checkPAPI().booleanValue() && util.IF(config, "auto-format-messages"))
+        msgFormat = PlaceholderAPI.setPlaceholders((Player)playerFrom, msgFormat); 
+    } 
+    if (playerTo != null && playerTo instanceof Player) {
+      msgFormat = msgFormat.replace("$targetLang$", targetLang);
+      if (util.checkPAPI().booleanValue() && util.IF(config, "auto-format-messages"))
+        msgFormat = PlaceholderAPI.setPlaceholders((Player)playerTo, msgFormat.replace("$", "%")); 
     } 
     if (util.IF(config, "auto-translate-chat") && 
       !sourceLang.equals(targetLang) && 
@@ -92,10 +92,6 @@ public class API {
     if (util.IF(config, "message-color-personalized"))
       msg = ChatColor.translateAlternateColorCodes("&".charAt(0), msg); 
     return msgFormat.replace("%msg%", msg);
-  }
-  
-  public String formatMsg(CommandSender sender, String msgFormat, String msg, String sourceLang, String targetLang) {
-    return formatMsg(sender, sender, msgFormat, msg, sourceLang, targetLang);
   }
   
   public String getLang(CommandSender sender) {
@@ -120,10 +116,10 @@ public class API {
     } 
     if (!this.GT.isSupport(lang))
       if (this.GT.isSupport(defaultLang)) {
-        sendMessage(null, sender, "", String.valueOf(this.plugin.name) + " &7El idioma &f'&b" + lang + "&f' &cno esta soportado&f.", "es");
+        sendMessage(null, sender, "", String.valueOf(this.plugin.name) + " &7El idioma &f'&b" + lang + "&f' &cno esta soportado&f.", "es", lang);
         lang = defaultLang;
       } else {
-        sendMessage(null, sender, "", String.valueOf(this.plugin.name) + " &7El idioma por defecto &f'&b" + defaultLang + "&f' &cno esta soportado&f!.", "es");
+        sendMessage(null, sender, "", String.valueOf(this.plugin.name) + " &7El idioma por defecto &f'&b" + defaultLang + "&f' &cno esta soportado&f!.", "es", lang);
         return null;
       }  
     return lang;
