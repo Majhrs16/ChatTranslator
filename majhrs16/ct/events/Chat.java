@@ -1,7 +1,7 @@
 package majhrs16.ct.events;
 
-import majhrs16.ct.api;
-import majhrs16.ct.main;
+import majhrs16.ct.ChatTranslator;
+import majhrs16.ct.translator.API;
 import majhrs16.ct.util;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -13,17 +13,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class chat implements Listener {
-  private main plugin;
+public class Chat implements Listener {
+  private ChatTranslator plugin;
   
-  private api api;
+  private API API;
   
-  private util util;
-  
-  public chat(main plugin) {
+  public Chat(ChatTranslator plugin) {
     this.plugin = plugin;
-    this.api = new api(plugin);
-    this.util = new util(plugin);
+    this.API = new API(plugin);
   }
   
   @EventHandler(priority = EventPriority.LOWEST)
@@ -39,12 +36,12 @@ public class chat implements Listener {
     String msgFormat = config.getString("message-format");
     Player player = event.getPlayer();
     String msg = event.getMessage();
-    if (this.util.IF("debug")) {
+    if (util.IF(config, "debug")) {
       System.out.println("Debug: PlayerFrom: '" + player.getName() + "'");
       System.out.println("Debug: msgFormat: '" + msgFormat + "'");
       System.out.println("Debug: msg: '" + msg + "'");
     } 
     Bukkit.getPluginManager().callEvent((Event)event);
-    this.api.broadcast((CommandSender)player, msgFormat, msg);
+    this.API.broadcast((CommandSender)player, msgFormat, msg);
   }
 }
