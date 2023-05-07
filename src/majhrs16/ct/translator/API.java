@@ -48,7 +48,7 @@ public class API {
 
 	public void sendMessage(CommandSender playerFrom, CommandSender playerTo, String msgFormat, String msg, String sourceLang, String targetLang) {
 //			ejemplo: sendMessage(Bukkit.getConsoleSender(), Majhrs16, "%msg% <%player_name%>", "Hello world!", "en", "es")
-//				Enviara al playerTo un mensaje traducido diciendo "Hola mundo! <Majhrs16>", En esta funcion se usa playerFrom para obtener las variables del enviador y pre ponerlas para todo playerTo. 
+//				Enviara al playerTo un mensaje traducido diciendo "Hola mundo! <Majhrs16>", En esta funcion se usa playerFrom para obtener las variables del enviador y pre ponerlas para todo playerTo.
 
 		util.assertLang(sourceLang, "El sourceLang '" + sourceLang + "' no esta soportado.");
 		util.assertLang(targetLang, "El targetLang '" + targetLang + "' no esta soportado.");
@@ -108,15 +108,15 @@ public class API {
 				playerFrom != playerTo) {
 			boolean isStartWithPluginName = false;
 
-			if (msg.startsWith(plugin.name)) {
-				msg = msg.substring(plugin.name.length(), msg.length());
+			if (msg.startsWith(plugin.title)) {
+				msg = msg.substring(plugin.title.length(), msg.length());
 				isStartWithPluginName = true;
 			}
 
 			msg	 = GT.translate(msg, sourceLang, targetLang);
 
 			if (isStartWithPluginName)
-				msg = plugin.name + " " + msg;
+				msg = plugin.title + " " + msg;
 		}
 
 		msgFormat = ChatColor.translateAlternateColorCodes("&".charAt(0), msgFormat);
@@ -141,17 +141,17 @@ public class API {
 			path = "" + ((Player) sender).getUniqueId();
 			if (players.contains(path)) {
 				lang	 = players.getString(path);
-	
+
 				if (util.checkPAPI() && lang.equals("auto"))
 					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-			
+
 			} else if (util.checkPAPI()) {
 				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 
 			} else {
 	   			lang = defaultLang;
 			}
- 
+
 		} else {
    			lang = defaultLang;
 		}
@@ -166,8 +166,7 @@ public class API {
 				return null;
 			}
 		}
-		
+
 		return lang;
 	}
-
 }

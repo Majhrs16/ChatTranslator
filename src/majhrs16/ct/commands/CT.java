@@ -32,7 +32,7 @@ public class CT implements CommandExecutor {
 				case "version":
 					showVersion(sender, lang);
 					return true;
-	
+
 				case "reload":
 					if (!sender.hasPermission("ChatTranslator.admin")) {
 						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
@@ -41,7 +41,7 @@ public class CT implements CommandExecutor {
 
 					updateConfig(sender, lang);
 					return true;
-					
+
 				case "parse":
 					if (!sender.hasPermission("ChatTranslator.admin")) {
 						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
@@ -54,7 +54,7 @@ public class CT implements CommandExecutor {
 
 					API.sendMessage(null, sender, msgFormat.replaceFirst("parse", ""), "&eDato de ejemplo", "es");
 					return true;
-	
+
 				default:
 					API.sendMessage(null, sender, "", plugin.name + "&7 Ese comando &cno existe&f!", lang);
 					return false;
@@ -68,7 +68,7 @@ public class CT implements CommandExecutor {
 
 	public void showHelp(CommandSender sender, String lang) {
 		ArrayList<String> msg = new ArrayList<String>();
-		msg.add(plugin.name + "\n&aTraduce tu chat de Minecraft a cualquier idioma&f!!");
+		msg.add(plugin.title + "\n&aTraduce tu chat de Minecraft a cualquier idioma&f!!");
 		msg.add("&e  /lang &f<&elang&f>\n&7Especifique con su codigo de idioma&f,&a para traducir el chat a su gusto&f.\n&f  (&7Independientemente de su lenguaje en el Minecraft&f).");
 		msg.add("");
 		msg.add("&e  /ct");
@@ -78,7 +78,7 @@ public class CT implements CommandExecutor {
 
 		showTooltip(sender, msg);
 	}
-	
+
 	public void showTooltip(CommandSender sender, ArrayList<String> msg) {
 		for (int i = 0; i < msg.size(); i++) {
 			if (msg.get(i) == "") {
@@ -98,7 +98,7 @@ public class CT implements CommandExecutor {
 			    TextComponent message = new TextComponent(title);
 
 				if (l.length > 1) {
-				    ComponentBuilder hoverText = new ComponentBuilder(description);
+					ComponentBuilder hoverText = new ComponentBuilder(description);
 					message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText.create()));
 				}
 
@@ -114,9 +114,9 @@ public class CT implements CommandExecutor {
 	}
 
 	public void showVersion(CommandSender sender, String lang) {
-		API.sendMessage(null, sender, "", plugin.name + " &7 Version&f: &a" + plugin.version, lang); 
+		API.sendMessage(null, sender, "", plugin.name + " &7 Version&f: &a" + plugin.version, lang);
 	}
-	
+
 	public void updateConfig(CommandSender sender, String lang) {
 		try {
 			plugin.reloadConfig();

@@ -28,11 +28,17 @@ import majhrs16.ct.translator.API;
 
 public class ChatTranslator extends JavaPlugin {
 	public String rutaConfig;
-	private FileConfiguration players           = null;
-	private File playersFile                    = null;
-	PluginDescriptionFile pdffile               = getDescription();
-	public String version                       = pdffile.getVersion();
-	public String name                          = ChatColor.YELLOW + "[" + ChatColor.GREEN + pdffile.getName() + ChatColor.YELLOW + "]";
+	private FileConfiguration players = null;
+	private File playersFile          = null;
+	PluginDescriptionFile pdffile     = getDescription();
+	public String version             = pdffile.getVersion();
+	public String name                = ChatColor.translateAlternateColorCodes("&".charAt(0), "&9Chat&aTranslator");
+	public String title               = ChatColor.translateAlternateColorCodes("&".charAt(0), "&6<&e[ %name% &e]&6> ".replace("%name%", name));
+	public String title_UTF8          = ""
+		+ "╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n"
+		+ "║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
+		+ "║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
+		+ "╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝";
 
 	public void onEnable() {
 		RegistryConfig();
@@ -61,22 +67,18 @@ public class ChatTranslator extends JavaPlugin {
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
 			API.sendMessage(null, console, "", "&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola en UTF&f-&c8&f.", "es");
 
-			Bukkit.getConsoleSender().sendMessage("\r\n"
-				+ "╔═╦╗   ╔╗╔══╗        ╔╗  ╔╗\r\n"
-				+ "║╔╣╚╦═╦╣╠╬╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
-				+ "║╚╣║╠╝╠╗╔╣║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
-				+ "╚═╩╩╩═╝╚═╝╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝");
+			console.sendMessage(title_UTF8);
 
 //			API.sendMessage(null, console, "\n", name, "en");
 
 		} else
-			Bukkit.getConsoleSender().sendMessage(name);
+			console.sendMessage(title);
 
 		API.sendMessage(null, console, "", "&a    Activado&f. &7Version&f: &b%version%&f.".replace("%version%", version), "es");
 
 		if (!util.checkPAPI()) {
-			API.sendMessage(null, console, "", "\n", "es");
-			API.sendMessage(null, console, "", "&c    No esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas de &a" + pdffile.getName(), "es");
+//			API.sendMessage(null, console, "", "\n", "es");
+			API.sendMessage(null, console, "", "&c    No esta disponible PlaceHolderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.", "es");
 		}
 
 		updateChecker();
@@ -91,7 +93,7 @@ public class ChatTranslator extends JavaPlugin {
 		CommandSender console = Bukkit.getConsoleSender();
 
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
-		API.sendMessage(null, console, "", name + "&c Desactivado&f.", "es");
+		API.sendMessage(null, console, "", title + "&c Desactivado&f.", "es");
 		API.sendMessage(null, console, "", "&4<------------------------->", "es");
 	}
 
@@ -100,7 +102,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			int translatesPerTick = 5;
-			
+
 		    public void run() {
 		        for (int i = 0; i < majhrs16.ct.util.chat.size(); i += translatesPerTick) {
 		        	int end = Math.min(i + translatesPerTick, majhrs16.ct.util.chat.size());
@@ -119,16 +121,16 @@ public class ChatTranslator extends JavaPlugin {
 		this.getCommand("ct").setExecutor(new CT(this));
 		this.getCommand("lang").setExecutor(new Lang(this));
 	}
-	
+
 	public void RegistryEvents() {
 		PluginManager pe = getServer().getPluginManager();
 		pe.registerEvents(new Chat(this), this);
 	}
-	
+
 	public void RegistryConfig() {
 		File config = new File(this.getDataFolder(), "config.yml");
 		rutaConfig  = config.getPath();
-		
+
 		if (!config.exists()) {
 			this.getConfig().options().copyDefaults(true);
 			saveConfig();
@@ -149,17 +151,17 @@ public class ChatTranslator extends JavaPlugin {
 			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestversion.length() <= 7) {
 				if (version.equals(latestversion)) {
-					API.sendMessage(null, console, "", name + "&a    Estas usando la ultima version del plugin <3", "es");
+					API.sendMessage(null, console, "", "&a    Estas usando la ultima version del plugin <3", "es");
 
 				} else {
-					API.sendMessage(null, console, "", name + "&e    Hay una nueva version disponible&f! &f(&b%latestversion%&f)".replace("%latestversion%", latestversion), "es");
-					API.sendMessage(null, console, "", name + "&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
+					API.sendMessage(null, console, "", "&e    Hay una nueva version disponible&f! &f(&b%latestversion%&f)".replace("%latestversion%", latestversion), "es");
+					API.sendMessage(null, console, "", "&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/", "es");
 				}
 
 			}
 
 		} catch (Exception ex) {
-			API.sendMessage(null, console, "", name + "&c    Error mientras se buscaban actualizaciones&f.", "es");
+			API.sendMessage(null, console, "", "&c    Error mientras se buscaban actualizaciones&f.", "es");
 		}
 	}
 
@@ -173,7 +175,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		return players;
 	}
- 
+
 	public void reloadPlayers(){
 		if (players == null) {
 			playersFile = new File(getDataFolder(), "players.yml");
@@ -187,13 +189,13 @@ public class ChatTranslator extends JavaPlugin {
 			if (defConfigStream != null) {
 				YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 				players.setDefaults(defConfig);
-			}			
+			}
 
 		} catch(UnsupportedEncodingException e){
 			e.printStackTrace();
 		}
 	}
- 
+
 	public void savePlayers(){
 		try {
 			players.save(playersFile);
@@ -202,7 +204,7 @@ public class ChatTranslator extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
- 
+
 	public void RegisterPlayers(){
 		playersFile = new File(this.getDataFolder(), "players.yml");
 		if (!playersFile.exists()){

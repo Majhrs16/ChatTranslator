@@ -111,20 +111,18 @@ public interface Translator {
 		YO("Yoruba"),
 		ZU("Zulu");
 
-        private String value;
+		private String value;
 
-        private Languages(String value) {
-            this.value = value;
-        }
+		private Languages(String value) {
+			this.value = value;
+		}
 
-        public String getValue() {
-            return value;
-        }
+		public String getValue() {
+			return value;
+		}
 	}
 
 	public String translate(String text, String sourceLang, String targetLang); // traduce msg con algun motor rapido y estable del idioma source al target.
 	public boolean isSupport(String language); // Verifica si el idioma proporcionado es compatible con Lenguages.
-//	public String getCode(String desiredLang); // Verifica si es compatible, en caso contrario busca al reves los idomas(Si es "Spanish" retorna "ES"), en cualquier caso deberia retornar un string.
 	public String httpHandler(String url) throws MalformedURLException, IOException; // retorna el valor en bruto de la web.
-	
 }

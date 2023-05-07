@@ -16,15 +16,15 @@ public class util  {
 		Boolean havePAPI = null;
 
 		try {
-		    Class.forName("me.clip.placeholderapi.PlaceholderAPI");
-		    havePAPI = true;
+			Class.forName("me.clip.placeholderapi.PlaceholderAPI");
+			havePAPI = true;
 		} catch (ClassNotFoundException e) {
-		    havePAPI = false;
+			havePAPI = false;
 		}
 
 		return havePAPI;
 	}
-	
+
 	public static boolean IF(FileConfiguration cfg, String path) {
 		// Comprobador rapido si existe y si es true una configuracion.
 		return cfg.contains(path) && cfg.getString(path).equals("true");

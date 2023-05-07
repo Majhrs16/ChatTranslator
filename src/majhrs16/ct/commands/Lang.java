@@ -50,9 +50,9 @@ public class Lang implements CommandExecutor {
 						plugin.saveConfig();
 					}
 
-					API.sendMessage(null, sender, "", plugin.name + " &7Su idioma ha sido &aestablecido &7a &b" + lang + "&f.", "es");
+					API.sendMessage(null, sender, "", " &7Su idioma ha sido &aestablecido &7a &b" + lang + "&f.", "es");
 					return true;
-				
+
 				case 2:  // /lang Majhrs16 es
 					Player player2;
 
@@ -76,19 +76,19 @@ public class Lang implements CommandExecutor {
 					plugin.savePlayers();
 
 					API.broadcast(sender,
-						plugin.name + " &f'&b%player%&f' &7ha cambiado el idioma de &f'&b%player2%&f' &7a &b%lang%&f.".replace("%player%", sender.getName()).replace("%player2%", player2.getName()).replace("%lang%", lang), "",
+						" &f'&b%player%&f' &7ha cambiado el idioma de &f'&b%player2%&f' &7a &b%lang%&f.".replace("%player%", sender.getName()).replace("%player2%", player2.getName()).replace("%lang%", lang), "",
 						"es"
 					);
 					return true;
 
 				default:
 					util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
-					API.sendMessage(null, sender, "", plugin.name + " &cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f<&6codigo&f>&f.", "es");
+					API.sendMessage(null, sender, "", " &cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f<&6codigo&f>&f.", "es");
 					return false;
 			}
 
 		} catch (IllegalArgumentException e) {
-			sender.sendMessage(API.formatMsg(null, sender, "", plugin.name + " " + e.getMessage(), "es", API.getLang(sender)));
+			sender.sendMessage(API.formatMsg(null, sender, "", e.getMessage(), "es", API.getLang(sender)));
 			return false;
 		}
 	}

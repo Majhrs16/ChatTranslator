@@ -10,80 +10,106 @@ import java.net.URL;
 import org.json.JSONArray;
 
 public class GoogleTranslator implements Translator {
-	public boolean isSupport(String lang) {
-    	try {
-    		Languages.valueOf(lang.toUpperCase());
-            return true;
+	public int[] listConvertion = {
+			32,  // ' '
+			33,  // !
+			34,  // "
+			35,  // #
+			36,  // $
+			37,  // %
+			38,  // &
+			39,  // '
+			40,  // (
+			41,  // )
+			42,  // *
+			43,  // +
+			44,  // ,
+			45,  // -
+			46,  // .
+			47,  // /
+			58,  // :
+			59,  // ;
+			60,  // <
+			61,  // =
+			62,  // >
+			63,  // ?
+			64,  // @
+			91,  // [
+			92,  // \
+			93,  // ]
+			94,  // ^
+			95,  // _
+			96,  // `
+			123, // {
+			124, // |
+			125, // }
+			126  // ~
+		};
 
-    	} catch (IllegalArgumentException e) {
-    		e.printStackTrace(); ////////////////// PENDIENTE
-            return false;
-    	}
-    }
+	public boolean isSupport(String lang) {
+		try {
+			Languages.valueOf(lang.toUpperCase());
+			return true;
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace(); ////////////////// PENDIENTE
+			return false;
+		}
+	}
 
 	public String translate(String text, String sourceLang, String targetLang) {
-        if(!(isSupport(sourceLang) || isSupport(targetLang)))
-            return text;
+		if(!(isSupport(sourceLang) || isSupport(targetLang)))
+			return text;
 
-        String parsedJson = "NULL";
-        String json       = "NULL";
+		String formatText = text;
+		String parsedJson = "NULL";
+		String json       = "NULL";
+		String URL        = "NULL";
 
-        try {
-        	text = text
-   	        	.replace("!", "%21")
-       			.replace(".", "%2e")
-        		.replace("%", "%25")
-        		.replace("ñ", "%F1")
-    			.replace("Ñ", "%D1")
-    			.replace("+", "%2B")
-    			.replace("&", "%26")
-    			.replace("\n", "%A")
-    			.replace(" ", "%20");
+		try {
+			for(int i : listConvertion) {
+//				System.out.println("DEBUG: " + formatText);
+				formatText = formatText.replace(Character.toString((char) i), "%" + Integer.toHexString(i));
+			}
 
-	        json = httpHandler(
-	        	"https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text
-	        ); // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
+			URL = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + formatText;
 
-	        parsedJson = new JSONArray(json).get(0).toString();       // [["hola","hola",null,null,5]]
-	        parsedJson = new JSONArray(parsedJson).get(0).toString(); // ["hola","hola",null,null,5]
-	        parsedJson = new JSONArray(parsedJson).get(0).toString(); // "hola"
+			json = httpHandler(URL);                                  // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
+			parsedJson = new JSONArray(json).get(0).toString();       // [["hola","hola",null,null,5]]
+			parsedJson = new JSONArray(parsedJson).get(0).toString(); // ["hola","hola",null,null,5]
+			parsedJson = new JSONArray(parsedJson).get(0).toString(); // "hola"
 
-	        return parsedJson
-	        	.replace("%21", "!")
-       			.replace("%2e", ".")
-	        	.replace("%20", " ")
-	        	.replace("%2B", "+")
-	        	.replace("%26", "&")
-	        	.replace("%A", "\n")
-	        	.replace("%D1", "Ñ")
-	        	.replace("%F1", "ñ")
-	        	.replace("%25", "%");
+			for(int i : listConvertion) {
+//				System.out.println(parsedJson);
+				parsedJson = parsedJson.replace("%" + Integer.toHexString(i), Character.toString((char) i));
+			}
 
-        } catch (MalformedURLException e) {
-        	e.printStackTrace();
-        	return "[Err0] " + text;
+			return parsedJson;
 
-        } catch (org.json.JSONException e) {
-        	System.out.println("[Err 1 detectado]");
-        	e.printStackTrace();
-        	System.out.println("Debug, text: '" + text + "'");
-        	System.out.println("Debug, Json: " + json);
-        	System.out.println("Debug, parsedJson: " + parsedJson);
-        	System.out.println("Debug, SL: " + sourceLang);
-        	System.out.println("Debug, TL: " + targetLang);
-        	return text;
+		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+			return "[Err0] " + text;
 
-        } catch (IOException e) {
-        	e.printStackTrace();
-        	return "[NO INTERNET] " + text;
+		} catch (org.json.JSONException e) {
+			System.out.println("[Err 1 detectado]");
+//			e.printStackTrace();
+			
+			System.out.println("DEBUG, URL: '" + URL + "'");
+			System.out.println("DEBUG, Json: " + json);
+			System.out.println("DEBUG, parsedJson: " + parsedJson);
+			return text;
 
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	return "[Err3] " + text;
-        }
-    }
+		} catch (IOException e) {
+//			e.printStackTrace();
+			return "[NO INTERNET] " + text;
 
-    public String httpHandler(String url) throws MalformedURLException, IOException {
+		} catch (Exception e) {
+//			e.printStackTrace();
+			return "[Err3] " + text;
+		}
+	}
+
+	public String httpHandler(String url) throws MalformedURLException, IOException {
 		StringBuilder resultado = new StringBuilder();
 		HttpURLConnection conexion = (HttpURLConnection) new URL(url).openConnection();
 		conexion.setRequestMethod("GET");

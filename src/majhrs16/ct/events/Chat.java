@@ -19,18 +19,18 @@ public class Chat implements Listener {
 	public Chat(ChatTranslator plugin) {
 		this.plugin = plugin;
 		this.API    = new API(plugin);
-    }
+	}
 
-    @EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
-    	if (event.isAsynchronous()) {
-    		event.setCancelled(true);
-    		majhrs16.ct.util.chat.add(new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients()));
-    	}
-    }
+		if (event.isAsynchronous()) {
+			event.setCancelled(true);
+			majhrs16.ct.util.chat.add(new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients()));
+		}
+	}
 
-    public void processMsg(AsyncPlayerChatEvent event) {
-    	FileConfiguration config = plugin.getConfig();
+	public void processMsg(AsyncPlayerChatEvent event) {
+		FileConfiguration config = plugin.getConfig();
 		String msgFormat         = config.getString("message-format");
 		CommandSender player     = event.getPlayer();
 		String msg               = event.getMessage();
