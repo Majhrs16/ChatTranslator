@@ -2,6 +2,8 @@
 Traduce tu chat de Minecraft en tiempo real!!
 
 
+
+
 Características de ChatTranslator:
 
 • Opcionalmente se puede utilizar la dependencia PlaceholderAPI, pero seria necesario instalar la extensión player para evitar problemas en el servidor.
@@ -28,4 +30,4 @@ Características de ChatTranslator:
 
 |___ • Atravez del evento majhrs16.ct.events.custom.Message,
 
-\___ • Soporte para DiscordSRV
+\\___ • Soporte para DiscordSRV.
