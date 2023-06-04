@@ -10,7 +10,7 @@ Características de ChatTranslator:
 
 • Los jugadores o consola pueden especificar su idioma utilizando el comando: /lang [código de idioma].
 
-• En caso de no tener conexión a internet, se añade el prefijo "[ NO INTERNET ]" a \$ct_messages\$.
+• En caso de no tener conexión a internet, se añade el prefijo "[ NO INTERNET ]" a $ct_messages$.
 
 • Configuración MUY personalizable para el formato del chat a través de config.formats.
 
