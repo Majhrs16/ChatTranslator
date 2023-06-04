@@ -6,84 +6,219 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.translator.API;
+import majhrs16.ct.events.custom.Message;
+import majhrs16.ct.translator.API.API;
+import majhrs16.ct.util.util;
+
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CT implements CommandExecutor {
-	private ChatTranslator plugin;
-	private API API;
+	private Message DC;
+	private ChatTranslator plugin = ChatTranslator.plugin;
+	private API API               = new API();
 
 	public CT(ChatTranslator plugin) {
-		this.plugin = plugin;
-		this.API    = new API(plugin);
+		this.DC = util.getDataConfigConsole();
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		FileConfiguration config  = plugin.getConfig();
 		String lang = API.getLang(sender);
+
+		DC.setPlayer(sender);
+		DC.setLang(lang);
+
+		if (util.IF(config, "debug")) {
+			System.out.println("Debug, Name: " + sender.getName());
+			System.out.println("Debug, Lang: " + lang);
+		}
 
 		if(args.length > 0) {
 			switch (args[0].toLowerCase()) {
 				case "version":
-					showVersion(sender, lang);
+					if (!plugin.enabled)
+						return false;
+
+					showVersion();
 					return true;
 
 				case "reload":
+					if (!plugin.enabled)
+						return false;
+
 					if (!sender.hasPermission("ChatTranslator.admin")) {
-						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
+						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+							API.sendMessage(DC);
 						return false;
 					}
 
-					updateConfig(sender, lang);
+					reloadConfig();
 					return true;
 
 				case "parse":
+					if (!plugin.enabled)
+						return false;
+
 					if (!sender.hasPermission("ChatTranslator.admin")) {
-						API.sendMessage(null, sender, "", "&cUsted no tiene permisos para ejecutar este comando&f.", "es");
+						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+							API.sendMessage(DC);
 						return false;
 					}
 
-					String msgFormat = "";
-					for (String slice : args)
-						msgFormat += slice;
+					String msgFormat = String.join(" ", args);
 
-					API.sendMessage(null, sender, msgFormat.replaceFirst("parse", ""), "&eDato de ejemplo", "es");
+					DC.setMessageFormat(msgFormat.replaceFirst("parse", ""));
+					DC.setMessages("&eDato de ejemplo");
+						API.sendMessage(DC);
+					return true;
+
+				case "lang":
+					if (!plugin.enabled)
+						return false;
+
+					setLang(sender, args);
+					return true;
+					
+				case "toggle":
+					if (!sender.hasPermission("ChatTranslator.admin")) {
+						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+							API.sendMessage(DC);
+						return false;
+					}
+
+					plugin.enabled = !plugin.enabled;
+					sender.sendMessage("" + plugin.enabled);
 					return true;
 
 				default:
-					API.sendMessage(null, sender, "", plugin.name + "&7 Ese comando &cno existe&f!", lang);
+					if (!plugin.enabled)
+						return false;
+
+					DC.setMessages("&7Ese comando &cno &7existe&f!");
+						API.sendMessage(DC);
 					return false;
 			}
 
 		} else {
-			showHelp(sender, lang);
+			if (!plugin.enabled)
+				return false;
+
+			showHelp(sender);
 			return true;
 		}
 	}
 
-	public void showHelp(CommandSender sender, String lang) {
-		ArrayList<String> msg = new ArrayList<String>();
-		msg.add(plugin.title + "\n&aTraduce tu chat de Minecraft a cualquier idioma&f!!");
-		msg.add("&e  /lang &f<&elang&f>\n&7Especifique con su codigo de idioma&f,&a para traducir el chat a su gusto&f.\n&f  (&7Independientemente de su lenguaje en el Minecraft&f).");
-		msg.add("");
-		msg.add("&e  /ct");
-		msg.add("&e    version\n&aVisualizar version&f.");
-		msg.add("&e    reload\n&aRecargar config&f.");
-		msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.\n\n&eEN DESARROLLO&f.");
+	public Boolean setLang(CommandSender sender, String[] args) {
+		String lang;
+		FileConfiguration config  = plugin.getConfig();
+		FileConfiguration players = plugin.getPlayers();
+		String path               = "";
 
-		showTooltip(sender, msg);
+		DC.setPlayer(sender);
+		DC.setLang(API.getLang(sender));
+
+		try {
+			switch (args.length) {
+				case 2: // /ct lang es
+					lang = util.assertLang(args[1], "&7El idioma &f'&b" + args[1] + "&f' &cno &7esta soportado&f!.");
+
+					if (sender instanceof Player) {
+						players.set(path + ((Player) sender).getUniqueId(), lang);
+						plugin.savePlayers();
+
+					} else {
+						players.set(path + plugin.getConfig().getString("server-uuid"), lang);
+						plugin.savePlayers();
+					}
+
+					DC.setMessages("&7Su idioma ha sido &aestablecido &7a &b" + lang + "&f.");
+					DC.setLang(lang);
+						API.sendMessage(DC);
+					return true;
+
+				case 3:  // /ct lang Majhrs16 es
+					if (!sender.hasPermission("ChatTranslator.admin")) {
+						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+							API.sendMessage(DC);
+						return false;
+					}
+
+					Player player2;
+					try {
+						player2 = Bukkit.getServer().getPlayer(args[1]);
+
+					} catch (NullPointerException e) {
+						player2 = null;
+					}
+
+					if (player2 == null) {
+						DC.setMessages("&7El jugador &f'&b" + args[1] + "&f' &cno &7esta &cdisponible&f.");
+							API.sendMessage(DC);
+						return false;
+					}
+					
+					lang = util.assertLang(args[2], "&7El idioma &f'&b" + args[2] + "&f' &cno &7esta soportado&f!.");
+
+					players.set(path + player2.getUniqueId(), lang);
+					plugin.savePlayers();
+
+					DC.setMessages(String.format(
+						"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f' &7a &b%s&f.",
+						sender.getName(),
+						player2.getName(),
+						lang
+					));
+//						API.broadcast(DC);
+					return true;
+
+				default:
+					util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
+					DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f[&6player&f] &f<&6codigo&f>&f.");
+						API.sendMessage(DC);
+					return false;
+			}
+
+		} catch (IllegalArgumentException e) {
+			DC.setMessages(e.getMessage());
+				API.sendMessage(DC);
+			return false;
+		}
 	}
 
-	public void showTooltip(CommandSender sender, ArrayList<String> msg) {
+	public void showHelp(CommandSender sender) {
+		ArrayList<String> msg = new ArrayList<String>();
+			msg.add(plugin.title + "\n&aTraduce tu chat de Minecraft a cualquier idioma&f!!");
+			msg.add("&e  /ct");
+			msg.add("&e    lang &f[&6Jugador&f] &f<&6codigo&f>\n"
+				+ "&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f.\n"
+				+ "&f    (&7Independientemente de su lenguaje en el Minecraft&f)\n"
+				+ "\n"
+				+ "&aTrucos&f:\n"
+				+ "&7  Puede poner &bauto &7como codigo para volver a la"
+				+ "&7    deteccion automatica del idioma de su Minecraft&f."
+				+ "\n"
+				+ "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la"
+				+ "&7    traduccion automatica para el jugador especificado&f."
+			);
+			msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.");
+			msg.add("&e    version\n&aVisualizar version&f.");
+			msg.add("&e    reload\n&aRecargar config&f.");
+			msg.add("&e    toggle\n&aActiva o desactiva el plugin&f.\n&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.");
+		showToolTip(sender, msg);
+	}
+
+	public void showToolTip(CommandSender sender, ArrayList<String> msg) {
 		for (int i = 0; i < msg.size(); i++) {
 			if (msg.get(i) == "") {
 				sender.sendMessage("");
-				i++;
+				continue;
 			}
 
 			String[] l         = msg.get(i).split("\n", 2);
@@ -91,7 +226,7 @@ public class CT implements CommandExecutor {
 			String description = "";
 
 			if (l.length > 1)
-				description = API.formatMsg(null, sender, "", l[1], "es", API.getLang(sender));
+				description = API.formatMsg(null, sender, "$ct_messages$", l[1], "es", API.getLang(sender), true, true);
 
 			if (sender instanceof Player) {
 				Player p              = (Player) sender;
@@ -113,20 +248,25 @@ public class CT implements CommandExecutor {
 		}
 	}
 
-	public void showVersion(CommandSender sender, String lang) {
-		API.sendMessage(null, sender, "", plugin.name + " &7 Version&f: &a" + plugin.version, lang);
+	public void showVersion() {
+		DC.setMessages("&7Version&f: &a" + plugin.version);
+			API.sendMessage(DC);
 	}
 
-	public void updateConfig(CommandSender sender, String lang) {
+	public void reloadConfig() {
 		try {
 			plugin.reloadConfig();
-			API.sendMessage(null, sender, "", plugin.name + "&7 Recargado config.yml&f.", lang);
+			DC.setMessages("&7Recargado &bconfig&f.&byml&f.");
+				API.sendMessage(DC);
 			plugin.reloadPlayers();
-			API.sendMessage(null, sender, "", plugin.name + "&7 Recargado players.yml&f.", lang);
-			API.sendMessage(null, sender, "", plugin.name + "&7 Config recargada &aexitosamente&f.", lang);
+			DC.setMessages("&7Recargado &bplayers&f.&byml&f.");
+				API.sendMessage(DC);
+			DC.setMessages("&7Config recargada &aexitosamente&f.");
+				API.sendMessage(DC);
 
 		} catch (Exception e) {
-			API.sendMessage(null, sender, "", plugin.name + "&f [&4ERROR&f] &cNO se pudo recargar la config&f. &ePor favor, vea su consola &f/ &eterminal&f.", lang);
+			DC.setMessages("&f [&4ERROR&f] &cNO se pudo recargar la config&f. &ePor favor, vea su consola &f/ &eterminal&f.");
+				API.sendMessage(DC);
 			e.printStackTrace();
 		}
 	}

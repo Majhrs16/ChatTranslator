@@ -1,6 +1,2 @@
-default-lang: "es"
-message-format: "&f<&b%player_name%&f> &f[&6%sourceLang%&f] &e-> &f[&6$targetLang$&f] &a%msg%"
-message-color-personalized: true
-auto-format-messages: true
-auto-translate-chat: true
-debug: false
+server-uuid: "null"
+config-version: 0

@@ -1,49 +1,70 @@
 package majhrs16.ct.events;
 
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.util;
-import majhrs16.ct.translator.API;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import majhrs16.ct.ChatTranslator;
+import majhrs16.ct.events.custom.Message;
+import majhrs16.ct.translator.API.API;
+import majhrs16.ct.util.util;
+
 public class Chat implements Listener {
-	private ChatTranslator plugin;
-	private API API;
+	private ChatTranslator plugin = ChatTranslator.plugin;
+	private API API = new API();
 
-	public Chat(ChatTranslator plugin) {
-		this.plugin = plugin;
-		this.API    = new API(plugin);
-	}
+	public Chat(ChatTranslator plugin) {}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onMessage(AsyncPlayerChatEvent event) {
-		if (event.isAsynchronous()) {
-			event.setCancelled(true);
-			majhrs16.ct.util.chat.add(new AsyncPlayerChatEvent(false, event.getPlayer(), event.getMessage(), event.getRecipients()));
+		if (!plugin.enabled || event.isCancelled())
+			return;
+
+		String path;
+		FileConfiguration config = plugin.getConfig();
+
+		path = "formats.from";
+		Message father = new Message(
+			null,
+			event.getPlayer(),
+			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
+			event.getMessage(),
+			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
+			config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+			true,
+
+			API.getLang(event.getPlayer()),
+
+			util.IF(config, "chat-color-personalized"),
+			util.IF(config, "use-PAPI-format")
+		);
+		
+		Message from = father.clone();
+			from.setFather(father);
+			from.setShow(false);
+
+		path = "formats.to";
+		Message to_model = new Message(
+			from,
+			null,
+			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
+			from.getMessages(),
+			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
+			config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+			true,
+
+			null,
+
+			util.IF(config, "chat-color-personalized"),
+			util.IF(config, "use-PAPI-format")
+		);
+
+		API.broadcast(from, to_model);
+
+		if (!util.IF(plugin.getConfig(), "show-native-chat")) {
+			event.getRecipients().clear();
 		}
 	}
-
-	public void processMsg(AsyncPlayerChatEvent event) {
-		FileConfiguration config = plugin.getConfig();
-		String msgFormat         = config.getString("message-format");
-		CommandSender player     = event.getPlayer();
-		String msg               = event.getMessage();
-
-		if (util.IF(config, "debug")) {
-			System.out.println("Debug: PlayerFrom: '" + player.getName() + "'");
-			System.out.println("Debug: msgFormat: '" + msgFormat + "'");
-			System.out.println("Debug: msg: '" + msg + "'");
-		}
-		
-		Bukkit.getPluginManager().callEvent(event);
-
-		API.broadcast(player, msgFormat, msg);
-
-    }
 }
