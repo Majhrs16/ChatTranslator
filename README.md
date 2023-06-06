@@ -23,7 +23,7 @@ ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo re
 
 Para instalar ChatTranslator, sigue los siguientes pasos:
 
-1. Descarga ChatTranslator desde [GitHub](https://github.com/CreativeMD/ChatTranslator/releases) o [CurseForge](https://www.curseforge.com/minecraft/mc-mods/chattranslator).
+1. Descarga ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
 2. Copia el archivo .jar de ChatTranslator en la carpeta de plugins de tu servidor.
 3. Reinicia tu servidor.
 
