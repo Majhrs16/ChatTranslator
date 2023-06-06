@@ -37,12 +37,12 @@ ChatTranslator se activa automáticamente en tu servidor cuando lo instalas y te
 
 Si tienes problemas con ChatTranslator, revisa la documentación del plugin y los recursos de soporte en los siguientes enlaces:
 
-- [Página de CurseForge](https://www.curseforge.com/minecraft/mc-mods/chattranslator)
-- [Repositorio de GitHub](https://github.com/CreativeMD/ChatTranslator)
+- [ChatTranslator wiki](https://github.com/Majhrs16/ChatTranslator/wiki)
+- [Discord](https://discord.gg/kZxHnSVPTg)
 
 ## Contribución
 
-Si deseas contribuir al desarrollo de ChatTranslator, puedes enviar solicitudes de extracción o informes de problemas al [repositorio de GitHub](https://github.com/CreativeMD/ChatTranslator). Tu contribución es muy apreciada.
+Si deseas contribuir al desarrollo de ChatTranslator, puedes enviar solicitudes de extracción o informes de problemas al [repositorio de GitHub](https://github.com/Majhrs16/ChatTranslator) o atravez del [Discord](https://discord.gg/kZxHnSVPTg). Tu contribución es muy apreciada.
 
 ## Licencia
 
@@ -50,6 +50,6 @@ ChatTranslator está licenciado bajo la Licencia GPL v3.0. Consulta el archivo [
 
 ## Soporte
 
-Para soporte o ayuda, únete a nuestro servidor de Discord: https://discord.gg/kZxHnSVPTg
+Para soporte o ayuda, únete a nuestro servidor de [Discord](https://discord.gg/kZxHnSVPTg).
 
 ¡Gracias por usar ChatTranslator! Si tienes alguna pregunta o necesitas ayuda, no dudes en preguntar.
