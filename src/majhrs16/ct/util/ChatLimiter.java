@@ -32,7 +32,7 @@ public class ChatLimiter {
 
 				if (spam.getCountInt() > spam.getMaxInt() && spam.getMax() > 0.0F) {
 		    		counts.clear();
-		    		
+
 		    		config = plugin.getConfig();
 
 		    		if (util.IF(config, "debug"))
@@ -44,20 +44,20 @@ public class ChatLimiter {
 						: 0.0F
 					);
 		    	}
+				
+				if (chat.size() > 0) {
+		        	int end = Math.min(max_messages_per_tick, chat.size());
 
-		    	for (int i = 0; i < chat.size(); i += max_messages_per_tick) {
-		        	int end = Math.min(i + max_messages_per_tick, chat.size());
-
-		        	for (Message event : chat.subList(i, end)) {
+		        	for (Message event : chat.subList(0, end)) {
 		        		if (event.getPlayer() instanceof Player) {
 			        		Player player = (Player) event.getPlayer();
-			        		
+
 							if (spam.getMax() > 0.0F) {
 				        		if (counts.containsKey(player)) {
 				        			CacheSpam count = counts.get(player);
 				        				count.setCount(count.getCount() + 0.0001F);
 				        			counts.put(player, count);
-	
+
 						    		if (util.IF(config, "debug"))
 						    			Bukkit.getConsoleSender().sendMessage("Debug 20: " + count.getCount() + ", " + spam.getCount() + ", " + spam.getMax());
 	
@@ -66,25 +66,21 @@ public class ChatLimiter {
 					        			counts.remove(player);
 					        			continue;
 					        		}
-	
+
 				        		} else {
 				        			counts.put(player, new CacheSpam(0.0F, null));
 				        		}
 							}
 		        		}
-
-//		        		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-//		        		    public void run() {
+	
 						Bukkit.getPluginManager().callEvent(event);
-//		        		    }
-//		        		}, 1L);
 		        	}
-
+	
 		    		if (util.IF(config, "debug"))
 		    			Bukkit.getConsoleSender().sendMessage("Debug 30: " + chat.size());
-
-		    		chat.subList(i, end).clear();
-		        }
+	
+		    		chat.subList(0, end).clear();
+				}
 
 				if (spam.getMax() > 0.0F) {
 		        	for (Map.Entry<Player, CacheSpam> entry : counts.entrySet()) {

@@ -144,11 +144,11 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public static String _getRegex() {
-		return "\\{\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?(true|false), ?\\'(.+)\\'\\, ?(true|false), ?(true|false)\\}";
+		return "\\[\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?(true|false), ?\\'(.+)\\'\\, ?(true|false), ?(true|false)\\]";
 	}
 	
 	public String toString() {
-		return String.format("{'%s', '%s', '%s', '%s', '%s', %s, '%s', %s, %s}",
+		return String.format("['%s', '%s', '%s', '%s', '%s', %s, '%s', %s, %s]",
 			sender.getName(),
 			message_format,
 			messages,

@@ -35,12 +35,26 @@ public class API implements Listener {
 		majhrs16.ct.util.ChatLimiter.chat.add(from);
 
 		for (Message to : tos) {
-			util.assertLang(to.getLang());
+			try {
+				util.assertLang(to.getLang());
+	
+				majhrs16.ct.util.ChatLimiter.chat.add(to);
 
-			majhrs16.ct.util.ChatLimiter.chat.add(to);
+			} catch (IllegalArgumentException e) {
+				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
+
+				Message alert = util.getDataConfigConsole();
+					alert.getFather().setPlayer(Bukkit.getConsoleSender());
+					alert.getFather().setMessages(String.format("&b%s&f: %s", to.getPlayerName(), msg));
+					alert.getFather().setShow(true);
+
+					alert.setPlayer(to.getPlayer());
+					alert.setMessages(msg);
+				sendMessage(alert);
+			}
 		}
 	}
-	
+
 	public void broadcast(Message from, Message to_model) {
 		Message to;
 		List<Message> tos = new ArrayList<Message>();
@@ -156,6 +170,14 @@ public class API implements Listener {
     @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void sendMessage(Message event) {
     	Message to               = event.clone();
+    	CommandSender to_player  = to.getPlayer();
+		String to_message_format = to.getMessageFormat();
+		String to_messages       = to.getMessages();
+		String to_tool_tips      = to.getToolTips();
+		String to_sounds         = to.getSounds();
+		Boolean to_show          = to.getShow();
+
+		String lang_target       = to.getLang();
 
     	Message from = to.getFather() == null ? new Message() : to.getFather();
 		CommandSender from_player  = from.getPlayer();
@@ -165,15 +187,6 @@ public class API implements Listener {
 		String from_sounds         = from.getSounds();
 		Boolean from_show          = from.getShow();
 		String lang_source         = from.getLang();
-
-    	CommandSender to_player  = to.getPlayer();
-		String to_message_format = to.getMessageFormat();
-		String to_messages       = to.getMessages();
-		String to_tool_tips      = to.getToolTips();
-		String to_sounds         = to.getSounds();
-		Boolean to_show          = to.getShow();
-
-		String lang_target       = to.getLang();
 
 		Boolean color_personalized = to.getColorPersonalized();
 		Boolean format_message     = to.getFormatMessage();
@@ -199,8 +212,9 @@ public class API implements Listener {
 				);
 
 				if (util.IF(plugin.getConfig(), "debug")) {
-					System.out.println(String.format("DEBUG from: '%s',	'%s',	'%s'	%s", from_message_format, from_messages, from_tool_tips, lang_source));
-					System.out.println(String.format("DEBUG to:   '%s',	'%s',	'%s'	%s", to_message_format, to_messages, to_tool_tips, lang_target));
+					System.out.println(              "DEBUG:      Format,	Msgs,	ToolTips	Lang");
+					System.out.println(String.format("DEBUG from: '%s',		'%s',	'%s'		%s", from_message_format, from_messages, from_tool_tips, lang_source));
+					System.out.println(String.format("DEBUG to:   '%s',		'%s',	'%s'		%s", to_message_format, to_messages, to_tool_tips, lang_target));
 				}
 
 				processMsg(

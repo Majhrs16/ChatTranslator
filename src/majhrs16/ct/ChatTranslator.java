@@ -99,10 +99,6 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		enabled = false;
-
-		majhrs16.ct.util.ChatLimiter.chat.clear();
-
 		CommandSender console = Bukkit.getConsoleSender();
 		API API               = new API();
 
@@ -110,14 +106,54 @@ public class ChatTranslator extends JavaPlugin {
 			DC.setPlayer(console);
 			DC.setLang(API.getLang(console));
 
-		DC.setMessages("&4<------------------------->");
-			API.sendMessage(DC);
+		API.processMsg(
+			DC.getFather(),
+			DC.getPlayer(),
+    		DC.getMessageFormat(),
+    		"&4<------------------------->",
+    		DC.getToolTips(),
+    		DC.getSounds(),
+    		DC.getShow(),
 
-		DC.setMessages("&c Desactivado&f.");
-			API.sendMessage(DC);
+    		DC.getLang(),
 
-		DC.setMessages("&4<------------------------->");
-			API.sendMessage(DC);
+    		DC.getColorPersonalized(),
+    		DC.getFormatMessage()
+		);
+
+		API.processMsg(
+			DC.getFather(),
+			DC.getPlayer(),
+    		DC.getMessageFormat(),
+    		"&c Desactivado&f.",
+    		DC.getToolTips(),
+    		DC.getSounds(),
+    		DC.getShow(),
+
+    		DC.getLang(),
+
+    		DC.getColorPersonalized(),
+    		DC.getFormatMessage()
+		);
+
+		API.processMsg(
+			DC.getFather(),
+			DC.getPlayer(),
+    		DC.getMessageFormat(),
+    		"&4<------------------------->",
+    		DC.getToolTips(),
+    		DC.getSounds(),
+    		DC.getShow(),
+
+    		DC.getLang(),
+
+    		DC.getColorPersonalized(),
+    		DC.getFormatMessage()
+		);
+			
+		enabled = false;
+
+		majhrs16.ct.util.ChatLimiter.chat.clear();
 	}
 
 	public void registerCommands() {
