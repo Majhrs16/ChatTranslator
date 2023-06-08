@@ -93,8 +93,41 @@ public class CT implements CommandExecutor {
 						return false;
 					}
 
-					plugin.enabled = !plugin.enabled;
-					sender.sendMessage("" + plugin.enabled);
+/*
+					if (args.length == 2) {
+						FileConfiguration players = plugin.getPlayers();
+						String path               = "";
+
+						Player player2;
+						try {
+							player2 = Bukkit.getServer().getPlayer(args[1]);
+
+						} catch (NullPointerException e) {
+							player2 = null;
+						}
+
+						if (player2 == null) {
+							DC.setMessages("&7El jugador &f'&b" + args[1] + "&f' &cno &7esta &cdisponible&f.");
+								API.sendMessage(DC);
+							return false;
+						}
+						
+						path = "" + player2.getUniqueId();
+						if (players.contains(path)) {
+							lang = "disabled";
+							if (players.getString(path).equals(lang)) {
+								
+							}
+						}
+						players.set(path, lang);
+						plugin.savePlayers();
+
+					} else if (args.length == 1) {
+*/
+						plugin.enabled = !plugin.enabled;
+						majhrs16.ct.util.ChatLimiter.chat.clear();
+						sender.sendMessage("" + plugin.enabled);
+//					}
 					return true;
 
 				default:
@@ -175,7 +208,24 @@ public class CT implements CommandExecutor {
 						player2.getName(),
 						lang
 					));
-//						API.broadcast(DC);
+
+					path = "formats.to";
+					Message to_model = new Message(
+						DC,
+						null,
+						config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
+						DC.getMessages(),
+						config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
+						config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+						true,
+
+						null,
+
+						util.IF(config, "chat-color-personalized"),
+						util.IF(config, "use-PAPI-format")
+					);
+
+					API.broadcast(DC, to_model);
 					return true;
 
 				default:

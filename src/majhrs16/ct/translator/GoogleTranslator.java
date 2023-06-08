@@ -12,6 +12,7 @@ import org.json.JSONArray;
 public class GoogleTranslator implements Translator {
 	public enum Languages {
 		OFF("OFF"),
+		disabled("disabled"),
 
 		AUTO("Automatic"),
 		AF("Afrikaans"),
@@ -264,6 +265,8 @@ public class GoogleTranslator implements Translator {
 	};
 
 	public boolean isSupport(String lang) {
+			// isSupport("xd") -> false
+			// isSupport("es") -> true
 		try {
 			if (lang == null)
 				throw new IllegalArgumentException("[Err 11 detectado]");
@@ -279,6 +282,7 @@ public class GoogleTranslator implements Translator {
 	}
 
 	public String translate(String text, String sourceLang, String targetLang) {
+			// translate("Hola", "es", "en") -> "hello"
 		if(!(isSupport(sourceLang) && isSupport(targetLang)))
 			return text;
 

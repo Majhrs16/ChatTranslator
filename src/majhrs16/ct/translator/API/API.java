@@ -94,6 +94,12 @@ public class API implements Listener {
     		Boolean format_message
 		) {
 
+//		FileConfiguration players = plugin.getPlayers();
+
+//		if (players.contains("" + ((Player) player).getUniqueId()) && players.getString("" + player.getUniqueId()).equals("disabled")) {
+//			return;
+//		}
+		
 		if (show) {
 			if (message_format != null && messages != null) {
 				if (tool_tips != null)

@@ -61,7 +61,8 @@ public class ChatTranslator extends JavaPlugin {
 		DC.setMessages("&4<------------------------->");
 			API.sendMessage(DC);
 
-//		API.sendMessage(null, console, "\n", name, "es");
+		DC.setMessages(" ");
+			API.sendMessage(DC);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
 			DC.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f) &cen UTF&f-&c8&f.");
@@ -72,25 +73,29 @@ public class ChatTranslator extends JavaPlugin {
 				API.sendMessage(DC);
 			DC.setMessageFormat("$ct_messages$");
 
-//			API.sendMessage(null, console, "\n", name, "es");
+			DC.setMessages(" ");
+				API.sendMessage(DC);
 
 		} else {
 			DC.setMessages(title);
 				API.sendMessage(DC);
 		}
 
-		DC.setMessages(String.format("&a    Activado&f. &7Version&f: &b%s&f.", version));
+		DC.setMessages(String.format("&a	Activado&f. &7Version&f: &b%s&f.", version));
 			API.sendMessage(DC);
 
 		if (!util.checkPAPI()) {
-//			API.sendMessage(null, console, "", "\n", "es");
-			DC.setMessages("&c    No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
+			DC.setMessages(" ");
+				API.sendMessage(DC);
+
+			DC.setMessages("&c	No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
 				API.sendMessage(DC);
 		}
 
 		updateChecker();
 
-//		API.sendMessage(null, console, "\n", name, "es");
+		DC.setMessages(" ");
+			API.sendMessage(DC);
 
 		DC.setMessages("&4<------------------------->");
 			API.sendMessage(DC);
@@ -186,14 +191,14 @@ public class ChatTranslator extends JavaPlugin {
 			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestversion.length() <= 7) {
 				if (version.equals(latestversion)) {
-					DC.setMessages("&a    Estas usando la ultima version del plugin <3");
+					DC.setMessages("&a	Estas usando la ultima version del plugin <3");
 						API.sendMessage(DC);
 
 				} else {
-					DC.setMessages(String.format("&e    Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
+					DC.setMessages(String.format("&e	Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
 						API.sendMessage(DC);
 
-					DC.setMessages("&a        Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
+					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
 						API.sendMessage(DC);
 				}
 

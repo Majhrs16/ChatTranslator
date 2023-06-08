@@ -12,7 +12,7 @@ import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 
 public class ChatLimiter {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin         = ChatTranslator.plugin;
 	public static ArrayList<Message> chat = new ArrayList<Message>();
 
 	public ChatLimiter() {

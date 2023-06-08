@@ -19,11 +19,11 @@ public class Chat implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onMessage(AsyncPlayerChatEvent event) {
-		if (!plugin.enabled || event.isCancelled())
-			return;
-
 		String path;
 		FileConfiguration config = plugin.getConfig();
+
+		if (!plugin.enabled || event.isCancelled())
+			return;
 
 		path = "formats.from";
 		Message father = new Message(
