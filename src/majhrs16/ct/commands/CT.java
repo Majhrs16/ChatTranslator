@@ -255,7 +255,7 @@ public class CT implements CommandExecutor {
 			msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.");
 			msg.add("&e    version\n&aVisualizar version&f.");
 			msg.add("&e    reload\n&aRecargar config&f.");
-			msg.add("&e    toggle\n&aActiva o desactiva el plugin&f.\n&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.");
+			msg.add("&e    toggle &f[&6Jugador&f]\n&aActiva o desactiva el chat para el jugador o por defecto en global&f.\n&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.");
 		showToolTip(sender, msg);
 	}
 
