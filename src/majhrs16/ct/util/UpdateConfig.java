@@ -22,7 +22,7 @@ public class UpdateConfig {
 	}
 
 	public void applyCurrentConfig() {
-		Boolean show_native_chat;
+		Boolean cancel_event, clear_recipients;
 		FileConfiguration config = plugin.getConfig();
 
 		ArrayList<String> formats_from_messages = new ArrayList<String>();
@@ -69,16 +69,22 @@ public class UpdateConfig {
 		if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
 			DC.setMessages("&aDetectado Chatty&f.");
 				API.sendMessage(DC);
-			show_native_chat = true;
+			cancel_event     = false;
+			clear_recipients = false;
 
 		} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
 			DC.setMessages("&aDetectado ChatManager&f.");
 				API.sendMessage(DC);
-			show_native_chat = true;
+			cancel_event     = false;
+			clear_recipients = false;
 		
-		} else
-			show_native_chat = false;
-		config.set("show-native-chat", show_native_chat);
+		} else {
+			cancel_event     = true;
+			clear_recipients = false;
+		}
+    	String path = "show-native-chat";
+		config.set(path + ".cancel-event", cancel_event);
+		config.set(path + ".clear-recipients", clear_recipients);
 
 		config.set("default-lang", null); // fix plugin crash on initial start.
 
@@ -107,7 +113,7 @@ public class UpdateConfig {
 		
 		if (config_version_original == 0) {
 			applyCurrentConfig();
-			config_version = 1;
+			config_version = 4;
 		}
 
 		path = "auto-update-config";
