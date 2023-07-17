@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import majhrs16.ct.ChatTranslator;
@@ -94,11 +92,13 @@ public class API implements Listener {
     		Boolean format_message
 		) {
 
-//		FileConfiguration players = plugin.getPlayers();
-
-//		if (players.contains("" + ((Player) player).getUniqueId()) && players.getString("" + player.getUniqueId()).equals("disabled")) {
-//			return;
-//		}
+		if (player instanceof Player) {
+			FileConfiguration players = plugin.getPlayers();
+			String path = "" + ((Player) player).getUniqueId();
+			if (players.contains(path) && players.getString(path).equals("disabled")) {
+				return;
+			}
+		}
 		
 		if (show) {
 			if (message_format != null && messages != null) {
@@ -173,7 +173,6 @@ public class API implements Listener {
 		}
 	}
 
-    @EventHandler (priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void sendMessage(Message event) {
     	Message to               = event.clone();
     	CommandSender to_player  = to.getPlayer();

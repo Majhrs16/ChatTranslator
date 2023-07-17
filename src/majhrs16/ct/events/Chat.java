@@ -17,13 +17,17 @@ public class Chat implements Listener {
 
 	public Chat(ChatTranslator plugin) {}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
 		String path;
 		FileConfiguration config = plugin.getConfig();
 
 		if (!plugin.enabled || event.isCancelled())
 			return;
+
+		if (util.IF(config, "show-native-chat.cancel-event")) {
+			event.setCancelled(true);
+		}
 
 		path = "formats.from";
 		Message father = new Message(
@@ -63,7 +67,7 @@ public class Chat implements Listener {
 
 		API.broadcast(from, to_model);
 
-		if (!util.IF(plugin.getConfig(), "show-native-chat")) {
+		if (util.IF(config, "show-native-chat.clear-recipients")) {
 			event.getRecipients().clear();
 		}
 	}

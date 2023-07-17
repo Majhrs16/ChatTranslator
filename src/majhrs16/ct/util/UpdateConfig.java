@@ -13,8 +13,15 @@ import majhrs16.ct.translator.API.API;
 public class UpdateConfig {
 	private ChatTranslator plugin = ChatTranslator.plugin;
 	private int config_version;
+	
+	public void applyDefaultConfig() {
+		FileConfiguration config = plugin.getConfig();
+		config.set("server-uuid", null);
+        config.set("config-version", 0);
+        plugin.saveConfig();
+	}
 
-	public void applyConfigVersion1() {
+	public void applyCurrentConfig() {
 		Boolean show_native_chat;
 		FileConfiguration config = plugin.getConfig();
 
@@ -84,42 +91,48 @@ public class UpdateConfig {
 		config.set("debug", false);
 	}
 
-	public UpdateConfig() {
+	public void update() {
 		String path, tmp;
 		FileConfiguration config = plugin.getConfig();
 
 		API API = new API();
 		Message DC = util.getDataConfigConsole();
 
-		path = "config-version";
-		if (!config.contains(path)) {
-			config.set(path, -1);
-			plugin.saveConfig();
-		}
+		String _path = "config-version";
+		if (!config.contains(_path))
+			config.set(_path, -1);
 
-		config_version = config.getInt(path);
+		config_version = config.getInt(_path);
 		int config_version_original = config_version;
-
+		
 		if (config_version_original == 0) {
-			applyConfigVersion1();
+			applyCurrentConfig();
 			config_version = 1;
 		}
 
-		if (!util.IF(config, "auto-update-config")) {
-			config.set(path, config_version);
+		path = "auto-update-config";
+		if (config.contains(path) && !util.IF(config, path)) {
+			config.set(_path, config_version);
+			plugin.saveConfig();
 			return;
 		}
-
+		
 		if (util.IF(config, "debug"))
 			System.out.println("Debug, config_version: " + config_version);
 
 		if (config_version < 1) {
-			ArrayList<String> formats_from_messages = new ArrayList<String>();
+			// Version perdida donde se usaba formatMsg en vez de format-message...
+
+			config_version = 1;
+		}
+		
+		if (config_version < 2) {
+			ArrayList<String> formats_from_messages  = new ArrayList<String>();
 			ArrayList<String> formats_from_tool_tips = new ArrayList<String>();
-			ArrayList<String> formats_from_sounds   = new ArrayList<String>();
-			ArrayList<String> formats_to_messages = new ArrayList<String>();
-			ArrayList<String> formats_to_toolTips = new ArrayList<String>();
-			ArrayList<String> formats_to_sounds   = new ArrayList<String>();
+			ArrayList<String> formats_from_sounds    = new ArrayList<String>();
+			ArrayList<String> formats_to_messages    = new ArrayList<String>();
+			ArrayList<String> formats_to_toolTips    = new ArrayList<String>();
+			ArrayList<String> formats_to_sounds      = new ArrayList<String>();
 
 			String formatMsg = config.getString("message-format");
 				formatMsg = formatMsg.replace("%player%", "%player_name%");
@@ -133,13 +146,13 @@ public class UpdateConfig {
 				formats_from_messages.add(formatMsg);
 				formats_to_messages.add(formatMsg);
 			config.set("formats.from.messages", formats_from_messages);
-			config.set("formats.from.toolTips", formats_from_tool_tips);
-			config.set("formats.from.sounds", formats_from_sounds);
-
-			config.set("formats.to.messages", formats_to_messages);
-			config.set("formats.to.toolTips", formats_to_toolTips);
-			config.set("formats.to.sounds", formats_to_sounds);
-			config.set("formatMsg", null);
+				config.set("formats.from.toolTips", formats_from_tool_tips);
+				config.set("formats.from.sounds", formats_from_sounds);
+	
+				config.set("formats.to.messages", formats_to_messages);
+				config.set("formats.to.toolTips", formats_to_toolTips);
+				config.set("formats.to.sounds", formats_to_sounds);
+			config.set("message-format", null);
 
 			path = "message-color-personalized";
 			tmp = config.getString(path);
@@ -167,9 +180,9 @@ public class UpdateConfig {
 
 			config.set("auto-update-config", true);
 
-			config_version = 1;
+			config_version = 2;
 
-		} if (config_version < 2) {
+	    } if (config_version < 3) {
 			Boolean show_native_chat;
 
 			DC.setPlayer(Bukkit.getConsoleSender());
@@ -190,10 +203,20 @@ public class UpdateConfig {
 			
 			config.set("max-spam-per-tick", 150.0007);
 
-			config_version = 2;
+			config_version = 3;
 		}
+	    
+	    if (config_version < 4) {
+	    	path = "show-native-chat";
+	    	Boolean state = util.IF(config, path);
+    		config.set(path, null);
+    		config.set(path + ".cancel-event", state);
+    		config.set(path + ".clear-recipients", state);
 
-		config.set(path, config_version);
+	    	config_version = 4;
+	    }
+
+		config.set(_path, config_version);
 		plugin.saveConfig();
 
 		if (config_version > config_version_original) {
@@ -204,6 +227,6 @@ public class UpdateConfig {
 				"" + config_version_original,
 				"" + config_version));
 			API.sendMessage(DC);
-		}
+	    }
 	}
 }

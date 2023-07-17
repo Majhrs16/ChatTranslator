@@ -12,7 +12,7 @@ import org.json.JSONArray;
 public class GoogleTranslator implements Translator {
 	public enum Languages {
 		OFF("OFF"),
-		disabled("disabled"),
+		DISABLED("disabled"),
 
 		AUTO("Automatic"),
 		AF("Afrikaans"),

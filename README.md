@@ -1,4 +1,4 @@
-# ChatTranslator v1.5.4
+# ChatTranslator v1.5.5
 
 ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
 

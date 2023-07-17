@@ -93,7 +93,6 @@ public class CT implements CommandExecutor {
 						return false;
 					}
 
-/*
 					if (args.length == 2) {
 						FileConfiguration players = plugin.getPlayers();
 						String path               = "";
@@ -113,21 +112,17 @@ public class CT implements CommandExecutor {
 						}
 						
 						path = "" + player2.getUniqueId();
-						if (players.contains(path)) {
-							lang = "disabled";
-							if (players.getString(path).equals(lang)) {
-								
-							}
-						}
-						players.set(path, lang);
+						players.set(path, "disabled");
 						plugin.savePlayers();
+						
+						DC.setMessages(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
+							API.sendMessage(DC);						
 
 					} else if (args.length == 1) {
-*/
 						plugin.enabled = !plugin.enabled;
 						majhrs16.ct.util.ChatLimiter.chat.clear();
 						sender.sendMessage("" + plugin.enabled);
-//					}
+					}
 					return true;
 
 				default:

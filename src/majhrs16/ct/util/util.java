@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.GoogleTranslator;
+import majhrs16.ct.translator.API.API;
 
 public class util {
 	public static Boolean checKDependency(String dependency) {
@@ -74,5 +75,22 @@ public class util {
 				msg.setColorPersonalized(true);
 				msg.setFormatMessage(false);
 		return msg;
+	}
+	
+	public static void processMsgFromDC(Message DC) {
+		new API().processMsg(
+			DC.getFather(),
+			DC.getPlayer(),
+    		DC.getMessageFormat(),
+    		DC.getMessages(),
+    		DC.getToolTips(),
+    		DC.getSounds(),
+    		DC.getShow(),
+
+    		DC.getLang(),
+
+    		DC.getColorPersonalized(),
+    		DC.getFormatMessage()
+		);
 	}
 }
