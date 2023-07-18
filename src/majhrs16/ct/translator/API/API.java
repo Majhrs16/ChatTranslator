@@ -282,26 +282,6 @@ public class API implements Listener {
 
 		if (to_player != null)
 			message_format = Pattern.compile("\\$player_name\\$", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(to_player.getName()); // Parece rebundante, pero es necesario.
-		
-		if (util.IF(config, "debug")) {
-			System.out.println("Debug 01, messages: " + messages);
-			System.out.println("Debug 01, messages_original: " + messages_original);
-			System.out.println("Debug 01, message_format: " + message_format);
-		}
-
-		if (message_format.contains("$ct_messages$")
-				// && !(lang_source.equals("off") && lang_target.equals("off"))
-				) {
-			messages = hexToOctalColors(messages);
-			messages = GT.translate(messages, lang_source, lang_target);
-			messages = octalToHexColors(messages);
-		}
-
-		message_format = Pattern.compile("\\$ct_messages\\$", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll("\\#ct_messages\\#"); // Fix bug %ct_messages% on $ct_messages$
-
-		int count = util.stringCount(message_format, "%ct_expand%");
-		message_format = Pattern.compile("\\%ct_messages\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(messages_original);
-		message_format = message_format.replace("#ct_messages#", messages);
 
 		if (util.checkPAPI() && format_message) {
 			if (from_player instanceof Player)
@@ -311,12 +291,26 @@ public class API implements Listener {
 				message_format = PlaceholderAPI.setPlaceholders((Player) to_player, message_format.replace("$", "%"));
 		}
 
-		if (util.IF(config, "debug")) {
-			System.out.println("Debug 02, messages: " + messages);
-			System.out.println("Debug 02, messages_original: " + messages_original);
-			System.out.println("Debug 02, message_format: " + message_format);
+		message_format = Pattern.compile("\\$ct_messages\\$", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll("\\#ct_messages\\#"); // Fix bug %ct_messages% on $ct_messages$
+
+		if (message_format.contains("$ct_messages$") && (lang_source.equals("off") && lang_target.equals("off"))) {
+			messages = hexToOctalColors(messages);
+			messages = GT.translate(messages, lang_source, lang_target);
+			messages = octalToHexColors(messages);
 		}
-		
+
+		message_format = ChatColor.translateAlternateColorCodes("&".charAt(0), message_format);
+
+		if (color_personalized) {
+			messages          = ChatColor.translateAlternateColorCodes("&".charAt(0), messages);
+			messages_original = ChatColor.translateAlternateColorCodes("&".charAt(0), messages_original);
+		}
+
+		message_format = Pattern.compile("\\%ct_messages\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(messages_original);
+		message_format = message_format.replace("#ct_messages#", messages);
+
+		int count = util.stringCount(message_format, "%ct_expand%");
+
 		for(int i = count; i > 0; i--) {
 			int padding = (70 - Pattern.compile("\\%ct_expand\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll("").length()) / i;
 
@@ -325,18 +319,22 @@ public class API implements Listener {
 				System.out.println("Debug 03, padding: " + padding);
 			}
 
-			String spaces = String.format("%" + padding + "s", "");
+			String spaces = "";
+			for (int j = 0; j <= padding; j++) {
+			    spaces += " ";
+			}
 			message_format = Pattern.compile("\\%ct_expand\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceFirst(spaces);
 		}
 
-		message_format = ChatColor.translateAlternateColorCodes("&".charAt(0), message_format);
-
-		if (color_personalized)
-			messages = ChatColor.translateAlternateColorCodes("&".charAt(0), messages);
-
-		if (util.IF(config, "debug"))
-			System.out.println("Debug 04, message_format: " + message_format);
-
+//		message_format = Pattern.compile("\\%ct_messages\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(messages_original);
+//		message_format = message_format.replace("#ct_messages#", messages);
+		
+		if (util.IF(config, "debug")) {
+			System.out.println("Debug 01, messages: " + messages);
+			System.out.println("Debug 01, messages_original: " + messages_original);
+			System.out.println("Debug 01, message_format: " + message_format);
+		}
+		
 		return message_format;
 	}
 
