@@ -1,4 +1,4 @@
-# ChatTranslator v1.5.5
+# ChatTranslator
 
 ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
 
@@ -12,7 +12,7 @@ ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo re
 - Opcionalmente, se puede utilizar la dependencia PlaceholderAPI. Sin embargo, es necesario instalar la extensión player para evitar problemas en el servidor.
 - En caso de no tener conexión a Internet, se añade el prefijo "[ NO INTERNET ]" a \$ct_messages\$.
 - Funciones personalizables y desactivables.
-- Compatible con BungeeCord.
+- Soporte para BungeeCord.
 - Soporte para otros plugins de chat, incluyendo:
   - Soporte parcial para Chatty y ChatManager a través del ejemplo de config #3.
   - Soporte para condiciones en `config.formats` a través de ConditionalEvents.
