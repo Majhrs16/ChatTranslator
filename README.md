@@ -4,20 +4,19 @@ ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo re
 
 ## Características
 
-- Utiliza la API de Google Translate para traducir el chat, la consola y más al idioma establecido.
+- Opcionalmente se puede utilizar la dependencia PlaceholderAPI, pero seria necesario instalar la extensión player para evitar problemas en el servidor.
+- Los jugadores o consola pueden especificar su idioma utilizando el comando: /lang [código de idioma].
+- Utiliza la API de Google Translate para traducir el chat, la consola y mas al idioma establecido.
+- En caso de no tener conexión a internet, se añade el prefijo "[ NO INTERNET ]" a $ct_messages$.
+- Configuración MUY personalizable para el formato del chat a través de config.formats.
 - Detección automática del idioma del jugador.
-- Los jugadores o la consola pueden especificar su idioma utilizando el comando: /lang [código de idioma].
-- Admite una amplia gama de idiomas.
-- Personalización completa del formato del chat a través de `config.formats`.
-- Opcionalmente, se puede utilizar la dependencia PlaceholderAPI. Sin embargo, es necesario instalar la extensión player para evitar problemas en el servidor.
-- En caso de no tener conexión a Internet, se añade el prefijo "[ NO INTERNET ]" a \$ct_messages\$.
 - Funciones personalizables y desactivables.
-- Soporte para BungeeCord.
-- Soporte para otros plugins de chat, incluyendo:
-  - Soporte parcial para Chatty y ChatManager a través del ejemplo de config #3.
-  - Soporte para condiciones en `config.formats` a través de ConditionalEvents.
-  - A través del evento majhrs16.ct.events.custom.Message.
-  - Soporte para DiscordSRV.
+- Compatible con BungeeCord.
+- Soporte para otros plugins de chat:
+  - Soporte parcial para Chatty y ChatManager atravez del ejemplo de config #3,
+  - Soporte para condiciones en config.formats atravez de ConditionalEvents,
+  - Atravez del evento majhrs16.ct.events.custom.Message,
+  - Soporte para DiscordSRV.​
 
 ## Instalación
 
