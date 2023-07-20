@@ -148,7 +148,7 @@ public class GoogleTranslator implements Translator {
 		43,  // +
 		44,  // ,
 		45,  // -
-		46,  // .
+//		46,  // .
 		47,  // /
 		58,  // :
 		59,  // ;
@@ -276,7 +276,7 @@ public class GoogleTranslator implements Translator {
 
 		} catch (IllegalArgumentException e) {
 			System.out.println("[Err 10 detectado], Debug lang: '" + lang + "'");
-			e.printStackTrace();
+//			e.printStackTrace();
 			return false;
 		}
 	}

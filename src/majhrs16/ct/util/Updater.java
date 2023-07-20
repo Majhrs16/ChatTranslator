@@ -10,10 +10,10 @@ import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
 
-public class UpdateConfig {
+public class Updater {
 	private ChatTranslator plugin = ChatTranslator.plugin;
 	private int config_version;
-	
+
 	public void applyDefaultConfig() {
 		FileConfiguration config = plugin.getConfig();
 		config.set("server-uuid", null);
@@ -54,39 +54,46 @@ public class UpdateConfig {
 		config.set("formats.to.toolTips", formats_to_tool_tips);
 		config.set("formats.to.sounds", formats_to_sounds);
 
+    	config.set("storage.type", "sqlite");
+			config.set("storage.host", "localhost");
+			config.set("storage.port", 3306);
+			config.set("storage.database", "ChatTranslator");
+			config.set("storage.user", "root");
+			config.set("storage.password", "password");
+
 		config.set("server-uuid", UUID.randomUUID().toString());
 
 		config.set("chat-color-personalized", true);
 
 		config.set("auto-update-config", true);
 
-		config.set("default-lang", "es"); // fix plugin crash on initial start.
+		config.set("default-lang", "es"); // fix plugin crash on initial start. // fix plugin en el primer inicio.
 
 		API API = new API();
-		Message DC = util.getDataConfigConsole();
-		DC.setPlayer(Bukkit.getConsoleSender());
-		DC.setLang(API.getLang(Bukkit.getConsoleSender()));
-		if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
-			DC.setMessages("&aDetectado Chatty&f.");
-				API.sendMessage(DC);
-			cancel_event     = false;
-			clear_recipients = false;
+			Message DC = util.getDataConfigDefault();
+			DC.setPlayer(Bukkit.getConsoleSender());
+			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
+			if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
+				DC.setMessages("&aDetectado Chatty&f.");
+					API.sendMessage(DC);
+				cancel_event     = false;
+				clear_recipients = false;
 
-		} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
-			DC.setMessages("&aDetectado ChatManager&f.");
-				API.sendMessage(DC);
-			cancel_event     = false;
-			clear_recipients = false;
-		
-		} else {
-			cancel_event     = true;
-			clear_recipients = false;
-		}
-    	String path = "show-native-chat";
-		config.set(path + ".cancel-event", cancel_event);
-		config.set(path + ".clear-recipients", clear_recipients);
+			} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
+				DC.setMessages("&aDetectado ChatManager&f.");
+					API.sendMessage(DC);
+				cancel_event     = false;
+				clear_recipients = false;
 
-		config.set("default-lang", null); // fix plugin crash on initial start.
+			} else {
+				cancel_event     = true;
+				clear_recipients = false;
+			}
+			String path = "show-native-chat";
+			config.set(path + ".cancel-event", cancel_event);
+			config.set(path + ".clear-recipients", clear_recipients);
+
+		config.set("default-lang", null); // fix plugin crash on initial start. // fix plugin en el primer inicio.
 
 		config.set("max-spam-per-tick", 150.0007);
 
@@ -102,7 +109,7 @@ public class UpdateConfig {
 		FileConfiguration config = plugin.getConfig();
 
 		API API = new API();
-		Message DC = util.getDataConfigConsole();
+		Message DC = util.getDataConfigDefault();
 
 		String _path = "config-version";
 		if (!config.contains(_path))
@@ -110,10 +117,10 @@ public class UpdateConfig {
 
 		config_version = config.getInt(_path);
 		int config_version_original = config_version;
-		
+
 		if (config_version_original == 0) {
 			applyCurrentConfig();
-			config_version = 4;
+			config_version = 5;
 		}
 
 		path = "auto-update-config";
@@ -126,11 +133,9 @@ public class UpdateConfig {
 		if (util.IF(config, "debug"))
 			System.out.println("Debug, config_version: " + config_version);
 
-		if (config_version < 1) {
+		if (config_version < 1)
 			// Version perdida donde se usaba formatMsg en vez de format-message...
-
 			config_version = 1;
-		}
 		
 		if (config_version < 2) {
 			ArrayList<String> formats_from_messages  = new ArrayList<String>();
@@ -220,6 +225,16 @@ public class UpdateConfig {
     		config.set(path + ".clear-recipients", state);
 
 	    	config_version = 4;
+	    }
+
+	    if (config_version < 5) {
+	    	config.set("storage.type", "local");
+	    	config.set("storage.host", "localhost");
+	    	config.set("storage.port", 3306);
+	    	config.set("storage.database", "ChatTranslator");
+	    	config.set("storage.user", "root");
+	    	config.set("storage.password", "password");
+	    	config_version = 5;
 	    }
 
 		config.set(_path, config_version);

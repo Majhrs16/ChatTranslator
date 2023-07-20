@@ -19,8 +19,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class API implements Listener {
@@ -41,7 +43,7 @@ public class API implements Listener {
 			} catch (IllegalArgumentException e) {
 				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
 
-				Message alert = util.getDataConfigConsole();
+				Message alert = util.getDataConfigDefault();
 					alert.getFather().setPlayer(Bukkit.getConsoleSender());
 					alert.getFather().setMessages(String.format("&b%s&f: %s", to.getPlayerName(), msg));
 					alert.getFather().setShow(true);
@@ -54,26 +56,23 @@ public class API implements Listener {
 	}
 
 	public void broadcast(Message from, Message to_model) {
-		Message to;
 		List<Message> tos = new ArrayList<Message>();
 
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
 			if(to_player == from.getPlayer())
 				continue;
 
-			to = to_model.clone();
-				to.setFather(from);
+			Message to = to_model.clone();
 				to.setPlayer(to_player);
 				to.setLang(getLang(to_player));
 			tos.add(to);
 		}
-		
-		to = to_model.clone();
-			to.setFather(from);
+
+		Message to = to_model.clone();
 			to.setPlayer(Bukkit.getConsoleSender());
 			to.setLang(getLang(Bukkit.getConsoleSender()));
 		tos.add(to);
-		
+
 		broadcast(from, tos);
 	}
 
@@ -92,14 +91,10 @@ public class API implements Listener {
     		Boolean format_message
 		) {
 
-		if (player instanceof Player) {
-			FileConfiguration players = plugin.getPlayers();
-			String path = "" + ((Player) player).getUniqueId();
-			if (players.contains(path) && players.getString(path).equals("disabled")) {
-				return;
-			}
+		if (lang != null && lang.equals("disabled")) {
+			return;
 		}
-		
+
 		if (show) {
 			if (message_format != null && messages != null) {
 				if (tool_tips != null)
@@ -160,7 +155,7 @@ public class API implements Listener {
 							player2.playSound(player2.getLocation(), sound, 1, 1);
 
 						} catch (IllegalArgumentException e) {
-							Message msg = util.getDataConfigConsole();
+							Message msg = util.getDataConfigDefault();
 								CommandSender console = Bukkit.getConsoleSender();
 								msg.setPlayer(console);
 								msg.setLang(getLang(console));
@@ -293,10 +288,12 @@ public class API implements Listener {
 
 		message_format = Pattern.compile("\\$ct_messages\\$", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll("\\#ct_messages\\#"); // Fix bug %ct_messages% on $ct_messages$
 
-		if (message_format.contains("$ct_messages$") && (lang_source.equals("off") && lang_target.equals("off"))) {
-			messages = hexToOctalColors(messages);
+		String[] values  = {lang_source, lang_target};
+		String[] compare = {null, null};
+		if (message_format.contains("#ct_messages#") && !(values == compare && lang_source.equals("off") && lang_target.equals("off"))) {
+//			messages = hexToOctalColors(messages);
 			messages = GT.translate(messages, lang_source, lang_target);
-			messages = octalToHexColors(messages);
+//			messages = octalToHexColors(messages);
 		}
 
 		message_format = ChatColor.translateAlternateColorCodes("&".charAt(0), message_format);
@@ -308,7 +305,7 @@ public class API implements Listener {
 
 		message_format = Pattern.compile("\\%ct_messages\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(messages_original);
 		message_format = message_format.replace("#ct_messages#", messages);
-
+		
 		int count = util.stringCount(message_format, "%ct_expand%");
 
 		for(int i = count; i > 0; i--) {
@@ -326,9 +323,6 @@ public class API implements Listener {
 			message_format = Pattern.compile("\\%ct_expand\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceFirst(spaces);
 		}
 
-//		message_format = Pattern.compile("\\%ct_messages\\%", Pattern.CASE_INSENSITIVE).matcher(message_format).replaceAll(messages_original);
-//		message_format = message_format.replace("#ct_messages#", messages);
-		
 		if (util.IF(config, "debug")) {
 			System.out.println("Debug 01, messages: " + messages);
 			System.out.println("Debug 01, messages_original: " + messages_original);
@@ -338,63 +332,157 @@ public class API implements Listener {
 		return message_format;
 	}
 
+	public void setLang(CommandSender sender, String lang) {
+		UUID uuid;
+		FileConfiguration config  = plugin.getConfig();
+
+		Message DC            = util.getDataConfigDefault();
+		CommandSender console = Bukkit.getConsoleSender();
+		DC.setPlayer(console);
+
+		if (sender instanceof Player) {
+			uuid = ((Player) sender).getUniqueId();
+
+		} else {
+			uuid = UUID.fromString(config.getString("server-uuid"));
+		}
+
+		try {
+			lang = util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f' &cno &7esta soportado&f!.");
+
+		} catch (IllegalArgumentException e) {
+			lang = config.getString("default-lang");
+		}
+		
+		switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+			case "yaml":
+				plugin.getPlayers().set(uuid.toString(), lang);;
+				break;
+	
+			case "sqlite":
+				try {
+					if (plugin.getSQLite().get(uuid) == null) {
+						plugin.getSQLite().insert(uuid, lang);
+
+					} else {
+						plugin.getSQLite().update(uuid, lang);
+					}
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+					DC.setMessages("&cError al escribir en SQLite&f.");
+					DC.setLang("es");
+						sendMessage(DC);
+				}
+				break;
+	
+			case "mysql":
+				try {
+					if (plugin.getMySQL().get(uuid) == null) {
+						plugin.getMySQL().insert(uuid, lang);
+
+					} else {
+						plugin.getMySQL().update(uuid, lang);
+					}
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+					DC.setMessages("&cError al escribir en MySQL&f.");
+					DC.setLang("es");
+						sendMessage(DC);
+				}
+				break;
+		}
+	}
+
 	public String getLang(CommandSender sender) {
 //			Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
 //			Ejemplo: getLang(Alejo09Games) -> String = "en"
 
+		UUID uuid;
 		String lang               = null;
 		FileConfiguration config  = plugin.getConfig();
 		FileConfiguration players = plugin.getPlayers();
 		String defaultLang        = config.getString("default-lang");
-		String path               = "";
+
+		Message DC            = util.getDataConfigDefault();
+		CommandSender console = Bukkit.getConsoleSender();
+		DC.setPlayer(console);
 
 		if (sender instanceof Player) {
-			path += ((Player) sender).getUniqueId();
-			if (players.contains(path)) {
-				lang = players.getString(path);
-
-				if (util.checkPAPI() && lang.equals("auto"))
-					lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-
-			} else if (util.checkPAPI()) {
-				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-
-			} else {
-	   			lang = defaultLang;
-			}
+			uuid = ((Player) sender).getUniqueId();
 
 		} else {
-			path += config.getString("server-uuid");
-			if (players.contains(path)) {
-				lang = players.getString(path);
+			uuid = UUID.fromString(config.getString("server-uuid"));
+		}
+		
+		switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+			case "yaml":
+				if (players.contains(uuid.toString())) {
+					lang = players.getString(uuid.toString());
+				}
+				break;
+	
+			case "sqlite":
+				try {
+					lang = plugin.getSQLite().get(uuid);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+					DC.setMessages("&cError al leer en SQLite&f.");
+					DC.setLang("es");
+						sendMessage(DC);
 
-			} else {
-				lang = defaultLang;
-			}
+				} catch (NullPointerException e) {
+					;
+				}
+				break;
+	
+			case "mysql":
+				try {
+					lang = plugin.getMySQL().get(uuid);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();
+					DC.setMessages("&cError al leer en MySQL&f.");
+					DC.setLang("es");
+						sendMessage(DC);
+				} catch (NullPointerException e) {
+					;
+				}
+				break;
+		}
+		
+		if (lang != null) {
+			if (util.checkPAPI() && lang.equals("auto"))
+				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
+
+		} else if (util.checkPAPI()) {
+			lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
+
+		} else {
+   			lang = defaultLang;
 		}
 
 		if (!GT.isSupport(lang)) {
-			Message msg = util.getDataConfigConsole();
-			
-			CommandSender console = Bukkit.getConsoleSender();
-			msg.setPlayer(console);
+			DC.setPlayer(console);
 
 			if (GT.isSupport(defaultLang)) {
-				msg.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
-				msg.setLang(defaultLang);
-					sendMessage(msg);
+				DC.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
+				DC.setLang(defaultLang);
+					util.processMsgFromDC(DC);
 
 				lang = defaultLang;
 
 			} else {
-				msg.setMessages("&cEl idioma por defecto &f'&b" + defaultLang + "&f' &cno esta soportado&f!.");
-				msg.setLang("es");
-					sendMessage(msg);
+				console.sendMessage(ChatColor.translateAlternateColorCodes("&".charAt(0), "&4EL IDIOMA POR DEFECTO &f'&b" + defaultLang + "&f' &4NO ESTA SOPORTADO&f!."));
 
 				lang = null;
 			}
 		}
-
+		
 		return lang;
 	}
 }

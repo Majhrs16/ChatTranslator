@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
+import majhrs16.ct.util.Updater;
 import majhrs16.ct.util.util;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -20,20 +21,16 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CT implements CommandExecutor {
-	private Message DC;
 	private ChatTranslator plugin = ChatTranslator.plugin;
 	private API API               = new API();
-
-	public CT(ChatTranslator plugin) {
-		this.DC = util.getDataConfigConsole();
-	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		FileConfiguration config  = plugin.getConfig();
 		String lang = API.getLang(sender);
 
-		DC.setPlayer(sender);
-		DC.setLang(lang);
+		Message DC = util.getDataConfigDefault();
+			DC.setPlayer(sender);
+			DC.setLang(lang);
 
 		if (util.IF(config, "debug")) {
 			System.out.println("Debug, Name: " + sender.getName());
@@ -46,7 +43,7 @@ public class CT implements CommandExecutor {
 					if (!plugin.enabled)
 						return false;
 
-					showVersion();
+					showVersion(DC);
 					return true;
 
 				case "reload":
@@ -59,7 +56,7 @@ public class CT implements CommandExecutor {
 						return false;
 					}
 
-					reloadConfig();
+					reloadConfig(DC);
 					return true;
 
 				case "parse":
@@ -83,7 +80,7 @@ public class CT implements CommandExecutor {
 					if (!plugin.enabled)
 						return false;
 
-					setLang(sender, args);
+					setLang(sender, args, DC);
 					return true;
 					
 				case "toggle":
@@ -94,9 +91,6 @@ public class CT implements CommandExecutor {
 					}
 
 					if (args.length == 2) {
-						FileConfiguration players = plugin.getPlayers();
-						String path               = "";
-
 						Player player2;
 						try {
 							player2 = Bukkit.getServer().getPlayer(args[1]);
@@ -110,19 +104,28 @@ public class CT implements CommandExecutor {
 								API.sendMessage(DC);
 							return false;
 						}
-						
-						path = "" + player2.getUniqueId();
-						players.set(path, "disabled");
-						plugin.savePlayers();
-						
+
+						API.setLang(player2, "disabled");
+
 						DC.setMessages(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
-							API.sendMessage(DC);						
+							API.sendMessage(DC);
 
 					} else if (args.length == 1) {
 						plugin.enabled = !plugin.enabled;
 						majhrs16.ct.util.ChatLimiter.chat.clear();
 						sender.sendMessage("" + plugin.enabled);
 					}
+					return true;
+
+				case "reset":
+					DC.setMessages("&aRestableciendo la config&f...");
+						API.sendMessage(DC);
+
+					new Updater().applyCurrentConfig();
+					plugin.saveConfig();
+
+					DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
+						API.sendMessage(DC);
 					return true;
 
 				default:
@@ -143,30 +146,20 @@ public class CT implements CommandExecutor {
 		}
 	}
 
-	public Boolean setLang(CommandSender sender, String[] args) {
+	public Boolean setLang(CommandSender sender, String[] args, Message DC) {
 		String lang;
 		FileConfiguration config  = plugin.getConfig();
-		FileConfiguration players = plugin.getPlayers();
 		String path               = "";
-
-		DC.setPlayer(sender);
-		DC.setLang(API.getLang(sender));
 
 		try {
 			switch (args.length) {
 				case 2: // /ct lang es
-					lang = util.assertLang(args[1], "&7El idioma &f'&b" + args[1] + "&f' &cno &7esta soportado&f!.");
+					lang = util.assertLang(args[1], "&7El idioma &f'&b" + args[1] + "&f'&c no &7esta soportado&f!.");
 
-					if (sender instanceof Player) {
-						players.set(path + ((Player) sender).getUniqueId(), lang);
-						plugin.savePlayers();
+					API.setLang(sender, lang);
+					plugin.saveConfig();
 
-					} else {
-						players.set(path + plugin.getConfig().getString("server-uuid"), lang);
-						plugin.savePlayers();
-					}
-
-					DC.setMessages("&7Su idioma ha sido &aestablecido &7a &b" + lang + "&f.");
+					DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b" + lang + "&f.");
 					DC.setLang(lang);
 						API.sendMessage(DC);
 					return true;
@@ -187,22 +180,24 @@ public class CT implements CommandExecutor {
 					}
 
 					if (player2 == null) {
-						DC.setMessages("&7El jugador &f'&b" + args[1] + "&f' &cno &7esta &cdisponible&f.");
+						DC.setMessages("&7El jugador &f'&b" + args[1] + "&f'&c no &7esta&c disponible&f.");
 							API.sendMessage(DC);
 						return false;
 					}
-					
-					lang = util.assertLang(args[2], "&7El idioma &f'&b" + args[2] + "&f' &cno &7esta soportado&f!.");
 
-					players.set(path + player2.getUniqueId(), lang);
-					plugin.savePlayers();
+					lang = util.assertLang(args[2], "&7El idioma &f'&b" + args[2] + "&f'&c no &7esta soportado&f!.");
+
+					API.setLang(player2, lang);
+					plugin.saveConfig();
 
 					DC.setMessages(String.format(
-						"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f' &7a &b%s&f.",
+						"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b%s&f.",
 						sender.getName(),
 						player2.getName(),
 						lang
 					));
+
+					DC.setShow(false);
 
 					path = "formats.to";
 					Message to_model = new Message(
@@ -211,7 +206,7 @@ public class CT implements CommandExecutor {
 						config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
 						DC.getMessages(),
 						config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
-						config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+						config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
 						true,
 
 						null,
@@ -225,7 +220,7 @@ public class CT implements CommandExecutor {
 
 				default:
 					util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
-					DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f: &e/lang &f[&6player&f] &f<&6codigo&f>&f.");
+					DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
 						API.sendMessage(DC);
 					return false;
 			}
@@ -255,7 +250,8 @@ public class CT implements CommandExecutor {
 			msg.add("&e    parse &f<&eformatMsg&f>\n&aProcesa en tiempo real formatMsg&f(&7Sirve para testear &f;&aD&f)&f.");
 			msg.add("&e    version\n&aVisualizar version&f.");
 			msg.add("&e    reload\n&aRecargar config&f.");
-			msg.add("&e    toggle &f[&6Jugador&f]\n&aActiva o desactiva el chat para el jugador o por defecto en global&f.\n&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.");
+			msg.add("&e    toggle &f[&6Jugador&f]\n&aActiva o desactiva el chat para el jugador o por defecto en global&f.\n&e    Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.");
+			msg.add("&e    reset\n&4Restablece la config&f,&e Pero no los datos de lenguajes&f.");
 		showToolTip(sender, msg);
 	}
 
@@ -293,18 +289,30 @@ public class CT implements CommandExecutor {
 		}
 	}
 
-	public void showVersion() {
+	public void showVersion(Message DC) {
 		DC.setMessages("&7Version&f: &a" + plugin.version);
 			API.sendMessage(DC);
 	}
 
-	public void reloadConfig() {
+	public void reloadConfig(Message DC) {
 		try {
 			plugin.reloadConfig();
 			DC.setMessages("&7Recargado &bconfig&f.&byml&f.");
 				API.sendMessage(DC);
 			plugin.reloadPlayers();
-			DC.setMessages("&7Recargado &bplayers&f.&byml&f.");
+			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+				case "yaml":
+					DC.setMessages("&7Recargado &bplayers&f.&byml&f.");
+					break;
+
+				case "sqlite":
+					DC.setMessages("&7Recargado almacenamiento &bSQLite&f.");
+					break;
+
+				case "mysql":
+					DC.setMessages("&7Recargado almacenamiento &bMySQL&f.");
+					break;
+			}
 				API.sendMessage(DC);
 			DC.setMessages("&7Config recargada &aexitosamente&f.");
 				API.sendMessage(DC);

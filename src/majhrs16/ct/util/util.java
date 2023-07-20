@@ -59,7 +59,7 @@ public class util {
 		return count;
 	}
 
-	public static Message getDataConfigConsole() {
+	public static Message getDataConfigDefault() {
 		Message father = new Message();
 			father.setPlayer(Bukkit.getConsoleSender());
 			father.setMessageFormat("$ct_messages$");

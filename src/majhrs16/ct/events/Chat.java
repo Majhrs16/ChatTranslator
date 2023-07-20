@@ -19,11 +19,11 @@ public class Chat implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
-		String path;
-		FileConfiguration config = plugin.getConfig();
-
 		if (!plugin.enabled || event.isCancelled())
 			return;
+
+		String path;
+		FileConfiguration config = plugin.getConfig();
 
 		if (util.IF(config, "show-native-chat.cancel-event")) {
 			event.setCancelled(true);
@@ -36,7 +36,7 @@ public class Chat implements Listener {
 			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
 			event.getMessage(),
 			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
-			config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
 			true,
 
 			API.getLang(event.getPlayer()),
@@ -44,9 +44,9 @@ public class Chat implements Listener {
 			util.IF(config, "chat-color-personalized"),
 			util.IF(config, "use-PAPI-format")
 		);
-		
+
 		Message from = father.clone();
-			from.setFather(father);
+			from.setFather(father); // Para evitar errores con CE al momento de capturar el evento...
 			from.setShow(false);
 
 		path = "formats.to";
@@ -56,7 +56,7 @@ public class Chat implements Listener {
 			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
 			from.getMessages(),
 			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
-			config.contains(path + ".sounds") ? String.join("\n", config.getStringList(path + ".sounds"))     : null,
+			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
 			true,
 
 			null,
