@@ -1,10 +1,10 @@
 package majhrs16.ct.storage.data;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.UUID;
 
 import majhrs16.ct.storage.DataBase;
@@ -17,7 +17,7 @@ public class MySQL implements DataBase {
 	private String database;
 	private String user;
 	private String password;
-	
+
 	public void set(String host, int port, String database, String user, String password) {
 		this.host     = host;
 		this.port     = port;

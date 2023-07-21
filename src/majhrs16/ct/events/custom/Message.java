@@ -3,13 +3,13 @@ package majhrs16.ct.events.custom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.Bukkit;
 
 import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.util;

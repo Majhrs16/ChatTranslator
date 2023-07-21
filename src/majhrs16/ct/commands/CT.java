@@ -2,23 +2,23 @@ package majhrs16.ct.commands;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 
-import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
+import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.Updater;
 import majhrs16.ct.util.util;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 
 public class CT implements CommandExecutor {
 	private ChatTranslator plugin = ChatTranslator.plugin;

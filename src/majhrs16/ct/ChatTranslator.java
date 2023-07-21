@@ -21,12 +21,8 @@ import majhrs16.ct.events.Chat;
 import majhrs16.ct.events.Msg;
 import majhrs16.ct.util.util;
 
-import java.net.HttpURLConnection;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
-import java.io.BufferedReader;
-import java.net.URL;
 
 public class ChatTranslator extends JavaPlugin {
 	private MySQL mysql;
@@ -53,7 +49,7 @@ public class ChatTranslator extends JavaPlugin {
 		mysql   = new MySQL();
 
 		config.register();
-		new Updater().update();
+		new Updater().updateConfig();
 		if (registerStorage()) {
 			onDisable();
 			return;
@@ -103,7 +99,7 @@ public class ChatTranslator extends JavaPlugin {
 				util.processMsgFromDC(DC);
 		}
 
-		updateChecker();
+		new Updater().updateChecker();
 
 		DC.setMessages("	");
 			util.processMsgFromDC(DC);
@@ -241,44 +237,6 @@ public class ChatTranslator extends JavaPlugin {
 		}
 		
 		return false;
-	}
-
-	public void updateChecker() {
-		CommandSender console = Bukkit.getConsoleSender();
-
-		API API           = new API();
-		Message DC = util.getDataConfigDefault();
-			DC.setPlayer(console);
-			DC.setLang(API.getLang(console));
-
-			DC.setMessages("	");
-				util.processMsgFromDC(DC);
-
-		try {
-			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
-			int timed_out         = 3000;
-			con.setConnectTimeout(timed_out);
-			con.setReadTimeout(timed_out);
-			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-			if (latestversion.length() <= 7) {
-				if (version.equals(latestversion)) {
-					DC.setMessages("&a	Estas usando la ultima version del plugin <3");
-						util.processMsgFromDC(DC);
-
-				} else {
-					DC.setMessages(String.format("&e	Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
-						util.processMsgFromDC(DC);
-
-					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
-						util.processMsgFromDC(DC);
-				}
-
-			}
-
-		} catch (Exception ex) {
-			DC.setMessages("&c    Error mientras se buscaban actualizaciones&f.");
-				util.processMsgFromDC(DC);
-		}
 	}
 
 	public MySQL getMySQL() {

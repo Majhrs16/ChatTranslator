@@ -1,16 +1,16 @@
 package majhrs16.ct.storage.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import majhrs16.ct.ChatTranslator;
+import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.File;
+
 import majhrs16.ct.storage.Configuration;
+import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.Updater;
 
 public class Config implements Configuration {

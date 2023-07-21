@@ -1,9 +1,14 @@
 package majhrs16.ct.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import majhrs16.ct.ChatTranslator;
@@ -14,6 +19,47 @@ public class Updater {
 	private ChatTranslator plugin = ChatTranslator.plugin;
 	private int config_version;
 
+	
+	public void updateChecker() {
+		CommandSender console = Bukkit.getConsoleSender();
+
+		API API           = new API();
+		Message DC = util.getDataConfigDefault();
+			DC.setPlayer(console);
+			DC.setLang(API.getLang(console));
+
+			DC.setMessages("	");
+				util.processMsgFromDC(DC);
+
+		try {
+			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
+			int timed_out         = 3000;
+			con.setConnectTimeout(timed_out);
+			con.setReadTimeout(timed_out);
+			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+			if (latestversion.length() <= 7) {
+				if (plugin.version.equals(latestversion)) {
+					DC.setMessages("&a	Estas usando la ultima version del plugin <3");
+						util.processMsgFromDC(DC);
+
+				} else {
+					DC.setMessages(String.format("&e	Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
+						util.processMsgFromDC(DC);
+
+					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
+						util.processMsgFromDC(DC);
+				}
+
+			}
+
+		} catch (Exception ex) {
+			DC.setMessages("&c    Error mientras se buscaban actualizaciones&f.");
+				util.processMsgFromDC(DC);
+		}
+	}
+	
+	/////////////////////////////////////////////////////////
+	
 	public void applyDefaultConfig() {
 		FileConfiguration config = plugin.getConfig();
 		config.set("server-uuid", null);
@@ -103,8 +149,8 @@ public class Updater {
 
 		config.set("debug", false);
 	}
-
-	public void update() {
+	
+	public void updateConfig() {
 		String path, tmp;
 		FileConfiguration config = plugin.getConfig();
 

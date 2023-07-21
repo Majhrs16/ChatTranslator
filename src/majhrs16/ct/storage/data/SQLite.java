@@ -1,10 +1,10 @@
 package majhrs16.ct.storage.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.UUID;
 
 import majhrs16.ct.storage.DataBase;
@@ -20,6 +20,7 @@ public class SQLite implements DataBase {
     public void connect() throws SQLException {
     	try {
 			Class.forName("org.sqlite.JDBC");
+
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

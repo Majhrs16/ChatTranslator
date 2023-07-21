@@ -1,29 +1,29 @@
 package majhrs16.ct.translator.API;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandSender;
+import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.GoogleTranslator;
+import majhrs16.ct.events.custom.Message;
+import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.util;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
 
+import java.util.regex.Pattern;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
+import java.util.List;
 
 public class API implements Listener {
 	private ChatTranslator plugin = ChatTranslator.plugin;
@@ -36,7 +36,7 @@ public class API implements Listener {
 
 		for (Message to : tos) {
 			try {
-				util.assertLang(to.getLang());
+				util.assertLang(to.getLang()); 
 	
 				majhrs16.ct.util.ChatLimiter.chat.add(to);
 

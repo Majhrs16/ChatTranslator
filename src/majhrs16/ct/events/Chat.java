@@ -1,14 +1,14 @@
 package majhrs16.ct.events;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
+import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.util;
 
 public class Chat implements Listener {
