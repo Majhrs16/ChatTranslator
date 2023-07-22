@@ -454,16 +454,13 @@ public class API implements Listener {
 				}
 				break;
 		}
-		
-		if (lang != null) {
-			if (util.checkPAPI() && lang.equals("auto"))
-				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 
-		} else if (util.checkPAPI()) {
-			lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-
-		} else {
-   			lang = defaultLang;
+		if (lang == null || lang.equals("auto")) {
+		    if (sender instanceof Player && util.checkPAPI()) {
+		        lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
+		    } else {
+		        lang = defaultLang;
+		    }
 		}
 
 		if (!GT.isSupport(lang)) {

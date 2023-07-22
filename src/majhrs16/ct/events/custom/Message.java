@@ -1,12 +1,14 @@
 package majhrs16.ct.events.custom;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+// import java.util.regex.Matcher;
+// import java.util.regex.Pattern;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
@@ -15,13 +17,10 @@ import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.util;
 
 public class Message extends Event implements Cancellable {
-	private ChatTranslator plugin = ChatTranslator.plugin;
-
-    private static final HandlerList HANDLERS = new HandlerList();
     private boolean isCancelled;
-
-    
-    private Pattern chat = Pattern.compile(_getRegex(), Pattern.CASE_INSENSITIVE);
+	private ChatTranslator plugin = ChatTranslator.plugin;
+    private static final HandlerList HANDLERS = new HandlerList();
+//  private Pattern chat = Pattern.compile(_getRegex(), Pattern.CASE_INSENSITIVE);
     
 
     private Message father;
@@ -143,62 +142,54 @@ public class Message extends Event implements Cancellable {
 		return DC;
 	}
 
-	public static String _getRegex() {
-		return "\\[\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?\\'(.+)\\'\\, ?(true|false), ?\\'(.+)\\'\\, ?(true|false), ?(true|false)\\]";
-	}
-	
 	public String toString() {
-		return String.format("['%s', '%s', '%s', '%s', '%s', %s, '%s', %s, %s]",
-			sender.getName(),
-			message_format,
-			messages,
-			tool_tips,
-			sounds,
-			show,
-			lang,
-			color,
-			format_papi
-		);
+		JSONArray jsonArray = new JSONArray();
+			jsonArray.put(getPlayerName());
+			jsonArray.put(getMessageFormat());
+			jsonArray.put(getMessages());
+			jsonArray.put(getToolTips());
+			jsonArray.put(getToolTips());
+			jsonArray.put(getShow());
+			jsonArray.put(getLang());
+			jsonArray.put(getColorPersonalized());
+			jsonArray.put(getFormatMessage());
+		return jsonArray.toString();
 	}
 	
 	public Message valueOf(String data) {
-		Matcher Chat = chat.matcher(data);
-		
-		if (!Chat.find())
-			return null;
+	    try {
+	        JSONArray jsonArray = new JSONArray(data);
 
-		String player_name    = Chat.group(1);
-		String message_format = Chat.group(2);
-		String messages       = Chat.group(3);
-		String tool_tips      = Chat.group(4);
-		String sounds         = Chat.group(5);
-		Boolean show          = Boolean.valueOf(Chat.group(6));
-		String lang           = Chat.group(7);
-		Boolean color         = Boolean.valueOf(Chat.group(8));
-		Boolean papi          = Boolean.valueOf(Chat.group(9));
-		
-		Player player;
-		try {
-			player = Bukkit.getServer().getPlayer(player_name);
+	        String player_name = jsonArray.getString(0);
+	        String message_format = jsonArray.getString(1);
+	        String messages = jsonArray.getString(2);
+	        String tool_tips = jsonArray.getString(3);
+	        String sounds = jsonArray.getString(4);
+	        boolean show = jsonArray.getBoolean(5);
+	        String lang = jsonArray.getString(6);
+	        boolean color = jsonArray.getBoolean(7);
+	        boolean papi = jsonArray.getBoolean(8);
 
-		} catch (NullPointerException e) {
-			player = null;
-		}
+	        Player player = Bukkit.getServer().getPlayer(player_name);
+	        if (player == null) {
+	            return null;
+	        }
 
-		if (player == null)
-			return null;
-
-		return new Message(
-			new Message(),
-			player,
-			message_format,
-			messages,
-			tool_tips,
-			sounds,
-			show,
-			lang,
-			color,
-			papi
-		);
+	        return new Message(
+	        	new Message(),
+	            player,
+	            message_format,
+	            messages,
+	            tool_tips,
+	            sounds,
+	            show,
+	            lang,
+	            color,
+	            papi
+	        );
+	    } catch (JSONException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 }
