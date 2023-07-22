@@ -36,7 +36,7 @@ ChatTranslator se activa automáticamente en tu servidor cuando lo instalas y te
 
 Si tienes problemas con ChatTranslator, revisa la documentación del plugin y los recursos de soporte en los siguientes enlaces:
 
-- [ChatTranslator wiki](https://github.com/Majhrs16/ChatTranslator/wiki)
+- [ChatTranslator wiki](https://github.com/Majhrs16/ChatTranslator/wiki) (Para desarrolladores)
 - [Discord](https://discord.gg/kZxHnSVPTg)
 
 ## Contribución
