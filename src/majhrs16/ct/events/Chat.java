@@ -30,24 +30,20 @@ public class Chat implements Listener {
 		}
 
 		path = "formats.from";
-		Message father = new Message(
+		Message from = new Message(
 			null,
 			event.getPlayer(),
 			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
 			event.getMessage(),
 			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
 			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
-			true,
+			false,
 
 			API.getLang(event.getPlayer()),
 
 			util.IF(config, "chat-color-personalized"),
 			util.IF(config, "use-PAPI-format")
 		);
-
-		Message from = father.clone();
-			from.setFather(father); // Para evitar errores con CE al momento de capturar el evento...
-			from.setShow(false);
 
 		path = "formats.to";
 		Message to_model = new Message(
@@ -57,7 +53,7 @@ public class Chat implements Listener {
 			from.getMessages(),
 			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
 			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
-			true,
+			false,
 
 			null,
 
@@ -65,7 +61,7 @@ public class Chat implements Listener {
 			util.IF(config, "use-PAPI-format")
 		);
 
-		API.broadcast(from, to_model);
+		API.broadcast(to_model);
 
 		if (util.IF(config, "show-native-chat.clear-recipients")) {
 			event.getRecipients().clear();

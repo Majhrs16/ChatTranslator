@@ -17,7 +17,6 @@ import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.util.util;
 
 public class Message extends Event implements Cancellable {
-    private boolean isCancelled;
 	private ChatTranslator plugin = ChatTranslator.plugin;
     private static final HandlerList HANDLERS = new HandlerList();
 //  private Pattern chat = Pattern.compile(_getRegex(), Pattern.CASE_INSENSITIVE);
@@ -29,8 +28,8 @@ public class Message extends Event implements Cancellable {
 	private String tool_tips;
 	private String sounds;
 	private String messages;
-	private Boolean show = true;
-
+    private boolean isCancelled;
+	
 	private String lang;
 
 	private Boolean color = true;
@@ -48,7 +47,7 @@ public class Message extends Event implements Cancellable {
     		String messages,
     		String tool_tips,
     		String sounds,
-    		Boolean show,
+    		Boolean isCancelled,
 
     		String lang,
 
@@ -62,31 +61,26 @@ public class Message extends Event implements Cancellable {
         setMessages(messages);
         setToolTips(tool_tips);
         setSounds(sounds);
-        setShow(show);
+        setCancelled(isCancelled);
         
         setLang(lang);
         
         setColorPersonalized(color);
         setFormatMessage(format_papi);
-        
-        setCancelled(false);
     }
 
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
 
-    @Override
     public HandlerList getHandlers() {
         return HANDLERS;
     }
 
-    @Override
     public boolean isCancelled() {
     	return this.isCancelled;
     }
 
-    @Override
     public void setCancelled(boolean isCancelled) {
     	this.isCancelled = isCancelled;
     }
@@ -101,13 +95,12 @@ public class Message extends Event implements Cancellable {
     	return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
     }
 
-    public void setFather(Message father)               { this.father = father; }
+    public void setFather(Message father)               { this.father = father == null ? new Message() : father; }
 	public void setPlayer(CommandSender sender)         { this.sender = sender; }
 	public void setMessageFormat(String message_format) { this.message_format = getChat(message_format, "messages") ; }
 	public void setMessages(String messages)            { this.messages = messages; }
 	public void setToolTips(String tool_tips)           { this.tool_tips = getChat(tool_tips, "toolTips"); }
 	public void setSounds(String sounds)                { this.sounds = getChat(sounds, "sounds"); }
-	public void setShow(Boolean show)                   { this.show = show; }
 	public void setLang(String lang)                    { this.lang = lang; }
 	public void setFormatMessage(Boolean format_papi)   { this.format_papi = format_papi; }
 	public void setColorPersonalized(Boolean color)     { this.color = color; }
@@ -120,7 +113,6 @@ public class Message extends Event implements Cancellable {
 	public String getMessages()           { return messages; }
 	public String getToolTips()           { return tool_tips; }
 	public String getSounds()             { return sounds; }
-	public Boolean getShow()              { return show; }
 	public String getLang()               { return lang; }
 	public Boolean getFormatMessage()     { return format_papi; }
 	public Boolean getColorPersonalized() { return color; }
@@ -133,7 +125,7 @@ public class Message extends Event implements Cancellable {
 			DC.setMessages(messages);
 			DC.setToolTips(tool_tips);
 			DC.setSounds(sounds);
-			DC.setShow(show);
+			DC.setCancelled(isCancelled);
 
 			DC.setLang(lang);
 
@@ -149,7 +141,7 @@ public class Message extends Event implements Cancellable {
 			jsonArray.put(getMessages());
 			jsonArray.put(getToolTips());
 			jsonArray.put(getToolTips());
-			jsonArray.put(getShow());
+			jsonArray.put(isCancelled());
 			jsonArray.put(getLang());
 			jsonArray.put(getColorPersonalized());
 			jsonArray.put(getFormatMessage());
@@ -176,7 +168,7 @@ public class Message extends Event implements Cancellable {
 	        }
 
 	        return new Message(
-	        	new Message(),
+	        	null,
 	            player,
 	            message_format,
 	            messages,
@@ -187,6 +179,7 @@ public class Message extends Event implements Cancellable {
 	            color,
 	            papi
 	        );
+
 	    } catch (JSONException e) {
 	        e.printStackTrace();
 	        return null;

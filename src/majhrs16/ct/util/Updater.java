@@ -29,7 +29,7 @@ public class Updater {
 			DC.setLang(API.getLang(console));
 
 			DC.setMessages("	");
-				util.processMsgFromDC(DC);
+				API.sendMessage(DC);
 
 		try {
 			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
@@ -40,21 +40,21 @@ public class Updater {
 			if (latestversion.length() <= 7) {
 				if (plugin.version.equals(latestversion)) {
 					DC.setMessages("&a	Estas usando la ultima version del plugin <3");
-						util.processMsgFromDC(DC);
+						API.sendMessage(DC);
 
 				} else {
 					DC.setMessages(String.format("&e	Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
-						util.processMsgFromDC(DC);
+						API.sendMessage(DC);
 
 					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
-						util.processMsgFromDC(DC);
+						API.sendMessage(DC);
 				}
 
 			}
 
 		} catch (Exception ex) {
 			DC.setMessages("&c    Error mientras se buscaban actualizaciones&f.");
-				util.processMsgFromDC(DC);
+				API.sendMessage(DC);
 		}
 	}
 	

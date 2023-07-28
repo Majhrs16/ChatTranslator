@@ -1,13 +1,15 @@
 package majhrs16.ct.translator;
 
+import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
+import org.json.JSONException;
 import org.json.JSONArray;
+
+import java.net.URL;
 
 public class GoogleTranslator implements Translator {
 	public enum Languages {
@@ -286,41 +288,37 @@ public class GoogleTranslator implements Translator {
 		if(!(isSupport(sourceLang) && isSupport(targetLang)))
 			return text;
 
-		String formatText = text;
-		String parsedJson = "NULL";
 		String json       = "NULL";
 		String URL        = "NULL";
 
 		try {
+			for(int i : listConvertion)
+				text = text.replace(Character.toString((char) i), "%" + Integer.toHexString(i));
+
+			text = text.replace(" ", "+");
+
+			URL = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text;
+
+			json = httpHandler(URL);
+			JSONArray parsed = new JSONArray(json); // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
+			parsed = parsed.getJSONArray(0);        // [["hola","hola",null,null,5]]
+			parsed = parsed.getJSONArray(0);        // ["hola","hola",null,null,5]
+			text = parsed.getString(0);             // "hola"
+
 			for(int i : listConvertion) {
-//				System.out.println("DEBUG: " + formatText);
-				formatText = formatText.replace(Character.toString((char) i), "%" + Integer.toHexString(i));
+				text = text.replace("%" + Integer.toHexString(i), Character.toString((char) i));
 			}
 
-			formatText = formatText.replace(" ", "+");
-
-			URL = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + formatText;
-
-			json = httpHandler(URL);                                  // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
-			parsedJson = new JSONArray(json).get(0).toString();       // [["hola","hola",null,null,5]]
-			parsedJson = new JSONArray(parsedJson).get(0).toString(); // ["hola","hola",null,null,5]
-			parsedJson = new JSONArray(parsedJson).get(0).toString(); // "hola"
-
-			for(int i : listConvertion) {
-				parsedJson = parsedJson.replace("%" + Integer.toHexString(i), Character.toString((char) i));
-			}
-
-			return parsedJson;
+			return text;
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return "[Err00 detectado] " + text;
 
-		} catch (org.json.JSONException e) {
+		} catch (JSONException e) {
 			System.out.println("[Err 01 detectado]");
 			System.out.println("  DEBUG, URL: '" + URL + "'");
 			System.out.println("  DEBUG, Json: " + json);
-			System.out.println("  DEBUG, parsedJson: " + parsedJson);
 			return text;
 
 		} catch (IOException e) {

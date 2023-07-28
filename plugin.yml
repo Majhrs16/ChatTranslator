@@ -1,13 +1,13 @@
 main: majhrs16.ct.ChatTranslator
-version: v1.6.0
+version: 1.6.2
 name: ChatTranslator
 author: Majhrs16
 softdepend: [PlaceHolderAPI, ConditionalEvents]
 
 commands:
-  ChatTranslator:
+  chattranslator:
     description: Comando Principal.
-  ct:
+  cht:
     description: Comando Principal.
 
 permissions:

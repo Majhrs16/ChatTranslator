@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.GoogleTranslator;
-import majhrs16.ct.translator.API.API;
 
 public class util {
 	public static Boolean checKDependency(String dependency) {
@@ -47,23 +46,12 @@ public class util {
 	public static String assertLang(String lang) {
 		return assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
-	
-	public static int stringCount(String text, String search) {
-		int count = 0;
-		int i = text.indexOf(search);
-		while (i != -1) {
-			i = text.indexOf(search, i + 1);
-			count++;
-		}
-
-		return count;
-	}
 
 	public static Message getDataConfigDefault() {
 		Message father = new Message();
 			father.setPlayer(Bukkit.getConsoleSender());
 			father.setMessageFormat("$ct_messages$");
-			father.setShow(false);
+			father.setCancelled(true);
 			father.setLang("es");
 			father.setColorPersonalized(true);
 			father.setFormatMessage(false);
@@ -71,12 +59,13 @@ public class util {
 			Message msg = new Message();
 				msg.setFather(father);
 				msg.setMessageFormat("$ct_messages$");
-				msg.setShow(true);
+				msg.setCancelled(false);
 				msg.setColorPersonalized(true);
 				msg.setFormatMessage(false);
 		return msg;
 	}
 	
+	/*
 	public static void processMsgFromDC(Message DC) {
 		new API().processMsg(
 			DC.getFather(),
@@ -85,7 +74,7 @@ public class util {
     		DC.getMessages(),
     		DC.getToolTips(),
     		DC.getSounds(),
-    		DC.getShow(),
+    		DC.isCancelled(),
 
     		DC.getLang(),
 
@@ -93,4 +82,5 @@ public class util {
     		DC.getFormatMessage()
 		);
 	}
+	*/
 }
