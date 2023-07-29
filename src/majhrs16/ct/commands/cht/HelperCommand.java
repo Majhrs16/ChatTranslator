@@ -1,6 +1,7 @@
-package majhrs16.ct.commands;
+package majhrs16.ct.commands.cht;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
@@ -14,7 +15,8 @@ public class HelperCommand {
 	public String[] help = new String[] {
 		plugin.title + "\n"
 			+ "&aTraduce tu chat de Minecraft a cualquier idioma&f!!",
-		"&e  /cht",
+		"&e  /cht\n"
+			+ "&aMuestra este mismo mensaje de ayuda&f.",
 		"",
 		"&e  lang &f[&6Jugador&f] &f<&6codigo&f>\n"
 			+ "&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f.\n"
@@ -42,7 +44,7 @@ public class HelperCommand {
 		"",
 	};
 
-	public void showToolTip(CommandSender sender) {
+	public void show(CommandSender sender) {
 		for (int i = 0; i < help.length; i++) {
 			if (help[i] == "") {
 				sender.sendMessage("");
@@ -62,7 +64,7 @@ public class HelperCommand {
 			Message DC = util.getDataConfigDefault();
 				DC.setPlayer(sender);
 				DC.setMessages(title);
-				DC.setToolTips(description);
+				DC.setToolTips(sender instanceof Player ? description : "	" + description);
 				DC.setLang(API.getLang(sender));
 			API.sendMessage(DC);
 		}

@@ -1,11 +1,11 @@
 package majhrs16.ct.storage;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.UUID;
-
 import majhrs16.lib.storages.Database;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.util.UUID;
 
 public class SQL extends Database {
 	public void createTable() throws SQLException {

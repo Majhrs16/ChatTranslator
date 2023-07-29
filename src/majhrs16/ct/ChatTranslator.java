@@ -7,34 +7,34 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
 
+import majhrs16.ct.commands.cht.MainCommand;
 import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.commands.MainCommand;
 import majhrs16.ct.storage.data.SQLite;
 import majhrs16.ct.translator.API.API;
 import majhrs16.ct.storage.data.MySQL;
 import majhrs16.ct.util.ChatLimiter;
+import majhrs16.lib.storages.YAML;
 import majhrs16.ct.util.Updater;
 import majhrs16.ct.events.Chat;
 import majhrs16.ct.events.Msg;
 import majhrs16.ct.util.util;
 
-import majhrs16.lib.storages.YAML;
-
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 
 public class ChatTranslator extends JavaPlugin {
+	private API API;
 	private MySQL mysql;
-	private SQLite sqlite;
-	public Boolean enabled;
 	private YAML config;
 	private YAML players;
+	private SQLite sqlite;
+	public Boolean enabled;
 	public static ChatTranslator plugin;
 	PluginDescriptionFile pdffile     = getDescription();
 	public String version             = "v" + pdffile.getVersion();
 	public String name                = "&aChat&9Translator";
 	public String title               = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
-	public String title_UTF8          = "\r\n"
+	public String title_UTF8          = ""
 		+ "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗\r\n"
 		+ "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
 		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
@@ -42,6 +42,8 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void onEnable() {
 		plugin  = this;
+		API     = new API();
+
 		config  = new YAML(plugin, "config.yml");
 		players = new YAML(plugin, "players.yml");
 		sqlite  = new SQLite();
@@ -57,9 +59,7 @@ public class ChatTranslator extends JavaPlugin {
 		registerEvents();
 		new ChatLimiter();
 
-		API API = new API();
 		CommandSender console = Bukkit.getConsoleSender();
-
 		Message DC = util.getDataConfigDefault();
 			DC.setPlayer(console);
 			DC.setLang(API.getLang(console));
@@ -74,9 +74,10 @@ public class ChatTranslator extends JavaPlugin {
 			DC.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f) &cen UTF&f-&c8&f.");
 				API.sendMessage(DC);
 
-			DC.setMessageFormat("%ct_messages%");
 			DC.setMessages(title_UTF8);
+			DC.setMessageFormat("\r\n$ct_messages$");
 				API.sendMessage(DC);
+
 			DC.setMessageFormat("$ct_messages$");
 
 			DC.setMessages("	");
@@ -110,14 +111,11 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		CommandSender console = Bukkit.getConsoleSender();
-		API API               = new API();
-
 		majhrs16.ct.util.ChatLimiter.chat.clear();
 
 		Message DC = util.getDataConfigDefault();
-			DC.setPlayer(console);
-			DC.setLang(API.getLang(console));
+			DC.setPlayer(Bukkit.getConsoleSender());
+			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
 
 		DC.setMessages("&4<------------------------->");
 			API.sendMessage(DC);
@@ -176,9 +174,8 @@ public class ChatTranslator extends JavaPlugin {
 	}
 	
 	public boolean registerStorage() {
-		API API = new API();
 		CommandSender console = Bukkit.getConsoleSender();
-		
+
 		Message DC = util.getDataConfigDefault();
 			DC.setPlayer(console);
 			DC.setLang(API.getLang(console));
@@ -248,6 +245,7 @@ public class ChatTranslator extends JavaPlugin {
 
 	public FileConfiguration getConfig() { return config.get(); }
 	public void reloadConfig() { config.reload(); }
+	public void resetConfig() { config.reset(); }
 	public void saveConfig() { config.save(); }
 
 	public FileConfiguration getPlayers() { return players.get(); }

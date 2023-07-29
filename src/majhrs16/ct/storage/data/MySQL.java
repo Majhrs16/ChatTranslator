@@ -1,9 +1,9 @@
 package majhrs16.ct.storage.data;
 
+import majhrs16.ct.storage.SQL;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import majhrs16.ct.storage.SQL;
 
 public class MySQL extends SQL {
 	public void connect() throws SQLException {

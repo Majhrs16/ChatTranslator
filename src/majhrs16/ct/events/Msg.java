@@ -1,13 +1,13 @@
 package majhrs16.ct.events;
 
 import org.bukkit.event.EventPriority;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.Bukkit;
 
-import majhrs16.ct.ChatTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
+import majhrs16.ct.ChatTranslator;
 
 public class Msg implements Listener {
 	private ChatTranslator plugin = ChatTranslator.plugin;

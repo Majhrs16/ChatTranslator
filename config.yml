@@ -1,0 +1,35 @@
+formats:
+  from:
+    messages:
+    - '%ct_expand% &a%ct_messages%'
+    toolTips:
+    - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
+    sounds:
+    - BLOCK_NOTE_BLOCK_BELL
+    - NOTE_PLING
+  to:
+    messages:
+    - '&f<&b%player_name%&f> &a$ct_messages$'
+    toolTips:
+    - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
+    sounds:
+    - ENTITY_EXPERIENCE_ORB_PICKUP
+    - ORB_PICKUP
+storage:
+  type: sqlite
+  host: localhost
+  port: 3306
+  database: ChatTranslator
+  user: root
+  password: password
+server-uuid: "null"
+chat-color-personalized: true
+auto-update-config: true
+show-native-chat:
+  cancel-event: true
+  clear-recipients: false
+max-spam-per-tick: 150.0007
+use-PAPI-format: true
+config-version: 0
+default-lang: es
+debug: false

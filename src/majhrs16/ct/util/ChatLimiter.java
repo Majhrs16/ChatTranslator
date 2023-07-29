@@ -1,15 +1,15 @@
 package majhrs16.ct.util;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+
+import majhrs16.ct.events.custom.Message;
+import majhrs16.ct.ChatTranslator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.events.custom.Message;
 
 public class ChatLimiter {
 	private ChatTranslator plugin         = ChatTranslator.plugin;

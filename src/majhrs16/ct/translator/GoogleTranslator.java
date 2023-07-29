@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONArray;
 
+import java.net.URLEncoder;
 import java.net.URL;
 
 public class GoogleTranslator implements Translator {
@@ -292,12 +293,12 @@ public class GoogleTranslator implements Translator {
 		String URL        = "NULL";
 
 		try {
-			for(int i : listConvertion)
-				text = text.replace(Character.toString((char) i), "%" + Integer.toHexString(i));
+//			for(int i : listConvertion)
+//				text = text.replace(Character.toString((char) i), "%" + Integer.toHexString(i));
 
-			text = text.replace(" ", "+");
+//			text = text.replace(" ", "+");
 
-			URL = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + text;
+			URL = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + URLEncoder.encode(text, "UTF-8");;
 
 			json = httpHandler(URL);
 			JSONArray parsed = new JSONArray(json); // [[["hola","hola",null,null,5]],null,"es",null,null,null,null,[]]
@@ -305,9 +306,11 @@ public class GoogleTranslator implements Translator {
 			parsed = parsed.getJSONArray(0);        // ["hola","hola",null,null,5]
 			text = parsed.getString(0);             // "hola"
 
+			/*
 			for(int i : listConvertion) {
 				text = text.replace("%" + Integer.toHexString(i), Character.toString((char) i));
 			}
+			*/
 
 			return text;
 

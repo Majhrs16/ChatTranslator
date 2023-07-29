@@ -60,7 +60,6 @@ public class YAML {
 	public void save() {
 		try {
 			config.save(file);
-			reload();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -72,6 +71,14 @@ public class YAML {
 		if (!file.exists()) {
 			reload();
 			save();
+		}
+	}
+
+	public void reset() {
+		file = new File(plugin.getDataFolder(), filename);
+		if (file.exists()) {
+			file.delete();
+			register();
 		}
 	}
 }

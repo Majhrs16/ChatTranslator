@@ -1,6 +1,5 @@
 package majhrs16.ct.util;
 
-
 public class CacheSpam {
 	Float max;
 	Float count; 
