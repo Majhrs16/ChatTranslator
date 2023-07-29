@@ -30,7 +30,7 @@ Una vez instalado, puedes personalizar la configuración de ChatTranslator modif
 
 ## Uso
 
-ChatTranslator se activa automáticamente en tu servidor cuando lo instalas y te permite comunicarte con jugadores que hablan diferentes idiomas. Si deseas cambiar tu idioma, puedes hacerlo ingresando el comando `/lang [código de idioma]`.
+ChatTranslator se activa automáticamente en tu servidor cuando lo instalas y te permite comunicarte con jugadores que hablan diferentes idiomas. Si deseas cambiar tu idioma, puedes hacerlo ingresando el comando `/cht lang [código de idioma]`.
 
 ## Solución de problemas
 
