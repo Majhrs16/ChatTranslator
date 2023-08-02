@@ -10,31 +10,43 @@ public class Reloader {
 
 	public void reloadConfig(Message DC) {
 		try {
-			plugin.reloadConfig();
-			DC.setMessages("&7Recargado &bconfig&f.&byml&f.");
+			DC.setMessages("&7Recargando almacenamiento");
 				API.sendMessage(DC);
 
-			plugin.reloadPlayers();
-				switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
-					case "yaml":
-						DC.setMessages("&7Recargado &bplayers&f.&byml&f.");
-						break;
-	
-					case "sqlite":
-						DC.setMessages("&7Recargado almacenamiento &bSQLite&f.");
-						break;
-	
-					case "mysql":
-						DC.setMessages("&7Recargado almacenamiento &bMySQL&f.");
-						break;
-				}
+			plugin.reloadConfig();
+			DC.setMessages("&7[  &aOK  &7] &bconfig&f.&byml");
+				API.sendMessage(DC);
+
+			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+				case "yaml":
+					DC.setMessages("&bplayers&f.&byml&f");
+					break;
+
+				case "sqlite":
+					DC.setMessages("&bSQLite");
+					break;
+
+				case "mysql":
+					DC.setMessages("&bMySQL");
+					break;
+
+				default:
+					DC.setMessages("&7[&4ERR001&7]"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+					break;
+			}
+
+			try {
+				plugin.reloadPlayers();
+				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
+
+			} catch (Exception e) {
+				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
+			}
+
 			API.sendMessage(DC);
 
-			DC.setMessages("&7Config recargada &aexitosamente&f.");
-				API.sendMessage(DC);
-
 		} catch (Exception e) {
-			DC.setMessages(plugin.title + "&f [&4ERROR&f] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f.");
+			DC.setMessages(plugin.title + "&7[&4ERR000&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f.");
 				API.sendMessage(DC);
 
 			e.printStackTrace();

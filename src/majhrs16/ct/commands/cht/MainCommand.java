@@ -98,7 +98,7 @@ public class MainCommand implements CommandExecutor {
 								return false;
 							}
 
-							setter.setLangAnother(DC, args[2], args[3]);
+							setter.setLangAnother(DC, args[1], args[2]);
 							return true;
 
 						default:

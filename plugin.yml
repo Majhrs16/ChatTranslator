@@ -9,8 +9,24 @@ commands:
     description: Comando Principal.
   cht:
     description: Comando Principal.
+  cht lang:
+    description: Cambiar de idioma.
+  cht version:
+    description: Version.
+  cht reload:
+    description: Recargar config.
+  cht toggle:
+    description: (Des)activar un jugador o por defecto el plugin.
+  cht reset:
+    description: RESTABLECE la config, pero no los datos de idiomas.
 
 permissions:
   ChatTranslator.admin:
     descriptions: Adminstra el plugin.
+    default: op
+  ChatTranslator.chat.from.color:
+    descriptions: Color para el remitente en el chat.
+    default: op
+  ChatTranslator.chat.to.color:
+    descriptions: Color para el destinario en el chat.
     default: op

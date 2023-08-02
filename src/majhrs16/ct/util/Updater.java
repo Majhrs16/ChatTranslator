@@ -11,49 +11,46 @@ import majhrs16.ct.ChatTranslator;
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.net.URL;
 
 public class Updater {
+	public int config_version;
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private int config_version;
+	private API API               = new API();
 
 	public void updateChecker() {
 		CommandSender console = Bukkit.getConsoleSender();
-
-		API API           = new API();
 		Message DC = util.getDataConfigDefault();
-			DC.setPlayer(console);
-			DC.setLang(API.getLang(console));
-
-			DC.setMessages("	");
-				API.sendMessage(DC);
+		DC.setPlayer(console);
+		DC.setLang(API.getLang(console));
 
 		try {
-			HttpURLConnection con = (HttpURLConnection) new URL("https://API.spigotmc.org/legacy/update.php?resource=106604").openConnection();
-			int timed_out         = 3000;
+			HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=106604").openConnection();
+			int timed_out = 3000;
 			con.setConnectTimeout(timed_out);
 			con.setReadTimeout(timed_out);
-			String latestversion  = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-			if (latestversion.length() <= 7) {
-				if (plugin.version.equals(latestversion)) {
-					DC.setMessages("&a	Estas usando la ultima version del plugin <3");
-						API.sendMessage(DC);
-
+			String latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+			if (latestVersion.length() <= 7) {
+				if (plugin.version.equals(latestVersion)) {
+					DC.setMessages("&a	Estas usando la última versión del plugin <3");
 				} else {
-					DC.setMessages(String.format("&e	Hay una nueva version disponible&f! &f(&b%s&f)", latestversion));
+					DC.setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));
 						API.sendMessage(DC);
 
 					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
-						API.sendMessage(DC);
 				}
+			} else {
+				DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
 			}
 
-		} catch (Exception ex) {
-			DC.setMessages("&c    Error mientras se buscaban actualizaciones&f.");
-				API.sendMessage(DC);
+		} catch (IOException ex) {
+			DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
 		}
+
+		API.sendMessage(DC);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -62,7 +59,6 @@ public class Updater {
 		Boolean cancel_event, clear_recipients;
 		FileConfiguration config = plugin.getConfig();
 
-		API API = new API();
 		Message DC = util.getDataConfigDefault();
 
 		String _path = "config-version";

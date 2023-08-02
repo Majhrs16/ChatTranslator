@@ -18,13 +18,13 @@ public class HelperCommand {
 		"&e  /cht\n"
 			+ "&aMuestra este mismo mensaje de ayuda&f.",
 		"",
-		"&e  lang &f[&6Jugador&f] &f<&6codigo&f>\n"
-			+ "&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f.\n"
+		"&e  lang &f[&6player&f] &f<&6lang&f>\n"
+			+ "&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f,\n"
 			+ "&f  (&7Independientemente de su lenguaje en el Minecraft&f)\n"
 			+ "\n"
 			+ "&aTrucos&f:\n"
 			+ "&7  Puede poner &bauto &7como codigo para volver a la\n"
-			+ "&7    deteccion automatica del idioma de su Minecraft&f."
+			+ "&7    deteccion automatica del idioma de su Minecraft," // En ingame al traducir el ultimo &f, se bugea como x 26
 			+ "\n"
 			+ "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la\n"
 			+ "&7    traduccion automatica para el jugador especificado&f.",
@@ -35,8 +35,8 @@ public class HelperCommand {
 		"&e  reload\n"
 			+ "&aRecargar config&f.",
 		"",
-		"&e  toggle &f[&6Jugador&f]\n"
-			+ "&aActiva &7o &cdesactiva &7el chat para el jugador o por defecto en global&f.\n"
+		"&e  toggle &f[&6player&f]\n"
+			+ "&aActiva &7o &cdesactiva &7el chat para el jugador o por defecto en global&f,\n"
 			+ "&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.",
 		"",
 		"&e  reset\n" 
@@ -52,8 +52,8 @@ public class HelperCommand {
 			}
 
 			String description;
-			String[] msg       = help[i].split("\n", 2);
-			String title       = msg[0];
+			String[] msg = help[i].split("\n", 2);
+			String title = msg[0];
 
 			if (msg.length > 1)
 				description = msg[1];
@@ -63,8 +63,12 @@ public class HelperCommand {
 
 			Message DC = util.getDataConfigDefault();
 				DC.setPlayer(sender);
-				DC.setMessages(title);
-				DC.setToolTips(sender instanceof Player ? description : "	" + description);
+				DC.setMessageFormat(title);
+				DC.setMessages("");
+				if (description != null)
+					DC.setToolTips(sender instanceof Player ? description : "	" + description.replace("\n", "\n\t"));
+//					Limitacino de la API, siosi necesitaremos agregar config.formats.<grupo>.toolTipsFormat, ademas de agregar %ct_tooltips$...
+//					O quizas no...
 				DC.setLang(API.getLang(sender));
 			API.sendMessage(DC);
 		}

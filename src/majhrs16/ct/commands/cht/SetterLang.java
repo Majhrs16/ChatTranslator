@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
+import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.ct.events.custom.Message;
 import majhrs16.ct.translator.API.API;
 import majhrs16.ct.ChatTranslator;
@@ -19,7 +20,7 @@ public class SetterLang {
 		API.setLang(DC.getPlayer(), lang);
 		plugin.savePlayers();
 
-		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b" + lang + "&f.");
+		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
 		DC.setLang(lang);
 			API.sendMessage(DC);
 	}
@@ -51,7 +52,7 @@ public class SetterLang {
 			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b%s&f.",
 			DC.getPlayerName(),
 			player2.getName(),
-			lang
+			GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
 		));
 
 		DC.setCancelled(true);

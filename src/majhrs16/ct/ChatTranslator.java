@@ -31,13 +31,14 @@ public class ChatTranslator extends JavaPlugin {
 	public Boolean enabled;
 	public static ChatTranslator plugin;
 	PluginDescriptionFile pdffile     = getDescription();
-	public String version             = "v" + pdffile.getVersion();
 	public String name                = "&aChat&9Translator";
+	public String version             = "v" + pdffile.getVersion();
+	public String sep                 = "&4<------------------------->";
 	public String title               = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
-	public String title_UTF8          = ""
-		+ "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗\r\n"
-		+ "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\r\n"
-		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\r\n"
+	public String title_UTF8          = "\n"
+		+ "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗\n"
+		+ "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\n"
+		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\n"
 		+ "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝";
 
 	public void onEnable() {
@@ -64,26 +65,23 @@ public class ChatTranslator extends JavaPlugin {
 			DC.setPlayer(console);
 			DC.setLang(API.getLang(console));
 
-		DC.setMessages("&4<------------------------->");
+		DC.setMessages(sep);
 			API.sendMessage(DC);
 
-		DC.setMessages("	");
-			API.sendMessage(DC);
+//		DC.setMessages(" "); API.sendMessage(DC);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
-			DC.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f) &cen UTF&f-&c8&f.");
+			DC.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en UTF&f-&c8&f.");
 				API.sendMessage(DC);
 
-			DC.setMessages(title_UTF8);
-			DC.setMessageFormat("\r\n$ct_messages$");
-				API.sendMessage(DC);
+			console.sendMessage(API.getColor(title_UTF8));
 
-			DC.setMessageFormat("$ct_messages$");
-
-			DC.setMessages("	");
-				API.sendMessage(DC);
+//			DC.setMessages(" "); API.sendMessage(DC);
 
 		} else {
+			DC.setMessages("&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&c en UTF&f-&c8&f.");
+				API.sendMessage(DC);
+
 			DC.setMessages(title);
 				API.sendMessage(DC);
 		}
@@ -92,8 +90,7 @@ public class ChatTranslator extends JavaPlugin {
 			API.sendMessage(DC);
 
 		if (!util.checkPAPI()) {
-			DC.setMessages("	");
-				API.sendMessage(DC);
+//			DC.setMessages(" "); API.sendMessage(DC);
 
 			DC.setMessages("&c	No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
 				API.sendMessage(DC);
@@ -101,10 +98,9 @@ public class ChatTranslator extends JavaPlugin {
 
 		new Updater().updateChecker();
 
-		DC.setMessages("	");
-			API.sendMessage(DC);
+//		DC.setMessages(" "); API.sendMessage(DC);
 
-		DC.setMessages("&4<------------------------->");
+		DC.setMessages(sep);
 			API.sendMessage(DC);
 
 		enabled = true;
@@ -117,8 +113,10 @@ public class ChatTranslator extends JavaPlugin {
 			DC.setPlayer(Bukkit.getConsoleSender());
 			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
 
-		DC.setMessages("&4<------------------------->");
+		DC.setMessages(sep);
 			API.sendMessage(DC);
+
+//		DC.setMessages(" "); API.sendMessage(DC);
 
 		switch (config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
@@ -155,7 +153,9 @@ public class ChatTranslator extends JavaPlugin {
 		DC.setMessages(title + "&cDesactivado&f.");
 			API.sendMessage(DC);
 
-		DC.setMessages("&4<------------------------->");
+//		DC.setMessages(" "); API.sendMessage(DC);
+
+		DC.setMessages(sep);
 			API.sendMessage(DC);
 
 		enabled = false;
@@ -191,7 +191,7 @@ public class ChatTranslator extends JavaPlugin {
 				try {
 					sqlite.connect();
 					sqlite.createTable();
-					
+
 					DC.setMessages(title + "&aConectado a SQLite&f.");
 					DC.setLang(API.getLang(console));
 						API.sendMessage(DC);
@@ -250,7 +250,7 @@ public class ChatTranslator extends JavaPlugin {
 
 	public FileConfiguration getPlayers() { return players.get(); }
 
-	public void reloadPlayers() {
+	public void reloadPlayers() throws SQLException {
 		enabled = false;
 
 		switch (config.get().getString("storage.type").toLowerCase()) {
@@ -260,13 +260,8 @@ public class ChatTranslator extends JavaPlugin {
 
 			case "sqlite":
 				sqlite.set(null, 0, config.get().getString("storage.database"), null, null);
-				try {
-					sqlite.disconnect();
-					registerStorage();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				sqlite.disconnect();
+				registerStorage();
 				break;
 
 			case "mysql":
@@ -277,13 +272,8 @@ public class ChatTranslator extends JavaPlugin {
 					config.get().getString("storage.user"),
 					config.get().getString("storage.password")
 				);
-				try {
-					mysql.disconnect();
-					registerStorage();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				mysql.disconnect();
+				registerStorage();
 				break;
 		}
 

@@ -3,7 +3,7 @@ package majhrs16.ct.util;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.Bukkit;
 
-import majhrs16.ct.translator.GoogleTranslator;
+import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.ct.events.custom.Message;
 
 public class util {

@@ -11,7 +11,7 @@ import majhrs16.ct.ChatTranslator;
 
 public class Msg implements Listener {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API = new API();
+	private API API               = new API();
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onMessage(Message event) {

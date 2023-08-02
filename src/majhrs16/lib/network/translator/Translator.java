@@ -1,4 +1,4 @@
-package majhrs16.ct.translator;
+package majhrs16.lib.network.translator;
 
 import java.net.MalformedURLException;
 import java.io.IOException;
