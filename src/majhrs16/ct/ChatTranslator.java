@@ -22,6 +22,15 @@ import majhrs16.ct.util.util;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 
+/*
+OUTPUT CONSOLA: NO ENTIENDO QUE PASA!! 
+
+[23:10:12 INFO]: 0 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",true,"es",true,true]
+[23:10:12 INFO]: 1 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",false,"es",true,true]
+[23:10:12 INFO]: 4 ["CONSOLE","&f<&b%player_name%&f> &a$ct_messages$","Hola","&f[&6%ct_lang_source%&f] &a%ct_messages%","&f[&6%ct_lang_source%&f] &a%ct_messages%",false,"en",true,true]
+[23:10:12 INFO]: 2 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",false,"es",true,true]
+*/
+
 public class ChatTranslator extends JavaPlugin {
 	private API API;
 	private MySQL mysql;
@@ -169,7 +178,7 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void registerEvents() {
 		PluginManager pe = getServer().getPluginManager();
-		pe.registerEvents(new Chat(this), this);
+		pe.registerEvents(new Chat(), this);
 		pe.registerEvents(new Msg(), this);
 	}
 	

@@ -13,9 +13,17 @@ public class Reloader {
 			DC.setMessages("&7Recargando almacenamiento");
 				API.sendMessage(DC);
 
-			plugin.reloadConfig();
-			DC.setMessages("&7[  &aOK  &7] &bconfig&f.&byml");
-				API.sendMessage(DC);
+			DC.setMessages("&bconfig&f.&byml");
+
+			try {
+				plugin.reloadConfig();
+				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
+
+			} catch (Exception e) {
+				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
+			}
+
+			API.sendMessage(DC);
 
 			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
 				case "yaml":

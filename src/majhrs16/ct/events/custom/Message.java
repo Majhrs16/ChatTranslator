@@ -32,7 +32,7 @@ public class Message extends Event implements Cancellable {
 
 
 	public Message() {
-		setCancelled(false);
+//		setCancelledThis(false);
 	}
 
 	public Message(
@@ -56,10 +56,11 @@ public class Message extends Event implements Cancellable {
 		setMessages(messages);
 		setToolTips(tool_tips);
 		setSounds(sounds);
-		setCancelled(isCancelled);
-		
+
+		setCancelledThis(isCancelled);
+
 		setLang(lang);
-		
+
 		setColorPersonalized(color);
 		setFormatMessage(format_papi);
 	}
@@ -71,13 +72,15 @@ public class Message extends Event implements Cancellable {
 	public HandlerList getHandlers() {
 		return HANDLERS;
 	}
-
+	
 	public boolean isCancelled() {
 		return this.isCancelled;
 	}
 
+	public void setCancelledThis(boolean isCancelled) { this.isCancelled = isCancelled; }
 	public void setCancelled(boolean isCancelled) {
-		this.isCancelled = isCancelled;
+		getFather().setCancelledThis(isCancelled); // Explosivo!!
+		setCancelledThis(isCancelled);
 	}
 
 	private String getChat(String format, String chat) {
@@ -101,7 +104,7 @@ public class Message extends Event implements Cancellable {
 	public void setColorPersonalized(Boolean color)     { this.color = color; }
 
 
-	public Message getFather()            { return this.father; }
+	public Message getFather()            { return father; }
 	public CommandSender getPlayer()      { return sender; }
 	public String getPlayerName()         { return sender.getName(); }
 	public String getMessageFormat()      { return message_format; }
@@ -114,18 +117,31 @@ public class Message extends Event implements Cancellable {
 
 	public Message clone() {
 		Message DC = new Message();
+			Message father = new Message(); // BUGAZO!!
+				father.setPlayer(getFather().getPlayer());
+				father.setMessageFormat(getFather().getMessageFormat());
+				father.setMessages(getFather().getMessages());
+				father.setToolTips(getFather().getToolTips());
+				father.setSounds(getFather().getSounds());
+				father.setCancelledThis(getFather().isCancelled());
+
+				father.setLang(getFather().getLang());
+
+				father.setColorPersonalized(getFather().getColorPersonalized());
+				father.setFormatMessage(getFather().getFormatMessage());
 			DC.setFather(father);
-			DC.setPlayer(sender);
-			DC.setMessageFormat(message_format);
-			DC.setMessages(messages);
-			DC.setToolTips(tool_tips);
-			DC.setSounds(sounds);
-			DC.setCancelled(isCancelled);
 
-			DC.setLang(lang);
+			DC.setPlayer(getPlayer());
+			DC.setMessageFormat(getMessageFormat());
+			DC.setMessages(getMessages());
+			DC.setToolTips(getToolTips());
+			DC.setSounds(getSounds());
+			DC.setCancelledThis(isCancelled());
 
-			DC.setColorPersonalized(color);
-			DC.setFormatMessage(format_papi);
+			DC.setLang(getLang());
+
+			DC.setColorPersonalized(getColorPersonalized());
+			DC.setFormatMessage(getFormatMessage());
 		return DC;
 	}
 

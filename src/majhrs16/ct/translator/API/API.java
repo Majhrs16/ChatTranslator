@@ -76,13 +76,13 @@ public class API {
 //			Este formateador basicamente remplaza (sub)vriables PAPI y locales, colorea el chat y/o el formato de este, tambien para los tooltips, y ya por ultimo traduce el mensaje. 
 
 		FileConfiguration config = plugin.getConfig();
+		DC = DC.clone(); // se clona para evitar sobreescrituras en el evento.
 
-		Message to               = DC.clone();
+		Message to               = DC;
 		CommandSender to_player  = to.getPlayer();
 		String to_message_format = to.getMessageFormat();
 		String to_messages       = to.getMessages();
 		String to_tool_tips      = to.getToolTips();
-		Boolean to_isCancelled   = to.isCancelled();
 		String lang_target       = to.getLang();
 
 		Message from               = to.getFather();
@@ -90,7 +90,6 @@ public class API {
 		String from_message_format = from.getMessageFormat();
 		String from_messages       = from.getMessages();
 		String from_tool_tips      = from.getToolTips();
-		Boolean from_isCancelled   = from.isCancelled();
 		String lang_source         = from.getLang();
 
 		Boolean color = to.getColorPersonalized();
@@ -98,13 +97,13 @@ public class API {
 
 		String from_messages_original = from_messages;
 
-		if (!from_isCancelled && from_message_format != null)
+		if (from_message_format != null)
 			from_message_format = convertVariablesToLowercase(from_message_format);
 
-		if (!to_isCancelled && to_message_format != null)
+		if (to_message_format != null)
 			to_message_format   = convertVariablesToLowercase(to_message_format);
 
-		if (!from_isCancelled && lang_source != null) {
+		if (lang_source != null && lang_target != null) {
 			if (from_message_format != null) {
 				from_message_format = from_message_format.replace("%ct_lang_source%", lang_source);
 				from_message_format = from_message_format.replace("$ct_lang_target$", lang_target);
@@ -114,9 +113,7 @@ public class API {
 				from_tool_tips = from_tool_tips.replace("%ct_lang_source%", lang_source);
 				from_tool_tips = from_tool_tips.replace("$ct_lang_target$", lang_target);
 			}
-		}
 
-		if (!to_isCancelled && lang_target != null) {
 			if (to_message_format != null) {
 				to_message_format = to_message_format.replace("%ct_lang_source%", lang_source);
 				to_message_format = to_message_format.replace("$ct_lang_target$", lang_target);
@@ -128,7 +125,7 @@ public class API {
 			}
 		}
 
-		if (!from_isCancelled && from_player != null) { 
+		if (from_player != null && to_player != null) {
 			if (from_message_format != null) {
 				from_message_format = from_message_format.replace("%player_name%", from_player.getName());
 				from_message_format = from_message_format.replace("$player_name$", to_player.getName());
@@ -138,9 +135,7 @@ public class API {
 				from_tool_tips = from_tool_tips.replace("%player_name%", from_player.getName());
 				from_tool_tips = from_tool_tips.replace("$player_name$", to_player.getName());
 			}
-		}
 
-		if (!to_isCancelled && to_player != null) {
 			if (to_message_format != null) {
 				to_message_format = to_message_format.replace("%player_name%", from_player.getName());
 				to_message_format = to_message_format.replace("$player_name$", to_player.getName());
@@ -154,9 +149,12 @@ public class API {
 
 		if (from_message_format != null)
 			from_message_format = from_message_format.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
-
 		if (to_message_format != null)
-			to_message_format   = to_message_format.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
+			to_message_format = to_message_format.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
+		if (from_tool_tips != null)
+			from_tool_tips = from_tool_tips.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
+		if (to_tool_tips != null)
+			to_tool_tips = to_tool_tips.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
 
 		if (util.checkPAPI() && papi) {
 			Player _from_player, _to_player;
@@ -173,120 +171,114 @@ public class API {
 			else
 				_to_player = null;
 
-			if (!from_isCancelled) {
-				if (from_message_format != null) {
-					from_message_format = parseSubVarables(_from_player, from_message_format);
-					from_message_format = parseSubVarables(_to_player, from_message_format.replace("$", "%"));
-				}
-
-				if (from_tool_tips != null) {
-					from_tool_tips = parseSubVarables(_from_player, from_tool_tips);
-					from_tool_tips = parseSubVarables(_to_player, from_tool_tips.replace("$", "%"));
-				}
+			if (from_message_format != null) {
+				from_message_format = parseSubVarables(_from_player, from_message_format);
+				from_message_format = parseSubVarables(_to_player, from_message_format.replace("$", "%"));
 			}
 
-			if (!to_isCancelled) {
-				if (to_message_format != null) {
-					to_message_format = parseSubVarables(_from_player, to_message_format);
-					to_message_format = parseSubVarables(_to_player, to_message_format.replace("$", "%"));
-				}
+			if (from_tool_tips != null) {
+				from_tool_tips = parseSubVarables(_from_player, from_tool_tips);
+				from_tool_tips = parseSubVarables(_to_player, from_tool_tips.replace("$", "%"));
+			}
 
-				if (to_tool_tips != null) {
-					to_tool_tips = parseSubVarables(_from_player, to_tool_tips);
-					to_tool_tips = parseSubVarables(_to_player, to_tool_tips.replace("$", "%"));
-				}
+			if (to_message_format != null) {
+				to_message_format = parseSubVarables(_from_player, to_message_format);
+				to_message_format = parseSubVarables(_to_player, to_message_format.replace("$", "%"));
+			}
+
+			if (to_tool_tips != null) {
+				to_tool_tips = parseSubVarables(_from_player, to_tool_tips);
+				to_tool_tips = parseSubVarables(_to_player, to_tool_tips.replace("$", "%"));
 			}
 		}
 
 		if (from_message_format != null)
 			from_message_format = from_message_format.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
-
 		if (to_message_format != null)
-			to_message_format   = to_message_format.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
+			to_message_format = to_message_format.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
+		if (from_tool_tips != null)
+			from_tool_tips = from_tool_tips.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
+		if (to_tool_tips != null)
+			to_tool_tips = to_tool_tips.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
 
+		/*
 		if (lang_source != null && lang_target != null
 				&& !lang_source.equals("off") && !lang_target.equals("off")
 				&& !lang_source.equals(lang_target)) {
-			if (!from_isCancelled) {
-				if (from_messages != null && from_message_format != null && from_message_format.contains("$ct_messages$")) {
-					from_messages = GT.translate(from_messages, lang_source, lang_target);
-				}
 
-				if (from_tool_tips != null) { // && from_tool_tips.contains("$ct_messages$")
-					from_tool_tips = GT.translate(from_tool_tips, lang_source, lang_target);
-				}
+			if (from_messages != null && from_message_format != null && from_message_format.contains("$ct_messages$")) {
+				from_messages = GT.translate(from_messages, lang_source, lang_target);
 			}
 
-			if (!to_isCancelled) {
-				if (to_messages != null && to_message_format != null && to_message_format.contains("$ct_messages$")) {
-					to_messages = GT.translate(to_messages, lang_source, lang_target);
-				}
+			if (from_messages != null && from_tool_tips != null && from_tool_tips.contains("$ct_messages$")) {
+				from_tool_tips = GT.translate(from_tool_tips, lang_source, lang_target);
+			}
 
-				if (to_tool_tips != null) {
-					to_tool_tips = GT.translate(to_tool_tips, lang_source, lang_target);
-				}
+			if (to_messages != null && to_message_format != null && to_message_format.contains("$ct_messages$")) {
+				to_messages = GT.translate(to_messages, lang_source, lang_target);
+			}
+
+			if (to_messages != null && to_tool_tips != null && to_tool_tips.contains("$ct_messages$")) { // HAY QUE PENSAR MEJOR COMO TRADUCIRLO SIN DEPENDER DE $ct_messages$...
+				to_tool_tips = GT.translate(to_tool_tips, lang_source, lang_target);
 			}
 		}
+		*/
 
-		if (!from_isCancelled && from_message_format != null)
+		if (from_message_format != null)
 			from_message_format = getColor(from_message_format);
 
-		if (!from_isCancelled && from_tool_tips != null)
+		if (from_tool_tips != null)
 			from_tool_tips = getColor(from_tool_tips);
 
-		if (!to_isCancelled && to_message_format != null)
+		if (to_message_format != null)
 			to_message_format = getColor(to_message_format);
 
-		if (!to_isCancelled && to_tool_tips != null)
+		if (to_tool_tips != null)
 			to_tool_tips = getColor(to_tool_tips);
 
 		if (color) {
-			if (!from_isCancelled && from_messages != null && from_player.hasPermission("ChatTranslator.chat.from.color")) {
+			if (from_messages != null && from_player != null && from_player.hasPermission("ChatTranslator.chat.from.color")) {
 				from_messages_original = getColor(from_messages_original);
 				from_messages          = getColor(from_messages);
 			}
 
-			if (!to_isCancelled && to_messages != null && from_player.hasPermission("ChatTranslator.chat.to.color"))
+			if (to_messages != null && to_player != null && from_player.hasPermission("ChatTranslator.chat.to.color"))
 				to_messages   = getColor(to_messages);
 		}
 
-		if (!from_isCancelled) {
-			if (from_message_format != null) {
-				if (from_messages != null)
-					from_message_format = from_message_format.replace("%ct_messages%", from_messages_original);
+		if (from_message_format != null) {
+			if (from_messages != null)
+				from_message_format = from_message_format.replace("%ct_messages%", from_messages_original);
 
-				if (to_messages != null)
-					from_message_format = from_message_format.replace("$ct_messages$", to_messages);
-			}
-
-			if (from_tool_tips != null) {
-				if (from_messages != null)
-					from_tool_tips = from_tool_tips.replace("%ct_messages%", from_messages_original);
-
-				if (to_messages != null)
-					from_tool_tips = from_tool_tips.replace("$ct_messages$", to_messages);
-			}
+			if (to_messages != null)
+				from_message_format = from_message_format.replace("$ct_messages$", to_messages);
 		}
 
-		if (!to_isCancelled) {
-			if (to_message_format != null) {
-				if (from_messages != null)
-					to_message_format = to_message_format.replace("%ct_messages%", from_messages_original);
+		if (to_message_format != null) {
+			if (from_messages != null)
+				to_message_format = to_message_format.replace("%ct_messages%", from_messages_original);
 
-				if (to_messages != null)
-					to_message_format = to_message_format.replace("$ct_messages$", to_messages);
-			}
-
-			if (to_tool_tips != null) {
-				if (from_messages != null)
-					to_tool_tips = to_tool_tips.replace("%ct_messages%", from_messages_original);
-
-				if (to_messages != null)
-					to_tool_tips = to_tool_tips.replace("$ct_messages$", to_messages);
-			}
+			if (to_messages != null)
+				to_message_format = to_message_format.replace("$ct_messages$", to_messages);
 		}
 
-		if (!from_isCancelled && from_message_format != null) {
+		if (from_tool_tips != null) {
+			if (from_messages != null)
+				from_tool_tips = from_tool_tips.replace("%ct_messages%", from_messages_original);
+
+			if (to_messages != null)
+				from_tool_tips = from_tool_tips.replace("$ct_messages$", to_messages);
+		}
+
+		if (to_tool_tips != null) {
+			if (from_messages != null)
+				to_tool_tips = to_tool_tips.replace("%ct_messages%", from_messages_original);
+
+			if (to_messages != null)
+				to_tool_tips = to_tool_tips.replace("$ct_messages$", to_messages);
+		}
+
+		if (from_message_format != null) {
 			int count = Str.count(from_message_format, "%ct_expand%");
 			for(int i = count; i > 0; i--) {
 				int padding = (70 - ChatColor.stripColor(from_message_format).replace("%ct_expand%", "").length()) / i;
@@ -300,7 +292,7 @@ public class API {
 			}
 		}
 
-		if (!to_isCancelled && to_message_format != null) {
+		if (to_message_format != null) {
 			int count = Str.count(to_message_format, "%ct_expand%");
 			for(int i = count; i > 0; i--) {
 				int padding = (70 - ChatColor.stripColor(to_message_format).replace("%ct_expand%", "").length()) / i;
@@ -382,49 +374,46 @@ public class API {
 	public void sendMessage(Message event) {
 //			Envia los mensajes especificados en father y el objeto Message actual.
 
-		Message formatted = formatMessage(event.clone());
+		System.out.println("2 " + event.getFather().toString());
 
-		if (util.IF(plugin.getConfig(), "debug")) {
-			System.out.println("DEBUG: Format, Msgs, ToolTips, Lang");
-			System.out.println(String.format("DEBUG from: '%s', '%s', '%s', %s",
+		if (event == new Message())
+			return;
+
+		try {
+			Message formatted = formatMessage(event);
+
+			if (util.IF(plugin.getConfig(), "debug")) {
+				System.out.println("DEBUG: Format, Msgs, ToolTips, Lang");
+				System.out.println(String.format("DEBUG from: '%s', '%s', '%s', %s",
 					formatted.getFather().getMessageFormat(),
 					formatted.getFather().getMessages(),
 					formatted.getFather().getToolTips(),
 					formatted.getFather().getLang()
-			));
-	
-			System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
+				));
+			}
+
+			processMessage(formatted.getFather());
+
+			if (util.IF(plugin.getConfig(), "debug")) {
+				System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
 					formatted.getMessageFormat(),
 					formatted.getMessages(),
 					formatted.getToolTips(),
 					formatted.getLang()
-			));
+				));
+			}
+
+			processMessage(formatted);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		processMessage(formatted.getFather());
-
-		if (util.IF(plugin.getConfig(), "debug")) {
-			System.out.println("DEBUG: Format, Msgs, ToolTips, Lang");
-			System.out.println(String.format("DEBUG from: '%s', '%s', '%s', %s",
-					formatted.getFather().getMessageFormat(),
-					formatted.getFather().getMessages(),
-					formatted.getFather().getToolTips(),
-					formatted.getFather().getLang()
-			));
-
-			System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
-					formatted.getMessageFormat(),
-					formatted.getMessages(),
-					formatted.getToolTips(),
-					formatted.getLang()
-			));
-		}
-
-		processMessage(formatted);
 	}
 
 	public void broadcast(List<Message> messages) {
 		for (Message to : messages) {
+			System.out.println("1 " + to.getFather().toString());
+
 			try {
 				util.assertLang(to.getLang()); 
 				majhrs16.ct.util.ChatLimiter.chat.add(to);
@@ -446,21 +435,25 @@ public class API {
 
 	public void broadcast(Message to_model) {
 		List<Message> tos = new ArrayList<Message>();
+		Message from = to_model.getFather();
+		System.out.println("0 " + from.toString());
+
+		Message console = to_model.clone();
+			console.setFather(from);
+			console.setPlayer(Bukkit.getConsoleSender());
+			console.setLang(getLang(Bukkit.getConsoleSender()));
+		tos.add(console);
 
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
 			if(to_player == to_model.getFather().getPlayer())
 				continue;
 
 			Message to = to_model.clone();
+				to.setFather(from);
 				to.setPlayer(to_player);
 				to.setLang(getLang(to_player));
 			tos.add(to);
 		}
-
-		Message to = to_model.clone();
-			to.setPlayer(Bukkit.getConsoleSender());
-			to.setLang(getLang(Bukkit.getConsoleSender()));
-		tos.add(to);
 
 		broadcast(tos);
 	}

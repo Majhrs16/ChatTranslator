@@ -51,7 +51,7 @@ public class util {
 		Message father = new Message();
 			father.setPlayer(Bukkit.getConsoleSender());
 			father.setMessageFormat("$ct_messages$");
-			father.setCancelled(true);
+			father.setCancelledThis(true);
 			father.setLang("es");
 			father.setColorPersonalized(true);
 			father.setFormatMessage(false);
@@ -59,28 +59,9 @@ public class util {
 			Message msg = new Message();
 				msg.setFather(father);
 				msg.setMessageFormat("$ct_messages$");
-				msg.setCancelled(false);
+				msg.setCancelledThis(false);
 				msg.setColorPersonalized(true);
 				msg.setFormatMessage(false);
 		return msg;
 	}
-	
-	/*
-	public static void processMsgFromDC(Message DC) {
-		new API().processMsg(
-			DC.getFather(),
-			DC.getPlayer(),
-    		DC.getMessageFormat(),
-    		DC.getMessages(),
-    		DC.getToolTips(),
-    		DC.getSounds(),
-    		DC.isCancelled(),
-
-    		DC.getLang(),
-
-    		DC.getColorPersonalized(),
-    		DC.getFormatMessage()
-		);
-	}
-	*/
 }
