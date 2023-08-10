@@ -15,6 +15,27 @@ formats:
     sounds:
     - ENTITY_EXPERIENCE_ORB_PICKUP
     - ORB_PICKUP
+
+  console:
+    messages:
+    - '&f<&b%player_name%&f> &a$ct_messages$'
+    toolTips:
+    - '\t&f[&6%ct_lang_source%&f] &a%ct_messages%'
+
+  from_entry:
+    messages:
+    - '&e%ct_messages%'
+  to_entry:
+    messages:
+    - '&e$ct_messages$'
+
+  from_exit:
+    messages:
+    - '&e%ct_messages%'
+  to_exit:
+    messages:
+    - '&e$ct_messages$'
+
 storage:
   type: sqlite
   host: localhost
@@ -22,12 +43,14 @@ storage:
   database: ChatTranslator
   user: root
   password: password
+
 server-uuid: "null"
 chat-color-personalized: true
 auto-update-config: true
 show-native-chat:
   cancel-event: true
   clear-recipients: false
+auto-translate-others: false # beta
 max-spam-per-tick: 150.0007
 use-PAPI-format: true
 config-version: 0

@@ -1,6 +1,9 @@
 package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -94,5 +97,20 @@ public class util {
 			IF(config, "chat-color-personalized"),
 			IF(config, "use-PAPI-format")
 		);
+	}
+
+	public static String wrapText(String text, int maxLength) {
+		if (text.length() <= maxLength)
+			return text;
+
+		ArrayList<String> segments = new ArrayList<>();
+		int currentIndex = 0;
+		while (currentIndex < text.length()) {
+			int endIndex = Math.min(currentIndex + maxLength, text.length());
+			segments.add(text.substring(currentIndex, endIndex));
+			currentIndex = endIndex;
+		}
+
+		return String.join("\n", segments);
 	}
 }

@@ -5,15 +5,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import majhrs16.cht.commands.cht.MainCommand;
-import majhrs16.cht.events.sign.SignUpdater;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.events.sign.SignBreak;
-import majhrs16.cht.events.sign.SignPlace;
 import majhrs16.cht.storage.data.SQLite;
+import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.translator.API.API;
 import majhrs16.cht.storage.data.MySQL;
-import majhrs16.cht.events.EntryPlayer;
-import majhrs16.cht.events.ExitPlayer;
+import majhrs16.cht.events.SignHandler;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
@@ -179,8 +176,7 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void registerEvents() {
 		PluginManager pe = getServer().getPluginManager();
-		pe.registerEvents(new EntryPlayer(), this);
-		pe.registerEvents(new ExitPlayer(), this);
+		pe.registerEvents(new AccessPlayer(), this);
 		pe.registerEvents(new Chat(), this);
 		pe.registerEvents(new Msg(), this);
 
@@ -188,9 +184,9 @@ public class ChatTranslator extends JavaPlugin {
 			new CoreTranslator().register(); // Expansion de ChT para PAPI: CoT.
 
 		if (util.checkPL()) {
-			pe.registerEvents(new SignPlace(), this);
-			pe.registerEvents(new SignBreak(), this);
-			new SignUpdater();
+			SignHandler sh = new SignHandler();
+			pe.registerEvents(sh, this);
+			sh.SignUpdater();
 		}
 	}
 

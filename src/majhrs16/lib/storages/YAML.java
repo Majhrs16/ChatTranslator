@@ -3,12 +3,13 @@ package majhrs16.lib.storages;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.io.File;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 public class YAML {
 	private JavaPlugin plugin;
@@ -33,29 +34,33 @@ public class YAML {
 		if (file == null) {
 			file = new File(plugin.getDataFolder(), filename);
 		}
-		
-		if (file.exists()) {
-			config = YamlConfiguration.loadConfiguration(file);
 
+		if (file.exists()) {
+			try {
+				FileConfiguration temp = YamlConfiguration.loadConfiguration(file);
+				if (temp.getString("config-version") == null)
+					throw new IllegalArgumentException("[ERR020]");
+				config = temp;
+
+			} catch (ScannerException | IllegalArgumentException e) {
+				throw new IllegalArgumentException(e);
+			}
 		} else {
 			config = new YamlConfiguration();
 
-			try (Reader defConfigStream = new InputStreamReader(plugin.getResource(filename), "UTF8")) {
+			try (Reader defConfigStream = new InputStreamReader(plugin.getResource(filename), StandardCharsets.UTF_8)) {
 				if (defConfigStream != null) {
 					YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+
 					config.setDefaults(defConfig);
 					config.options().copyDefaults(true);
 				}
 
-			} catch(UnsupportedEncodingException e){
+			} catch (IOException e) {
 				e.printStackTrace();
-
-			} catch (IOException e1) {
-				e1.printStackTrace();
 			}
 		}
 	}
-
 
 	public void save() {
 		try {

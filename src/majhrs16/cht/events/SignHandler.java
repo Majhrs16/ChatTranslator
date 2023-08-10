@@ -1,4 +1,4 @@
-package majhrs16.cht.events.sign;
+package majhrs16.cht.events;
 
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -11,24 +11,32 @@ import com.comphenix.protocol.PacketType;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.translator.API.API;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.util;
 
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import org.bukkit.Material;
 import org.bukkit.Bukkit;
 
-public class SignUpdater {
+import java.util.Arrays;
+
+public class SignHandler implements Listener {
 	private ChatTranslator _plugin = ChatTranslator.plugin;
 	private API API                = new API();
 
 	@SuppressWarnings("deprecation")
-	public SignUpdater() {
+	public void SignUpdater() {
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(_plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_SIGN) {
 			public void onPacketSending(PacketEvent event) {
+				if (!util.IF(_plugin.getConfig(), "auto-translate-others"))
+					return;
+
 				Player to_player       = event.getPlayer();
 				String uuid            = to_player.getUniqueId().toString();
 				Player from_player     = Bukkit.getPlayer(uuid);
@@ -45,14 +53,10 @@ public class SignUpdater {
 					if (!lines.equals(new String[] {"", "", "", ""})) {
 						String msg = String.join("\n", lines);
 
-						System.out.println("DEBUG 00: " + msg);
-
 						Message from = new Message(null, from_player, "%ct_messages%", msg, null, null, false, from_lang, true, false);
 						Message to   = new Message(from, to_player,   "$ct_messages$", msg, null, null, false, to_lang,   true, false);
 
-						lines = wrapText(API.formatMessage(to).getMessageFormat(), 14).split("\n", 4);
-
-						System.out.println("DEBUG 01: " + String.join("\n", lines));
+						lines = util.wrapText(API.formatMessage(to).getMessageFormat(), 20).split("\n", 4);
 
 						WrappedChatComponent[] wrappedLines = Arrays.stream(lines).map(WrappedChatComponent::fromText).toArray(WrappedChatComponent[]::new);
 						event.getPacket().getChatComponentArrays().write(0, wrappedLines);
@@ -61,19 +65,32 @@ public class SignUpdater {
 			}
 		});
 	}
-	
-	private String wrapText(String text, int maxLength) {
-		if (text.length() <= maxLength)
-			return text;
 
-		ArrayList<String> segments = new ArrayList<>();
-		int currentIndex = 0;
-		while (currentIndex < text.length()) {
-			int endIndex = Math.min(currentIndex + maxLength, text.length());
-			segments.add(text.substring(currentIndex, endIndex));
-			currentIndex = endIndex;
+	@EventHandler
+	public void onSignBreak(BlockBreakEvent event) {
+		if (!util.IF(_plugin.getConfig(), "auto-translate-others"))
+			return;
+
+		Player player = event.getPlayer();
+		Block block   = event.getBlock();
+		String path   = String.format("%s_%s_%s_%s", player.getUniqueId().toString(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
+
+		if (block.getType().equals(Material.AIR) && _plugin.getSigns().contains(path)) {
+			_plugin.getSigns().set(path, null);
+			_plugin.saveSigns();
 		}
+	}
 
-		return String.join("\n", segments);
+	@EventHandler
+	public void onSignPlace(SignChangeEvent event) {
+		if (!util.IF(_plugin.getConfig(), "auto-translate-others"))
+			return;
+
+		Player player = event.getPlayer();
+		Block block   = event.getBlock();
+		String path   = String.format("%s_%s_%s_%s", player.getUniqueId().toString(), block.getX(), block.getY(), block.getZ());
+
+		_plugin.getSigns().set(path, API.getLang(player));
+		_plugin.saveSigns();
 	}
 }

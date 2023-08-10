@@ -1,6 +1,8 @@
 package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.yaml.snakeyaml.scanner.ScannerException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.Bukkit;
 
@@ -14,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.io.File;
 import java.net.URL;
 
 public class Updater {
@@ -92,7 +95,7 @@ public class Updater {
 			path = "show-native-chat";
 			config.set(path + ".cancel-event", cancel_event);
 			config.set(path + ".clear-recipients", clear_recipients);
-			config_version = 5;
+			config_version = 3;
 		}
 
 		path = "auto-update-config";
@@ -105,11 +108,7 @@ public class Updater {
 		if (util.IF(config, "debug"))
 			System.out.println("Debug, config_version: " + config_version);
 
-		if (config_version < 1)
-			// Version perdida donde se usaba formatMsg en vez de format-message...
-			config_version = 1;
-
-		if (config_version < 2) {
+		if (config_version < 1) {
 			ArrayList<String> formats_from_messages  = new ArrayList<String>();
 			ArrayList<String> formats_from_tool_tips = new ArrayList<String>();
 			ArrayList<String> formats_from_sounds    = new ArrayList<String>();
@@ -124,10 +123,8 @@ public class Updater {
 				formatMsg = formatMsg.replace("%sourceLang%", "%ct_lang_source%");
 				formatMsg = formatMsg.replace("$targetLang$", "$ct_lang_target$");
 
-				formatMsg.replace("%msg%", "$ct_messages$");
-
-				formats_from_messages.add(formatMsg);
-				formats_to_messages.add(formatMsg);
+				formats_from_messages.add(formatMsg.replace("%msg%", "%ct_messages%"));
+				formats_to_messages.add(formatMsg.replace("%msg%", "$ct_messages$"));
 			config.set("formats.from.messages", formats_from_messages);
 				config.set("formats.from.toolTips", formats_from_tool_tips);
 				config.set("formats.from.sounds", formats_from_sounds);
@@ -163,9 +160,9 @@ public class Updater {
 
 			config.set("auto-update-config", true);
 
-			config_version = 2;
+			config_version = 1;
 
-		} if (config_version < 3) {
+		} if (config_version < 2) {
 			Boolean show_native_chat;
 
 			DC.setPlayer(Bukkit.getConsoleSender());
@@ -186,42 +183,51 @@ public class Updater {
 
 			config.set("max-spam-per-tick", 150.0007);
 
-			config_version = 3;
+			config_version = 2;
 		}
 		
-		if (config_version < 4) {
+		if (config_version < 3) {
 			path = "show-native-chat";
 			Boolean state = util.IF(config, path);
 			config.set(path, null);
 			config.set(path + ".cancel-event", state);
 			config.set(path + ".clear-recipients", state);
 
-			config_version = 4;
-		}
-
-		if (config_version < 5) {
-			config.set("storage.type", "local");
+			config.set("storage.type", "yaml");
 			config.set("storage.host", "localhost");
 			config.set("storage.port", 3306);
 			config.set("storage.database", "ChatTranslator");
 			config.set("storage.user", "root");
 			config.set("storage.password", "password");
-			config_version = 5;
-		}
 
-		if (config_version < 6) {
-			ArrayList<String> formats_from_messages  = new ArrayList<String>();
-			ArrayList<String> formats_to_messages    = new ArrayList<String>();
+			ArrayList<String> formats_from_messages = new ArrayList<String>();
+			ArrayList<String> formats_to_messages   = new ArrayList<String>();
 
 			formats_from_messages.add("&e%ct_messages%");
 			formats_to_messages.add("&e$ct_messages$");
 
-			config.set("formats.from_entry.messages", formats_from_messages);
-			config.set("formats.to_entry.messages", formats_to_messages);
+			config.set("formats.from_entry.messages", new ArrayList<>(formats_from_messages));
+			config.set("formats.to_entry.messages", new ArrayList<>(formats_to_messages));
 
-			config.set("formats.from_exit.messages", formats_from_messages);
-			config.set("formats.to_exit.messages", formats_to_messages);
-			config_version = 6;
+			config.set("formats.from_exit.messages", new ArrayList<>(formats_from_messages));
+			config.set("formats.to_exit.messages", new ArrayList<>(formats_to_messages));
+
+
+			ArrayList<String> formats_console_messages = new ArrayList<String>();
+			ArrayList<String> formats_console_toolTips = new ArrayList<String>();
+
+			formats_console_messages.add("&f<&b%player_name%&f> &a$ct_messages$");
+			formats_console_toolTips.add("\\t&f[&6%ct_lang_source%&f] &a%ct_messages%");
+
+			config.set("formats.console.messages", formats_console_messages);
+			config.set("formats.console.toolTips", formats_console_toolTips);
+
+
+			config.set("auto-translate-others", false);
+
+			upgradePlayers();
+
+			config_version = 3;
 		}
 
 		config.set(_path, config_version);
@@ -236,5 +242,24 @@ public class Updater {
 				"" + config_version));
 			API.sendMessage(DC);
 	    }
+	}
+	
+	public void upgradePlayers() {
+		String filename = "players.yml";
+		File file       = new File(plugin.getDataFolder(), filename);
+
+		if (file.exists()) {
+			try {
+				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+				config.set("config-version", 1);
+				config.save(file);
+
+			} catch (ScannerException e) {
+				throw new IllegalArgumentException("[ERR020]");
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

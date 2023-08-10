@@ -1,8 +1,8 @@
-version: 1.6.2
+version: 1.7.2
 author: Majhrs16
 name: ChatTranslator
-main: majhrs16.ct.ChatTranslator
-softdepend: [PlaceholderAPI, ConditionalEvents]
+main: majhrs16.cht.ChatTranslator
+softdepend: [PlaceholderAPI, ConditionalEvents, ProtocolLib]
 
 commands:
   chattranslator:
