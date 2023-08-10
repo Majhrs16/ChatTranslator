@@ -1,38 +1,37 @@
-package majhrs16.ct;
+package majhrs16.cht;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import majhrs16.cht.commands.cht.MainCommand;
+import majhrs16.cht.events.sign.SignUpdater;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.events.sign.SignBreak;
+import majhrs16.cht.events.sign.SignPlace;
+import majhrs16.cht.storage.data.SQLite;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.storage.data.MySQL;
+import majhrs16.cht.events.EntryPlayer;
+import majhrs16.cht.events.ExitPlayer;
+import majhrs16.cht.util.ChatLimiter;
+import majhrs16.cot.CoreTranslator;
+import majhrs16.lib.storages.YAML;
+import majhrs16.cht.util.Updater;
+import majhrs16.cht.events.Chat;
+import majhrs16.cht.events.Msg;
+import majhrs16.cht.util.util;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
 
-import majhrs16.ct.commands.cht.MainCommand;
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.storage.data.SQLite;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.storage.data.MySQL;
-import majhrs16.ct.util.ChatLimiter;
-import majhrs16.lib.storages.YAML;
-import majhrs16.ct.util.Updater;
-import majhrs16.ct.events.Chat;
-import majhrs16.ct.events.Msg;
-import majhrs16.ct.util.util;
-
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 
-/*
-OUTPUT CONSOLA: NO ENTIENDO QUE PASA!! 
-
-[23:10:12 INFO]: 0 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",true,"es",true,true]
-[23:10:12 INFO]: 1 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",false,"es",true,true]
-[23:10:12 INFO]: 4 ["CONSOLE","&f<&b%player_name%&f> &a$ct_messages$","Hola","&f[&6%ct_lang_source%&f] &a%ct_messages%","&f[&6%ct_lang_source%&f] &a%ct_messages%",false,"en",true,true]
-[23:10:12 INFO]: 2 ["Majhrs16","%ct_expand% &a%ct_messages%","Hola","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>","&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>",false,"es",true,true]
-*/
-
 public class ChatTranslator extends JavaPlugin {
 	private API API;
+	private YAML signs;
 	private MySQL mysql;
 	private YAML config;
 	private YAML players;
@@ -41,7 +40,7 @@ public class ChatTranslator extends JavaPlugin {
 	public static ChatTranslator plugin;
 	PluginDescriptionFile pdffile     = getDescription();
 	public String name                = "&aChat&9Translator";
-	public String version             = "v" + pdffile.getVersion();
+	public String version             = "b" + pdffile.getVersion();
 	public String sep                 = "&4<------------------------->";
 	public String title               = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
 	public String title_UTF8          = "\n"
@@ -54,12 +53,14 @@ public class ChatTranslator extends JavaPlugin {
 		plugin  = this;
 		API     = new API();
 
+		signs   = new YAML(plugin, "signs.yml");
 		config  = new YAML(plugin, "config.yml");
 		players = new YAML(plugin, "players.yml");
 		sqlite  = new SQLite();
 		mysql   = new MySQL();
 
 		config.register();
+		signs.register();
 		new Updater().updateConfig();
 		if (registerStorage()) {
 			onDisable();
@@ -116,7 +117,7 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		majhrs16.ct.util.ChatLimiter.chat.clear();
+		majhrs16.cht.util.ChatLimiter.chat.clear();
 
 		Message DC = util.getDataConfigDefault();
 			DC.setPlayer(Bukkit.getConsoleSender());
@@ -178,10 +179,21 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void registerEvents() {
 		PluginManager pe = getServer().getPluginManager();
+		pe.registerEvents(new EntryPlayer(), this);
+		pe.registerEvents(new ExitPlayer(), this);
 		pe.registerEvents(new Chat(), this);
 		pe.registerEvents(new Msg(), this);
+
+		if (util.checkPAPI())
+			new CoreTranslator().register(); // Expansion de ChT para PAPI: CoT.
+
+		if (util.checkPL()) {
+			pe.registerEvents(new SignPlace(), this);
+			pe.registerEvents(new SignBreak(), this);
+			new SignUpdater();
+		}
 	}
-	
+
 	public boolean registerStorage() {
 		CommandSender console = Bukkit.getConsoleSender();
 
@@ -235,34 +247,34 @@ public class ChatTranslator extends JavaPlugin {
 					return true;
 				}
 				break;
-			
+
 			default:
-				DC.setMessages(title + "&4Error&f, &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+				DC.setMessages(title + "&f[&4ERR000&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
 					API.sendMessage(DC);
 		}
 		
 		return false;
 	}
 
-	public MySQL getMySQL() {
-		return mysql;
-	}
-
-	public SQLite getSQLite() {
-		return sqlite;
-	}
+	public MySQL getMySQL() { return mysql; }
+	public SQLite getSQLite() { return sqlite; }
 
 	public FileConfiguration getConfig() { return config.get(); }
 	public void reloadConfig() { config.reload(); }
 	public void resetConfig() { config.reset(); }
 	public void saveConfig() { config.save(); }
 
-	public FileConfiguration getPlayers() { return players.get(); }
+	public FileConfiguration getSigns() { return signs.get(); }
+	public void reloadSigns() { signs.reload(); }
+	public void resetSigns() { signs.reset(); }
+	public void saveSigns() { signs.save(); }
 
+	public FileConfiguration getPlayers() { return players.get(); }
 	public void reloadPlayers() throws SQLException {
 		enabled = false;
 
-		switch (config.get().getString("storage.type").toLowerCase()) {
+		String storageType = config.get().getString("storage.type").toLowerCase();
+		switch (storageType) {
 			case "yaml":
 				players.reload();
 				break;
@@ -284,6 +296,15 @@ public class ChatTranslator extends JavaPlugin {
 				mysql.disconnect();
 				registerStorage();
 				break;
+
+			default:
+				CommandSender console = Bukkit.getConsoleSender();
+
+				Message DC = util.getDataConfigDefault();
+					DC.setPlayer(console);
+					DC.setMessages(title + "&f[&4ERR000&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+					DC.setLang(API.getLang(console));
+				API.sendMessage(DC);
 		}
 
 		enabled = true;

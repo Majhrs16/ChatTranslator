@@ -1,12 +1,12 @@
-package majhrs16.ct.util;
+package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.Bukkit;
 
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
 
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
@@ -207,6 +207,21 @@ public class Updater {
 			config.set("storage.user", "root");
 			config.set("storage.password", "password");
 			config_version = 5;
+		}
+
+		if (config_version < 6) {
+			ArrayList<String> formats_from_messages  = new ArrayList<String>();
+			ArrayList<String> formats_to_messages    = new ArrayList<String>();
+
+			formats_from_messages.add("&e%ct_messages%");
+			formats_to_messages.add("&e$ct_messages$");
+
+			config.set("formats.from_entry.messages", formats_from_messages);
+			config.set("formats.to_entry.messages", formats_to_messages);
+
+			config.set("formats.from_exit.messages", formats_from_messages);
+			config.set("formats.to_exit.messages", formats_to_messages);
+			config_version = 6;
 		}
 
 		config.set(_path, config_version);

@@ -1,6 +1,6 @@
-package majhrs16.ct.storage.data;
+package majhrs16.cht.storage.data;
 
-import majhrs16.ct.storage.SQL;
+import majhrs16.cht.storage.SQL;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;

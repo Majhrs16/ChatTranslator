@@ -1,4 +1,4 @@
-package majhrs16.ct.storage;
+package majhrs16.cht.storage;
 
 import majhrs16.lib.storages.Database;
 

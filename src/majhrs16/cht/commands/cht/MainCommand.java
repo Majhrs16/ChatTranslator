@@ -1,15 +1,15 @@
-package majhrs16.ct.commands.cht;
+package majhrs16.cht.commands.cht;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.util.Updater;
-import majhrs16.ct.util.util;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.Updater;
+import majhrs16.cht.util.util;
 
 public class MainCommand implements CommandExecutor {
 	private ChatTranslator plugin = ChatTranslator.plugin;
@@ -57,27 +57,6 @@ public class MainCommand implements CommandExecutor {
 
 				new Reloader().reloadConfig(DC);
 				return true;
-
-			/*
-//				Me parece innecesario, CoT puede esto y mas!!
-
-				case "parse":
-					if (!plugin.enabled)
-						return false;
-
-					if (!sender.hasPermission("ChatTranslator.admin")) {
-						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
-							API.sendMessage(DC);
-						return false;
-					}
-
-					String msgFormat = String.join(" ", args);
-
-					DC.setMessageFormat(msgFormat.replaceFirst("parse", ""));
-					DC.setMessages("&eDato de ejemplo");
-						API.sendMessage(DC);
-					return true;
-				*/
 
 			case "lang":
 				if (!plugin.enabled)

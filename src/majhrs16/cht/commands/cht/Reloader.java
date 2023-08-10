@@ -1,8 +1,8 @@
-package majhrs16.ct.commands.cht;
+package majhrs16.cht.commands.cht;
 
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
 
 public class Reloader {
 	private ChatTranslator plugin = ChatTranslator.plugin;
@@ -19,7 +19,7 @@ public class Reloader {
 				plugin.reloadConfig();
 				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
-			} catch (Exception e) {
+			} catch (IllegalArgumentException e) {
 				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
 			}
 
@@ -49,6 +49,7 @@ public class Reloader {
 
 			} catch (Exception e) {
 				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
+				e.printStackTrace();
 			}
 
 			API.sendMessage(DC);

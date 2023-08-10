@@ -1,8 +1,8 @@
-package majhrs16.ct.events;
+package majhrs16.cht.events;
 
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
@@ -17,8 +17,7 @@ public class Msg implements Listener {
 	public void onMessage(Message event) {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				System.out.println("4 " + event.toString());
-				if (event.getFather().isCancelled() || event.isCancelled())
+				if (event.isCancelled())
 					return;
 
 				API.sendMessage(event);

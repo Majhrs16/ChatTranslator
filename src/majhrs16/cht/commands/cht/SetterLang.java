@@ -1,14 +1,13 @@
-package majhrs16.ct.commands.cht;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
+package majhrs16.cht.commands.cht;
 
 import majhrs16.lib.network.translator.GoogleTranslator;
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.util.util;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.util;
+
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 public class SetterLang {
 	private ChatTranslator plugin = ChatTranslator.plugin;
@@ -26,8 +25,7 @@ public class SetterLang {
 	}
 	
 	public void setLangAnother(Message DC, String player, String lang) {
-		FileConfiguration config  = plugin.getConfig();
-		String path               = "";
+		String path = "";
 
 		Player player2;
 		try {
@@ -58,21 +56,10 @@ public class SetterLang {
 		DC.setCancelled(true);
 
 		path = "formats.to";
-		Message to_model = new Message(
-			DC,
-			null,
-			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
-			DC.getMessages(),
-			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
-			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
-			false,
+		path = "formats.";
+		Message console  = util.createMessage(DC, Bukkit.getConsoleSender(), DC.getMessages(), false, API.getLang(Bukkit.getConsoleSender()), path + "console");
+		Message to_model = util.createMessage(DC, null,                      DC.getMessages(), false, null, path + "to");
 
-			null,
-
-			util.IF(config, "chat-color-personalized"),
-			util.IF(config, "use-PAPI-format")
-		);
-
-		API.broadcast(to_model);
+		API.broadcast(to_model, console);
 	}
 }

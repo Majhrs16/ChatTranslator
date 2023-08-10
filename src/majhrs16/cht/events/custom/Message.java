@@ -1,4 +1,4 @@
-package majhrs16.ct.events.custom;
+package majhrs16.cht.events.custom;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
@@ -10,8 +10,8 @@ import org.bukkit.event.Event;
 import org.json.JSONArray;
 import org.bukkit.Bukkit;
 
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.util.util;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.util;
 
 public class Message extends Event implements Cancellable {
 	private ChatTranslator plugin = ChatTranslator.plugin;
@@ -117,7 +117,7 @@ public class Message extends Event implements Cancellable {
 
 	public Message clone() {
 		Message DC = new Message();
-			Message father = new Message(); // BUGAZO!!
+			Message father = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
 				father.setPlayer(getFather().getPlayer());
 				father.setMessageFormat(getFather().getMessageFormat());
 				father.setMessages(getFather().getMessages());
@@ -151,7 +151,7 @@ public class Message extends Event implements Cancellable {
 			jsonArray.put(getMessageFormat());
 			jsonArray.put(getMessages());
 			jsonArray.put(getToolTips());
-			jsonArray.put(getToolTips());
+			jsonArray.put(getSounds());
 			jsonArray.put(isCancelled());
 			jsonArray.put(getLang());
 			jsonArray.put(getColorPersonalized());
@@ -171,15 +171,15 @@ public class Message extends Event implements Cancellable {
 			boolean show          = jsonArray.getBoolean(5);
 			String lang           = jsonArray.getString(6);
 			boolean color         = jsonArray.getBoolean(7);
-			boolean papi          = jsonArray.getBoolean(8); 
+			boolean papi          = jsonArray.getBoolean(8);
 
-			Player player = Bukkit.getServer().getPlayer(player_name);
-			if (player == null) {
+			Player player = null;
+			if (player_name != null && (player = Bukkit.getServer().getPlayer(player_name)) == null) { // Sino se hace este filtro se HYPER BUGEA.
 				return null;
 			}
 
 			return new Message(
-				null,
+				null, 
 				player,
 				message_format,
 				messages,

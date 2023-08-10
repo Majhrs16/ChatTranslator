@@ -1,4 +1,4 @@
-package majhrs16.ct.util;
+package majhrs16.cht.util;
 
 public class CacheSpam {
 	Float max;

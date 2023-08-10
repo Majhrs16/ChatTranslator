@@ -1,10 +1,10 @@
-package majhrs16.ct.translator.API;
+package majhrs16.cht.translator.API;
 
 import majhrs16.lib.network.translator.GoogleTranslator;
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.ChatTranslator;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.utils.Str;
-import majhrs16.ct.util.util;
+import majhrs16.cht.util.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
@@ -147,14 +147,23 @@ public class API {
 			}
 		}
 
-		if (from_message_format != null)
-			from_message_format = from_message_format.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (to_message_format != null)
-			to_message_format = to_message_format.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (from_tool_tips != null)
-			from_tool_tips = from_tool_tips.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (to_tool_tips != null)
-			to_tool_tips = to_tool_tips.replace("$ct_messages$", "#ct_messages#"); // Fix bug %ct_messages% en vez de $ct_messages$
+		if (from_message_format != null) {
+			from_message_format = from_message_format.replace("%ct_messages%", "x00");
+			from_message_format = from_message_format.replace("$ct_messages$", "x01");
+		}
+		if (to_message_format != null) {
+			to_message_format = to_message_format.replace("%ct_messages%", "x00");
+			to_message_format = to_message_format.replace("$ct_messages$", "x01");
+		}
+
+		if (from_tool_tips != null) {
+			from_tool_tips = from_tool_tips.replace("%ct_messages%", "x00");
+			from_tool_tips = from_tool_tips.replace("$ct_messages$", "x01");
+		}
+		if (to_tool_tips != null) {
+			to_tool_tips = to_tool_tips.replace("%ct_messages%", "x00");
+			to_tool_tips = to_tool_tips.replace("$ct_messages$", "x01");
+		}
 
 		if (util.checkPAPI() && papi) {
 			Player _from_player, _to_player;
@@ -192,47 +201,46 @@ public class API {
 			}
 		}
 
-		if (from_message_format != null)
-			from_message_format = from_message_format.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (to_message_format != null)
-			to_message_format = to_message_format.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (from_tool_tips != null)
-			from_tool_tips = from_tool_tips.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
-		if (to_tool_tips != null)
-			to_tool_tips = to_tool_tips.replace("#ct_messages#", "$ct_messages$"); // Fix bug %ct_messages% en vez de $ct_messages$
-
-		/*
 		if (lang_source != null && lang_target != null
 				&& !lang_source.equals("off") && !lang_target.equals("off")
 				&& !lang_source.equals(lang_target)) {
 
-			if (from_messages != null && from_message_format != null && from_message_format.contains("$ct_messages$")) {
+			if (from_messages != null && from_message_format != null && from_message_format.contains("x01"))
 				from_messages = GT.translate(from_messages, lang_source, lang_target);
-			}
-
-			if (from_messages != null && from_tool_tips != null && from_tool_tips.contains("$ct_messages$")) {
-				from_tool_tips = GT.translate(from_tool_tips, lang_source, lang_target);
-			}
-
-			if (to_messages != null && to_message_format != null && to_message_format.contains("$ct_messages$")) {
+			if (to_messages != null && to_message_format != null && to_message_format.contains("x01")) //  && to_message_format.contains("$ct_messages$")
 				to_messages = GT.translate(to_messages, lang_source, lang_target);
-			}
 
-			if (to_messages != null && to_tool_tips != null && to_tool_tips.contains("$ct_messages$")) { // HAY QUE PENSAR MEJOR COMO TRADUCIRLO SIN DEPENDER DE $ct_messages$...
+			if (from_tool_tips != null)
+				from_tool_tips = GT.translate(from_tool_tips, lang_source, lang_target);
+			if (to_tool_tips != null) // No hace falta pensar mas. Si from y to son de distinto idioma, mejor traducirlos...
 				to_tool_tips = GT.translate(to_tool_tips, lang_source, lang_target);
-			}
 		}
-		*/
+
+		if (from_message_format != null) {
+			from_message_format = from_message_format.replace("x00", "%ct_messages%");
+			from_message_format = from_message_format.replace("x01", "$ct_messages$");
+		}
+		if (to_message_format != null) {
+			to_message_format = to_message_format.replace("x00", "%ct_messages%");
+			to_message_format = to_message_format.replace("x01", "$ct_messages$");
+		}
+
+		if (from_tool_tips != null) {
+			from_tool_tips = from_tool_tips.replace("x00", "%ct_messages%");
+			from_tool_tips = from_tool_tips.replace("x01", "$ct_messages$");
+		}
+		if (to_tool_tips != null) {
+			to_tool_tips = to_tool_tips.replace("x00", "%ct_messages%");
+			to_tool_tips = to_tool_tips.replace("x01", "$ct_messages$");
+		}
 
 		if (from_message_format != null)
 			from_message_format = getColor(from_message_format);
-
-		if (from_tool_tips != null)
-			from_tool_tips = getColor(from_tool_tips);
-
 		if (to_message_format != null)
 			to_message_format = getColor(to_message_format);
 
+		if (from_tool_tips != null)
+			from_tool_tips = getColor(from_tool_tips);
 		if (to_tool_tips != null)
 			to_tool_tips = getColor(to_tool_tips);
 
@@ -242,7 +250,7 @@ public class API {
 				from_messages          = getColor(from_messages);
 			}
 
-			if (to_messages != null && to_player != null && from_player.hasPermission("ChatTranslator.chat.to.color"))
+			if (to_messages != null && to_player != null && to_player.hasPermission("ChatTranslator.chat.to.color"))
 				to_messages   = getColor(to_messages);
 		}
 
@@ -374,8 +382,6 @@ public class API {
 	public void sendMessage(Message event) {
 //			Envia los mensajes especificados en father y el objeto Message actual.
 
-		System.out.println("2 " + event.getFather().toString());
-
 		if (event == new Message())
 			return;
 
@@ -412,11 +418,9 @@ public class API {
 
 	public void broadcast(List<Message> messages) {
 		for (Message to : messages) {
-			System.out.println("1 " + to.getFather().toString());
-
 			try {
-				util.assertLang(to.getLang()); 
-				majhrs16.ct.util.ChatLimiter.chat.add(to);
+				util.assertLang(to.getLang());
+				majhrs16.cht.util.ChatLimiter.chat.add(to);
 
 			} catch (IllegalArgumentException e) {
 				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
@@ -433,16 +437,12 @@ public class API {
 		}
 	}
 
-	public void broadcast(Message to_model) {
+	public void broadcast(Message to_model, Message console) {
 		List<Message> tos = new ArrayList<Message>();
 		Message from = to_model.getFather();
-		System.out.println("0 " + from.toString());
 
-		Message console = to_model.clone();
-			console.setFather(from);
-			console.setPlayer(Bukkit.getConsoleSender());
-			console.setLang(getLang(Bukkit.getConsoleSender()));
-		tos.add(console);
+		if (console != null && console != new Message())
+			tos.add(console);
 
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
 			if(to_player == to_model.getFather().getPlayer())

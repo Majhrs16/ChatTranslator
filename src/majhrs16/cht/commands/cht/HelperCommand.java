@@ -1,12 +1,12 @@
-package majhrs16.ct.commands.cht;
+package majhrs16.cht.commands.cht;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import majhrs16.ct.events.custom.Message;
-import majhrs16.ct.translator.API.API;
-import majhrs16.ct.ChatTranslator;
-import majhrs16.ct.util.util;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.API.API;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.util;
 
 public class HelperCommand {
 	private ChatTranslator plugin = ChatTranslator.plugin;
