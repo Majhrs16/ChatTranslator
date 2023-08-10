@@ -17,7 +17,7 @@ ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo re
 - Funciones personalizables y desactivables.
 - Soporte con Bungeecord con bases de datos.
 - Soporte para otros plugins de chat:
-  - Soporte parcial para Chatty y ChatManager atravez del ejemplo de config #3,
+  - Soporte parcial para [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/) y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) atravez del ejemplo de config #3,
   - Atravez del evento majhrs16.cht.events.custom.Message,
   - Soporte para DiscordSRV.
 
