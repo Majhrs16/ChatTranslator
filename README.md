@@ -37,6 +37,36 @@ ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y s
 
 Si deseas cambiar tu idioma al automatico, puedes hacerlo usando el comando `/cht lang [jugador] auto`.
 
+## Compilación
+
+Para compilar el código fuente de ChatTranslator, sigue estos pasos:
+
+1. Asegúrate de tener instalado Java Development Kit (JDK) en tu sistema.
+2. Clona este repositorio en tu máquina local utilizando el siguiente comando:
+
+   ```
+   git clone https://github.com/Majhrs16/ChatTranslator.git
+   ```
+
+3. Navega al directorio del proyecto:
+
+   ```
+   cd ChatTranslator
+   ```
+
+4. Descarga las dependencias requeridas y colócalas en la carpeta "libs" dentro del proyecto:
+
+   - [ConditionalEvents.jar](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)
+   - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/)
+   - [Spigot 1.15.2.jar](https://getbukkit.org/download/spigot)
+   - [ProtocolLib.jar](https://www.spigotmc.org/resources/protocollib.1997/)
+
+5. Abre una consola y ejecuta el compile.bat:
+
+   Esto compilará todos los archivos fuente y generará un ChatTranslator.jar.
+
+Y eso es todo! :D
+
 ## Solución de problemas
 
 Si tienes problemas con ChatTranslator, revisa la documentación del plugin y los recursos de soporte en los siguientes enlaces:
