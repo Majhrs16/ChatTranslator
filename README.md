@@ -41,7 +41,7 @@ Si deseas cambiar tu idioma al automatico, puedes hacerlo usando el comando `/ch
 
 Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
-1. Asegúrate de tener instalado Java Development Kit (JDK) en tu sistema.
+1. Asegúrate de tener instalado Java Development Kit (JDK) 8 en tu sistema.
 2. Clona este repositorio en tu máquina local utilizando el siguiente comando:
 
    ```
