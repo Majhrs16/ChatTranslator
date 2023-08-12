@@ -19,23 +19,23 @@ public class SetterLang {
 		API.setLang(DC.getPlayer(), lang);
 		plugin.savePlayers();
 
-		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
+		DC.setMessageFormat("$ct_messages$ &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
+		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a");
 		DC.setLang(lang);
 			API.sendMessage(DC);
 	}
-	
-	public void setLangAnother(Message DC, String player, String lang) {
-		String path = "";
 
-		Player player2;
+	public void setLangAnother(Message DC, String player, String lang) {
+		Player to_player;
+
 		try {
-			player2 = Bukkit.getServer().getPlayer(player);
+			to_player = Bukkit.getServer().getPlayer(player);
 
 		} catch (NullPointerException e) {
-			player2 = null;
+			to_player = null;
 		}
 
-		if (player2 == null) {
+		if (to_player == null) {
 			DC.setMessages("&7El jugador &f'&b" + player + "&f'&c no &7esta&c disponible&f.");
 				API.sendMessage(DC);
 			return;
@@ -43,22 +43,31 @@ public class SetterLang {
 
 		lang = util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
 
-		API.setLang(player2, lang);
+		API.setLang(to_player, lang);
 		plugin.savePlayers();
 
-		DC.setMessages(String.format(
+		String msg = String.format(
 			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b%s&f.",
 			DC.getPlayerName(),
-			player2.getName(),
+			to_player.getName(),
 			GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
-		));
+		);
 
-		DC.setCancelled(true);
+		Message from = util.getDataConfigDefault();
+			from.setPlayer(Bukkit.getConsoleSender());
+			from.setLang("es");
+			from.setCancelledThis(true);
+			from.setMessages(msg);
 
-		path = "formats.to";
-		path = "formats.";
-		Message console  = util.createMessage(DC, Bukkit.getConsoleSender(), DC.getMessages(), false, API.getLang(Bukkit.getConsoleSender()), path + "console");
-		Message to_model = util.createMessage(DC, null,                      DC.getMessages(), false, null, path + "to");
+		Message to_model = util.getDataConfigDefault();
+			to_model.setFather(from);
+			to_model.setMessages(msg);
+
+		Message console = util.getDataConfigDefault();
+			console.setFather(from);
+			console.setPlayer(Bukkit.getConsoleSender());
+			console.setLang(API.getLang(Bukkit.getConsoleSender()));
+			console.setMessages(msg);
 
 		API.broadcast(to_model, console);
 	}

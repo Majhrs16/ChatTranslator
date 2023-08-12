@@ -20,8 +20,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.Bukkit;
 
 import java.util.Arrays;
@@ -38,25 +39,25 @@ public class SignHandler implements Listener {
 					return;
 
 				Player to_player       = event.getPlayer();
-				String uuid            = to_player.getUniqueId().toString();
-				Player from_player     = Bukkit.getPlayer(uuid);
+				World world            = to_player.getWorld();
+				Player from_player     = Bukkit.getPlayer(to_player.getUniqueId());
 				String to_lang         = API.getLang(to_player);
 
 				if (event.getPacketType() == PacketType.Play.Server.UPDATE_SIGN) {
 					BlockPosition blockPosition = event.getPacket().getBlockPositionModifier().read(0);
-					Block block                 = to_player.getWorld().getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
-					String path                 = String.format("%s_%s_%s_%s", uuid, (int) block.getX(), (int) block.getY(), (int) block.getZ());
-					String from_lang            = _plugin.getSigns().getString(path);
+					Block block                 = world.getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+					String path                 = String.format("%s_%s_%s_%s", world.getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
 					Sign signBlock              = (Sign) block.getState();
 					String[] lines              = signBlock.getLines();
 
-					if (!lines.equals(new String[] {"", "", "", ""})) {
+					if (!lines.equals(new String[] {"", "", "", ""}) && _plugin.getSigns().contains(path)) {
+						String from_lang = _plugin.getSigns().getString(path + ".lang");
 						String msg = String.join("\n", lines);
 
-						Message from = new Message(null, from_player, "%ct_messages%", msg, null, null, false, from_lang, true, false);
-						Message to   = new Message(from, to_player,   "$ct_messages$", msg, null, null, false, to_lang,   true, false);
+						Message from = new Message(null, from_player, "%ct_messages%", null, msg, null, false, from_lang, true, false);
+						Message to   = new Message(from, to_player,   "$ct_messages$", null, msg, null, false, to_lang,   true, false);
 
-						lines = util.wrapText(API.formatMessage(to).getMessageFormat(), 20).split("\n", 4);
+						lines = util.wrapText(API.formatMessage(to).getToolTips(), 15).split("\n", 4);
 
 						WrappedChatComponent[] wrappedLines = Arrays.stream(lines).map(WrappedChatComponent::fromText).toArray(WrappedChatComponent[]::new);
 						event.getPacket().getChatComponentArrays().write(0, wrappedLines);
@@ -71,12 +72,15 @@ public class SignHandler implements Listener {
 		if (!util.IF(_plugin.getConfig(), "auto-translate-others"))
 			return;
 
+		FileConfiguration signs = _plugin.getSigns();
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();
-		String path   = String.format("%s_%s_%s_%s", player.getUniqueId().toString(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
+		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
 
-		if (block.getType().equals(Material.AIR) && _plugin.getSigns().contains(path)) {
-			_plugin.getSigns().set(path, null);
+		if (block.getType().equals(Material.AIR) && signs.contains(path)) {
+			signs.set(path + ".uuid", null);
+			signs.set(path + ".lang", null);
+			signs.set(path, null);
 			_plugin.saveSigns();
 		}
 	}
@@ -86,11 +90,13 @@ public class SignHandler implements Listener {
 		if (!util.IF(_plugin.getConfig(), "auto-translate-others"))
 			return;
 
+		FileConfiguration signs = _plugin.getSigns();
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();
-		String path   = String.format("%s_%s_%s_%s", player.getUniqueId().toString(), block.getX(), block.getY(), block.getZ());
+		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), block.getX(), block.getY(), block.getZ());
 
-		_plugin.getSigns().set(path, API.getLang(player));
+		signs.set(path + ".uuid", player.getUniqueId().toString());
+		signs.set(path + ".lang", API.getLang(player));
 		_plugin.saveSigns();
 	}
 }

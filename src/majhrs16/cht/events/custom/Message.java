@@ -23,17 +23,13 @@ public class Message extends Event implements Cancellable {
 	private String tool_tips;
 	private String sounds;
 	private String messages;
-	private boolean isCancelled;
-
+	private boolean isCancelled = false;
 	private String lang;
-
-	private Boolean color = true;
+	private Boolean color       = true;
 	private Boolean format_papi = true;
 
 
-	public Message() {
-//		setCancelledThis(false);
-	}
+	public Message() {}
 
 	public Message(
 			Message father,
@@ -43,9 +39,7 @@ public class Message extends Event implements Cancellable {
 			String tool_tips,
 			String sounds,
 			Boolean isCancelled,
-
 			String lang,
-
 			Boolean color,
 			Boolean format_papi
 		) {
@@ -56,11 +50,8 @@ public class Message extends Event implements Cancellable {
 		setMessages(messages);
 		setToolTips(tool_tips);
 		setSounds(sounds);
-
 		setCancelledThis(isCancelled);
-
 		setLang(lang);
-
 		setColorPersonalized(color);
 		setFormatMessage(format_papi);
 	}
@@ -124,9 +115,7 @@ public class Message extends Event implements Cancellable {
 				father.setToolTips(getFather().getToolTips());
 				father.setSounds(getFather().getSounds());
 				father.setCancelledThis(getFather().isCancelled());
-
 				father.setLang(getFather().getLang());
-
 				father.setColorPersonalized(getFather().getColorPersonalized());
 				father.setFormatMessage(getFather().getFormatMessage());
 			DC.setFather(father);
@@ -137,9 +126,7 @@ public class Message extends Event implements Cancellable {
 			DC.setToolTips(getToolTips());
 			DC.setSounds(getSounds());
 			DC.setCancelledThis(isCancelled());
-
 			DC.setLang(getLang());
-
 			DC.setColorPersonalized(getColorPersonalized());
 			DC.setFormatMessage(getFormatMessage());
 		return DC;

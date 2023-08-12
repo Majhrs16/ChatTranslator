@@ -71,12 +71,12 @@ public class util {
 			father.setColorPersonalized(true);
 			father.setFormatMessage(false);
 
-			Message msg = new Message();
-				msg.setFather(father);
-				msg.setMessageFormat("$ct_messages$");
-				msg.setCancelledThis(false);
-				msg.setColorPersonalized(true);
-				msg.setFormatMessage(false);
+		Message msg = new Message();
+			msg.setFather(father);
+			msg.setMessageFormat("$ct_messages$");
+			msg.setCancelledThis(false);
+			msg.setColorPersonalized(true);
+			msg.setFormatMessage(false);
 		return msg;
 	}
 
