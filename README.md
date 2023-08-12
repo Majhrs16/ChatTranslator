@@ -10,8 +10,8 @@ ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo re
 - Configuración MUY personalizable para el formato del chat a través de config.formats.
 - Opcionalmente se puede utilizar las dependencias:
   - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)) Pero seria necesario instalar la extensión player para evitar
-    problemas en el servidor y automarizar la deteccion del idioma :3
-  - [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)) Para traducir carteles y futuramente mas cosas!.
+    problemas en el servidor y automatizar la deteccion del idioma :3
+  - [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)) Para traducir carteles y futuramente mas cosas! (Por limitaciones externas, solo hasta la 1.19).
   - [ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)) Para condicionar el chat.
 - Detección automática del idioma del jugador(Requiere PlaceholderAPI).
 - Funciones personalizables y desactivables.
