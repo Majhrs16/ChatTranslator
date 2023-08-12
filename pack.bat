@@ -1,0 +1,1 @@
+jar cvf ChatTranslator.jar -C bin . -C src . plugin.yml config.yml players.yml signs.yml LICENSE com org
