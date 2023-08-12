@@ -60,6 +60,8 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
    - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/)
    - [Spigot 1.15.2.jar](https://getbukkit.org/download/spigot)
    - [ProtocolLib.jar](https://www.spigotmc.org/resources/protocollib.1997/)
+   - [org.json...jar](https://repo1.maven.org/maven2/org/json/org.json/chargebee-1.0/)
+   - [MySQL...jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.31/)
 
 5. Y ya por ultimo, ejecuta el compile.bat:
 
