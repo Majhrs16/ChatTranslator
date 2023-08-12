@@ -61,7 +61,7 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
    - [Spigot 1.15.2.jar](https://getbukkit.org/download/spigot)
    - [ProtocolLib.jar](https://www.spigotmc.org/resources/protocollib.1997/)
 
-5. Abre una consola y ejecuta el compile.bat:
+5. Y ya por ultimo, ejecuta el compile.bat:
 
    Esto compilará todos los archivos fuente y generará un ChatTranslator.jar.
 
