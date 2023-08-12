@@ -25,7 +25,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 	private Pattern lang        = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
 
 	public String getAuthor()     { return "Majhrs16"; }
-	public String getVersion()    { return "b1.3.0"; }
+	public String getVersion()    { return "b1.3.1"; }
 	public String getIdentifier() { return "ct"; }
 
 //	"\\[['\"]?.+['\"]?, *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *[true|false], *['\"]?.+['\"]?, *[true|false], *[true|false]\\]";
@@ -45,10 +45,10 @@ public class CoreTranslator extends PlaceholderExpansion {
 		Matcher Lang        = lang.matcher(identifier);
 		String result = null;
 
-		if (Broadcast.find()) { // %ct_broadcast_{["Maj", "from", "Hola mundo", "from", "from", false, "es", true, true], ["", "to", "Que tal?", "to", "to", false, "", true, true], ["", "console", "Que tal?", "console", "console", false, "", true, true]}%
+		if (Broadcast.find()) { // %ct_broadcast_[["Maj", "from", "Hola mundo", "from", "from", false, "es", true, true], ["", "to", "Que tal?", "to", "to", false, "", true, true], ["", "console", "Que tal?", "console", "console", false, "", true, true]]%
 			result = broadcast(player, Broadcast.group(1), Broadcast.group(2), Broadcast.group(3));
 
-		} else if (SendMessage.find()) { // %ct_sendMessage_{["Maj", "from", "Hola mundo", "from", "from", false, "es", true, true], ["Maj", "to", "Que tal?", "to", "to", false, "es", true, true]}%
+		} else if (SendMessage.find()) { // %ct_sendMessage_[["Maj", "from", "Hola mundo", "from", "from", false, "es", true, true], ["Maj", "to", "Que tal?", "to", "to", false, "es", true, true]]%
 			result = sendMessage(player, SendMessage.group(1), SendMessage.group(2));
 
 		} else if (Lang.find()) { // %ct_getLang_{player_name}%
@@ -86,13 +86,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 		tos.add(console);
 
 		Message to_model = new Message().valueOf(to_json);
-			to_model.setFather(from);
-
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
 			if(to_player == from.getPlayer())
 				continue;
 
 			Message to = to_model.clone();
+				to.setFather(from);
 				to.setPlayer(to_player);
 				to.setLang(API.getLang(to_player));
 			tos.add(to);
