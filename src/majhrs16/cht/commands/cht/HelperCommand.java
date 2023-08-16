@@ -62,14 +62,14 @@ public class HelperCommand {
 				description = null;
 
 			Message DC = util.getDataConfigDefault();
-				DC.setPlayer(sender);
-				DC.setMessageFormat(title);
-				DC.setMessages("");
+				DC.getTo().setSender(sender);
+				DC.getTo().setMessageFormat(title);
+				DC.getTo().setMessages("");
 				if (description != null)
-					DC.setToolTips(sender instanceof Player ? description : "	" + description.replace("\n", "\n\t"));
+					DC.getTo().setToolTips(sender instanceof Player ? description : "	" + description.replace("\n", "\n\t"));
 //					Limitacino de la API, siosi necesitaremos agregar config.formats.<grupo>.toolTipsFormat, ademas de agregar %ct_tooltips$...
 //					O quizas no...
-				DC.setLang(API.getLang(sender));
+				DC.getTo().setLang(API.getLang(sender));
 			API.sendMessage(DC);
 		}
 	}

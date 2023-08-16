@@ -20,8 +20,8 @@ public class MainCommand implements CommandExecutor {
 		String lang = API.getLang(sender);
 
 		Message DC = util.getDataConfigDefault();
-			DC.setPlayer(sender);
-			DC.setLang(lang);
+			DC.getTo().setSender(sender);
+			DC.getTo().setLang(lang);
 
 		if (util.IF(config, "debug")) {
 			System.out.println("Debug, Name: " + sender.getName());
@@ -41,7 +41,7 @@ public class MainCommand implements CommandExecutor {
 				if (!plugin.enabled)
 					return false;
 
-				DC.setMessages("&7Version&f: &a" + plugin.version);
+				DC.getTo().setMessages("&7Version&f: &a" + plugin.version);
 					API.sendMessage(DC);
 				return true;
 
@@ -50,7 +50,7 @@ public class MainCommand implements CommandExecutor {
 					return false;
 
 				if (!sender.hasPermission("ChatTranslator.admin")) {
-					DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+					DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 						API.sendMessage(DC);
 					return false;
 				}
@@ -72,7 +72,7 @@ public class MainCommand implements CommandExecutor {
 
 						case 3:  // /ct lang Majhrs16 es
 							if (!sender.hasPermission("ChatTranslator.admin")) {
-								DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+								DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 									API.sendMessage(DC);
 								return false;
 							}
@@ -82,20 +82,20 @@ public class MainCommand implements CommandExecutor {
 
 						default:
 							util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
-							DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
+							DC.getTo().setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
 								API.sendMessage(DC);
 							return false;
 					}
 
 				} catch (IllegalArgumentException e) {
-					DC.setMessages(e.getMessage());
+					DC.getTo().setMessages(e.getMessage());
 						API.sendMessage(DC);
 					return false;
 				}
 
 			case "toggle":
 				if (!sender.hasPermission("ChatTranslator.admin")) {
-					DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+					DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 						API.sendMessage(DC);
 					return false;
 				}
@@ -116,13 +116,13 @@ public class MainCommand implements CommandExecutor {
 				}
 
 			case "reset":
-				DC.setMessages("&aRestableciendo la config&f...");
+				DC.getTo().setMessages("&aRestableciendo la config&f...");
 					API.sendMessage(DC);
 
 				plugin.resetConfig();
 				new Updater().updateConfig();
 
-				DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
+				DC.getTo().setMessages("&aSe ha restablecido la config exitosamente&f.");
 					API.sendMessage(DC);
 				return true;
 
@@ -130,7 +130,7 @@ public class MainCommand implements CommandExecutor {
 				if (!plugin.enabled)
 					return false;
 
-				DC.setMessages("&7Ese comando &cno &7existe&f!");
+				DC.getTo().setMessages("&7Ese comando &cno &7existe&f!");
 					API.sendMessage(DC);
 				return false;
 		}

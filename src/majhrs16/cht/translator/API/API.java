@@ -78,22 +78,22 @@ public class API {
 		FileConfiguration config = plugin.getConfig();
 		DC = DC.clone(); // se clona para evitar sobreescrituras en el evento.
 
-		Message to               = DC;
-		CommandSender to_player  = to.getPlayer();
-		String to_message_format = to.getMessageFormat();
-		String to_messages       = to.getMessages();
-		String to_tool_tips      = to.getToolTips();
-		String lang_target       = to.getLang();
-
-		Message from               = to.getFather();
-		CommandSender from_player  = from.getPlayer();
+		Message from               = DC;
+		CommandSender from_player  = from.getSender();
 		String from_message_format = from.getMessageFormat();
 		String from_messages       = from.getMessages();
 		String from_tool_tips      = from.getToolTips();
 		String lang_source         = from.getLang();
 
-		Boolean color = to.getColorPersonalized();
-		Boolean papi  = to.getFormatMessage();
+		Message to               = from.getTo();
+		CommandSender to_player  = to.getSender();
+		String to_message_format = to.getMessageFormat();
+		String to_messages       = to.getMessages();
+		String to_tool_tips      = to.getToolTips();
+		String lang_target       = to.getLang();
+
+		Boolean color = to.getColor();
+		Boolean papi  = to.getFormatPAPI();
 
 		String from_messages_original = from_messages;
 
@@ -314,13 +314,13 @@ public class API {
 			}
 		}
 
-		DC.getFather().setMessageFormat(from_message_format);
-		DC.getFather().setMessages(from_messages);
-		DC.getFather().setToolTips(from_tool_tips);
+		DC.setMessageFormat(from_message_format);
+		DC.setMessages(from_messages);
+		DC.setToolTips(from_tool_tips);
 
-		DC.setMessageFormat(to_message_format);
-		DC.setMessages(to_messages);
-		DC.setToolTips(to_tool_tips);
+		DC.getTo().setMessageFormat(to_message_format);
+		DC.getTo().setMessages(to_messages);
+		DC.getTo().setToolTips(to_tool_tips);
 
 		return DC;
 	}
@@ -335,7 +335,7 @@ public class API {
 					&& formatted.getMessages() != null
 				) {
 
-			 if (formatted.getPlayer() instanceof Player) {
+			 if (formatted.getSender() instanceof Player) {
 				TextComponent message = new TextComponent(formatted.getMessageFormat());
 
 				if (formatted.getToolTips() != null) {
@@ -345,7 +345,7 @@ public class API {
 					));
 				}
 
-				Player player = ((Player) formatted.getPlayer());
+				Player player = ((Player) formatted.getSender());
 				player.spigot().sendMessage(message);
 			
 				if (formatted.getSounds() != null) {
@@ -359,9 +359,9 @@ public class API {
 
 						} catch (IllegalArgumentException e) {
 							Message msg = util.getDataConfigDefault();
-								msg.setPlayer(Bukkit.getConsoleSender());
-								msg.setLang(getLang(Bukkit.getConsoleSender()));
-								msg.setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + line + "&f' &cinvalido&f.");
+								msg.getTo().setSender(Bukkit.getConsoleSender());
+								msg.getTo().setLang(getLang(Bukkit.getConsoleSender()));
+								msg.getTo().setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + line + "&f' &cinvalido&f.");
 							 sendMessage(msg);
 						}
 					}
@@ -391,25 +391,22 @@ public class API {
 			if (util.IF(plugin.getConfig(), "debug")) {
 				System.out.println("DEBUG: Format, Msgs, ToolTips, Lang");
 				System.out.println(String.format("DEBUG from: '%s', '%s', '%s', %s",
-					formatted.getFather().getMessageFormat(),
-					formatted.getFather().getMessages(),
-					formatted.getFather().getToolTips(),
-					formatted.getFather().getLang()
-				));
-			}
-
-			processMessage(formatted.getFather());
-
-			if (util.IF(plugin.getConfig(), "debug")) {
-				System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
 					formatted.getMessageFormat(),
 					formatted.getMessages(),
 					formatted.getToolTips(),
 					formatted.getLang()
 				));
+
+				System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
+					formatted.getTo().getMessageFormat(),
+					formatted.getTo().getMessages(),
+					formatted.getTo().getToolTips(),
+					formatted.getTo().getLang()
+				));
 			}
 
 			processMessage(formatted);
+			processMessage(formatted.getTo());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -426,47 +423,50 @@ public class API {
 				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
 
 				Message alert = util.getDataConfigDefault();
-					alert.getFather().setPlayer(Bukkit.getConsoleSender());
-					alert.getFather().setMessages(String.format("&b%s&f: %s", to.getPlayerName(), msg));
-					alert.getFather().setCancelled(false);
+					alert.setMessages(String.format("&b%s&f: %s", to.getSenderName(), msg));
+					alert.setCancelled(false);
 
-					alert.setPlayer(to.getPlayer());
-					alert.setMessages(msg);
+					alert.getTo().setSender(to.getSender());
+					alert.getTo().setMessages(msg);
 				sendMessage(alert);
 			}
 		}
 	}
 
-	public void broadcast(Message to_model, Message console) {
+	public void broadcast(Message from) {
 		List<Message> tos = new ArrayList<Message>();
-		Message from = to_model.getFather();
 
-		if (console != null && console != new Message())
-			tos.add(console);
+		Message console = from.getTo().getTo();
+		if (console != null && console != new Message()) {
+			from.setTo(console);
+			tos.add(from.clone());
+		}
 
+		from.setCancelledThis(true);
+
+		Message to_model = from.getTo();
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
-			if(to_player == to_model.getFather().getPlayer())
+			if(to_player == from.getSender())
 				continue;
 
-			Message to = to_model.clone();
-				to.setFather(from);
-				to.setPlayer(to_player);
-				to.setLang(getLang(to_player));
-			tos.add(to);
+			from.setTo(to_model);
+				from.getTo().setSender(to_player);
+				from.getTo().setLang(getLang(to_player));
+			tos.add(from.clone());
 		}
 
 		broadcast(tos);
 	}
 
 	public void setLang(CommandSender sender, String lang) throws IllegalArgumentException {
-//		setLang(player, "es");  -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
-//		setLang(console, "es"); -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
-//		setLang(player/consola, "XD"); -> IllegalArgumentException...
+//			setLang(player, "es");  -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
+//			setLang(console, "es"); -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
+//			setLang(player/consola, "XD"); -> IllegalArgumentException...
 
 		UUID uuid;
 		FileConfiguration config  = plugin.getConfig();
 		Message DC = util.getDataConfigDefault();
-			DC.setPlayer(Bukkit.getConsoleSender());
+			DC.setSender(Bukkit.getConsoleSender());
 			DC.setLang(getLang(Bukkit.getConsoleSender()));
 
 		if (sender instanceof Player) {
@@ -493,7 +493,7 @@ public class API {
 					}
 
 				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
+					DC.getTo().setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
 						sendMessage(DC);
 				}
 				break;
@@ -508,7 +508,7 @@ public class API {
 					}
 
 				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
+					DC.getTo().setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
 						sendMessage(DC);
 				}
 				break;
@@ -526,7 +526,8 @@ public class API {
 
 		CommandSender console = Bukkit.getConsoleSender();
 		Message DC            = util.getDataConfigDefault();
-			DC.setPlayer(console);
+			DC.getTo().setSender(console);
+			DC.getTo().setLang(defaultLang);
 
 		if (sender instanceof Player) {
 			uuid = ((Player) sender).getUniqueId();
@@ -548,8 +549,7 @@ public class API {
 					lang = plugin.getSQLite().get(uuid);
 
 				} catch (SQLException e) {
-					DC.setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
-					DC.setLang("es");
+					DC.getTo().setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
 						sendMessage(DC);
 
 				} catch (NullPointerException e) {
@@ -562,8 +562,7 @@ public class API {
 					lang = plugin.getMySQL().get(uuid);
 
 				} catch (SQLException e) {
-					DC.setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
-					DC.setLang("es");
+					DC.getTo().setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
 						sendMessage(DC);
 
 				} catch (NullPointerException e) {
@@ -583,8 +582,7 @@ public class API {
 
 		if (!GT.isSupport(lang)) {
 			if (GT.isSupport(defaultLang)) {
-				DC.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
-				DC.setLang(defaultLang);
+				DC.getTo().setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
 					sendMessage(DC);
 
 				lang = defaultLang;

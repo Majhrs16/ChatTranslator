@@ -22,7 +22,7 @@ public class Toggler {
 		}
 
 		if (player2 == null) {
-			sender.setMessages("&7El jugador &f'&b" + player + "&f' &cno &7esta &cdisponible&f.");
+			sender.getTo().setMessages("&7El jugador &f'&b" + player + "&f' &cno &7esta &cdisponible&f.");
 				API.sendMessage(sender);
 			return;
 		}
@@ -30,7 +30,7 @@ public class Toggler {
 		API.setLang(player2, "disabled");
 		plugin.savePlayers();
 
-		sender.setMessages(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
+		sender.getTo().setMessages(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
 			API.sendMessage(sender);
 	}
 	

@@ -17,7 +17,7 @@ public class Msg implements Listener {
 	public void onMessage(Message event) {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (event == new Message() && event.isCancelled()) // && event.getFather().isCancelled() // Da conflictos con muchas configuraciones.
+				if (event == new Message() && event.isCancelled()) // && event.getTo().isCancelled() // Da conflictos con muchas configuraciones.
 					return;
 
 				API.sendMessage(event);

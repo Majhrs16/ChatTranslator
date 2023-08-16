@@ -18,14 +18,14 @@ import java.util.List;
 public class CoreTranslator extends PlaceholderExpansion {
 	private API API = new API();
 
-	private Pattern sendMessage = Pattern.compile("sendMessage_\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
+	private Pattern sendMessage = Pattern.compile("sendMessage_\\[(\\[.+\\]),? *(\\[.+\\])?\\]", Pattern.CASE_INSENSITIVE);
 	private Pattern broadcast   = Pattern.compile("broadcast_\\[(\\[.+\\]), *(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
 	private Pattern translate   = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private Pattern parser      = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private Pattern lang        = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
 
 	public String getAuthor()     { return "Majhrs16"; }
-	public String getVersion()    { return "b1.3.1"; }
+	public String getVersion()    { return "b1.3.2"; }
 	public String getIdentifier() { return "ct"; }
 
 //	"\\[['\"]?.+['\"]?, *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *[true|false], *['\"]?.+['\"]?, *[true|false], *[true|false]\\]";
@@ -80,21 +80,20 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return getMessageFormatted(player, "&cJugador no encontrado&f.");
 
 		Message console = new Message().valueOf(term_json);
-			console.setFather(from);
-			console.setPlayer(Bukkit.getConsoleSender());
+			console.setSender(Bukkit.getConsoleSender());
 			console.setLang(API.getLang(Bukkit.getConsoleSender()));
-		tos.add(console);
+		from.setTo(console);
+		tos.add(from.clone());
 
 		Message to_model = new Message().valueOf(to_json);
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
-			if(to_player == from.getPlayer())
+			if(to_player == from.getSender())
 				continue;
 
-			Message to = to_model.clone();
-				to.setFather(from);
-				to.setPlayer(to_player);
-				to.setLang(API.getLang(to_player));
-			tos.add(to);
+			from.setTo(to_model.clone());
+				from.getTo().setSender(to_player);
+				from.getTo().setLang(API.getLang(to_player));
+			tos.add(from.clone());
 		}
 
 		for (Message to : tos) {
@@ -107,12 +106,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
 
 				Message alert = util.getDataConfigDefault();
-					alert.getFather().setPlayer(Bukkit.getConsoleSender());
-					alert.getFather().setMessages(String.format("&b%s&f: %s", to.getPlayerName(), msg));
-					alert.getFather().setCancelled(false);
+					alert.setSender(Bukkit.getConsoleSender());
+					alert.setMessages(String.format("&b%s&f: %s", to.getSenderName(), msg));
+					alert.setCancelled(false);
 
-					alert.setPlayer(to.getPlayer());
-					alert.setMessages(msg);
+					alert.getTo().setSender(to.getSender());
+					alert.getTo().setMessages(msg);
 				API.sendMessage(alert);
 			}
 		}
@@ -120,20 +119,20 @@ public class CoreTranslator extends PlaceholderExpansion {
 		return "ok";
 	}
 	public String getMessageFormatted(Player player, String lang_source, String lang_target, String text) {
-		Message to = util.getDataConfigDefault();
-			to.getFather().setLang(lang_source);
+		Message from = util.getDataConfigDefault();
+			from.setLang(lang_source);
 
-			to.setPlayer(player);
-			to.setLang(lang_target);
-			to.setMessages(text);
-		return API.formatMessage(to).getMessageFormat();
+			from.getTo().setSender(player);
+			from.getTo().setLang(lang_target);
+			from.getTo().setMessages(text);
+		return API.formatMessage(from).getMessageFormat();
 	}
 
 	public String getMessageFormatted(Player player, String text) {
 		return getMessageFormatted(player, "es", API.getLang(player), text);
 	}
 
-	public Player getPlayer(String player_name) {
+	public Player getSender(String player_name) {
 		Player player;
 		try {
 			player = Bukkit.getServer().getPlayer(player_name);
@@ -146,24 +145,25 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String sendMessage(Player player, String from_json, String to_json) {
-		Message msg = new Message().valueOf(to_json);
+		Message from = new Message().valueOf(from_json);
+		if (from == null)
+			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
 
-		if (msg == null)
-			return getMessageFormatted(player, "&cJugador to no encontrado&f.");
+		if (to_json != null) {
+			Message to = new Message().valueOf(to_json);
 
-		if (from_json != null) {
-			msg.setFather(new Message().valueOf(from_json));
+			if (to == null)
+				return getMessageFormatted(player, "&cJugador to no encontrado&f.");
 
-			if (msg.getFather() == null)
-				return getMessageFormatted(player, "&cJugador from no encontrado&f.");
+			from.setTo(to);
 		}
 
-		API.sendMessage(msg);
+		API.sendMessage(from);
 		return "ok";
 	}
 
 	public String parseOtherPlayer(String player_name, String placeholder) {
-		Player player = getPlayer(player_name);
+		Player player = getSender(player_name);
 		if (player == null)
 			return null;
 

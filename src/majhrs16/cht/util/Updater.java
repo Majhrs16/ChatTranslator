@@ -27,7 +27,7 @@ public class Updater {
 	public void updateChecker() {
 		CommandSender console = Bukkit.getConsoleSender();
 		Message DC = util.getDataConfigDefault();
-		DC.setPlayer(console);
+		DC.setSender(console);
 		DC.setLang(API.getLang(console));
 
 		try {
@@ -38,19 +38,19 @@ public class Updater {
 			String latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestVersion.length() <= 7) {
 				if (plugin.version.equals(latestVersion)) {
-					DC.setMessages("&a	Estas usando la última versión del plugin <3");
+					DC.getTo().setMessages("&a	Estas usando la última versión del plugin <3");
 				} else {
-					DC.setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));
+					DC.getTo().setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));
 						API.sendMessage(DC);
 
-					DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
+					DC.getTo().setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
 				}
 			} else {
-				DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+				DC.getTo().setMessages("&c	Error mientras se buscaban actualizaciones&f.");
 			}
 
 		} catch (IOException ex) {
-			DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+			DC.getTo().setMessages("&c	Error mientras se buscaban actualizaciones&f.");
 		}
 
 		API.sendMessage(DC);
@@ -63,6 +63,8 @@ public class Updater {
 		FileConfiguration config = plugin.getConfig();
 
 		Message DC = util.getDataConfigDefault();
+			DC.getTo().setSender(Bukkit.getConsoleSender());
+			DC.getTo().setLang(API.getLang(Bukkit.getConsoleSender()));
 
 		String _path = "config-version";
 		if (!config.contains(_path))
@@ -74,16 +76,14 @@ public class Updater {
 		if (config_version_original == 0) {
 			config.set("server-uuid", UUID.randomUUID().toString());
 
-			DC.setPlayer(Bukkit.getConsoleSender());
-			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
 			if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
-				DC.setMessages("&aDetectado Chatty&f.");
+				DC.getTo().setMessages("&aDetectado Chatty&f.");
 					API.sendMessage(DC);
 				cancel_event     = false;
 				clear_recipients = false;
 
 			} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
-				DC.setMessages("&aDetectado ChatManager&f.");
+				DC.getTo().setMessages("&aDetectado ChatManager&f.");
 					API.sendMessage(DC);
 				cancel_event     = false;
 				clear_recipients = false;
@@ -165,15 +165,13 @@ public class Updater {
 		} if (config_version < 2) {
 			Boolean show_native_chat;
 
-			DC.setPlayer(Bukkit.getConsoleSender());
-			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
 			if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
-				DC.setMessages("&aDetectado Chatty&f.");
+				DC.getTo().setMessages("&aDetectado Chatty&f.");
 					API.sendMessage(DC);
 				show_native_chat = true;
 
 			} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
-				DC.setMessages("&aDetectado ChatManager&f.");
+				DC.getTo().setMessages("&aDetectado ChatManager&f.");
 					API.sendMessage(DC);
 				show_native_chat = true;
 			
@@ -234,12 +232,11 @@ public class Updater {
 		plugin.saveConfig();
 
 		if (config_version > config_version_original) {
-			DC.setPlayer(Bukkit.getConsoleSender());
-			DC.setLang(API.getLang(Bukkit.getConsoleSender()));
-			DC.setMessages(String.format(
+			DC.getTo().setMessages(String.format(
 				"&eSe ha actualizado la config de la version &b%s &ea la &b%s&f.",
 				"" + config_version_original,
-				"" + config_version));
+				"" + config_version
+			));
 			API.sendMessage(DC);
 	    }
 	}

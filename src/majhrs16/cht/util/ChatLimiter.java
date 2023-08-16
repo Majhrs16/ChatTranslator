@@ -49,8 +49,8 @@ public class ChatLimiter {
 					int end = Math.min(max_messages_per_tick, chat.size());
 
 					for (Message event : chat.subList(0, end)) {
-						if (event.getPlayer() instanceof Player) {
-							Player player = (Player) event.getPlayer();
+						if (event.getSender() instanceof Player) {
+							Player player = (Player) event.getSender();
 
 							if (spam.getMax() > 0.0F) {
 								if (counts.containsKey(player)) {

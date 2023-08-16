@@ -63,29 +63,30 @@ public class util {
 	}
 
 	public static Message getDataConfigDefault() {
-		Message father = new Message();
-			father.setPlayer(Bukkit.getConsoleSender());
-			father.setMessageFormat("$ct_messages$");
-			father.setCancelledThis(true);
-			father.setLang("es");
-			father.setColorPersonalized(true);
-			father.setFormatMessage(false);
+		Message to = new Message();
+			to.setMessageFormat("$ct_messages$");
+			to.setCancelledThis(false);
+			to.setColor(true);
+			to.setFormatPAPI(false);
 
-		Message msg = new Message();
-			msg.setFather(father);
-			msg.setMessageFormat("$ct_messages$");
-			msg.setCancelledThis(false);
-			msg.setColorPersonalized(true);
-			msg.setFormatMessage(false);
-		return msg;
+		Message from = new Message();
+			from.setTo(to);
+			from.setSender(Bukkit.getConsoleSender());
+			from.setMessageFormat("$ct_messages$");
+			from.setCancelledThis(true);
+			from.setLang("es");
+			from.setColor(true);
+			from.setFormatPAPI(false);
+
+		return from;
 	}
 
-	public static Message createMessage(Message from, CommandSender to_player, String messages, Boolean isCancelled, String lang, String path) {
+	public static Message createMessage(Message to, CommandSender sender, String messages, Boolean isCancelled, String lang, String path) {
 		FileConfiguration config = plugin.getConfig();
 
 		return new Message(
-			from,
-			to_player,
+			to,
+			sender,
 			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")).replace("\\t", "\t") : null,
 			messages,
 			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")).replace("\\t", "\t") : null,

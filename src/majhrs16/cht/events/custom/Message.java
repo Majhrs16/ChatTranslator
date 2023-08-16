@@ -17,12 +17,13 @@ public class Message extends Event implements Cancellable {
 	private ChatTranslator plugin = ChatTranslator.plugin;
 	private static final HandlerList HANDLERS = new HandlerList();
 
-	private Message father;
+
+	private Message to;
 	private CommandSender sender;
 	private String message_format;
+	private String messages;
 	private String tool_tips;
 	private String sounds;
-	private String messages;
 	private boolean isCancelled = false;
 	private String lang;
 	private Boolean color       = true;
@@ -32,7 +33,7 @@ public class Message extends Event implements Cancellable {
 	public Message() {}
 
 	public Message(
-			Message father,
+			Message to,
 			CommandSender sender,
 			String message_format,
 			String messages,
@@ -44,16 +45,16 @@ public class Message extends Event implements Cancellable {
 			Boolean format_papi
 		) {
 
-		setFather(father);
-		setPlayer(sender);
+		setTo(to);
+		setSender(sender);
 		setMessageFormat(message_format);
 		setMessages(messages);
 		setToolTips(tool_tips);
 		setSounds(sounds);
 		setCancelledThis(isCancelled);
 		setLang(lang);
-		setColorPersonalized(color);
-		setFormatMessage(format_papi);
+		setColor(color);
+		setFormatPAPI(format_papi);
 	}
 
 	public static HandlerList getHandlerList() {
@@ -64,13 +65,11 @@ public class Message extends Event implements Cancellable {
 		return HANDLERS;
 	}
 	
-	public boolean isCancelled() {
-		return this.isCancelled;
-	}
+	public boolean isCancelled() { return isCancelled; }
 
 	public void setCancelledThis(boolean isCancelled) { this.isCancelled = isCancelled; }
-	public void setCancelled(boolean isCancelled) {
-		getFather().setCancelledThis(isCancelled); // Explosivo!!
+	public void setCancelled(boolean isCancelled) { // Soporte con CE.
+		getTo().setCancelledThis(isCancelled); // Explosivo!!
 		setCancelledThis(isCancelled);
 	}
 
@@ -84,65 +83,65 @@ public class Message extends Event implements Cancellable {
 		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
 	}
 
-	public void setFather(Message father)               { this.father = father == null ? new Message() : father; }
-	public void setPlayer(CommandSender sender)         { this.sender = sender; }
+	public void setTo(Message to)                       { this.to             = to == null ? new Message() : to; }
+	public void setSender(CommandSender sender)         { this.sender         = sender; }
 	public void setMessageFormat(String message_format) { this.message_format = getChat(message_format, "messages") ; }
-	public void setMessages(String messages)            { this.messages = messages; }
-	public void setToolTips(String tool_tips)           { this.tool_tips = getChat(tool_tips, "toolTips"); }
-	public void setSounds(String sounds)                { this.sounds = getChat(sounds, "sounds"); }
-	public void setLang(String lang)                    { this.lang = lang; }
-	public void setFormatMessage(Boolean format_papi)   { this.format_papi = format_papi; }
-	public void setColorPersonalized(Boolean color)     { this.color = color; }
+	public void setMessages(String messages)            { this.messages       = messages; }
+	public void setToolTips(String tool_tips)           { this.tool_tips      = getChat(tool_tips, "toolTips"); }
+	public void setSounds(String sounds)                { this.sounds         = getChat(sounds, "sounds"); }
+	public void setLang(String lang)                    { this.lang           = lang; }
+	public void setFormatPAPI(Boolean format_papi)      { this.format_papi    = format_papi; }
+	public void setColor(Boolean color)                 { this.color          = color; }
 
 
-	public Message getFather()            { return father; }
-	public CommandSender getPlayer()      { return sender; }
-	public String getPlayerName()         { return sender.getName(); }
+	public Message getTo()                { return to; }
+	public CommandSender getSender()      { return sender; }
+	public String getSenderName()         { return sender.getName(); }
 	public String getMessageFormat()      { return message_format; }
 	public String getMessages()           { return messages; }
 	public String getToolTips()           { return tool_tips; }
 	public String getSounds()             { return sounds; }
 	public String getLang()               { return lang; }
-	public Boolean getFormatMessage()     { return format_papi; }
-	public Boolean getColorPersonalized() { return color; }
+	public Boolean getFormatPAPI()        { return format_papi; }
+	public Boolean getColor()             { return color; }
 
 	public Message clone() {
-		Message DC = new Message();
-			Message father = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
-				father.setPlayer(getFather().getPlayer());
-				father.setMessageFormat(getFather().getMessageFormat());
-				father.setMessages(getFather().getMessages());
-				father.setToolTips(getFather().getToolTips());
-				father.setSounds(getFather().getSounds());
-				father.setCancelledThis(getFather().isCancelled());
-				father.setLang(getFather().getLang());
-				father.setColorPersonalized(getFather().getColorPersonalized());
-				father.setFormatMessage(getFather().getFormatMessage());
-			DC.setFather(father);
+		Message from = new Message();
+			Message to = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
+				to.setSender(getTo().getSender());
+				to.setMessageFormat(getTo().getMessageFormat());
+				to.setMessages(getTo().getMessages());
+				to.setToolTips(getTo().getToolTips());
+				to.setSounds(getTo().getSounds());
+				to.setCancelledThis(getTo().isCancelled());
+				to.setLang(getTo().getLang());
+				to.setColor(getTo().getColor());
+				to.setFormatPAPI(getTo().getFormatPAPI());
+			from.setTo(to);
 
-			DC.setPlayer(getPlayer());
-			DC.setMessageFormat(getMessageFormat());
-			DC.setMessages(getMessages());
-			DC.setToolTips(getToolTips());
-			DC.setSounds(getSounds());
-			DC.setCancelledThis(isCancelled());
-			DC.setLang(getLang());
-			DC.setColorPersonalized(getColorPersonalized());
-			DC.setFormatMessage(getFormatMessage());
-		return DC;
+			from.setSender(getSender());
+			from.setMessageFormat(getMessageFormat());
+			from.setMessages(getMessages());
+			from.setToolTips(getToolTips());
+			from.setSounds(getSounds());
+			from.setCancelledThis(isCancelled());
+			from.setLang(getLang());
+			from.setColor(getColor());
+			from.setFormatPAPI(getFormatPAPI());
+		return from;
 	}
 
 	public String toString() {
 		JSONArray jsonArray = new JSONArray();
-			jsonArray.put(getPlayerName());
+			jsonArray.put(getSenderName());
 			jsonArray.put(getMessageFormat());
 			jsonArray.put(getMessages());
 			jsonArray.put(getToolTips());
 			jsonArray.put(getSounds());
 			jsonArray.put(isCancelled());
 			jsonArray.put(getLang());
-			jsonArray.put(getColorPersonalized());
-			jsonArray.put(getFormatMessage());
+			jsonArray.put(getColor());
+			jsonArray.put(getFormatPAPI());
 		return jsonArray.toString();
 	}
 

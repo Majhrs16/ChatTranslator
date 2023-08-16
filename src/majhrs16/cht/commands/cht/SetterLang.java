@@ -16,12 +16,12 @@ public class SetterLang {
 	public void setLang(Message DC, String lang) {
 		lang = util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
 
-		API.setLang(DC.getPlayer(), lang);
+		API.setLang(DC.getTo().getSender(), lang);
 		plugin.savePlayers();
 
-		DC.setMessageFormat("$ct_messages$ &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
-		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a");
-		DC.setLang(lang);
+		DC.getTo().setMessageFormat("$ct_messages$ &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
+		DC.getTo().setMessages("&7Su idioma ha sido &aestablecido&7 a");
+		DC.getTo().setLang(lang);
 			API.sendMessage(DC);
 	}
 
@@ -36,7 +36,7 @@ public class SetterLang {
 		}
 
 		if (to_player == null) {
-			DC.setMessages("&7El jugador &f'&b" + player + "&f'&c no &7esta&c disponible&f.");
+			DC.getTo().setMessages("&7El jugador &f'&b" + player + "&f'&c no &7esta&c disponible&f.");
 				API.sendMessage(DC);
 			return;
 		}
@@ -48,27 +48,24 @@ public class SetterLang {
 
 		String msg = String.format(
 			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b%s&f.",
-			DC.getPlayerName(),
+			DC.getTo().getSenderName(),
 			to_player.getName(),
 			GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
 		);
 
 		Message from = util.getDataConfigDefault();
-			from.setPlayer(Bukkit.getConsoleSender());
-			from.setLang("es");
-			from.setCancelledThis(true);
 			from.setMessages(msg);
 
 		Message to_model = util.getDataConfigDefault();
-			to_model.setFather(from);
 			to_model.setMessages(msg);
+		from.setTo(to_model);
 
 		Message console = util.getDataConfigDefault();
-			console.setFather(from);
-			console.setPlayer(Bukkit.getConsoleSender());
+			console.setSender(Bukkit.getConsoleSender());
 			console.setLang(API.getLang(Bukkit.getConsoleSender()));
 			console.setMessages(msg);
+		to_model.setTo(console);
 
-		API.broadcast(to_model, console);
+		API.broadcast(from);
 	}
 }

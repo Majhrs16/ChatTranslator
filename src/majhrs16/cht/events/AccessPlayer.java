@@ -22,13 +22,13 @@ public class AccessPlayer implements Listener {
 			return;
 
 		String path = "formats.";
-		Message from     = util.createMessage(null, Bukkit.getConsoleSender(), event.getJoinMessage(), true,  "en", path + "from_entry");
-		Message console  = util.createMessage(from, Bukkit.getConsoleSender(), event.getJoinMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_entry");
-		Message to_model = util.createMessage(from, null,                      event.getJoinMessage(), false, null, path + "to_entry");
+		Message console  = util.createMessage(null,     Bukkit.getConsoleSender(), event.getJoinMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_entry");
+		Message to_model = util.createMessage(console,  null,                      event.getJoinMessage(), false, null, path + "to_entry");
+		Message from     = util.createMessage(to_model, Bukkit.getConsoleSender(), event.getJoinMessage(), true,  "en", path + "from_entry");
 
 		event.setJoinMessage("");
 
-		API.broadcast(to_model, console);
+		API.broadcast(from);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -37,12 +37,12 @@ public class AccessPlayer implements Listener {
 			return;
 
 		String path = "formats.";
-		Message from     = util.createMessage(null, Bukkit.getConsoleSender(), event.getQuitMessage(), true,  "en", path + "from_exit");
-		Message console  = util.createMessage(from, Bukkit.getConsoleSender(), event.getQuitMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_exit");
-		Message to_model = util.createMessage(from, null,                      event.getQuitMessage(), false, null, path + "to_exit");
+		Message console  = util.createMessage(null,     Bukkit.getConsoleSender(), event.getQuitMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_exit");
+		Message to_model = util.createMessage(console,  null,                      event.getQuitMessage(), false, null, path + "to_exit");
+		Message from     = util.createMessage(to_model, Bukkit.getConsoleSender(), event.getQuitMessage(), true,  "en", path + "from_exit");
 
 		event.setQuitMessage("");
 
-		API.broadcast(to_model, console);
+		API.broadcast(from);
 	}
 }
