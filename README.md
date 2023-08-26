@@ -1,25 +1,23 @@
 # ChatTranslator
 
-ChatTranslator es un plugin de Minecraft que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
+ChatTranslator es un plugin para Minecraft 1.8 - 1.20.1 que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
 
 ## Características
 
-- Los jugadores o consola pueden especificar su idioma utilizando el comando: `/cht lang [jugador] <código de idioma>`.
-- Utiliza la API de [Google](https://www.google.com/) [Translate](https://translate.google.com/) para traducir el chat, la consola y mas al idioma establecido.
-- En caso de no tener conexión a internet, se añade el prefijo `[!]` a la variable local: `$ct_messages$`.
-- Configuración MUY personalizable para el formato del chat a través de config.formats.
-- Opcionalmente se puede utilizar las dependencias:
-  - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)) Pero seria necesario instalar la extensión player para evitar
-    problemas en el servidor y automatizar la deteccion del idioma :3
-  - [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)) Para traducir carteles y futuramente mas cosas! (Por limitaciones externas, solo hasta la 1.19).
-  - [ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)) Para condicionar el chat.
-- Detección automática del idioma del jugador(Requiere PlaceholderAPI).
-- Funciones personalizables y desactivables.
-- Soporte con Bungeecord con bases de datos.
-- Soporte para otros plugins de chat:
-  - Soporte parcial para [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/) y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) atravez del ejemplo de config #3,
-  - Atravez del evento majhrs16.cht.events.custom.Message,
-  - Soporte para DiscordSRV.
+- Utilización de la API de [Google Translate](https://translate.google.com/) para llevar a cabo traducciones al idioma establecido, abarcando el chat y los mensajes de la consola, entre otros.
+- Configuración altamente personalizable para adecuar el formato del chat a las preferencias individuales, a través de `config.formats`.
+- En situaciones en las que la conexión a internet no esté disponible, se añade el prefijo `[!]` a la variable local `ct_messages`.
+- Los jugadores y la consola pueden especificar su idioma utilizando el comando `/cht lang [jugador] <código de idioma>`.
+- Capacidades para la traducción de carteles, y aún más características planificadas para futuras actualizaciones.
+- Funciones altamente personalizables que se pueden activar o desactivar según las necesidades.
+- Compatibilidad con BungeeCord y la integración de bases de datos para un rendimiento óptimo.
+- Detección automática del idioma del jugador para facilitar la comunicación.
+- Opcionalmente, se puede aprovechar el potencial de las siguientes dependencias:
+  - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/).
+  - [ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/), brindando una manera sencilla de condicionar los chats.
+- Soporte parcial para otros plugins de chat, tales como:
+  - [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) y [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
+  - Mediante el evento `majhrs16.cht.events.custom.Message`.
 
 ## Instalación
 
@@ -33,11 +31,11 @@ Una vez instalado, puedes personalizar la configuración de ChatTranslator modif
 
 ## Uso
 
-ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y si estan cumplidas todas las dependencias opcionales tendras una experiencia increible! =D
+ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y una vez empiezas a chatear, se traduciran entre si automaticamente(Por defecto, dependiendo del idioma de su Minecraft).
 
 Si deseas cambiar tu idioma al automatico, puedes hacerlo usando el comando `/cht lang [jugador] auto`.
 
-## Compilación
+## Compilación(Para desarrolladores)
 
 Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
@@ -58,10 +56,7 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
    - [ConditionalEvents.jar](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)
    - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/)
-   - [Spigot 1.15.2.jar](https://getbukkit.org/download/spigot)
-   - [ProtocolLib.jar](https://www.spigotmc.org/resources/protocollib.1997/)
-   - [org.json...jar](https://repo1.maven.org/maven2/org/json/org.json/chargebee-1.0/)
-   - [MySQL...jar](https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.31/)
+   - [Spigot 1.16.5.jar](https://getbukkit.org/download/spigot)
 
 5. Y ya por ultimo, ejecuta el compile.bat:
 
