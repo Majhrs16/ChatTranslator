@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class ChatLimiter {
 
 					config = plugin.getConfig();
 
-					if (util.IF(config, "debug"))
+					if (Config.DEBUG.IF())
 						Bukkit.getConsoleSender().sendMessage("Debug 11: " + spam.getCount() + ", " + spam.getMax());
 
 					spam = new CacheSpam(0.0F,
@@ -58,7 +59,7 @@ public class ChatLimiter {
 										count.setCount(count.getCount() + 0.0001F);
 									counts.put(player, count);
 
-									if (util.IF(config, "debug"))
+									if (Config.DEBUG.IF())
 										Bukkit.getConsoleSender().sendMessage("Debug 20: " + count.getCount() + ", " + spam.getCount() + ", " + spam.getMax());
 
 									if (count.getCountFloat() >= spam.getMaxFloat()) {
@@ -76,7 +77,7 @@ public class ChatLimiter {
 						Bukkit.getPluginManager().callEvent(event);
 					}
 
-					if (util.IF(config, "debug"))
+					if (Config.DEBUG.IF())
 						Bukkit.getConsoleSender().sendMessage("Debug 30: " + chat.size());
 
 					chat.subList(0, end).clear();

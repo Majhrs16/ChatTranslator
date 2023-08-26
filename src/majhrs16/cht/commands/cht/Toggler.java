@@ -1,7 +1,7 @@
 package majhrs16.cht.commands.cht;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
+import majhrs16.cht.translator.API;
 import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.command.CommandSender;
@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 
 public class Toggler {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API               = new API();
 
 	public void ToggleOffPlayer(Message sender, String player) {
 		Player player2;

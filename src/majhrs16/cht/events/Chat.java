@@ -1,40 +1,41 @@
 package majhrs16.cht.events;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.Bukkit;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
+import majhrs16.cht.translator.API;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
 
 public class Chat implements Listener {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API = new API();
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
 		if (!plugin.enabled || event.isCancelled())
 			return;
 
-		FileConfiguration config = plugin.getConfig();
-
-		if (util.IF(config, "show-native-chat.cancel-event")) {
+		if (Config.NativeChat.CANCEL.IF()) {
 			event.setCancelled(true);
 		}
 
-		String path = "formats.";
-		Message console  = util.createMessage(null,     Bukkit.getConsoleSender(), event.getMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "console");
-		Message to_model = util.createMessage(console,  null,                      event.getMessage(), false, null,                                   path + "to");
-		Message from     = util.createMessage(to_model, event.getPlayer(),         event.getMessage(), false, API.getLang(event.getPlayer()),         path + "from");
+		String from_lang = API.getLang(event.getPlayer());
+		Message to_model = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
 
-		API.broadcast(from);
+		Message from_console = to_model.clone();
+			Message console  = util.createChat(Bukkit.getConsoleSender(), event.getMessage(), from_lang, API.getLang(Bukkit.getConsoleSender()), "console");
 
-		if (util.IF(config, "show-native-chat.clear-recipients")) {
+			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
+
+		API.broadcast(to_model, tos -> tos.add(from_console));
+
+		if (Config.NativeChat.CLEAR.IF()) {
 			event.getRecipients().clear();
 		}
 	}

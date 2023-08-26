@@ -8,18 +8,18 @@ import majhrs16.cht.commands.cht.MainCommand;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.storage.data.SQLite;
 import majhrs16.cht.events.AccessPlayer;
-import majhrs16.cht.translator.API.API;
-import majhrs16.cht.storage.data.MySQL;
 import majhrs16.cht.events.SignHandler;
+import majhrs16.cht.storage.data.MySQL;
+import majhrs16.cht.bool.Dependencies;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cot.CoreTranslator;
+import majhrs16.cht.translator.API;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.Updater;
 import majhrs16.cht.events.Chat;
 import majhrs16.cht.events.Msg;
 import majhrs16.cht.util.util;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
 
@@ -27,28 +27,27 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 
 public class ChatTranslator extends JavaPlugin {
-	private API API;
 	private YAML signs;
 	private MySQL mysql;
 	private YAML config;
 	private YAML players;
 	private SQLite sqlite;
 	public Boolean enabled;
-	public static ChatTranslator plugin;
-	PluginDescriptionFile pdffile     = getDescription();
-	public String name                = "&aChat&9Translator";
-	public String version             = "b" + pdffile.getVersion();
-	public String sep                 = "&4<------------------------->";
-	public String title               = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
-	public String title_UTF8          = "\n"
+	PluginDescriptionFile pdffile  = getDescription();
+	public final String name       = "&aChat&9Translator";
+	public final String version    = "&bv" + pdffile.getVersion().replace(".", "&f.&b");
+	public final String sep        = "&c<&4-------------------------&c>";
+	public final String title      = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
+	public final String title_UTF8 = "\n"
 		+ "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗\n"
 		+ "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\n"
 		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\n"
 		+ "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝";
 
+	public static ChatTranslator plugin;
+
 	public void onEnable() {
 		plugin  = this;
-		API     = new API();
 
 		signs   = new YAML(plugin, "signs.yml");
 		config  = new YAML(plugin, "config.yml");
@@ -67,48 +66,53 @@ public class ChatTranslator extends JavaPlugin {
 		registerEvents();
 		new ChatLimiter();
 
-		CommandSender console = Bukkit.getConsoleSender();
-		Message DC = util.getDataConfigDefault();
-			DC.getTo().setSender(console);
-			DC.getTo().setLang(API.getLang(console));
+		Message from = util.getDataConfigDefault();
 
-		DC.getTo().setMessages(sep);
-			API.sendMessage(DC);
+		from.setMessages(sep);
+			API.sendMessage(from);
 
-//		DC.getTo().setMessages(" "); API.sendMessage(DC);
+		if (Dependencies.ProtocolLib.exist())
+			if (Bukkit.getVersion().contains("1.20")) {
+				from.setMessages("&eAdvertencia&f: &cProtocolLib no esta soportado en la 1.20.x&f(&7Hasta la fecha&f: &b12/08/2023&f), &eNo se asegura que funcione&f...");
+					API.sendMessage(from);
+			}
+
+//		from.setMessages(" "); API.sendMessage(from);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
-			DC.getTo().setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en UTF&f-&c8&f.");
-				API.sendMessage(DC);
+			from.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en &BUTF&f-&b8&f.");
+				API.sendMessage(from);
 
-			console.sendMessage(API.getColor(title_UTF8));
+			Bukkit.getConsoleSender().sendMessage(API.getColor(title_UTF8));
 
-//			DC.getTo().setMessages(" "); API.sendMessage(DC);
+//			from.setMessages(" "); API.sendMessage(from);
 
 		} else {
-			DC.getTo().setMessages("&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&c en UTF&f-&c8&f.");
-				API.sendMessage(DC);
+			from.setMessages("&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&e en &bUTF&f-&b8&f.");
+				API.sendMessage(from);
 
-			DC.getTo().setMessages(title);
-				API.sendMessage(DC);
+			from.setMessages(title);
+				API.sendMessage(from);
 		}
 
-		DC.getTo().setMessages(String.format("&a	Activado&f, &7Version&f: &b%s&f.", version));
-			API.sendMessage(DC);
+		from.setMessages(String.format("&a	Activado&f, &7Version&f: &b%s&f.", version));
+			API.sendMessage(from);
 
-		if (!util.checkPAPI()) {
-//			DC.getTo().setMessages(" "); API.sendMessage(DC);
+/*
+		if (!Dependencies.PAPI.exist()) {
+//			from.setMessages(" "); API.sendMessage(from);
 
-			DC.getTo().setMessages("&c	No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
-				API.sendMessage(DC);
+			from.setMessages("&c	No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
+				API.sendMessage(from);
 		}
+*/
 
-		new Updater().updateChecker();
+		new Updater().updateChecker(Bukkit.getConsoleSender());
 
-//		DC.getTo().setMessages(" "); API.sendMessage(DC);
+//		from.setMessages(" "); API.sendMessage(from);
 
-		DC.getTo().setMessages(sep);
-			API.sendMessage(DC);
+		from.setMessages(sep);
+			API.sendMessage(from);
 
 		enabled = true;
 	}
@@ -116,14 +120,12 @@ public class ChatTranslator extends JavaPlugin {
 	public void onDisable() {
 		majhrs16.cht.util.ChatLimiter.chat.clear();
 
-		Message DC = util.getDataConfigDefault();
-			DC.getTo().setSender(Bukkit.getConsoleSender());
-			DC.getTo().setLang(API.getLang(Bukkit.getConsoleSender()));
+		Message from = util.getDataConfigDefault();
 
-		DC.getTo().setMessages(sep);
-			API.sendMessage(DC);
+		from.setMessages(sep);
+			API.sendMessage(from);
 
-//		DC.getTo().setMessages(" "); API.sendMessage(DC);
+//		from.setMessages(" "); API.sendMessage(from);
 
 		switch (config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
@@ -133,12 +135,12 @@ public class ChatTranslator extends JavaPlugin {
 			case "sqlite":
 				try {
 					getMySQL().disconnect();
-					DC.getTo().setMessages(title + "&aDesconectado de SQLite&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&aDesconectado de SQLite&f.");
+						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages(title + "&4Error al desconectar a SQLite&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&4Error al desconectar a SQLite&f.");
+						API.sendMessage(from);
 					return;
 				}
 				break;
@@ -146,24 +148,24 @@ public class ChatTranslator extends JavaPlugin {
 			case "mysql":
 				try {
 					getMySQL().disconnect();
-					DC.getTo().setMessages(title + "&aDesconectado de MySQL&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&aDesconectado de MySQL&f.");
+						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages(title + "&4Error al desconectar a MySQL&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&4Error al desconectar a MySQL&f.");
+						API.sendMessage(from);
 					return;
 				}
 				break;
 		}
 
-		DC.getTo().setMessages(title + "&cDesactivado&f.");
-			API.sendMessage(DC);
+		from.setMessages(title + "&cDesactivado&f.");
+			API.sendMessage(from);
 
-//		DC.getTo().setMessages(" "); API.sendMessage(DC);
+//		from.setMessages(" "); API.sendMessage(from);
 
-		DC.getTo().setMessages(sep);
-			API.sendMessage(DC);
+		from.setMessages(sep);
+			API.sendMessage(from);
 
 		enabled = false;
 	}
@@ -175,37 +177,21 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerEvents() {
-		PluginManager pe = getServer().getPluginManager();
-		pe.registerEvents(new AccessPlayer(), this);
-		pe.registerEvents(new Chat(), this);
-		pe.registerEvents(new Msg(), this);
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new AccessPlayer(), this);
+		pm.registerEvents(new Chat(), this);
+		pm.registerEvents(new Msg(), this);
 
-		if (util.checkPAPI())
+//		if (Dependencies.ProtocolLib.exist()) {
+			pm.registerEvents(new SignHandler(), this);
+//		}
+
+		if (Dependencies.PAPI.exist())
 			new CoreTranslator().register(); // Expansion de ChT para PAPI: CoT.
-
-		if (util.checkPL()) {
-			if (Bukkit.getVersion().contains("1.20")) {
-				CommandSender console = Bukkit.getConsoleSender();
-				Message DC = util.getDataConfigDefault();
-					DC.getTo().setSender(console);
-					DC.getTo().setLang(API.getLang(console));
-
-				DC.getTo().setMessages("&eAdvertencia&f: &cProtocolLib no esta soportado en la 1.20.x&f(&7Hasta la fecha&f: &b12/08/2023&f), &eNo se asegura que funcione&f...");
-					API.sendMessage(DC);
-			}
-
-			SignHandler sh = new SignHandler();
-			pe.registerEvents(sh, this);
-			sh.SignUpdater();
-		}
 	}
 
 	public boolean registerStorage() {
-		CommandSender console = Bukkit.getConsoleSender();
-
-		Message DC = util.getDataConfigDefault();
-			DC.getTo().setSender(console);
-			DC.getTo().setLang(API.getLang(console));
+		Message from = util.getDataConfigDefault();
 
 		String storageType = config.get().getString("storage.type").toLowerCase();
 		switch (storageType) {
@@ -219,44 +205,44 @@ public class ChatTranslator extends JavaPlugin {
 					sqlite.connect();
 					sqlite.createTable();
 
-					DC.getTo().setMessages(title + "&aConectado a SQLite&f.");
-					DC.getTo().setLang(API.getLang(console));
-						API.sendMessage(DC);
+					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
+					from.setMessages(title + "&aConectado a SQLite&f.");
+						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages(title + "&4Error al conectar a SQLite&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&4Error al conectar a SQLite&f.");
+						API.sendMessage(from);
 					return true;
 				}
 				break;
 
 			case "mysql":
 				mysql.set(
-					config.get().getString("storage.host"),
-					config.get().getInt("storage.port"),
-					config.get().getString("storage.database"),
-					config.get().getString("storage.user"),
-					config.get().getString("storage.password")
+					getConfig().getString("storage.host"),
+					getConfig().getInt("storage.port"),
+					getConfig().getString("storage.database"),
+					getConfig().getString("storage.user"),
+					getConfig().getString("storage.password")
 				);
 				try {
 					mysql.connect();
 					mysql.createTable();
 
-					DC.getTo().setMessages(title + "&aConectado a MySQL&f.");
-					DC.getTo().setLang(API.getLang(console));
-						API.sendMessage(DC);
+					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
+					from.setMessages(title + "&aConectado a MySQL&f.");
+						API.sendMessage(from);
 
 				} catch (SQLException e) {
 					e.printStackTrace();
-					DC.getTo().setMessages(title + "&4Error al conectar a MySQL&f.");
-						API.sendMessage(DC);
+					from.setMessages(title + "&4Error al conectar a MySQL&f.");
+						API.sendMessage(from);
 					return true;
 				}
 				break;
 
 			default:
-				DC.getTo().setMessages(title + "&f[&4ERR000&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
-					API.sendMessage(DC);
+				from.setMessages(title + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+					API.sendMessage(from);
 		}
 		
 		return false;
@@ -286,31 +272,19 @@ public class ChatTranslator extends JavaPlugin {
 				break;
 
 			case "sqlite":
-				sqlite.set(null, 0, config.get().getString("storage.database"), null, null);
 				sqlite.disconnect();
 				registerStorage();
 				break;
 
 			case "mysql":
-				mysql.set(
-					config.get().getString("storage.host"),
-					config.get().getInt("storage.port"),
-					config.get().getString("storage.database"),
-					config.get().getString("storage.user"),
-					config.get().getString("storage.password")
-				);
 				mysql.disconnect();
 				registerStorage();
 				break;
 
 			default:
-				CommandSender console = Bukkit.getConsoleSender();
-
-				Message DC = util.getDataConfigDefault();
-					DC.getTo().setSender(console);
-					DC.getTo().setMessages(title + "&f[&4ERR000&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
-					DC.getTo().setLang(API.getLang(console));
-				API.sendMessage(DC);
+				Message from = util.getDataConfigDefault();
+					from.setMessages(title + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+				API.sendMessage(from);
 		}
 
 		enabled = true;

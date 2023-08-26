@@ -4,13 +4,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.translator.API;
 import majhrs16.cht.util.util;
 
 public class HelperCommand {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API	              = new API();
 
 	public String[] help = new String[] {
 		plugin.title + "\n"
@@ -19,15 +18,15 @@ public class HelperCommand {
 			+ "&aMuestra este mismo mensaje de ayuda&f.",
 		"",
 		"&e  lang &f[&6player&f] &f<&6lang&f>\n"
-			+ "&7Especifique con su codigo de idioma&f, &apara traducir el chat a su gusto&f,\n"
+			+ "&7Especifique con su &bcodigo de idioma&f, &apara traducir el chat a su gusto&f,\n"
 			+ "&f  (&7Independientemente de su lenguaje en el Minecraft&f)\n"
 			+ "\n"
 			+ "&aTrucos&f:\n"
 			+ "&7  Puede poner &bauto &7como codigo para volver a la\n"
 			+ "&7    deteccion automatica del idioma de su Minecraft," // En ingame al traducir el ultimo &f, se bugea como x 26
 			+ "\n"
-			+ "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la\n"
-			+ "&7    traduccion automatica para el jugador especificado&f.",
+			+ "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la traduccion\n"
+			+ "&7    automatica para el jugador especificado&f.",
 		"",
 		"&e  version\n"
 			+ "&aVisualizar version&f.",
@@ -62,14 +61,14 @@ public class HelperCommand {
 				description = null;
 
 			Message DC = util.getDataConfigDefault();
-				DC.getTo().setSender(sender);
-				DC.getTo().setMessageFormat(title);
-				DC.getTo().setMessages("");
+				DC.setSender(sender);
+				DC.setMessageFormat(title);
+				DC.setMessages("");
 				if (description != null)
-					DC.getTo().setToolTips(sender instanceof Player ? description : "	" + description.replace("\n", "\n\t"));
+					DC.setToolTips(sender instanceof Player ? description : "	" + description.replace("\n", "\n\t"));
 //					Limitacino de la API, siosi necesitaremos agregar config.formats.<grupo>.toolTipsFormat, ademas de agregar %ct_tooltips$...
 //					O quizas no...
-				DC.getTo().setLang(API.getLang(sender));
+				DC.setLangTarget(API.getLang(sender));
 			API.sendMessage(DC);
 		}
 	}

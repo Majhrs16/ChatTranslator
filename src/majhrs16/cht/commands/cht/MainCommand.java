@@ -6,24 +6,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
+import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.translator.API;
 import majhrs16.cht.util.Updater;
+import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
 
 public class MainCommand implements CommandExecutor {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API               = new API();
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		FileConfiguration config = plugin.getConfig();
 		String lang = API.getLang(sender);
 
 		Message DC = util.getDataConfigDefault();
-			DC.getTo().setSender(sender);
-			DC.getTo().setLang(lang);
+			DC.setSender(sender);
+			DC.setLangTarget(lang);
 
-		if (util.IF(config, "debug")) {
+		if (Config.DEBUG.IF()) {
 			System.out.println("Debug, Name: " + sender.getName());
 			System.out.println("Debug, Lang: " + lang);
 		}
@@ -41,7 +42,7 @@ public class MainCommand implements CommandExecutor {
 				if (!plugin.enabled)
 					return false;
 
-				DC.getTo().setMessages("&7Version&f: &a" + plugin.version);
+				DC.setMessages(plugin.title + plugin.version);
 					API.sendMessage(DC);
 				return true;
 
@@ -49,8 +50,8 @@ public class MainCommand implements CommandExecutor {
 				if (!plugin.enabled)
 					return false;
 
-				if (!sender.hasPermission("ChatTranslator.admin")) {
-					DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+				if (!Permissions.chattranslator.ADMIN.IF(sender)) {
+					DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 						API.sendMessage(DC);
 					return false;
 				}
@@ -71,8 +72,8 @@ public class MainCommand implements CommandExecutor {
 							return true;
 
 						case 3:  // /ct lang Majhrs16 es
-							if (!sender.hasPermission("ChatTranslator.admin")) {
-								DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+							if (!Permissions.chattranslator.ADMIN.IF(sender)) {
+								DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 									API.sendMessage(DC);
 								return false;
 							}
@@ -82,20 +83,20 @@ public class MainCommand implements CommandExecutor {
 
 						default:
 							util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
-							DC.getTo().setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
+							DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
 								API.sendMessage(DC);
 							return false;
 					}
 
 				} catch (IllegalArgumentException e) {
-					DC.getTo().setMessages(e.getMessage());
+					DC.setMessages(e.getMessage());
 						API.sendMessage(DC);
 					return false;
 				}
 
 			case "toggle":
-				if (!sender.hasPermission("ChatTranslator.admin")) {
-					DC.getTo().setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
+				if (!Permissions.chattranslator.ADMIN.IF(sender)) {
+					DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 						API.sendMessage(DC);
 					return false;
 				}
@@ -116,13 +117,13 @@ public class MainCommand implements CommandExecutor {
 				}
 
 			case "reset":
-				DC.getTo().setMessages("&aRestableciendo la config&f...");
+				DC.setMessages("&aRestableciendo la config&f...");
 					API.sendMessage(DC);
 
 				plugin.resetConfig();
 				new Updater().updateConfig();
 
-				DC.getTo().setMessages("&aSe ha restablecido la config exitosamente&f.");
+				DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
 					API.sendMessage(DC);
 				return true;
 
@@ -130,7 +131,7 @@ public class MainCommand implements CommandExecutor {
 				if (!plugin.enabled)
 					return false;
 
-				DC.getTo().setMessages("&7Ese comando &cno &7existe&f!");
+				DC.setMessages("&7Ese comando &cno &7existe&f!");
 					API.sendMessage(DC);
 				return false;
 		}

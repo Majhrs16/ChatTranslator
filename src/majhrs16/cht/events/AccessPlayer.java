@@ -8,41 +8,44 @@ import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Config;
+import majhrs16.cht.bool.Permissions;
+import majhrs16.cht.translator.API;
+import majhrs16.cht.util.Updater;
 import majhrs16.cht.util.util;
 
 public class AccessPlayer implements Listener {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API = new API();
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onExit(PlayerJoinEvent event) {
-		if (!plugin.enabled)
+	public void onEntry(PlayerJoinEvent event) {
+		if (!plugin.enabled || !Config.TranslateOthers.ACCESS.IF())
 			return;
 
-		String path = "formats.";
-		Message console  = util.createMessage(null,     Bukkit.getConsoleSender(), event.getJoinMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_entry");
-		Message to_model = util.createMessage(console,  null,                      event.getJoinMessage(), false, null, path + "to_entry");
-		Message from     = util.createMessage(to_model, Bukkit.getConsoleSender(), event.getJoinMessage(), true,  "en", path + "from_entry");
+//		Message console  = util.createChat(Bukkit.getConsoleSender(), event.getJoinMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "entry");
+//			console.setCancelledThis(true); // Evitar duplicacion del mensaje.
+		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getJoinMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "entry");
 
 		event.setJoinMessage("");
 
-		API.broadcast(from);
+		API.broadcast(to_model);
+
+		if (Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
+			new Updater().updateChecker(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onEntry(PlayerQuitEvent event) {
-		if (!plugin.enabled)
+	public void onExit(PlayerQuitEvent event) {
+		if (!plugin.enabled || !Config.TranslateOthers.ACCESS.IF())
 			return;
 
-		String path = "formats.";
-		Message console  = util.createMessage(null,     Bukkit.getConsoleSender(), event.getQuitMessage(), false, API.getLang(Bukkit.getConsoleSender()), path + "to_exit");
-		Message to_model = util.createMessage(console,  null,                      event.getQuitMessage(), false, null, path + "to_exit");
-		Message from     = util.createMessage(to_model, Bukkit.getConsoleSender(), event.getQuitMessage(), true,  "en", path + "from_exit");
+//		Message console  = util.createChat(Bukkit.getConsoleSender(), event.getQuitMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "exit");
+//			console.setCancelledThis(true); // Evitar duplicacion del mensaje.
+		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getQuitMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "exit");
 
 		event.setQuitMessage("");
 
-		API.broadcast(from);
+		API.broadcast(to_model); // tos -> tos.add(console));
 	}
 }

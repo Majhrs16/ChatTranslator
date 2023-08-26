@@ -1,14 +1,18 @@
-package majhrs16.cht.translator.API;
+package majhrs16.cht.translator;
 
 import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.bool.Dependencies;
+import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Config;
 import majhrs16.lib.utils.Str;
 import majhrs16.cht.util.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -19,6 +23,9 @@ import net.md_5.bungee.api.ChatColor;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
+import java.util.function.Consumer;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.sql.SQLException;
@@ -27,55 +34,62 @@ import java.util.UUID;
 import java.util.List;
 
 public class API {
-	private ChatTranslator plugin = ChatTranslator.plugin;
-	public GoogleTranslator GT    = new GoogleTranslator();
+	private static  ChatTranslator plugin = ChatTranslator.plugin;
+	
+	private static Pattern sub_variables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
+	private static Pattern color_hex     = Pattern.compile("#[a-f0-9]{6}", Pattern.CASE_INSENSITIVE);
+	private static Pattern variables     = Pattern.compile("[\\%\\$][A-Z0-9_]+[\\%\\$]"); // ARREGLR EL lowercase EXCESIVO!!
 
-	private static Pattern variables    = Pattern.compile("[\\%\\$][a-z0-9_]+[\\%\\$]", Pattern.CASE_INSENSITIVE);
-	private static Pattern subVariables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
-	private static Pattern colorsHex    = Pattern.compile("#[a-f0-9]{6}", Pattern.CASE_INSENSITIVE);
+	public static GoogleTranslator GT = new GoogleTranslator();
 
-	public String parseSubVarables(Player player, String input) {
-//			Procesa sub variables de PAPI.
 
+	public static String parseSubVarables(Player player, String input) {
 		Matcher SubVar;
-		while ((SubVar = subVariables.matcher(input)).find())
+		while ((SubVar = sub_variables.matcher(input)).find())
 			input = input.replace(SubVar.group(0), PlaceholderAPI.setPlaceholders(player, "%" + SubVar.group(1) + "%"));
 		return  PlaceholderAPI.setPlaceholders(player, input);
 	}
 
-	public String convertVariablesToLowercase(String input) {
-		String output = input;
+/*	public static String parseSubVarables(Player player, String input) {
+		Matcher SubVar = sub_variables.matcher(input);
+		StringBuffer result = new StringBuffer();
 
-		Matcher matcher;
-		while ((matcher = variables.matcher(input)).find()) {
-			input = input.replace(matcher.group(0), "");
-			output = output.replace(matcher.group(0), matcher.group(0).toLowerCase());
+		while (SubVar.find()) {
+			String replacement = PlaceholderAPI.setPlaceholders(player, "%" + SubVar.group(1) + "%");
+			SubVar.appendReplacement(result, Matcher.quoteReplacement(replacement));
 		}
 
-		return output;
+		SubVar.appendTail(result);
+	    return result.toString();
+	}*/
+
+	public static String convertVariablesToLowercase(String input) {
+		Matcher matcher = variables.matcher(input);
+		while (matcher.find())
+			input = input.replace(matcher.group(0), matcher.group(0).toLowerCase());
+		return input;
 	}
 
-	public String getColor(String text) {
+	public static String getColor(String text) {
 //			Convierte el color RGB y tradicional a un formato visible.
 
 		String version = Bukkit.getVersion();
-		if (version.contains("1.16") && 
-				version.contains("1.17") && 
-				version.contains("1.18") && 
-				version.contains("1.19") && 
+		if (version.contains("1.16") &&
+				version.contains("1.17") &&
+				version.contains("1.18") &&
+				version.contains("1.19") &&
 				version.contains("1.20")) {
 			Matcher matcher;
-			while ((matcher = colorsHex.matcher(text)).find())
-				text = text.replace(matcher.group(0), "" + ChatColor.valueOf(matcher.group(0)));
+			while ((matcher = color_hex.matcher(text)).find())
+				text = text.replace(matcher.group(0), "" + ChatColor.of(matcher.group(0)));
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', text);
 	}
 
-	public Message formatMessage(Message DC) {
+	public static Message formatMessage(Message DC) {
 //			Este formateador basicamente remplaza (sub)vriables PAPI y locales, colorea el chat y/o el formato de este, tambien para los tooltips, y ya por ultimo traduce el mensaje. 
 
-		FileConfiguration config = plugin.getConfig();
 		DC = DC.clone(); // se clona para evitar sobreescrituras en el evento.
 
 		Message from               = DC;
@@ -83,45 +97,45 @@ public class API {
 		String from_message_format = from.getMessageFormat();
 		String from_messages       = from.getMessages();
 		String from_tool_tips      = from.getToolTips();
-		String lang_source         = from.getLang();
+		String from_lang_source    = from.getLangSource();
+		String from_lang_target    = from.getLangTarget();
 
 		Message to               = from.getTo();
 		CommandSender to_player  = to.getSender();
 		String to_message_format = to.getMessageFormat();
 		String to_messages       = to.getMessages();
 		String to_tool_tips      = to.getToolTips();
-		String lang_target       = to.getLang();
+		String to_lang_source    = to.getLangSource();
+		String to_lang_target    = to.getLangTarget();
 
 		Boolean color = to.getColor();
 		Boolean papi  = to.getFormatPAPI();
 
-		String from_messages_original = from_messages;
-
 		if (from_message_format != null)
 			from_message_format = convertVariablesToLowercase(from_message_format);
-
+	
 		if (to_message_format != null)
 			to_message_format   = convertVariablesToLowercase(to_message_format);
 
-		if (lang_source != null && lang_target != null) {
+		if (from_lang_source != null && to_lang_target != null) {
 			if (from_message_format != null) {
-				from_message_format = from_message_format.replace("%ct_lang_source%", lang_source);
-				from_message_format = from_message_format.replace("$ct_lang_target$", lang_target);
+				from_message_format = from_message_format.replace("%ct_lang_source%", from_lang_source);
+				from_message_format = from_message_format.replace("$ct_lang_target$", to_lang_target);
 			}
 
 			if (from_tool_tips != null) {
-				from_tool_tips = from_tool_tips.replace("%ct_lang_source%", lang_source);
-				from_tool_tips = from_tool_tips.replace("$ct_lang_target$", lang_target);
+				from_tool_tips = from_tool_tips.replace("%ct_lang_source%", from_lang_source);
+				from_tool_tips = from_tool_tips.replace("$ct_lang_target$", to_lang_target);
 			}
 
 			if (to_message_format != null) {
-				to_message_format = to_message_format.replace("%ct_lang_source%", lang_source);
-				to_message_format = to_message_format.replace("$ct_lang_target$", lang_target);
+				to_message_format = to_message_format.replace("%ct_lang_source%", from_lang_source);
+				to_message_format = to_message_format.replace("$ct_lang_target$", to_lang_target);
 			}
 
 			if (to_tool_tips != null) {
-				to_tool_tips = to_tool_tips.replace("%ct_lang_source%", lang_source);
-				to_tool_tips = to_tool_tips.replace("$ct_lang_target$", lang_target);
+				to_tool_tips = to_tool_tips.replace("%ct_lang_source%", from_lang_source);
+				to_tool_tips = to_tool_tips.replace("$ct_lang_target$", to_lang_target);
 			}
 		}
 
@@ -165,7 +179,7 @@ public class API {
 			to_tool_tips = to_tool_tips.replace("$ct_messages$", "x01");
 		}
 
-		if (util.checkPAPI() && papi) {
+		if (Dependencies.PAPI.exist() && papi) {
 			Player _from_player, _to_player;
 
 			if (from_player instanceof Player)
@@ -201,19 +215,30 @@ public class API {
 			}
 		}
 
-		if (lang_source != null && lang_target != null
-				&& !lang_source.equals("off") && !lang_target.equals("off")
-				&& !lang_source.equals(lang_target)) {
+		if (from_lang_source != null
+				&& from_lang_target != null
+				&& !from_lang_source.equals("off")
+				&& !from_lang_target.equals("off")
+				&& !from_lang_source.equals(from_lang_target)) {
 
-			if (from_messages != null && from_message_format != null && from_message_format.contains("x01"))
-				from_messages = GT.translate(from_messages, lang_source, lang_target);
-			if (to_messages != null && to_message_format != null && to_message_format.contains("x01")) //  && to_message_format.contains("$ct_messages$")
-				to_messages = GT.translate(to_messages, lang_source, lang_target);
+			if (from_messages != null && from_message_format != null && from_message_format.contains("x00"))
+				from_messages = GT.translate(from_messages, from_lang_source, from_lang_target);
 
 			if (from_tool_tips != null)
-				from_tool_tips = GT.translate(from_tool_tips, lang_source, lang_target);
+				from_tool_tips = GT.translate(from_tool_tips, from_lang_source, from_lang_target);
+		}
+
+		if (to_lang_source != null
+				&& to_lang_target != null
+				&& !to_lang_source.equals("off")
+				&& !to_lang_target.equals("off")
+				&& !to_lang_source.equals(to_lang_target)) {
+
+			if (to_messages != null && to_message_format != null && to_message_format.contains("x01"))
+				to_messages = GT.translate(to_messages, to_lang_source, to_lang_target);
+
 			if (to_tool_tips != null) // No hace falta pensar mas. Si from y to son de distinto idioma, mejor traducirlos...
-				to_tool_tips = GT.translate(to_tool_tips, lang_source, lang_target);
+				to_tool_tips = GT.translate(to_tool_tips, to_lang_source, to_lang_target);
 		}
 
 		if (from_message_format != null) {
@@ -239,24 +264,23 @@ public class API {
 		if (to_message_format != null)
 			to_message_format = getColor(to_message_format);
 
-		if (from_tool_tips != null)
-			from_tool_tips = getColor(from_tool_tips);
-		if (to_tool_tips != null)
-			to_tool_tips = getColor(to_tool_tips);
-
 		if (color) {
-			if (from_messages != null && from_player != null && from_player.hasPermission("ChatTranslator.chat.from.color")) {
-				from_messages_original = getColor(from_messages_original);
-				from_messages          = getColor(from_messages);
-			}
+			if (from_tool_tips != null)
+				from_tool_tips = getColor(from_tool_tips);
 
-			if (to_messages != null && to_player != null && to_player.hasPermission("ChatTranslator.chat.to.color"))
-				to_messages   = getColor(to_messages);
+			if (to_tool_tips != null)
+				to_tool_tips = getColor(to_tool_tips);
+
+			if (from_messages != null && from_player != null && Permissions.chattranslator.Color.FROM_COLOR.IF(from_player))
+				from_messages = getColor(from_messages);
+
+			if (to_messages != null && to_player != null && Permissions.chattranslator.Color.TO_COLOR.IF(to_player))
+				to_messages = getColor(to_messages);
 		}
 
 		if (from_message_format != null) {
 			if (from_messages != null)
-				from_message_format = from_message_format.replace("%ct_messages%", from_messages_original);
+				from_message_format = from_message_format.replace("%ct_messages%", from_messages);
 
 			if (to_messages != null)
 				from_message_format = from_message_format.replace("$ct_messages$", to_messages);
@@ -264,7 +288,7 @@ public class API {
 
 		if (to_message_format != null) {
 			if (from_messages != null)
-				to_message_format = to_message_format.replace("%ct_messages%", from_messages_original);
+				to_message_format = to_message_format.replace("%ct_messages%", from_messages);
 
 			if (to_messages != null)
 				to_message_format = to_message_format.replace("$ct_messages$", to_messages);
@@ -272,7 +296,7 @@ public class API {
 
 		if (from_tool_tips != null) {
 			if (from_messages != null)
-				from_tool_tips = from_tool_tips.replace("%ct_messages%", from_messages_original);
+				from_tool_tips = from_tool_tips.replace("%ct_messages%", from_messages);
 
 			if (to_messages != null)
 				from_tool_tips = from_tool_tips.replace("$ct_messages$", to_messages);
@@ -280,7 +304,7 @@ public class API {
 
 		if (to_tool_tips != null) {
 			if (from_messages != null)
-				to_tool_tips = to_tool_tips.replace("%ct_messages%", from_messages_original);
+				to_tool_tips = to_tool_tips.replace("%ct_messages%", from_messages);
 
 			if (to_messages != null)
 				to_tool_tips = to_tool_tips.replace("$ct_messages$", to_messages);
@@ -291,7 +315,7 @@ public class API {
 			for(int i = count; i > 0; i--) {
 				int padding = (70 - ChatColor.stripColor(from_message_format).replace("%ct_expand%", "").length()) / i;
 
-				if (util.IF(config, "debug")) {
+				if (Config.DEBUG.IF()) {
 					System.out.println("Debug 03, i: " + i);
 					System.out.println("Debug 03, padding: " + padding);
 				}
@@ -304,12 +328,12 @@ public class API {
 			int count = Str.count(to_message_format, "%ct_expand%");
 			for(int i = count; i > 0; i--) {
 				int padding = (70 - ChatColor.stripColor(to_message_format).replace("%ct_expand%", "").length()) / i;
-	
-				if (util.IF(config, "debug")) {
+
+				if (Config.DEBUG.IF()) {
 					System.out.println("Debug 03, i: " + i);
 					System.out.println("Debug 03, padding: " + padding);
 				}
-	
+
 				to_message_format = to_message_format.replaceFirst("%ct_expand%", Str.repeat(" ", padding));
 			}
 		}
@@ -325,13 +349,17 @@ public class API {
 		return DC;
 	}
 
-	public void processMessage(Message formatted) {
+	@SuppressWarnings("deprecation")
+	public static void processMessage(Message formatted) {
 //			Envia el Message a su destinario. Pero es necesario formatearlo previamente con formatMessage.
 
-		if (!formatted.isCancelled()
-					&& formatted.getLang() != null
-					&& !formatted.getLang().equals("disabled")
-					&& formatted.getMessageFormat()  != null
+		if (!new Message().equals(formatted)
+					&& !formatted.isCancelled()
+					&& formatted.getLangSource() != null
+					&& formatted.getLangTarget() != null
+					&& !formatted.getLangSource().equals("disabled")
+					&& !formatted.getLangTarget().equals("disabled")
+					&& formatted.getMessageFormat() != null
 					&& formatted.getMessages() != null
 				) {
 
@@ -359,9 +387,9 @@ public class API {
 
 						} catch (IllegalArgumentException e) {
 							Message msg = util.getDataConfigDefault();
-								msg.getTo().setSender(Bukkit.getConsoleSender());
-								msg.getTo().setLang(getLang(Bukkit.getConsoleSender()));
-								msg.getTo().setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + line + "&f' &cinvalido&f.");
+								msg.setSender(Bukkit.getConsoleSender());
+								msg.setLangTarget(getLang(Bukkit.getConsoleSender()));
+								msg.setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + line + "&f' &cinvalido&f.");
 							 sendMessage(msg);
 						}
 					}
@@ -379,7 +407,7 @@ public class API {
 		 }
 	}
 
-	public void sendMessage(Message event) {
+	public static void sendMessage(Message event) {
 //			Envia los mensajes especificados en father y el objeto Message actual.
 
 		if (event == new Message())
@@ -388,20 +416,22 @@ public class API {
 		try {
 			Message formatted = formatMessage(event);
 
-			if (util.IF(plugin.getConfig(), "debug")) {
-				System.out.println("DEBUG: Format, Msgs, ToolTips, Lang");
-				System.out.println(String.format("DEBUG from: '%s', '%s', '%s', %s",
+			if (Config.DEBUG.IF()) {
+				System.out.println("DEBUG: Format, Msgs, ToolTips, LangSource, LangTarget");
+				System.out.println(String.format("DEBUG from: '%s', '%s', '%s', '%s' -> '%s'",
 					formatted.getMessageFormat(),
 					formatted.getMessages(),
 					formatted.getToolTips(),
-					formatted.getLang()
+					formatted.getLangSource(),
+					formatted.getLangTarget()
 				));
 
-				System.out.println(String.format("DEBUG to: '%s', '%s', '%s'  %s",
+				System.out.println(String.format("DEBUG to:   '%s', '%s', '%s', '%s' -> '%s'",
 					formatted.getTo().getMessageFormat(),
 					formatted.getTo().getMessages(),
 					formatted.getTo().getToolTips(),
-					formatted.getTo().getLang()
+					formatted.getTo().getLangSource(),
+					formatted.getTo().getLangTarget()
 				));
 			}
 
@@ -413,70 +443,98 @@ public class API {
 		}
 	}
 
-	public void broadcast(List<Message> messages) {
+	public static void broadcast(List<Message> messages, Consumer<Message> preBroadcastAction) {
 		for (Message to : messages) {
 			try {
-				util.assertLang(to.getLang());
-				majhrs16.cht.util.ChatLimiter.chat.add(to);
+				util.assertLang(to.getLangSource());
+				util.assertLang(to.getLangTarget());
+
+				if (preBroadcastAction != null)
+					preBroadcastAction.accept(to);
 
 			} catch (IllegalArgumentException e) {
-				String msg = String.format("&cIdioma &f'&b%s&f' no soportado&f.", to.getLang());
-
 				Message alert = util.getDataConfigDefault();
-					alert.setMessages(String.format("&b%s&f: %s", to.getSenderName(), msg));
-					alert.setCancelled(false);
-
-					alert.getTo().setSender(to.getSender());
-					alert.getTo().setMessages(msg);
+					alert.setMessages(String.format("&b%s&f: &cIdioma &f'&b%s&f' &cy&f/&co &f'&b%s&f' &cno soportado&f.",
+						to.getSenderName(),
+						to.getLangSource(),
+						to.getLangTarget()
+					));
 				sendMessage(alert);
 			}
 		}
 	}
 
-	public void broadcast(Message from) {
+	public static void broadcast(List<Message> messages) {
+		broadcast(messages, to -> majhrs16.cht.util.ChatLimiter.chat.add(to));
+	}
+
+	 public static void broadcast(Message from, Consumer<List<Message>> preBroadcastAction) {
+		if (from == null
+				|| from.equals(new Message())
+				|| from.getTo().equals(new Message()))
+			return;
+
 		List<Message> tos = new ArrayList<Message>();
 
-		Message console = from.getTo().getTo();
-		if (console != null && console != new Message()) {
-			from.setTo(console);
-			tos.add(from.clone());
-		}
-
-		from.setCancelledThis(true);
-
 		Message to_model = from.getTo();
+
+		to_model.setSender(from.getSender());
+		to_model.setLangTarget(from.getLangTarget()); // Por si no se establece en el to_model el lang_target.
+
+		to_model.setCancelledThis(true);  // Evitar duplicacion.
+		tos.add(from.clone());
+		from.setCancelledThis(true);      // Evitar duplicacion.
+
+		to_model.setCancelledThis(false); // Restaurar funcionalidad.
 		for (Player to_player : Bukkit.getOnlinePlayers()) {
-			if(to_player == from.getSender())
+			if(from.getSender().equals(to_player))
 				continue;
 
-			from.setTo(to_model);
-				from.getTo().setSender(to_player);
-				from.getTo().setLang(getLang(to_player));
+			to_model.setSender(to_player);
+			to_model.setLangTarget(getLang(to_player));
 			tos.add(from.clone());
 		}
+
+		if (preBroadcastAction != null)
+			preBroadcastAction.accept(tos);
 
 		broadcast(tos);
 	}
 
-	public void setLang(CommandSender sender, String lang) throws IllegalArgumentException {
-//			setLang(player, "es");  -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
-//			setLang(console, "es"); -> null, Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
-//			setLang(player/consola, "XD"); -> IllegalArgumentException...
+	 public static void broadcast(Message from) {
+		 broadcast(from, null);
+	 }
+
+	public static void setLang(Object sender, String lang) throws IllegalArgumentException {
+//		Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
+//			setLang(player, "es");        -> null,
+//			setLang(console, "es");       -> null,
+//			setLang(offlinePlayer, "fr"); -> null,
+
+//		setLang(Player/offlinePlayer, "Ekisde"); -> IllegalArgumentException...
 
 		UUID uuid;
 		FileConfiguration config  = plugin.getConfig();
 		Message DC = util.getDataConfigDefault();
-			DC.setSender(Bukkit.getConsoleSender());
-			DC.setLang(getLang(Bukkit.getConsoleSender()));
+
+		try {
+			util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+
+		} catch (IllegalArgumentException e) {
+			DC.setMessages(e.getMessage());
+				API.sendMessage(DC);
+			return;
+		}
 
 		if (sender instanceof Player) {
 			uuid = ((Player) sender).getUniqueId();
 
+		} if (sender instanceof OfflinePlayer) {
+			uuid = ((OfflinePlayer) sender).getUniqueId();
+
 		} else {
 			uuid = UUID.fromString(config.getString("server-uuid"));
 		}
-
-		lang = util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f' &cno &7esta soportado&f!.");
 
 		switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
 			case "yaml":
@@ -493,7 +551,7 @@ public class API {
 					}
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
+					DC.setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
 						sendMessage(DC);
 				}
 				break;
@@ -508,14 +566,31 @@ public class API {
 					}
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
+					DC.setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
 						sendMessage(DC);
 				}
 				break;
 		}
 	}
 
-	public String getLang(CommandSender sender) {
+	public static String getPlayerLocale(Player player) {
+		try {
+			Class<?> craftPlayerClass = player.getClass();
+			Method getHandleMethod = craftPlayerClass.getDeclaredMethod("getHandle");
+			getHandleMethod.setAccessible(true);
+			Object entityPlayer = getHandleMethod.invoke(player);
+
+			Field localeField = entityPlayer.getClass().getField("locale");
+			localeField.setAccessible(true);
+			return (String) localeField.get(entityPlayer);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "en_US"; // Valor predeterminado en caso de error
+		}
+	}
+
+	private static String getLang(CommandSender sender, String to_lang) {
 	//		Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
 	//		Ejemplo: getLang(Alejo09Games) -> String = "en"
 
@@ -523,11 +598,14 @@ public class API {
 		String lang               = null;
 		FileConfiguration config  = plugin.getConfig();
 		String defaultLang        = config.getString("default-lang");
-
-		CommandSender console = Bukkit.getConsoleSender();
-		Message DC            = util.getDataConfigDefault();
-			DC.getTo().setSender(console);
-			DC.getTo().setLang(defaultLang);
+		Message DC                = new Message(); // Duplique el codigo del util.getDataConfigDefault ya que no veo otra forma.
+			DC.setTo(null); // Necesario para evitar crashes.
+			DC.setSender(Bukkit.getConsoleSender());
+			DC.setMessageFormat("$ct_messages$");
+			DC.setLangSource("es");
+			DC.setLangTarget(to_lang);
+			DC.setColor(true);
+			DC.setFormatPAPI(false);
 
 		if (sender instanceof Player) {
 			uuid = ((Player) sender).getUniqueId();
@@ -549,7 +627,7 @@ public class API {
 					lang = plugin.getSQLite().get(uuid);
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
+					DC.setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
 						sendMessage(DC);
 
 				} catch (NullPointerException e) {
@@ -562,7 +640,7 @@ public class API {
 					lang = plugin.getMySQL().get(uuid);
 
 				} catch (SQLException e) {
-					DC.getTo().setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
+					DC.setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
 						sendMessage(DC);
 
 				} catch (NullPointerException e) {
@@ -572,8 +650,9 @@ public class API {
 		}
 
 		if (lang == null || lang.equals("auto")) {
-			if (sender instanceof Player && util.checkPAPI()) {
-				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
+			if (sender instanceof Player) { //  && util.checkPAPI()
+				lang = getPlayerLocale((Player) sender).split("_")[0];
+//				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 
 			} else {
 				lang = defaultLang;
@@ -582,18 +661,27 @@ public class API {
 
 		if (!GT.isSupport(lang)) {
 			if (GT.isSupport(defaultLang)) {
-				DC.getTo().setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
+				DC.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
 					sendMessage(DC);
 
 				lang = defaultLang;
 
 			} else {
-				console.sendMessage(ChatColor.translateAlternateColorCodes("&".charAt(0), "&4EL IDIOMA POR DEFECTO &f'&b" + defaultLang + "&f' &4NO ESTA SOPORTADO&f!."));
+				Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&4EL IDIOMA POR DEFECTO &f'&b" + defaultLang + "&f' &4NO ESTA SOPORTADO&f!."));
 
 				lang = null;
 			}
 		}
-		
+
 		return lang;
+	}
+
+	public static String getLang(CommandSender sender) {
+		return getLang(
+			sender,
+			getLang(
+				Bukkit.getConsoleSender(),
+				plugin.getConfig().getString("default-lang")
+		));
 	}
 }

@@ -4,11 +4,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.scanner.ScannerException;
 import org.bukkit.command.CommandSender;
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import majhrs16.cht.bool.Dependencies;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Config;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
-import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.translator.API;
 
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
@@ -22,13 +29,14 @@ import java.net.URL;
 public class Updater {
 	public int config_version;
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API               = new API();
 
-	public void updateChecker() {
-		CommandSender console = Bukkit.getConsoleSender();
+	public void updateChecker(CommandSender to_sender) {
+		if (!Config.CHECK_UPDATES.IF())
+			return;
+
 		Message DC = util.getDataConfigDefault();
-		DC.setSender(console);
-		DC.setLang(API.getLang(console));
+			DC.setSender(to_sender);
+			DC.setLangTarget(API.getLang(to_sender));
 
 		try {
 			HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=106604").openConnection();
@@ -37,23 +45,62 @@ public class Updater {
 			con.setReadTimeout(timed_out);
 			String latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestVersion.length() <= 7) {
+				latestVersion = "&b" + latestVersion.replace(".", "&f.&b");
+
 				if (plugin.version.equals(latestVersion)) {
-					DC.getTo().setMessages("&a	Estas usando la última versión del plugin <3");
-				} else {
-					DC.getTo().setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));
+					DC.setMessages("&a	Estas usando la última versión del plugin <3");
 						API.sendMessage(DC);
 
-					DC.getTo().setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
+				} else {
+					if (to_sender instanceof Player) {
+						Player player = (Player) to_sender;
+
+						DC.setMessages("&9link");
+						DC.setToolTips("&7Descargar " + plugin.name + " &b" + latestVersion);
+
+						TextComponent linkText = new TextComponent(API.formatMessage(DC).getMessages());
+							ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/chattranslator.106604/");
+								linkText.setClickEvent(clickEvent);
+
+							@SuppressWarnings("deprecation")
+							HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(API.formatMessage(DC).getToolTips()).create());
+								linkText.setHoverEvent(hoverEvent);
+
+						TextComponent message = new TextComponent("    ");
+							DC.setMessages("&aPuedes descargarla en este");
+							DC.setToolTips("&f!");
+
+							message.addExtra(API.formatMessage(DC).getMessages() + " ");
+							message.addExtra(linkText);
+							message.addExtra(API.formatMessage(DC).getToolTips());
+
+						TextComponent versionMessage = new TextComponent();
+							DC.setMessages(String.format("&eHay una nueva versión disponible&f! &f(&B%s&f)", latestVersion));
+							DC.setToolTips(null);
+
+							versionMessage.setText(API.formatMessage(DC).getMessages());
+
+						player.spigot().sendMessage(versionMessage);
+						player.spigot().sendMessage(message);
+
+					} else {
+						DC.setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));
+							API.sendMessage(DC);
+	
+						DC.setMessages("&a		Puedes descargarla en &9https://www.spigotmc.org/resources/chattranslator.106604/");
+							API.sendMessage(DC);
+					}
 				}
+
 			} else {
-				DC.getTo().setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+				DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+					API.sendMessage(DC);
 			}
 
 		} catch (IOException ex) {
-			DC.getTo().setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+			DC.setMessages("&c	Error mientras se buscaban actualizaciones&f.");
+				API.sendMessage(DC);
 		}
-
-		API.sendMessage(DC);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -62,10 +109,6 @@ public class Updater {
 		Boolean cancel_event, clear_recipients;
 		FileConfiguration config = plugin.getConfig();
 
-		Message DC = util.getDataConfigDefault();
-			DC.getTo().setSender(Bukkit.getConsoleSender());
-			DC.getTo().setLang(API.getLang(Bukkit.getConsoleSender()));
-
 		String _path = "config-version";
 		if (!config.contains(_path))
 			config.set(_path, -1);
@@ -73,39 +116,56 @@ public class Updater {
 		config_version = config.getInt(_path);
 		int config_version_original = config_version;
 
+		if (config_version_original == 0)
+			config.set("server-uuid", UUID.randomUUID().toString()); // Para evitar crashes.
+
+		Message DC = util.getDataConfigDefault();
+
 		if (config_version_original == 0) {
-			config.set("server-uuid", UUID.randomUUID().toString());
-
-			if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
-				DC.getTo().setMessages("&aDetectado Chatty&f.");
+			if (Dependencies.Chatty.exist()) {
+				DC.setMessages("&aDetectado Chatty&f.");
 					API.sendMessage(DC);
 				cancel_event     = false;
 				clear_recipients = false;
 
-			} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
-				DC.getTo().setMessages("&aDetectado ChatManager&f.");
+			} else if (Dependencies.ChatManager.exist()) {
+				DC.setMessages("&aDetectado ChatManager&f.");
 					API.sendMessage(DC);
 				cancel_event     = false;
 				clear_recipients = false;
+
+			} else if (Dependencies.DiscordSRV.exist()) {
+				DC.setMessages("&aDetectado DiscordSRV&f.");
+					API.sendMessage(DC);
+
+				cancel_event     = false;
+				clear_recipients = true;
 
 			} else {
 				cancel_event     = true;
 				clear_recipients = false;
 			}
-			path = "show-native-chat";
-			config.set(path + ".cancel-event", cancel_event);
-			config.set(path + ".clear-recipients", clear_recipients);
-			config_version = 3;
+			config.set(Config.NativeChat.CANCEL.getPath(), cancel_event);
+			config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
+
+			if (Dependencies.ProtocolLib.exist()) {
+				DC.setMessages("&aDetectado ProtocolLib&f.");
+					API.sendMessage(DC);
+
+				config.set(Config.TranslateOthers.SIGNS.getPath(), true);
+			}
+
+			config_version = 4;
 		}
 
 		path = "auto-update-config";
-		if (config.contains(path) && !util.IF(config, path)) {
+		if (config.contains(path) && !util.IF(config, path)) { // Solo por nostalgia lo dejare asi :,3
 			config.set(_path, config_version);
 			plugin.saveConfig();
 			return;
 		}
 		
-		if (util.IF(config, "debug"))
+		if (Config.DEBUG.IF())
 			System.out.println("Debug, config_version: " + config_version);
 
 		if (config_version < 1) {
@@ -165,13 +225,13 @@ public class Updater {
 		} if (config_version < 2) {
 			Boolean show_native_chat;
 
-			if (util.checKDependency("ru.mrbrikster.chatty.api.ChattyApi")) {
-				DC.getTo().setMessages("&aDetectado Chatty&f.");
+			if (Dependencies.Chatty.exist()) {
+				DC.setMessages("&aDetectado Chatty&f.");
 					API.sendMessage(DC);
 				show_native_chat = true;
 
-			} else if (util.checKDependency("me.h1dd3nxn1nja.chatmanager.Main")) {
-				DC.getTo().setMessages("&aDetectado ChatManager&f.");
+			} else if (Dependencies.ChatManager.exist()) {
+				DC.setMessages("&aDetectado ChatManager&f.");
 					API.sendMessage(DC);
 				show_native_chat = true;
 			
@@ -200,39 +260,37 @@ public class Updater {
 
 			ArrayList<String> formats_from_messages = new ArrayList<String>();
 			ArrayList<String> formats_to_messages   = new ArrayList<String>();
+			ArrayList<String> formats_to_console_messages = new ArrayList<String>();
+			ArrayList<String> formats_to_console_toolTips = new ArrayList<String>();
+				formats_from_messages.add("&e%ct_messages%");
+				formats_to_messages.add("&e$ct_messages$");
 
-			formats_from_messages.add("&e%ct_messages%");
-			formats_to_messages.add("&e$ct_messages$");
-
+				formats_to_console_messages.add("&f<&b%player_name%&f> &a$ct_messages$");
+				formats_to_console_toolTips.add("\\t&f[&6%ct_lang_source%&f] &a%ct_messages%");
 			config.set("formats.from_entry.messages", new ArrayList<>(formats_from_messages));
-			config.set("formats.to_entry.messages", new ArrayList<>(formats_to_messages));
-
 			config.set("formats.from_exit.messages", new ArrayList<>(formats_from_messages));
+			config.set("formats.to_entry.messages", new ArrayList<>(formats_to_messages));
 			config.set("formats.to_exit.messages", new ArrayList<>(formats_to_messages));
-
-
-			ArrayList<String> formats_console_messages = new ArrayList<String>();
-			ArrayList<String> formats_console_toolTips = new ArrayList<String>();
-
-			formats_console_messages.add("&f<&b%player_name%&f> &a$ct_messages$");
-			formats_console_toolTips.add("\\t&f[&6%ct_lang_source%&f] &a%ct_messages%");
-
-			config.set("formats.console.messages", formats_console_messages);
-			config.set("formats.console.toolTips", formats_console_toolTips);
-
-
-			config.set("auto-translate-others", false);
+			config.set("formats.to_console.messages", formats_to_console_messages);
+			config.set("formats.to_console.toolTips", formats_to_console_toolTips);
+			config.set("auto-translate-others.access", true);
+			config.set("auto-translate-others.signs", true);
 
 			upgradePlayers();
 
 			config_version = 3;
 		}
 
+		if (config_version < 4) {
+			config.set("check-updates", true);
+			config_version = 4;
+		}
+
 		config.set(_path, config_version);
 		plugin.saveConfig();
 
 		if (config_version > config_version_original) {
-			DC.getTo().setMessages(String.format(
+			DC.setMessages(String.format(
 				"&eSe ha actualizado la config de la version &b%s &ea la &b%s&f.",
 				"" + config_version_original,
 				"" + config_version
@@ -252,7 +310,7 @@ public class Updater {
 				config.save(file);
 
 			} catch (ScannerException e) {
-				throw new IllegalArgumentException("[ERR020]");
+				throw new IllegalArgumentException("[ERR021]");
 
 			} catch (IOException e) {
 				e.printStackTrace();

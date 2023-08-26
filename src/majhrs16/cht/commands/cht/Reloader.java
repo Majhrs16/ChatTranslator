@@ -1,62 +1,75 @@
 package majhrs16.cht.commands.cht;
 
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API.API;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.bool.Permissions;
+import majhrs16.cht.translator.API;
 
 public class Reloader {
 	private ChatTranslator plugin = ChatTranslator.plugin;
-	private API API               = new API();
 
 	public void reloadConfig(Message DC) {
 		try {
-			DC.getTo().setMessages("&7Recargando almacenamiento");
+			DC.setMessages("&7Recargando almacenamiento");
 				API.sendMessage(DC);
 
-			DC.getTo().setMessages("&bconfig&f.&byml");
+			DC.setMessages("&bconfig&f.&byml");
 
 			try {
 				plugin.reloadConfig();
-				DC.getTo().setMessages("&7[  &aOK  &7] " + DC.getTo().getMessages());
+				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
 			} catch (IllegalArgumentException e) {
-				DC.getTo().setMessages("&7[ &cFAIL &7] " + DC.getTo().getMessages() + "\n    " + e.toString());
+				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
 			}
 
 			API.sendMessage(DC);
 
+			DC.setMessages("&bsigns&f.&byml");
+
+			try {
+				plugin.reloadSigns();
+				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
+
+			} catch (IllegalArgumentException e) {
+				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
+			}
+
+			API.sendMessage(DC); 
+
 			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
 				case "yaml":
-					DC.getTo().setMessages("&bplayers&f.&byml&f");
+					DC.setMessages("&bplayers&f.&byml&f");
 					break;
 
 				case "sqlite":
-					DC.getTo().setMessages("&bSQLite");
+					DC.setMessages("&bSQLite");
 					break;
 
 				case "mysql":
-					DC.getTo().setMessages("&bMySQL");
+					DC.setMessages("&bMySQL");
 					break;
 
 				default:
-					DC.getTo().setMessages("&7[&4ERR001&7]"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+					DC.setMessages("&7[&4ERR100&7]"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
 					break;
 			}
 
 			try {
 				plugin.reloadPlayers();
-				DC.getTo().setMessages("&7[  &aOK  &7] " + DC.getTo().getMessages());
+				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
-			} catch (Exception e) {
-				DC.getTo().setMessages("&7[ &cFAIL &7] " + DC.getTo().getMessages() + "\n    " + e.toString());
-				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
 			}
 
 			API.sendMessage(DC);
 
 		} catch (Exception e) {
-			DC.getTo().setMessages(plugin.title + "&7[&4ERR000&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f.");
-				API.sendMessage(DC);
+			if (Permissions.chattranslator.ADMIN.IF(DC.getSender())) {
+				DC.setMessages(plugin.title + "&7[&4ERR110&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f.");
+					API.sendMessage(DC);
+			}
 
 			e.printStackTrace();
 		}

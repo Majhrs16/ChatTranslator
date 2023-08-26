@@ -7,97 +7,88 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.events.custom.Message;
-// import majhrs16.ct.translator.API.API;
+import majhrs16.cht.translator.API;
 
 public class util {
 	private static ChatTranslator plugin = ChatTranslator.plugin;
-//	private API API = new API();
-
-	public static Boolean checKDependency(String dependency) {
-		Boolean haveDependency = null;
-
-		try {
-			Class.forName(dependency);
-			haveDependency = true;
-
-		} catch (ClassNotFoundException e) {
-			haveDependency = false;
-		}
-
-		return haveDependency;
-	}
-
-	public static Boolean checkPAPI() {
-			// Comprueba si esta disponible PAPI.
-
-		return checKDependency("me.clip.placeholderapi.PlaceholderAPI");
-	}
-
-	public static Boolean checkPL() {
-			// Comprueba si esta disponible ProtocolLib.
-
-		return checKDependency("com.comphenix.protocol.ProtocolLib");
-	}
 
 	public static boolean IF(FileConfiguration cfg, String path) {
-			// Comprobador rapido si existe y si es true una configuracion.
+			// Comprobador rapido si existe una configuracion.y si es true.
 
-		return cfg.contains(path) && cfg.getString(path).equals("true");
+		return cfg.contains(path) && cfg.getBoolean(path);
 	}
 
-	public static String assertLang(String lang, String text) {
+	public static void assertLang(String lang, String text) {
 			// Si no esta soportado lang lanza una excepcion IllegalArgumentException junto con text. 
 
-		if (!new GoogleTranslator().isSupport(lang)) {
+		if (!API.GT.isSupport(lang)) {
 			throw new IllegalArgumentException(text);
 		}
-
-		return lang;
 	}
 
-	public static String assertLang(String lang) {
-		return assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
+	public static void assertLang(String lang) {
+		assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
 
 	public static Message getDataConfigDefault() {
-		Message to = new Message();
-			to.setMessageFormat("$ct_messages$");
-			to.setCancelledThis(false);
-			to.setColor(true);
-			to.setFormatPAPI(false);
-
 		Message from = new Message();
-			from.setTo(to);
+			from.setTo(null); // Necesario para evitar crashes.
 			from.setSender(Bukkit.getConsoleSender());
-			from.setMessageFormat("$ct_messages$");
-			from.setCancelledThis(true);
-			from.setLang("es");
+			from.setMessageFormat("%ct_messages%");
+			from.setLangSource("es");
+			from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
 			from.setColor(true);
 			from.setFormatPAPI(false);
 
 		return from;
 	}
 
-	public static Message createMessage(Message to, CommandSender sender, String messages, Boolean isCancelled, String lang, String path) {
+	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		FileConfiguration config = plugin.getConfig();
 
-		return new Message(
-			to,
-			sender,
-			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")).replace("\\t", "\t") : null,
-			messages,
-			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")).replace("\\t", "\t") : null,
-			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds")).replace("\\t", "\t")   : null,
-			isCancelled,
+		if (path == null)
+			path = "";
 
-			lang,
+		else
+			path = "_" + path;
+
+		String _path = "formats.to" + path;
+		Message to = new Message(
+			null,
+			sender,
+			config.contains(_path + ".messages") ? String.join("\n", config.getStringList(_path + ".messages")).replace("\\t", "\t") : null,
+			messages,
+			config.contains(_path + ".toolTips") ? String.join("\n", config.getStringList(_path + ".toolTips")).replace("\\t", "\t") : null,
+			config.contains(_path + ".sounds")   ? String.join("\n", config.getStringList(_path + ".sounds")).replace("\\t", "\t")   : null,
+			false,
+
+			langSource,
+			langTarget,
 
 			IF(config, "chat-color-personalized"),
 			IF(config, "use-PAPI-format")
 		);
+
+		_path = "formats.from" + path;
+		Message from = new Message(
+			to,
+			sender,
+			config.contains(_path + ".messages") ? String.join("\n", config.getStringList(_path + ".messages")).replace("\\t", "\t") : null,
+			messages,
+			config.contains(_path + ".toolTips") ? String.join("\n", config.getStringList(_path + ".toolTips")).replace("\\t", "\t") : null,
+			config.contains(_path + ".sounds")   ? String.join("\n", config.getStringList(_path + ".sounds")).replace("\\t", "\t")   : null,
+			false,
+
+			langSource,
+			langTarget,
+
+			IF(config, "chat-color-personalized"),
+			IF(config, "use-PAPI-format")
+		);
+
+		return from;
 	}
 
 	public static String wrapText(String text, int maxLength) {
