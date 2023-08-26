@@ -16,7 +16,7 @@ formats:
     - ENTITY_EXPERIENCE_ORB_PICKUP
     - ORB_PICKUP
 
-  console:
+  to_console:
     messages:
     - '&f<&b%player_name%&f> &a$ct_messages$'
     toolTips:
@@ -24,14 +24,14 @@ formats:
 
   from_entry:
     messages:
-    - '&e%ct_messages%'
+    - '&e$ct_messages$'
   to_entry:
     messages:
     - '&e$ct_messages$'
 
   from_exit:
     messages:
-    - '&e%ct_messages%'
+    - '&e$ct_messages$'
   to_exit:
     messages:
     - '&e$ct_messages$'
@@ -44,15 +44,18 @@ storage:
   user: root
   password: password
 
+auto-translate-others:
+  access: true
+
 server-uuid: "null"
 chat-color-personalized: true
 auto-update-config: true
 show-native-chat:
   cancel-event: true
   clear-recipients: false
-auto-translate-others: false # beta
 max-spam-per-tick: 150.0007
 use-PAPI-format: true
+check-updates: true
 config-version: 0
 default-lang: es
 debug: false

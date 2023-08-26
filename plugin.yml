@@ -1,26 +1,41 @@
-version: 1.7.4
-author: Majhrs16
-name: ChatTranslator
 main: majhrs16.cht.ChatTranslator
-softdepend: [PlaceholderAPI, ConditionalEvents, ProtocolLib]
+name: ChatTranslator
+author: Majhrs16
+load: POSTWORLD
+version: 1.7.4
+
+softdepend:
+- PlaceholderAPI
+- ConditionalEvents
+# - ProtocolLib
 
 commands:
   chattranslator:
     description: Comando Principal.
-  cht:
-    description: Comando Principal.
-  cht lang:
+    aliases: cht
+  cht.lang:
     description: Cambiar de idioma.
-  cht version:
-    description: Version.
-  cht reload:
+    usage: "/cht lang [jugador] <idioma>"
+  cht.version:
+    description: Version del plugin.
+  cht.reload:
     description: Recargar config.
   cht toggle:
     description: (Des)activar un jugador o por defecto el plugin.
-  cht reset:
+  cht.reset:
     description: RESTABLECE la config, pero no los datos de idiomas.
 
 permissions:
+  ChatTranslator.*:
+    children:
+      ChatTranslator.admin: true
+      ChatTranslator.chat.from.color: true
+      ChatTranslator.chat.to.color: true
+  ChatTranslator.chat.*:
+    children:
+      ChatTranslator.chat.from.color: true
+      ChatTranslator.chat.to.color: true
+
   ChatTranslator.admin:
     descriptions: Adminstra el plugin.
     default: op
