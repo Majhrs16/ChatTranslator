@@ -6,18 +6,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.entity.Player;
 
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONArray;
+
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Config;
-
-import com.google.gson.JsonParser;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
 
 public class Message extends Event implements Cancellable {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final HandlerList HANDLERS = new HandlerList();
 
 
@@ -141,8 +140,9 @@ public class Message extends Event implements Cancellable {
 		return from;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String toString() {
-		JsonArray jsonArray = new JsonArray();
+		JSONArray jsonArray = new JSONArray();
 			jsonArray.add(getSenderName());
 			jsonArray.add(getMessageFormat());
 			jsonArray.add(getMessages());
@@ -156,24 +156,25 @@ public class Message extends Event implements Cancellable {
 		return jsonArray.toString();
 	}
 
-	private String getJsonString(JsonElement element) {
-		return !element.isJsonNull() ? element.getAsString() : null;
+
+	private String getJsonString(Object obj) {
+		return (String) obj;
 	}
 
 	public Message valueOf(String data) {
 		try {
-			JsonArray jsonArray = new JsonParser().parse(data).getAsJsonArray();
+			JSONArray jsonArray = (JSONArray) new JSONParser().parse(data);
 
 			String player_name = getJsonString(jsonArray.get(0));
-			String message_format = jsonArray.get(1).getAsString();
+			String message_format = (String) jsonArray.get(1);
 			String messages = getJsonString(jsonArray.get(2)); // Explosivo?
 			String tool_tips = getJsonString(jsonArray.get(3));
 			String sounds = getJsonString(jsonArray.get(4));
-			boolean show = jsonArray.get(5).getAsBoolean();
-			String lang_source = jsonArray.get(6).getAsString();
+			boolean show = (boolean) jsonArray.get(5);
+			String lang_source = (String) jsonArray.get(6);
 			String lang_target = getJsonString(jsonArray.get(7));
-			boolean color = jsonArray.get(8).getAsBoolean();
-			boolean papi = jsonArray.get(9).getAsBoolean();
+			boolean color = (boolean) jsonArray.get(8);
+			boolean papi = (boolean) jsonArray.get(9);
 
 			Player player = null;
 			if (player_name != null && (player = Bukkit.getServer().getPlayer(player_name)) == null) {

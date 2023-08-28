@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.commands.cht.MainCommand;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.storage.data.SQLite;
@@ -13,7 +14,6 @@ import majhrs16.cht.storage.data.MySQL;
 import majhrs16.cht.bool.Dependencies;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cot.CoreTranslator;
-import majhrs16.cht.translator.API;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.Updater;
 import majhrs16.cht.events.Chat;
@@ -32,8 +32,12 @@ public class ChatTranslator extends JavaPlugin {
 	private YAML config;
 	private YAML players;
 	private SQLite sqlite;
-	public Boolean enabled;
-	PluginDescriptionFile pdffile  = getDescription();
+	private static ChatTranslator plugin;
+
+	private boolean is_disabled           = true;
+	private PluginDescriptionFile pdffile = getDescription();
+	private ChatTranslatorAPI API         = ChatTranslatorAPI.getInstance();
+
 	public final String name       = "&aChat&9Translator";
 	public final String version    = "&bv" + pdffile.getVersion().replace(".", "&f.&b");
 	public final String sep        = "&c<&4-------------------------&c>";
@@ -44,10 +48,11 @@ public class ChatTranslator extends JavaPlugin {
 		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\n"
 		+ "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝";
 
-	public static ChatTranslator plugin;
-
 	public void onEnable() {
 		plugin  = this;
+
+		if (!isDisabled())
+			return;
 
 		signs   = new YAML(plugin, "signs.yml");
 		config  = new YAML(plugin, "config.yml");
@@ -114,10 +119,13 @@ public class ChatTranslator extends JavaPlugin {
 		from.setMessages(sep);
 			API.sendMessage(from);
 
-		enabled = true;
+		setDisabled(false);
 	}
 
 	public void onDisable() {
+		if (isDisabled())
+			return;
+
 		majhrs16.cht.util.ChatLimiter.chat.clear();
 
 		Message from = util.getDataConfigDefault();
@@ -125,7 +133,8 @@ public class ChatTranslator extends JavaPlugin {
 		from.setMessages(sep);
 			API.sendMessage(from);
 
-//		from.setMessages(" "); API.sendMessage(from);
+		from.setMessages(title);
+			API.sendMessage(from);
 
 		switch (config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
@@ -135,11 +144,11 @@ public class ChatTranslator extends JavaPlugin {
 			case "sqlite":
 				try {
 					getMySQL().disconnect();
-					from.setMessages(title + "&aDesconectado de SQLite&f.");
+					from.setMessages("\t&aDesconectado de SQLite&f.");
 						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					from.setMessages(title + "&4Error al desconectar a SQLite&f.");
+					from.setMessages("\t&4Error al desconectar a SQLite&f.");
 						API.sendMessage(from);
 					return;
 				}
@@ -148,18 +157,18 @@ public class ChatTranslator extends JavaPlugin {
 			case "mysql":
 				try {
 					getMySQL().disconnect();
-					from.setMessages(title + "&aDesconectado de MySQL&f.");
+					from.setMessages("\t&aDesconectado de MySQL&f.");
 						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					from.setMessages(title + "&4Error al desconectar a MySQL&f.");
+					from.setMessages("\t&4Error al desconectar a MySQL&f.");
 						API.sendMessage(from);
 					return;
 				}
 				break;
 		}
 
-		from.setMessages(title + "&cDesactivado&f.");
+		from.setMessages("\t&cDesactivado&f.");
 			API.sendMessage(from);
 
 //		from.setMessages(" "); API.sendMessage(from);
@@ -167,13 +176,31 @@ public class ChatTranslator extends JavaPlugin {
 		from.setMessages(sep);
 			API.sendMessage(from);
 
-		enabled = false;
+		setDisabled(true);
+	}
+
+	public static ChatTranslator getInstance() {
+		return plugin;
+	}
+
+	public boolean isDisabled() {
+		return is_disabled;
+	}
+
+	public void setDisabled(boolean isDisabled) {
+		this.is_disabled = isDisabled;
+
+		if (isDisabled())
+			plugin.onDisable();
+
+		else
+			plugin.onEnable();
 	}
 
 	public void registerCommands() {
 		MainCommand main_command = new MainCommand();
-		this.getCommand("chattranslator").setExecutor(main_command);
-		this.getCommand("cht").setExecutor(main_command);
+		getCommand("chattranslator").setExecutor(main_command);
+		getCommand("cht").setExecutor(main_command);
 	}
 
 	public void registerEvents() {
@@ -193,14 +220,14 @@ public class ChatTranslator extends JavaPlugin {
 	public boolean registerStorage() {
 		Message from = util.getDataConfigDefault();
 
-		String storageType = config.get().getString("storage.type").toLowerCase();
+		String storageType = getConfig().getString("storage.type").toLowerCase();
 		switch (storageType) {
 			case "yaml":
 				players.register();
 				break;
 
 			case "sqlite":
-				sqlite.set(null, 0, config.get().getString("storage.database"), null, null);
+				sqlite.set(null, 0, getConfig().getString("storage.database"), null, null);
 				try {
 					sqlite.connect();
 					sqlite.createTable();
@@ -263,9 +290,9 @@ public class ChatTranslator extends JavaPlugin {
 
 	public FileConfiguration getPlayers() { return players.get(); }
 	public void reloadPlayers() throws SQLException {
-		enabled = false;
+		setDisabled(true);
 
-		String storageType = config.get().getString("storage.type").toLowerCase();
+		String storageType = getConfig().getString("storage.type").toLowerCase();
 		switch (storageType) {
 			case "yaml":
 				players.reload();
@@ -287,11 +314,11 @@ public class ChatTranslator extends JavaPlugin {
 				API.sendMessage(from);
 		}
 
-		enabled = true;
+		setDisabled(false);
 	}
 
 	public void savePlayers() {
-		if (config.get().getString("storage.type").toLowerCase().equals("yaml")) {
+		if (getConfig().getString("storage.type").toLowerCase().equals("yaml")) {
 			players.save();
 		}
 	}

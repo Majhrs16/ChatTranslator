@@ -1,36 +1,33 @@
 package majhrs16.cht.commands.cht;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.Command;
-
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.util.Updater;
 import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
 
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.Command;
+
 public class MainCommand implements CommandExecutor {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		FileConfiguration config = plugin.getConfig();
-		String lang = API.getLang(sender);
-
 		Message DC = util.getDataConfigDefault();
 			DC.setSender(sender);
-			DC.setLangTarget(lang);
+			DC.setLangTarget(API.getLang(sender));
 
 		if (Config.DEBUG.IF()) {
 			System.out.println("Debug, Name: " + sender.getName());
-			System.out.println("Debug, Lang: " + lang);
+			System.out.println("Debug, Lang: " + DC.getLangTarget());
 		}
 
 		if(args.length < 1) {
-			if (!plugin.enabled)
+			if (plugin.isDisabled())
 				return false;
 	
 			new HelperCommand().show(sender);
@@ -39,7 +36,7 @@ public class MainCommand implements CommandExecutor {
 
 		switch (args[0].toLowerCase()) {
 			case "version":
-				if (!plugin.enabled)
+				if (plugin.isDisabled())
 					return false;
 
 				DC.setMessages(plugin.title + plugin.version);
@@ -47,7 +44,7 @@ public class MainCommand implements CommandExecutor {
 				return true;
 
 			case "reload":
-				if (!plugin.enabled)
+				if (plugin.isDisabled())
 					return false;
 
 				if (!Permissions.chattranslator.ADMIN.IF(sender)) {
@@ -60,7 +57,7 @@ public class MainCommand implements CommandExecutor {
 				return true;
 
 			case "lang":
-				if (!plugin.enabled)
+				if (plugin.isDisabled())
 					return false;
 				
 				SetterLang setter = new SetterLang();
@@ -82,7 +79,6 @@ public class MainCommand implements CommandExecutor {
 							return true;
 
 						default:
-							util.assertLang(config.getString("default-lang"), "&7El idioma por defecto &f'&b%lang%&f' &cno esta soportado&f!.");
 							DC.setMessages("&cSintaxis invalida&f. &aPor favor use la sintaxis&f:\n    &e/ct lang &f[&6player&f] &f<&6codigo&f>&f.");
 								API.sendMessage(DC);
 							return false;
@@ -107,11 +103,11 @@ public class MainCommand implements CommandExecutor {
 					case 1:
 						tog.TogglePlugin(sender);
 						return true;
-					
+
 					case 2:
 						tog.ToggleOffPlayer(DC, args[1]);
 						return true;
-						
+
 					default:
 						return false;
 				}
@@ -128,7 +124,7 @@ public class MainCommand implements CommandExecutor {
 				return true;
 
 			default:
-				if (!plugin.enabled)
+				if (plugin.isDisabled())
 					return false;
 
 				DC.setMessages("&7Ese comando &cno &7existe&f!");

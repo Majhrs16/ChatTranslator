@@ -1,16 +1,17 @@
 package majhrs16.cht.commands.cht;
 
 import majhrs16.lib.network.translator.GoogleTranslator;
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.util.util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
 
 public class SetterLang {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void setLang(Message DC, String lang) {
 		try {

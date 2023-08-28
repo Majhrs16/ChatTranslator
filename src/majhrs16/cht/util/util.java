@@ -3,16 +3,33 @@ package majhrs16.cht.util;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.translator.api.Core;
 
 public class util {
-	private static ChatTranslator plugin = ChatTranslator.plugin;
+	private static ChatTranslator plugin = ChatTranslator.getInstance();
+	private static Pattern version       = Pattern.compile("\\d\\.\\d\\.\\d");
+
+	public static double getMinecraftVersion() {
+		Matcher matcher = version.matcher(Bukkit.getVersion());
+
+		if (matcher.find()) {
+			String version = matcher.group(0);
+			version = version.substring(0, version.lastIndexOf("."));
+
+			return Double.parseDouble(version);
+		}
+
+		return 0.0;
+	}
 
 	public static boolean IF(FileConfiguration cfg, String path) {
 			// Comprobador rapido si existe una configuracion.y si es true.
@@ -23,7 +40,7 @@ public class util {
 	public static void assertLang(String lang, String text) {
 			// Si no esta soportado lang lanza una excepcion IllegalArgumentException junto con text. 
 
-		if (!API.GT.isSupport(lang)) {
+		if (!Core.GT.isSupport(lang)) {
 			throw new IllegalArgumentException(text);
 		}
 	}
@@ -38,7 +55,7 @@ public class util {
 			from.setSender(Bukkit.getConsoleSender());
 			from.setMessageFormat("%ct_messages%");
 			from.setLangSource("es");
-			from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
+			from.setLangTarget(ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
 			from.setColor(true);
 			from.setFormatPAPI(false);
 

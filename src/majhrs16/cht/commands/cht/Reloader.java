@@ -1,12 +1,13 @@
 package majhrs16.cht.commands.cht;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Permissions;
-import majhrs16.cht.translator.API;
+import majhrs16.cht.ChatTranslator;
 
 public class Reloader {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void reloadConfig(Message DC) {
 		try {
@@ -35,7 +36,7 @@ public class Reloader {
 				DC.setMessages("&7[ &cFAIL &7] " + DC.getMessages() + "\n    " + e.toString());
 			}
 
-			API.sendMessage(DC); 
+			API.sendMessage(DC);
 
 			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
 				case "yaml":

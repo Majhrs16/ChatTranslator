@@ -17,7 +17,7 @@ public enum Config {
     }
 
     public boolean IF() {
-        return util.IF(ChatTranslator.plugin.getConfig(), getPath());
+        return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
     }
 
     public String getPath() {
@@ -35,7 +35,7 @@ public enum Config {
         }
 
         public boolean IF() {
-            return util.IF(ChatTranslator.plugin.getConfig(), getPath());
+            return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
         }
 
         public String getPath() {
@@ -54,7 +54,7 @@ public enum Config {
         }
 
         public boolean IF() {
-            return util.IF(ChatTranslator.plugin.getConfig(), getPath());
+            return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
         }
 
         public String getPath() {

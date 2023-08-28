@@ -5,16 +5,16 @@ formats:
     toolTips:
     - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
     sounds:
-    - BLOCK_NOTE_BLOCK_BELL
-    - NOTE_PLING
+    - BLOCK_NOTE_BLOCK_BELL; 1; 1
+    - NOTE_PLING; 1; 1
   to:
     messages:
     - '&f<&b%player_name%&f> &a$ct_messages$'
     toolTips:
     - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
     sounds:
-    - ENTITY_EXPERIENCE_ORB_PICKUP
-    - ORB_PICKUP
+    - ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1
+    - ORB_PICKUP; 1; 1
 
   to_console:
     messages:
@@ -46,6 +46,7 @@ storage:
 
 auto-translate-others:
   access: true
+  signs: true
 
 server-uuid: "null"
 chat-color-personalized: true

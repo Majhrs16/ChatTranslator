@@ -7,24 +7,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Config;
-import majhrs16.cht.bool.Permissions;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.util.Updater;
 import majhrs16.cht.util.util;
 
 public class AccessPlayer implements Listener {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onEntry(PlayerJoinEvent event) {
-		if (!plugin.enabled || !Config.TranslateOthers.ACCESS.IF())
+		if (plugin.isDisabled() || !Config.TranslateOthers.ACCESS.IF())
 			return;
 
-//		Message console  = util.createChat(Bukkit.getConsoleSender(), event.getJoinMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "entry");
-//			console.setCancelledThis(true); // Evitar duplicacion del mensaje.
 		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getJoinMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "entry");
 
 		event.setJoinMessage("");
@@ -37,15 +36,13 @@ public class AccessPlayer implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onExit(PlayerQuitEvent event) {
-		if (!plugin.enabled || !Config.TranslateOthers.ACCESS.IF())
+		if (plugin.isDisabled()|| !Config.TranslateOthers.ACCESS.IF())
 			return;
 
-//		Message console  = util.createChat(Bukkit.getConsoleSender(), event.getQuitMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "exit");
-//			console.setCancelledThis(true); // Evitar duplicacion del mensaje.
 		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getQuitMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "exit");
 
 		event.setQuitMessage("");
 
-		API.broadcast(to_model); // tos -> tos.add(console));
+		API.broadcast(to_model);
 	}
 }

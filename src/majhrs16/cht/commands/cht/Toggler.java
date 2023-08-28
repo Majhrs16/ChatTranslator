@@ -1,7 +1,7 @@
 package majhrs16.cht.commands.cht;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 public class Toggler {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void ToggleOffPlayer(Message sender, String player) {
 		Player player2;
@@ -34,12 +35,7 @@ public class Toggler {
 	}
 	
 	public void TogglePlugin(CommandSender sender) {
-		if (plugin.enabled)
-			plugin.onDisable();
-
-		else
-			plugin.onEnable();
-
-		sender.sendMessage("" + plugin.enabled);
+		plugin.setDisabled(!plugin.isDisabled());
+		sender.sendMessage("" + plugin.isDisabled());
 	}
 }

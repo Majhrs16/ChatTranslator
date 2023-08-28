@@ -10,28 +10,30 @@ import com.comphenix.protocol.PacketType;
 */
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+
+import java.util.List;
+
 public class SignHandler implements Listener {
-	private ChatTranslator plugin = ChatTranslator.plugin;
-//	private List<Player> showed = new ArrayList<Player>();
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+
+	//	private List<Player> showed = new ArrayList<Player>();
 
 //	private final int VIEW_DISTANCE = (int) Math.pow(7, 2); // 7 bloques al cuadrado
 
@@ -94,8 +96,10 @@ public class SignHandler implements Listener {
 //	public void updateSign(/* BlockPosition blockPosition, int blockId, */ String[] lines, String fromLang, Player toPlayer) {
 	@EventHandler
 	public void updateSign(PlayerInteractEvent event) {
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
+			return;
+
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			FileConfiguration signs = plugin.getSigns();
 			Block block = event.getClickedBlock();
 
 			if (!(block.getState() instanceof Sign))
@@ -105,6 +109,7 @@ public class SignHandler implements Listener {
 
 			String path   = String.format("%s_%s_%s_%s", block.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
 
+			FileConfiguration signs = plugin.getSigns();
 			Message from = util.getDataConfigDefault();
 				from.setLangSource(signs.getString(path + ".lang"));
 				from.setLangTarget(API.getLang(event.getPlayer()));
@@ -206,7 +211,7 @@ public class SignHandler implements Listener {
 
 	@EventHandler
 	public void onSignBreak(BlockBreakEvent event) {
-		if (!plugin.enabled && !Config.TranslateOthers.SIGNS.IF())
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
 			return;
 
 		FileConfiguration signs = plugin.getSigns();
@@ -219,12 +224,13 @@ public class SignHandler implements Listener {
 			signs.set(path + ".lang", null);
 			signs.set(path, null);
 			plugin.saveSigns();
+			plugin.reloadSigns();
 		}
 	}
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
-		if (!plugin.enabled && !Config.TranslateOthers.SIGNS.IF())
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
 			return;
 
 		FileConfiguration signs = plugin.getSigns();
@@ -238,5 +244,6 @@ public class SignHandler implements Listener {
 		signs.set(path + ".text", event.getLines());
 		signs.set(path + ".lang", API.getLang(player));
 		plugin.saveSigns();
+		plugin.reloadSigns();
 	}
 }

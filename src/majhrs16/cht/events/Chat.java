@@ -6,18 +6,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
 
 public class Chat implements Listener {
-	private ChatTranslator plugin = ChatTranslator.plugin;
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onMessage(AsyncPlayerChatEvent event) {
-		if (!plugin.enabled || event.isCancelled())
+		if (plugin.isDisabled() || event.isCancelled())
 			return;
 
 		if (Config.NativeChat.CANCEL.IF()) {

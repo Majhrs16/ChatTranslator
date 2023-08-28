@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatLimiter {
-	private ChatTranslator plugin         = ChatTranslator.plugin;
+	private ChatTranslator plugin         = ChatTranslator.getInstance();
 	public static ArrayList<Message> chat = new ArrayList<Message>();
 
 	public ChatLimiter() {
@@ -28,7 +28,7 @@ public class ChatLimiter {
 			);
 
 			public void run() {
-				if (!plugin.enabled)
+				if (plugin.isDisabled())
 					return;
 
 				if (spam.getCountInt() > spam.getMaxInt() && spam.getMax() > 0.0F) {

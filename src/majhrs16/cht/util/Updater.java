@@ -10,12 +10,13 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.events.custom.Message;
+
 import majhrs16.cht.bool.Dependencies;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.bool.Config;
-
-import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
 
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
@@ -28,7 +29,9 @@ import java.net.URL;
 
 public class Updater {
 	public int config_version;
-	private ChatTranslator plugin = ChatTranslator.plugin;
+
+	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void updateChecker(CommandSender to_sender) {
 		if (!Config.CHECK_UPDATES.IF())
@@ -53,6 +56,9 @@ public class Updater {
 
 				} else {
 					if (to_sender instanceof Player) {
+						if (util.getMinecraftVersion() < 1.8)
+							return;
+
 						Player player = (Player) to_sender;
 
 						DC.setMessages("&9link");
