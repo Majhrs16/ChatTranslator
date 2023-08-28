@@ -3,8 +3,8 @@ package majhrs16.cot;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.PlaceholderAPI;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.API;
 import majhrs16.cht.util.util;
 
 import org.bukkit.entity.Player;
@@ -19,6 +19,8 @@ public class CoreTranslator extends PlaceholderExpansion {
 	private Pattern translate   = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private Pattern parser      = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private Pattern lang        = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
+
+	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public String getAuthor()     { return "Majhrs16"; }
 	public String getVersion()    { return "b1.3.3"; }
