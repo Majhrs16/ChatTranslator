@@ -183,7 +183,7 @@ public interface Msgs {
 		broadcast(tos);
 	}
 
-	default public void broadcast(Message from) {
-		 broadcast(from, null);
+	default public void broadcast(Message to_model) {
+		 broadcast(to_model, null);
 	 }
 }

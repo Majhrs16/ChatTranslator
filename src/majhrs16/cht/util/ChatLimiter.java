@@ -17,7 +17,7 @@ public class ChatLimiter {
 	public static ArrayList<Message> chat = new ArrayList<Message>();
 
 	public ChatLimiter() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
 			int max_messages_per_tick     = 7;
 			Map<Player, CacheSpam> counts = new HashMap<>();
 			FileConfiguration config      = plugin.getConfig();
