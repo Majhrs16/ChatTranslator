@@ -1,6 +1,6 @@
 # ChatTranslator
 
-ChatTranslator es un plugin para Minecraft 1.8 - 1.20.1 que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
+ChatTranslator es un plugin para Minecraft 1.7.10 - 1.20.1 que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
 
 ## Características
 
@@ -8,15 +8,16 @@ ChatTranslator es un plugin para Minecraft 1.8 - 1.20.1 que permite la traducci�
 - Configuración altamente personalizable para adecuar el formato del chat a las preferencias individuales, a través de `config.formats`.
 - En situaciones en las que la conexión a internet no esté disponible, se añade el prefijo `[!]` a la variable local `ct_messages`.
 - Los jugadores y la consola pueden especificar su idioma utilizando el comando `/cht lang [jugador] <código de idioma>`.
-- Capacidades para la traducción de carteles, y aún más características planificadas para futuras actualizaciones.
-- Funciones altamente personalizables que se pueden activar o desactivar según las necesidades.
+- Capacidad para la traducción de carteles, y aún más características planificadas para futuras actualizaciones.
 - Compatibilidad con BungeeCord y la integración de bases de datos para un rendimiento óptimo.
 - Detección automática del idioma del jugador para facilitar la comunicación.
+- Funciones que se pueden activar o desactivar según las necesidades.
 - Opcionalmente, se puede aprovechar el potencial de las siguientes dependencias:
   - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/).
   - [ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/), brindando una manera sencilla de condicionar los chats.
 - Soporte parcial para otros plugins de chat, tales como:
-  - [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) y [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
+  - [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
+  - Soporte parcial para [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) a través del [ejemplo de configuración #4](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-discordsrv).
   - Mediante el evento `majhrs16.cht.events.custom.Message`.
 
 ## Instalación
@@ -39,7 +40,7 @@ Si deseas cambiar tu idioma al automatico, puedes hacerlo usando el comando `/ch
 
 Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
-1. Asegúrate de tener instalado Java Development Kit (JDK) 8 en tu sistema.
+1. Asegúrate de tener instalado preferiblemente Java Development Kit (JDK) 8 en tu sistema.
 2. Clona este repositorio en tu máquina local utilizando el siguiente comando:
 
    ```
@@ -63,6 +64,147 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
    Esto compilará todos los archivos fuente y generará un ChatTranslator.jar.
 
 Y eso es todo! :D
+
+## Lista de idiomas soportados:
+
+```
+AF    = Afrikaans,
+SQ    = shqiptare,
+AM    = አማርኛ,
+AR    = عرب,
+HY    = հայերեն,
+AS    = অসমীয়া,
+AY    = Aymara,
+AZ    = Azərbaycan,
+BM    = Bamanankan,
+EU    = euskara,
+BE    = беларускі,
+BN    = বাংলা,
+BHO   = भोसपुरी के बा,
+BS    = bosanski,
+BG    = български,
+CA    = Català,
+CEB   = Cebuano,
+ZH_CN = 简体中文,
+ZH    = 简体中文,
+ZH_TW = 繁體中文,
+CO    = Corsu,
+HR    = Hrvatski,
+CS    = čeština,
+DA    = dansk,
+DV    = ދިވެހި,
+DOI   = डोगरी,
+NL    = Nederlands,
+EN    = English,
+EO    = Esperanto,
+ET    = eesti keel,
+EE    = Eʋegbe,
+FIL   = Filipino Tagalog,
+FI    = Tarkoitukset,
+FR    = Français,
+FY    = Frysk,
+GL    = galego,
+KA    = ქართული,
+DE    = Deutsch,
+EL    = Ελληνικά,
+GN    = Guarani,
+GU    = ગુજરાતી,
+HT    = Kreyòl ayisyen,
+HA    = hausa,
+HAW   = ʻŌlelo Hawaiʻi,
+HE    = עִברִית,
+IW    = עִברִית,
+HI    = हिंदी,
+HMN   = Hmoob,
+HU    = Magyar,
+IS    = íslenskur,
+IG    = igbo,
+ILO   = Ilocano,
+ID    = bahasa Indonesia,
+GA    = Gaeilge,
+IT    = Italiano,
+JA    = 日本語,
+JV    = basa jawa,
+JW    = basa jawa,
+KN    = ಕ್ಯಾನರ್ಸ್,
+KK    = қазақ,
+KM    = ខ្មែរ,
+RW    = Kiñarwanda,
+GOM   = कोंकणी,
+KO    = 한국인,
+KRI   = Krio,
+KU    = Kurdî,
+CKB   = کوردی سۆرانی,
+KY    = Кыргызча,
+LO    = ຊາວລາວ,
+LA    = Latinus,
+LV    = latviski,
+LN    = Lingala,
+LT    = lietuvių,
+LG    = Oluganda,
+LB    = lëtzebuergesch,
+MK    = македонски,
+MAI   = मैथिली,
+MG    = Malagasy,
+MS    = Melayu,
+ML    = മലബാർ,
+MT    = Malti,
+MI    = Maori,
+MR    = मराठी,
+LUS   = Mizo tawng,
+MN    = Монгол,
+MY    = မြန်မာ,
+NE    = नेपाली,
+NO    = norsk,
+NY    = Nyanja Chichewa,
+OR    = ଘୃଣା oriya,
+OM    = Afaan Oromoo,
+PS    = پښتو,
+FA    = فارسی,
+PL    = Polski,
+PT    = Português,
+PA    = ਪੰਜਾਬੀ,
+QU    = Runasimi,
+RO    = Română,
+RU    = Русский,
+SM    = samoa,
+SA    = संस्कृत,
+GD    = Gàidhlig na h-Alba,
+NSO   = Sepedi,
+SR    = Српски,
+ST    = sesotho,
+SN    = Shona,
+SD    = سنڌي,
+SI    = සිංහල,
+SK    = slovenský,
+SL    = Slovenščina,
+SO    = Soomaali,
+ES    = Español,
+SU    = basa sunda,
+SW    = kiswahili,
+SV    = svenska,
+TL    = Tagalog Filipino,
+TG    = тоҷикӣ,
+TA    = தமிழ்,
+TT    = Татар,
+TE    = తెలుగు,
+TH    = แบบไทย,
+TI    = tigriña ዝብል ቃል ንረክብ,
+TS    = Tsonga,
+TR    = Türkçe,
+TK    = Türkmenler,
+AK    = Twi Akan .,
+UK    = українська,
+UR    = اردو,
+UG    = Uigur,
+UZ    = o'zbek,
+VI    = Tiếng Việt,
+CY    = Cymraeg,
+XH    = isiXhosa,
+YI    = יידיש,
+YO    = Yoruba,
+ZU    = Zulu.
+```
 
 ## Solución de problemas
 
