@@ -16,15 +16,13 @@ import majhrs16.cht.translator.api.Core;
 
 public class util {
 	private static ChatTranslator plugin = ChatTranslator.getInstance();
-	private static Pattern version       = Pattern.compile("\\d\\.\\d\\.\\d");
+	private static Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
 
 	public static double getMinecraftVersion() {
 		Matcher matcher = version.matcher(Bukkit.getVersion());
 
 		if (matcher.find()) {
-			String version = matcher.group(0);
-			version = version.substring(0, version.lastIndexOf("."));
-
+			String version = matcher.group(1) + "." + (matcher.group(3) == null ? 0 : matcher.group(3));
 			return Double.parseDouble(version);
 		}
 

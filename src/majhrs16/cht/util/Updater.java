@@ -56,7 +56,7 @@ public class Updater {
 
 				} else {
 					if (to_sender instanceof Player) {
-						if (util.getMinecraftVersion() < 1.8)
+						if (util.getMinecraftVersion() < 8.0) // 1.8.0
 							return;
 
 						Player player = (Player) to_sender;

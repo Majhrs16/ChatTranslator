@@ -40,7 +40,7 @@ public interface Core {
 	default public String getColor(String text) {
 //			Convierte el color RGB y tradicional a un formato visible.
 
-		if (util.getMinecraftVersion() >= 1.16) {
+		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
 			Matcher matcher;
 			while ((matcher = color_hex.matcher(text)).find())
 				text = text.replace(matcher.group(0), "" + ChatColor.of(matcher.group(0)));

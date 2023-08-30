@@ -35,7 +35,7 @@ public interface Msgs {
 			 if (formatted.getSender() instanceof Player) {
 				Player player = ((Player) formatted.getSender());
 
-				 if (util.getMinecraftVersion() >= 1.8) {
+				 if (util.getMinecraftVersion() >= 8.0) { // 1.8.0
 					TextComponent message = new TextComponent(formatted.getMessageFormat());
 
 					if (formatted.getToolTips() != null) {
