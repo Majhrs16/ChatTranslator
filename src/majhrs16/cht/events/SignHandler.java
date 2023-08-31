@@ -100,6 +100,9 @@ public class SignHandler implements Listener {
 			return;
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (event.getPlayer().isSneaking())
+				event.setCancelled(true);
+
 			Block block = event.getClickedBlock();
 
 			if (!(block.getState() instanceof Sign))

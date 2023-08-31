@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 
@@ -47,10 +48,8 @@ public class Updater {
 			con.setConnectTimeout(timed_out);
 			con.setReadTimeout(timed_out);
 			String latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-			if (latestVersion.length() <= 7) {
-				latestVersion = "&b" + latestVersion.replace(".", "&f.&b");
-
-				if (plugin.version.equals(latestVersion)) {
+			if (latestVersion.length() <= 8) {
+				if (ChatColor.stripColor(plugin.version).equals(latestVersion)) {
 					DC.setMessages("&a	Estas usando la última versión del plugin <3");
 						API.sendMessage(DC);
 

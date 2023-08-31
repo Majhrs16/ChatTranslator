@@ -15,24 +15,26 @@ import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public interface Core {
 	public GoogleTranslator GT = new GoogleTranslator();
 
 	Pattern sub_variables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
 	Pattern color_hex     = Pattern.compile("#[a-f0-9]{6}", Pattern.CASE_INSENSITIVE);
+	Pattern no_translate  = Pattern.compile("`(.+)`", Pattern.CASE_INSENSITIVE);
 	Pattern variables     = Pattern.compile("[\\%\\$][A-Z0-9_]+[\\%\\$]"); // ARREGLR EL lowercase EXCESIVO!!
 
 	default public String parseSubVarables(Player player, String input) {
-		Matcher matcher;
-		while ((matcher = sub_variables.matcher(input)).find())
+		Matcher matcher = sub_variables.matcher(input);
+		while (matcher.find())
 			input = input.replace(matcher.group(0), PlaceholderAPI.setPlaceholders(player, "%" + matcher.group(1) + "%"));
 		return  PlaceholderAPI.setPlaceholders(player, input);
 	}
 
 	default public String convertVariablesToLowercase(String input) {
-		Matcher matcher;
-		while ((matcher = variables.matcher(input)).find())
+		Matcher matcher = variables.matcher(input);
+		while (matcher.find())
 			input = input.replace(matcher.group(0), matcher.group(0).toLowerCase());
 		return input;
 	}
@@ -72,6 +74,9 @@ public interface Core {
 
 		Boolean color = to.getColor();
 		Boolean papi  = to.getFormatPAPI();
+
+		ArrayList<String> from_escapes = new ArrayList<String>();
+		ArrayList<String> to_escapes   = new ArrayList<String>();
 
 		if (from_message_format != null)
 			from_message_format = convertVariablesToLowercase(from_message_format);
@@ -177,6 +182,32 @@ public interface Core {
 			}
 		}
 
+		if (from_messages != null) {
+			Matcher matcher = no_translate.matcher(from_messages);
+			int i = 10;
+			while (matcher.find()) {
+				String escape = matcher.group(0);
+				if (!from_escapes.contains(escape)) {
+					from_escapes.add(escape);
+					from_messages = from_messages.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
+					i++;
+				}
+			}
+		}
+
+		if (to_messages != null) {
+			Matcher matcher = no_translate.matcher(to_messages);
+			int i = 10;
+			while (matcher.find()) {
+				String escape = matcher.group(0);
+				if (!to_escapes.contains(escape)) {
+					to_escapes.add(escape);
+					to_messages = to_messages.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
+					i++;
+				}
+			}
+		}
+
 		if (from_lang_source != null
 				&& from_lang_target != null
 				&& !from_lang_source.equals("off")
@@ -202,6 +233,25 @@ public interface Core {
 			if (to_tool_tips != null) // No hace falta pensar mas. Si from y to son de distinto idioma, mejor traducirlos...
 				to_tool_tips = GT.translate(to_tool_tips, to_lang_source, to_lang_target);
 		}
+
+		if (from_messages != null) {
+			int i = 10;
+			for (String escape : from_escapes) {
+				from_messages = from_messages.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
+				i++;
+			}
+		}
+
+		if (to_messages != null) {
+			int i = 10;
+			for (String escape : to_escapes) {
+				to_messages = to_messages.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
+				i++;
+			}
+		}
+
+		from_escapes = null;
+		to_escapes   = null;
 
 		if (from_message_format != null) {
 			from_message_format = from_message_format.replace("x00", "%ct_messages%");

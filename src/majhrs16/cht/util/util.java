@@ -1,18 +1,17 @@
 package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandSender;
+import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.translator.api.Core;
+import majhrs16.cht.ChatTranslator;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.translator.api.Core;
+import java.util.ArrayList;
 
 public class util {
 	private static ChatTranslator plugin = ChatTranslator.getInstance();

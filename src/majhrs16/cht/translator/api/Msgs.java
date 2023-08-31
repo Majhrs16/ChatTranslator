@@ -1,6 +1,7 @@
 package majhrs16.cht.translator.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -156,25 +157,27 @@ public interface Msgs {
 				|| from.getTo().equals(new Message()))
 			return;
 
-		List<Message> tos = new ArrayList<Message>();
+		Message to_model                     = from.getTo();
+		List<Message> tos                    = new ArrayList<Message>();
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
-		Message to_model = from.getTo();
+		for (Player to_player : players) {
+			if (from.getSender().equals(to_player)) {
+				if (players.size() > 1)
+					continue;
 
-		to_model.setSender(from.getSender());
-		to_model.setLangTarget(from.getLangTarget()); // Por si no se establece en el to_model el lang_target.
+				to_model.setSender(from.getSender());
+				to_model.setLangTarget(from.getLangTarget());
+				to_model.setCancelledThis(true);
 
-		to_model.setCancelledThis(true);  // Evitar duplicacion.
-		tos.add(from.clone());
-		from.setCancelledThis(true);      // Evitar duplicacion.
+			} else {
+				to_model.setSender(to_player);
+				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
+				to_model.setCancelledThis(false);
+			}
 
-		to_model.setCancelledThis(false); // Restaurar funcionalidad.
-		for (Player to_player : Bukkit.getOnlinePlayers()) {
-			if(from.getSender().equals(to_player))
-				continue;
-
-			to_model.setSender(to_player);
-			to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 			tos.add(from.clone());
+			from.setCancelledThis(true);
 		}
 
 		if (preBroadcastAction != null)
