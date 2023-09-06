@@ -82,12 +82,15 @@ public class CoreTranslator extends PlaceholderExpansion {
 			from_console.setTo(console);
 			from_console.setCancelledThis(true);
 
-		API.broadcast(from, tos -> {
-			tos.add(from_console);
+		API.broadcast(from, froms -> {
+			froms.add(from_console);
 
-			API.broadcast(tos, to -> API.sendMessage(to));
+			API.broadcast(froms, _from -> { // Controlar cada from.
+				API.sendMessage(_from);
+				_from.setCancelled(true); // Cancelar from y to alavez.
+			});
 
-			tos.clear(); // Evitar lanzar el broadcast por defecto.
+			froms.clear(); // Evitar lanzar el broadcast por defecto.
 		});
 
 		return "ok";
