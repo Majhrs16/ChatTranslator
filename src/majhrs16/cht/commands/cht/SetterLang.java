@@ -26,18 +26,23 @@ public class SetterLang {
 		API.setLang(DC.getSender(), lang);
 		plugin.savePlayers();
 
-		DC.setMessageFormat("%ct_messages% &b" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "&f.");
-		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a");
+		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b`" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`&f.");
 		DC.setLangTarget(lang);
 			API.sendMessage(DC);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setLangAnother(Message DC, String player, String lang) {
-		@SuppressWarnings("deprecation")
-		OfflinePlayer to_player = Bukkit.getOfflinePlayer(player);
+		OfflinePlayer to_player;
+		try {
+			to_player = Bukkit.getOfflinePlayer(player);
 
-		if (to_player == null || !to_player.hasPlayedBefore()) {
-			DC.getTo().setMessages("&7El jugador &f'&b" + player + "&f' &cno &cexiste&f.");
+			if (to_player == null) {
+				throw new NullPointerException();
+			}
+
+		} catch (NullPointerException e) {
+			DC.setMessages("&7El jugador &f'&b" + player + "&f' &cno &cexiste&f.");
 				API.sendMessage(DC);
 			return;
 		}
@@ -55,7 +60,7 @@ public class SetterLang {
 		plugin.savePlayers();
 
 		String msg = String.format(
-			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b%s&f.",
+			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
 			DC.getSenderName(),
 			to_player.getName(),
 			GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()

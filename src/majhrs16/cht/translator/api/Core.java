@@ -276,19 +276,17 @@ public interface Core {
 		if (to_message_format != null)
 			to_message_format = getColor(to_message_format);
 
-		if (color) {
-			if (from_tool_tips != null)
-				from_tool_tips = getColor(from_tool_tips);
+		if (from_tool_tips != null && (color || (from_player != null && Permissions.chattranslator.Color.FROM_COLOR.IF(from_player))))
+			from_tool_tips = getColor(from_tool_tips);
 
-			if (to_tool_tips != null)
-				to_tool_tips = getColor(to_tool_tips);
+		if (to_tool_tips != null && (color || (to_player != null && Permissions.chattranslator.Color.TO_COLOR.IF(to_player))))
+			to_tool_tips = getColor(to_tool_tips);
 
-			if (from_messages != null && from_player != null && Permissions.chattranslator.Color.FROM_COLOR.IF(from_player))
-				from_messages = getColor(from_messages);
+		if (from_messages != null && (color || (from_player != null && Permissions.chattranslator.Color.FROM_COLOR.IF(from_player))))
+			from_messages = getColor(from_messages);
 
-			if (to_messages != null && to_player != null && Permissions.chattranslator.Color.TO_COLOR.IF(to_player))
-				to_messages = getColor(to_messages);
-		}
+		if (to_messages != null && (color || (to_player != null && Permissions.chattranslator.Color.TO_COLOR.IF(to_player))))
+			to_messages = getColor(to_messages);
 
 		if (from_message_format != null) {
 			if (from_messages != null)

@@ -70,7 +70,7 @@ public interface Lang {
 
 				} catch (SQLException e) {
 					DC.setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
-					ChatTranslatorAPI.getInstance().sendMessage(DC);
+						ChatTranslatorAPI.getInstance().sendMessage(DC);
 				}
 				break;
 
