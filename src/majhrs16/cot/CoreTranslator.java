@@ -22,8 +22,11 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
+	public boolean persist()      { return true; }
+	public boolean canRegister()  { return true; }
+
 	public String getAuthor()     { return "Majhrs16"; }
-	public String getVersion()    { return "b1.3.3"; }
+	public String getVersion()    { return "b1.3.5"; }
 	public String getIdentifier() { return "cot"; }
 
 //	"\\[['\"]?.+['\"]?, *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *[true|false], *['\"]?.+['\"]?, *[true|false], *[true|false]\\]";
