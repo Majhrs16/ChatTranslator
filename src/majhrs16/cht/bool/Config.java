@@ -7,7 +7,7 @@ public enum Config {
     UPDATE_CONFIG	("auto-update-config"),
     CHECK_UPDATES	("check-updates"),
     FORMAT_PAPI		("use-PAPI-format"),
-    CHAT_COLOR		("chat-color-personalized"),
+    CHAT_COLOR		("chat-custom-colors"),
     DEBUG			("debug");
 
     private final String path;
@@ -17,7 +17,7 @@ public enum Config {
     }
 
     public boolean IF() {
-        return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
+        return util.IF(ChatTranslator.getInstance().config.get(), getPath());
     }
 
     public String getPath() {
@@ -35,7 +35,7 @@ public enum Config {
         }
 
         public boolean IF() {
-            return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
+            return util.IF(ChatTranslator.getInstance().config.get(), getPath());
         }
 
         public String getPath() {
@@ -54,7 +54,7 @@ public enum Config {
         }
 
         public boolean IF() {
-            return util.IF(ChatTranslator.getInstance().getConfig(), getPath());
+            return util.IF(ChatTranslator.getInstance().config.get(), getPath());
         }
 
         public String getPath() {

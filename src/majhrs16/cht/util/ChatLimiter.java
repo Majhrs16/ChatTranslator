@@ -20,7 +20,7 @@ public class ChatLimiter {
 		Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
 			int max_messages_per_tick     = 7;
 			Map<Player, CacheSpam> counts = new HashMap<>();
-			FileConfiguration config      = plugin.getConfig();
+			FileConfiguration config      = plugin.config.get();
 			CacheSpam spam                = new CacheSpam(0.0F,
 				config.contains("max-spam-per-tick")
 					? Float.valueOf(config.getString("max-spam-per-tick"))
@@ -34,7 +34,7 @@ public class ChatLimiter {
 				if (spam.getCountInt() > spam.getMaxInt() && spam.getMax() > 0.0F) {
 					counts.clear();
 
-					config = plugin.getConfig();
+					config = plugin.config.get();
 
 					if (Config.DEBUG.IF())
 						Bukkit.getConsoleSender().sendMessage("Debug 11: " + spam.getCount() + ", " + spam.getMax());

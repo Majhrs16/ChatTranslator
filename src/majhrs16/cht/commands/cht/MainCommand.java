@@ -116,7 +116,7 @@ public class MainCommand implements CommandExecutor {
 				DC.setMessages("&aRestableciendo la config&f...");
 					API.sendMessage(DC);
 
-				plugin.resetConfig();
+				plugin.config.reset();
 				new Updater().updateConfig();
 
 				DC.setMessages("&aSe ha restablecido la config exitosamente&f.");

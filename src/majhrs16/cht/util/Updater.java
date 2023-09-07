@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.io.File;
 import java.net.URL;
@@ -112,7 +113,7 @@ public class Updater {
 	public void updateConfig() {
 		String path, tmp;
 		Boolean cancel_event, clear_recipients;
-		FileConfiguration config = plugin.getConfig();
+		FileConfiguration config = plugin.config.get();
 
 		String _path = "config-version";
 		if (!config.contains(_path))
@@ -160,13 +161,13 @@ public class Updater {
 				config.set(Config.TranslateOthers.SIGNS.getPath(), true);
 			}
 
-			config_version = 4;
+			config_version = 5;
 		}
 
 		path = "auto-update-config";
 		if (config.contains(path) && !util.IF(config, path)) { // Solo por nostalgia lo dejare asi :,3
 			config.set(_path, config_version);
-			plugin.saveConfig();
+			plugin.config.save();
 			return;
 		}
 		
@@ -291,8 +292,32 @@ public class Updater {
 			config_version = 4;
 		}
 
+		if (config_version < 5) {
+			path = "chat-color-personalized";
+			config.set("chat-custom-colors", config.getString(path));
+			config.set(path, null);
+
+			path = "formats.from_entry.messages";
+			if (config.contains(path)) {
+				List<String> from_entry = config.getStringList(path);
+				for (int i = 0; i < from_entry.size(); i++)
+					from_entry.set(i, from_entry.get(i).replace("$ct_messages$", "%ct_messages%"));
+				config.set(path, from_entry);
+			}
+
+			path = "formats.from_exit.messages";
+			if (config.contains(path)) {
+				List<String> from_exit = config.getStringList(path);
+				for (int i = 0; i < from_exit.size(); i++)
+					from_exit.set(i, from_exit.get(i).replace("$ct_messages$", "%ct_messages%"));
+				config.set(path, from_exit);
+			}
+
+			config_version = 5;
+		}
+
 		config.set(_path, config_version);
-		plugin.saveConfig();
+		plugin.config.save();
 
 		if (config_version > config_version_original) {
 			DC.setMessages(String.format(

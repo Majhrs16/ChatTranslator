@@ -2,7 +2,7 @@ main: majhrs16.cht.ChatTranslator
 name: ChatTranslator
 author: Majhrs16
 load: POSTWORLD
-version: 1.7.4
+version: 1.7.5
 
 softdepend:
 - PlaceholderAPI

@@ -5,9 +5,14 @@ import majhrs16.lib.storages.Database;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+
 import java.util.UUID;
 
 public class SQL extends Database {
+	public SQL(String driver, String type) {
+		super(driver, type);
+	}
+
 	public void createTable() throws SQLException {
 		String sql = "CREATE TABLE IF NOT EXISTS Players (UUID TEXT, Lang TEXT)";
 		conn.createStatement().execute(sql);

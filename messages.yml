@@ -1,0 +1,25 @@
+native-lang: es
+
+plugin:
+  name: "&aChat&9Translator"
+  version: "&b%version%"
+  title:
+    text: "&6<&e[ %name% &e]&6>"
+    UTF-8:
+    - ""
+    - "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗"
+    - "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗"
+    - "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝"
+    - "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝"
+  separator: "&c<&4-------------------------&c>"
+  UTF-8:
+    yes: "&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en &BUTF&f-&b8&f."
+    no: "&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&e en &bUTF&f-&b8&f."
+
+starting:
+- "%separator%"
+- "%title%"
+- "&a	Activado&f, &7Version&f: &b%version%&f."
+- "%separator%"
+
+config-version: 1

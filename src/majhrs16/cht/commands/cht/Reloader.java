@@ -17,7 +17,7 @@ public class Reloader {
 			DC.setMessages("&bconfig&f.&byml");
 
 			try {
-				plugin.reloadConfig();
+				plugin.config.reload();
 				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
 			} catch (IllegalArgumentException e) {
@@ -29,7 +29,7 @@ public class Reloader {
 			DC.setMessages("&bsigns&f.&byml");
 
 			try {
-				plugin.reloadSigns();
+				plugin.signs.reload();
 				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
 			} catch (IllegalArgumentException e) {
@@ -38,7 +38,7 @@ public class Reloader {
 
 			API.sendMessage(DC);
 
-			switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+			switch (plugin.config.get().getString("storage.type").toLowerCase()) {
 				case "yaml":
 					DC.setMessages("&bplayers&f.&byml&f");
 					break;
@@ -57,7 +57,7 @@ public class Reloader {
 			}
 
 			try {
-				plugin.reloadPlayers();
+				plugin.players.reloads();
 				DC.setMessages("&7[  &aOK  &7] " + DC.getMessages());
 
 			} catch (IllegalArgumentException e) {

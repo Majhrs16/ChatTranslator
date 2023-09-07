@@ -24,14 +24,14 @@ formats:
 
   from_entry:
     messages:
-    - '&e$ct_messages$'
+    - '&e%ct_messages%'
   to_entry:
     messages:
     - '&e$ct_messages$'
 
   from_exit:
     messages:
-    - '&e$ct_messages$'
+    - '&e%ct_messages%'
   to_exit:
     messages:
     - '&e$ct_messages$'
@@ -49,7 +49,7 @@ auto-translate-others:
   signs: true
 
 server-uuid: "null"
-chat-color-personalized: true
+chat-custom-colors: true
 auto-update-config: true
 show-native-chat:
   cancel-event: true

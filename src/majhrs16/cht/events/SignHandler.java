@@ -112,7 +112,7 @@ public class SignHandler implements Listener {
 
 			String path   = String.format("%s_%s_%s_%s", block.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
 
-			FileConfiguration signs = plugin.getSigns();
+			FileConfiguration signs = plugin.signs.get();
 			Message from = util.getDataConfigDefault();
 				from.setLangSource(signs.getString(path + ".lang"));
 				from.setLangTarget(API.getLang(event.getPlayer()));
@@ -217,7 +217,7 @@ public class SignHandler implements Listener {
 		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
 			return;
 
-		FileConfiguration signs = plugin.getSigns();
+		FileConfiguration signs = plugin.signs.get();
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();
 		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
@@ -226,8 +226,8 @@ public class SignHandler implements Listener {
 			signs.set(path + ".text", null);
 			signs.set(path + ".lang", null);
 			signs.set(path, null);
-			plugin.saveSigns();
-			plugin.reloadSigns();
+			plugin.signs.save();
+			plugin.signs.reload();
 		}
 	}
 
@@ -236,7 +236,7 @@ public class SignHandler implements Listener {
 		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
 			return;
 
-		FileConfiguration signs = plugin.getSigns();
+		FileConfiguration signs = plugin.signs.get();
 		Player player = event.getPlayer();
 		Block block   = event.getBlock();
 		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), block.getX(), block.getY(), block.getZ());
@@ -246,7 +246,7 @@ public class SignHandler implements Listener {
 
 		signs.set(path + ".text", event.getLines());
 		signs.set(path + ".lang", API.getLang(player));
-		plugin.saveSigns();
-		plugin.reloadSigns();
+		plugin.signs.save();
+		plugin.signs.reload();
 	}
 }

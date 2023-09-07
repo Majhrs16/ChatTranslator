@@ -34,7 +34,7 @@ public class Chat implements Listener {
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(to_model, tos -> tos.add(from_console));
+		API.broadcast(to_model, froms -> froms.add(from_console));
 
 		if (Config.NativeChat.CLEAR.IF()) {
 			event.getRecipients().clear();

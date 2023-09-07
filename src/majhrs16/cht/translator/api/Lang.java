@@ -27,7 +27,7 @@ public interface Lang {
 
 		UUID uuid;
 		ChatTranslator plugin     = ChatTranslator.getInstance();
-		FileConfiguration config  = plugin.getConfig();
+		FileConfiguration config  = plugin.config.get();
 		Message DC = util.getDataConfigDefault();
 
 		try {
@@ -54,18 +54,19 @@ public interface Lang {
 			uuid = UUID.fromString(config.getString("server-uuid"));
 		}
 
-		switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+		switch (plugin.config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
-				plugin.getPlayers().set(uuid.toString(), lang);;
+				plugin.players.get().set(uuid.toString(), lang);
+				plugin.players.save();
 				break;
 
 			case "sqlite":
 				try {
-					if (plugin.getSQLite().get(uuid) == null) {
-						plugin.getSQLite().insert(uuid, lang);
+					if (plugin.sqlite.get(uuid) == null) {
+						plugin.sqlite.insert(uuid, lang);
 
 					} else {
-						plugin.getSQLite().update(uuid, lang);
+						plugin.sqlite.update(uuid, lang);
 					}
 
 				} catch (SQLException e) {
@@ -76,11 +77,11 @@ public interface Lang {
 
 			case "mysql":
 				try {
-					if (plugin.getMySQL().get(uuid) == null) {
-						plugin.getMySQL().insert(uuid, lang);
+					if (plugin.mysql.get(uuid) == null) {
+						plugin.mysql.insert(uuid, lang);
 
 					} else {
-						plugin.getMySQL().update(uuid, lang);
+						plugin.mysql.update(uuid, lang);
 					}
 
 				} catch (SQLException e) {
@@ -115,7 +116,7 @@ public interface Lang {
 		UUID uuid;
 		ChatTranslator plugin     = ChatTranslator.getInstance();
 		String lang               = null;
-		FileConfiguration config  = plugin.getConfig();
+		FileConfiguration config  = plugin.config.get();
 		String defaultLang        = config.getString("default-lang");
 		Message DC                = new Message(); // Duplique el codigo del util.getDataConfigDefault ya que no veo otra forma.
 			DC.setTo(null); // Necesario para evitar crashes.
@@ -141,9 +142,9 @@ public interface Lang {
 			uuid = UUID.fromString(config.getString("server-uuid"));
 		}
 
-		switch (plugin.getConfig().getString("storage.type").toLowerCase()) {
+		switch (plugin.config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
-				FileConfiguration players = plugin.getPlayers();
+				FileConfiguration players = plugin.players.get();
 				if (players.contains(uuid.toString())) {
 					lang = players.getString(uuid.toString());
 				}
@@ -151,7 +152,7 @@ public interface Lang {
 
 			case "sqlite":
 				try {
-					lang = plugin.getSQLite().get(uuid);
+					lang = plugin.sqlite.get(uuid);
 
 				} catch (SQLException e) {
 					DC.setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
@@ -164,7 +165,7 @@ public interface Lang {
 
 			case "mysql":
 				try {
-					lang = plugin.getMySQL().get(uuid);
+					lang = plugin.mysql.get(uuid);
 
 				} catch (SQLException e) {
 					DC.setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
@@ -208,7 +209,7 @@ public interface Lang {
 			sender,
 			getLang(
 				Bukkit.getConsoleSender(),
-				ChatTranslator.getInstance().getConfig().getString("default-lang")
+				ChatTranslator.getInstance().config.get().getString("default-lang")
 		));
 	}
 }

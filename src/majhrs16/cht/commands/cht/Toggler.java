@@ -28,14 +28,18 @@ public class Toggler {
 		}
 
 		API.setLang(player2, "disabled");
-		plugin.savePlayers();
 
 		sender.getTo().setMessages(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
 			API.sendMessage(sender);
 	}
 	
 	public void TogglePlugin(CommandSender sender) {
-		plugin.setDisabled(!plugin.isDisabled());
-		sender.sendMessage("" + plugin.isDisabled());
+		if (plugin.isDisabled())
+			plugin.onEnable();
+
+		else
+			plugin.onDisable();
+
+		sender.sendMessage("" + !plugin.isDisabled());
 	}
 }

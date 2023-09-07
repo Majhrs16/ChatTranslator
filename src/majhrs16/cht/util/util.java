@@ -60,7 +60,7 @@ public class util {
 	}
 
 	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
-		FileConfiguration config = plugin.getConfig();
+		FileConfiguration config = plugin.config.get();
 
 		if (path == null)
 			path = "";

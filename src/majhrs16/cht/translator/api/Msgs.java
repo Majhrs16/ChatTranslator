@@ -152,17 +152,18 @@ public interface Msgs {
 	}
 
 	default  public void broadcast(Message from, Consumer<List<Message>> preBroadcastAction) {
-		if (from == null
-				|| from.equals(new Message())
-				|| from.getTo().equals(new Message()))
+		if (from == null || from.equals(new Message()))
 			return;
 
+		if (from.getTo() == null || from.getTo().equals(new Message()))
+			from.setTo(from.clone());
+
 		Message to_model                     = from.getTo();
-		List<Message> tos                    = new ArrayList<Message>();
+		List<Message> froms                  = new ArrayList<Message>();
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 
 		for (Player to_player : players) {
-			if (from.getSender().equals(to_player)) {
+			if (from.getSender() == to_player) {
 				if (players.size() > 1)
 					continue;
 
@@ -176,14 +177,14 @@ public interface Msgs {
 				to_model.setCancelledThis(false);
 			}
 
-			tos.add(from.clone());
+			froms.add(from.clone());
 			from.setCancelledThis(true);
 		}
 
 		if (preBroadcastAction != null)
-			preBroadcastAction.accept(tos);
+			preBroadcastAction.accept(froms);
 
-		broadcast(tos);
+		broadcast(froms);
 	}
 
 	default public void broadcast(Message to_model) {

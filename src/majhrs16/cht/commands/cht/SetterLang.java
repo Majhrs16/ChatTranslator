@@ -3,14 +3,14 @@ package majhrs16.cht.commands.cht;
 import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.ChatTranslator;
+// import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
 
 public class SetterLang {
-	private ChatTranslator plugin = ChatTranslator.getInstance();
+//	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void setLang(Message DC, String lang) {
@@ -24,7 +24,6 @@ public class SetterLang {
 		}
 
 		API.setLang(DC.getSender(), lang);
-		plugin.savePlayers();
 
 		DC.setMessages("&7Su idioma ha sido &aestablecido&7 a &b`" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`&f.");
 		DC.setLangTarget(lang);
@@ -37,7 +36,7 @@ public class SetterLang {
 		try {
 			to_player = Bukkit.getOfflinePlayer(player);
 
-			if (to_player == null) {
+			if (to_player == null || !to_player.hasPlayedBefore()) {
 				throw new NullPointerException();
 			}
 
@@ -57,7 +56,6 @@ public class SetterLang {
 		}
 
 		API.setLang(to_player, lang);
-		plugin.savePlayers();
 
 		String msg = String.format(
 			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
@@ -69,8 +67,8 @@ public class SetterLang {
 		Message from = util.getDataConfigDefault();
 			from.setMessages(msg);
 
-		Message to_model = util.getDataConfigDefault();
-			to_model.setMessages(msg);
+		Message to_model = from.clone();
+			to_model.setMessageFormat("$ct_messages$");
 		from.setTo(to_model);
 
 		API.broadcast(from);

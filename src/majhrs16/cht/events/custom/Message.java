@@ -81,7 +81,7 @@ public class Message extends Event implements Cancellable {
 	private String getChat(String format, String chat) {
 		if (format == null)
 			return format;
-		FileConfiguration config = plugin.getConfig();
+		FileConfiguration config = plugin.config.get();
 		String path = "formats." + format + "."  + chat;
 		if (Config.DEBUG.IF())
 			System.out.println("DEBUG: " + config.contains(path));

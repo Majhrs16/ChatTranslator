@@ -1,24 +1,24 @@
 package majhrs16.cht;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import majhrs16.cht.translator.ChatTranslatorAPI;
+// import majhrs16.cht.commands.CommandHandler;
 import majhrs16.cht.commands.cht.MainCommand;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.storage.data.SQLite;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
-import majhrs16.cht.storage.data.MySQL;
 import majhrs16.cht.bool.Dependencies;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.Updater;
+import majhrs16.cht.storage.Players;
+import majhrs16.cht.storage.SQL;
 import majhrs16.cht.events.Chat;
 import majhrs16.cht.events.Msg;
 import majhrs16.cht.util.util;
+
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
@@ -27,11 +27,14 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 
 public class ChatTranslator extends JavaPlugin {
-	private YAML signs;
-	private MySQL mysql;
-	private YAML config;
-	private YAML players;
-	private SQLite sqlite;
+	public SQL mysql;
+	public SQL sqlite;
+	public YAML signs;
+	public YAML config;
+	public YAML messages;
+	public YAML commands;
+	public Players players;
+
 	private static ChatTranslator plugin;
 
 	private boolean is_disabled           = true;
@@ -39,7 +42,7 @@ public class ChatTranslator extends JavaPlugin {
 	private ChatTranslatorAPI API         = ChatTranslatorAPI.getInstance();
 
 	public final String name       = "&aChat&9Translator";
-	public final String version    = "&bv" + pdffile.getVersion().replace(".", "&f.&b");
+	public final String version    = "&bb" + pdffile.getVersion().replace(".", "&f.&b");
 	public final String sep        = "&c<&4-------------------------&c>";
 	public final String title      = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
 	public final String title_UTF8 = "\n"
@@ -51,15 +54,15 @@ public class ChatTranslator extends JavaPlugin {
 	public void onEnable() {
 		plugin  = this;
 
-		if (!isDisabled())
-			return;
+		signs    = new YAML(plugin, "signs.yml");
+		config   = new YAML(plugin, "config.yml");
+		players  = new Players(plugin, "players.yml");
+		messages = new YAML(plugin, "messages.yml");
+		commands = new YAML(plugin, "commands.yml");
+		sqlite   = new SQL("org.sqlite.JDBC", "sqlite");
+		mysql    = new SQL("com.mysql.jdbc.Driver", "mysql");
 
-		signs   = new YAML(plugin, "signs.yml");
-		config  = new YAML(plugin, "config.yml");
-		players = new YAML(plugin, "players.yml");
-		sqlite  = new SQLite();
-		mysql   = new MySQL();
-
+		commands.register();
 		config.register();
 		signs.register();
 		new Updater().updateConfig();
@@ -76,11 +79,13 @@ public class ChatTranslator extends JavaPlugin {
 		from.setMessages(sep);
 			API.sendMessage(from);
 
+/*
 		if (Dependencies.ProtocolLib.exist())
 			if (Bukkit.getVersion().contains("1.20")) {
 				from.setMessages("&eAdvertencia&f: &cProtocolLib no esta soportado en la 1.20.x&f(&7Hasta la fecha&f: &b12/08/2023&f), &eNo se asegura que funcione&f...");
 					API.sendMessage(from);
 			}
+*/
 
 //		from.setMessages(" "); API.sendMessage(from);
 
@@ -123,9 +128,6 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		if (isDisabled())
-			return;
-
 		majhrs16.cht.util.ChatLimiter.chat.clear();
 
 		Message from = util.getDataConfigDefault();
@@ -143,7 +145,7 @@ public class ChatTranslator extends JavaPlugin {
 	
 			case "sqlite":
 				try {
-					getMySQL().disconnect();
+					sqlite.disconnect();
 					from.setMessages("\t&aDesconectado de SQLite&f.");
 						API.sendMessage(from);
 
@@ -156,7 +158,7 @@ public class ChatTranslator extends JavaPlugin {
 	
 			case "mysql":
 				try {
-					getMySQL().disconnect();
+					mysql.disconnect();
 					from.setMessages("\t&aDesconectado de MySQL&f.");
 						API.sendMessage(from);
 
@@ -189,16 +191,17 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void setDisabled(boolean isDisabled) {
 		this.is_disabled = isDisabled;
-
-		if (isDisabled())
-			plugin.onDisable();
-
-		else
-			plugin.onEnable();
 	}
 
 	public void registerCommands() {
-		MainCommand main_command = new MainCommand();
+		/*for (String key : commands.get().getKeys(false)) {
+			if (!key.equals("config-version")) {
+				Bukkit.getLogger().warning(key);
+				getCommand(key).setExecutor(new CommandHandler(key));
+			}
+		}*/
+
+		MainCommand main_command = new MainCommand(); 
 		getCommand("chattranslator").setExecutor(main_command);
 		getCommand("cht").setExecutor(main_command);
 	}
@@ -220,14 +223,14 @@ public class ChatTranslator extends JavaPlugin {
 	public boolean registerStorage() {
 		Message from = util.getDataConfigDefault();
 
-		String storageType = getConfig().getString("storage.type").toLowerCase();
+		String storageType = config.get().getString("storage.type").toLowerCase();
 		switch (storageType) {
 			case "yaml":
 				players.register();
 				break;
 
 			case "sqlite":
-				sqlite.set(null, 0, getConfig().getString("storage.database"), null, null);
+				sqlite.set(null, 0, config.get().getString("storage.database"), null, null);
 				try {
 					sqlite.connect();
 					sqlite.createTable();
@@ -245,11 +248,11 @@ public class ChatTranslator extends JavaPlugin {
 
 			case "mysql":
 				mysql.set(
-					getConfig().getString("storage.host"),
-					getConfig().getInt("storage.port"),
-					getConfig().getString("storage.database"),
-					getConfig().getString("storage.user"),
-					getConfig().getString("storage.password")
+					config.get().getString("storage.host"),
+					config.get().getInt("storage.port"),
+					config.get().getString("storage.database"),
+					config.get().getString("storage.user"),
+					config.get().getString("storage.password")
 				);
 				try {
 					mysql.connect();
@@ -273,53 +276,5 @@ public class ChatTranslator extends JavaPlugin {
 		}
 		
 		return false;
-	}
-
-	public MySQL getMySQL() { return mysql; }
-	public SQLite getSQLite() { return sqlite; }
-
-	public FileConfiguration getConfig() { return config.get(); }
-	public void reloadConfig() { config.reload(); }
-	public void resetConfig() { config.reset(); }
-	public void saveConfig() { config.save(); }
-
-	public FileConfiguration getSigns() { return signs.get(); }
-	public void reloadSigns() { signs.reload(); }
-	public void resetSigns() { signs.reset(); }
-	public void saveSigns() { signs.save(); }
-
-	public FileConfiguration getPlayers() { return players.get(); }
-	public void reloadPlayers() throws SQLException {
-		setDisabled(true);
-
-		String storageType = getConfig().getString("storage.type").toLowerCase();
-		switch (storageType) {
-			case "yaml":
-				players.reload();
-				break;
-
-			case "sqlite":
-				sqlite.disconnect();
-				registerStorage();
-				break;
-
-			case "mysql":
-				mysql.disconnect();
-				registerStorage();
-				break;
-
-			default:
-				Message from = util.getDataConfigDefault();
-					from.setMessages(title + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
-				API.sendMessage(from);
-		}
-
-		setDisabled(false);
-	}
-
-	public void savePlayers() {
-		if (getConfig().getString("storage.type").toLowerCase().equals("yaml")) {
-			players.save();
-		}
 	}
 }
