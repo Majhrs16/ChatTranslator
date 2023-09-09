@@ -13,10 +13,43 @@ import majhrs16.cht.util.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public interface Lang {
+	public class LocaleUtil {
+		private static Field localeField;
+		private static Method getHandleMethod;
+
+		static {
+			try {
+				getHandleMethod = Player.class.getDeclaredMethod("getHandle");
+				getHandleMethod.setAccessible(true);
+				Class<?> entityPlayerClass = getHandleMethod.getReturnType();
+				localeField = entityPlayerClass.getField("locale");
+			} catch (NoSuchMethodException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		}
+
+		public static String getPlayerLocale(Player player) {
+			FileConfiguration config = ChatTranslator.getInstance().config.get();
+
+			if (localeField == null)
+				return config.getString("defaultLang");
+
+			try {
+				Object entityPlayer = getHandleMethod.invoke(player);
+				return (String) localeField.get(entityPlayer);
+
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+				return config.getString("defaultLang");
+			}
+		}
+	}
+
 	default public void setLang(Object sender, String lang) throws IllegalArgumentException {
 //		Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
 //			setLang(player, "es");        -> null,
@@ -92,23 +125,6 @@ public interface Lang {
 		}
 	}
 
-	default public String getPlayerLocale(Player player) {
-		try {
-			Class<?> craftPlayerClass = player.getClass();
-			Method getHandleMethod = craftPlayerClass.getDeclaredMethod("getHandle");
-			getHandleMethod.setAccessible(true);
-			Object entityPlayer = getHandleMethod.invoke(player);
-
-			Field localeField = entityPlayer.getClass().getField("locale");
-			localeField.setAccessible(true);
-			return (String) localeField.get(entityPlayer);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "en_US"; // Valor predeterminado en caso de error
-		}
-	}
-
 	default String getLang(Object sender, String to_lang) {
 	//		Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
 	//		Ejemplo: getLang(Alejo09Games) -> String = "en"
@@ -179,7 +195,14 @@ public interface Lang {
 
 		if (lang == null || lang.equals("auto")) {
 			if (sender instanceof Player) { //  && util.checkPAPI()
-				lang = getPlayerLocale((Player) sender).split("_")[0];
+				String locale = LocaleUtil.getPlayerLocale((Player) sender);
+				if (locale != null) {
+					lang = locale.split("_")[0];
+
+				} else {
+					lang = defaultLang;
+				}
+
 //				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
 
 			} else {

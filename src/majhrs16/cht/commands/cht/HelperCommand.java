@@ -18,7 +18,7 @@ public class HelperCommand {
 		"&e  /cht\n"
 			+ "&aMuestra este mismo mensaje de ayuda&f.",
 		"",
-		"&e  lang &f[&6player&f] &f<&6lang&f>\n"
+		"&e    lang &f[&6player&f] &f<&6lang&f>\n"
 			+ "&7Especifique con su &bcodigo de idioma&f, &apara traducir el chat a su gusto&f,\n"
 			+ "&f  (&7Independientemente de su lenguaje en el Minecraft&f)\n"
 			+ "\n"
@@ -29,17 +29,17 @@ public class HelperCommand {
 			+ "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la traduccion\n"
 			+ "&7    automatica para el jugador especificado&f.",
 		"",
-		"&e  version\n"
+		"&e    version\n"
 			+ "&aVisualizar version&f.",
 		"",
-		"&e  reload\n"
+		"&e    reload\n"
 			+ "&aRecargar config&f.",
 		"",
-		"&e  toggle &f[&6player&f]\n"
+		"&e    toggle &f[&6player&f]\n"
 			+ "&aActiva &7o &cdesactiva &7el chat para el jugador o por defecto en global&f,\n"
 			+ "&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f.",
 		"",
-		"&e  reset\n" 
+		"&e    reset\n" 
 			+ "&4Restablece la config&f,&e Pero no los datos de lenguajes&f.",
 		"",
 	};

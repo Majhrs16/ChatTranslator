@@ -1,17 +1,16 @@
 package majhrs16.cht;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
-// import majhrs16.cht.commands.CommandHandler;
-import majhrs16.cht.commands.cht.MainCommand;
+import majhrs16.cht.events.CommandHandler;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
 import majhrs16.cht.bool.Dependencies;
 import majhrs16.cht.util.ChatLimiter;
+import majhrs16.cht.storage.Players;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.Updater;
-import majhrs16.cht.storage.Players;
 import majhrs16.cht.storage.SQL;
 import majhrs16.cht.events.Chat;
 import majhrs16.cht.events.Msg;
@@ -19,7 +18,6 @@ import majhrs16.cht.util.util;
 
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
 
@@ -194,16 +192,30 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerCommands() {
-		/*for (String key : commands.get().getKeys(false)) {
+		/*
+		for (String key : commands.get().getKeys(false)) {
 			if (!key.equals("config-version")) {
-				Bukkit.getLogger().warning(key);
-				getCommand(key).setExecutor(new CommandHandler(key));
-			}
-		}*/
+				PluginCommand pc = getCommand(key);
 
+				if (pc == null) {
+					Message from = util.getDataConfigDefault();
+
+					from.setMessages("&cNo fue posible registrar el comando principal&f: &b`" + key + "`");
+						API.sendMessage(from);
+
+				} else {
+					CommandHandler ch = new CommandHandler(key);
+					pc.setExecutor(ch);
+				}
+			}
+		}
+		*/
+
+		/*
 		MainCommand main_command = new MainCommand(); 
 		getCommand("chattranslator").setExecutor(main_command);
 		getCommand("cht").setExecutor(main_command);
+		*/
 	}
 
 	public void registerEvents() {
@@ -211,6 +223,7 @@ public class ChatTranslator extends JavaPlugin {
 		pm.registerEvents(new AccessPlayer(), this);
 		pm.registerEvents(new Chat(), this);
 		pm.registerEvents(new Msg(), this);
+		pm.registerEvents(new CommandHandler(), this);
 
 //		if (Dependencies.ProtocolLib.exist()) {
 			pm.registerEvents(new SignHandler(), this);
