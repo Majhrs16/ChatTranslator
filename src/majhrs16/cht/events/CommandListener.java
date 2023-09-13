@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import majhrs16.cht.commands._CommandHandler;
+import majhrs16.cht.commands.CommandHandler;
 
-public class CommandHandler implements Listener {
+public class CommandListener implements Listener {
 	public boolean preProcessCommand(CommandSender sender, String command_line) {
 		String[] command_parts;
 
@@ -23,7 +23,7 @@ public class CommandHandler implements Listener {
 		String[] args = new String[command_parts.length - 1];
 		System.arraycopy(command_parts, 1, args, 0, command_parts.length - 1);
 
-		return new _CommandHandler().onCommand(sender, null, command_base, args);
+		return new CommandHandler().onCommand(sender, null, command_base, args);
 	}
 
 	@EventHandler

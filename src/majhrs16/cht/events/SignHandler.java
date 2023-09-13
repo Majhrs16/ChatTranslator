@@ -21,8 +21,9 @@ import org.bukkit.entity.Player;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.lib.storages.YAML.ParseYamlException;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -120,6 +121,8 @@ public class SignHandler implements Listener {
 			List<String> lines = signs.getStringList(path + ".text");
 			for (int i = 0; i < lines.size(); i++) {
 				String line = lines.get(i);
+
+				System.out.println("Line sign: " + i + " text: '" + line + "'");
 
 				if (line.isEmpty())
 					continue;
@@ -227,7 +230,13 @@ public class SignHandler implements Listener {
 			signs.set(path + ".lang", null);
 			signs.set(path, null);
 			plugin.signs.save();
-			plugin.signs.reload();
+
+			try {
+				plugin.signs.reload();
+
+			} catch (ParseYamlException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -247,6 +256,11 @@ public class SignHandler implements Listener {
 		signs.set(path + ".text", event.getLines());
 		signs.set(path + ".lang", API.getLang(player));
 		plugin.signs.save();
-		plugin.signs.reload();
+		try {
+			plugin.signs.reload();
+
+		} catch (ParseYamlException e) {
+			e.printStackTrace();
+		}
 	}
 }

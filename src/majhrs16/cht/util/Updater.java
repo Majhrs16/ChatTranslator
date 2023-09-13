@@ -8,16 +8,16 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.ChatColor;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.util.cache.internal.Texts;
+import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.events.custom.Message;
-
-import majhrs16.cht.bool.Dependencies;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.bool.Config;
 
 import java.net.HttpURLConnection;
 import java.io.InputStreamReader;
@@ -35,10 +35,7 @@ public class Updater {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public void updateChecker(CommandSender to_sender) {
-		if (!Config.CHECK_UPDATES.IF())
-			return;
-
+	public void checkUpdate(CommandSender to_sender) {
 		Message DC = util.getDataConfigDefault();
 			DC.setSender(to_sender);
 			DC.setLangTarget(API.getLang(to_sender));
@@ -50,7 +47,7 @@ public class Updater {
 			con.setReadTimeout(timed_out);
 			String latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
 			if (latestVersion.length() <= 8) {
-				if (ChatColor.stripColor(plugin.version).equals(latestVersion)) {
+				if (ChatColor.stripColor(Texts.VERSION).equals(latestVersion)) {
 					DC.setMessages("&a	Estas usando la última versión del plugin <3");
 						API.sendMessage(DC);
 
@@ -62,7 +59,7 @@ public class Updater {
 						Player player = (Player) to_sender;
 
 						DC.setMessages("&9link");
-						DC.setToolTips("&7Descargar " + plugin.name + " &b" + latestVersion);
+						DC.setToolTips("&7Descargar " + Texts.PLUGIN.NAME + " &b" + latestVersion);
 
 						TextComponent linkText = new TextComponent(API.formatMessage(DC).getMessages());
 							ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/chattranslator.106604/");

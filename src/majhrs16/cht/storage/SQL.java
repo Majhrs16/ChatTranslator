@@ -8,10 +8,12 @@ import java.sql.ResultSet;
 
 import java.util.UUID;
 
-public class SQL extends Database {
+public abstract class SQL extends Database {
 	public SQL(String driver, String type) {
 		super(driver, type);
 	}
+
+	public abstract void connect() throws SQLException;
 
 	public void createTable() throws SQLException {
 		String sql = "CREATE TABLE IF NOT EXISTS Players (UUID TEXT, Lang TEXT)";

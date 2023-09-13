@@ -4,11 +4,11 @@ import majhrs16.lib.network.translator.GoogleTranslator;
 import me.clip.placeholderapi.PlaceholderAPI;
 import majhrs16.cht.events.custom.Message;
 import net.md_5.bungee.api.ChatColor;
-import majhrs16.cht.bool.Dependencies;
-import majhrs16.cht.bool.Permissions;
-import majhrs16.cht.bool.Config;
 import majhrs16.lib.utils.Str;
 import majhrs16.cht.util.util;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.util.cache.Dependencies;
+import majhrs16.cht.util.cache.Permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +26,9 @@ public interface Core {
 	Pattern variables     = Pattern.compile("[\\%\\$][A-Z0-9_]+[\\%\\$]"); // ARREGLR EL lowercase EXCESIVO!!
 
 	default public String parseSubVarables(Player player, String input) {
+		if (input == null)
+			return input;
+
 		Matcher matcher = sub_variables.matcher(input);
 		while (matcher.find())
 			input = input.replace(matcher.group(0), PlaceholderAPI.setPlaceholders(player, "%" + matcher.group(1) + "%"));
@@ -33,14 +36,20 @@ public interface Core {
 	}
 
 	default public String convertVariablesToLowercase(String input) {
-		Matcher matcher = variables.matcher(input);
-		while (matcher.find())
+		if (input == null)
+			return input;
+
+		Matcher matcher;
+		while ((matcher = variables.matcher(input)).find())
 			input = input.replace(matcher.group(0), matcher.group(0).toLowerCase());
 		return input;
 	}
 
 	default public String getColor(String text) {
 //			Convierte el color RGB y tradicional a un formato visible.
+
+		if (text == null)
+			return text;
 
 		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
 			Matcher matcher;
@@ -75,8 +84,11 @@ public interface Core {
 		Boolean color = to.getColor();
 		Boolean papi  = to.getFormatPAPI();
 
-		ArrayList<String> from_escapes = new ArrayList<String>();
-		ArrayList<String> to_escapes   = new ArrayList<String>();
+		ArrayList<String> from_messages_escapes = new ArrayList<String>();
+		ArrayList<String> to_messages_escapes   = new ArrayList<String>();
+
+		ArrayList<String> from_tool_tips_escapes = new ArrayList<String>();
+		ArrayList<String> to_tool_tips_escapes   = new ArrayList<String>();
 
 		if (from_message_format != null)
 			from_message_format = convertVariablesToLowercase(from_message_format);
@@ -84,48 +96,68 @@ public interface Core {
 		if (to_message_format != null)
 			to_message_format   = convertVariablesToLowercase(to_message_format);
 
-		if (from_lang_source != null && to_lang_target != null) {
-			if (from_message_format != null) {
+		if (from_message_format != null) {
+			if (from_lang_source != null)
 				from_message_format = from_message_format.replace("%ct_lang_source%", from_lang_source);
+
+			if (to_lang_target != null)
 				from_message_format = from_message_format.replace("$ct_lang_target$", to_lang_target);
-			}
-
-			if (from_tool_tips != null) {
-				from_tool_tips = from_tool_tips.replace("%ct_lang_source%", from_lang_source);
-				from_tool_tips = from_tool_tips.replace("$ct_lang_target$", to_lang_target);
-			}
-
-			if (to_message_format != null) {
-				to_message_format = to_message_format.replace("%ct_lang_source%", from_lang_source);
-				to_message_format = to_message_format.replace("$ct_lang_target$", to_lang_target);
-			}
-
-			if (to_tool_tips != null) {
-				to_tool_tips = to_tool_tips.replace("%ct_lang_source%", from_lang_source);
-				to_tool_tips = to_tool_tips.replace("$ct_lang_target$", to_lang_target);
-			}
 		}
 
-		if (from_player != null && to_player != null) {
-			if (from_message_format != null) {
+		if (from_tool_tips != null) {
+			if (from_lang_source != null)
+				from_tool_tips = from_tool_tips.replace("%ct_lang_source%", from_lang_source);
+
+			if (to_lang_target != null)
+				from_tool_tips = from_tool_tips.replace("$ct_lang_target$", to_lang_target);
+		}
+
+		if (to_message_format != null) {
+			if (from_lang_source != null)
+				to_message_format = to_message_format.replace("%ct_lang_source%", from_lang_source);
+
+			if (to_lang_target != null)
+				to_message_format = to_message_format.replace("$ct_lang_target$", to_lang_target);
+		}
+
+		if (to_tool_tips != null) {
+			if (from_lang_source != null)
+				to_tool_tips = to_tool_tips.replace("%ct_lang_source%", from_lang_source);
+
+			if (to_lang_target != null)
+				to_tool_tips = to_tool_tips.replace("$ct_lang_target$", to_lang_target);
+		}
+
+		if (from_message_format != null) {
+			if (from_player != null)
 				from_message_format = from_message_format.replace("%player_name%", from_player.getName());
+
+			if (to_player != null)
 				from_message_format = from_message_format.replace("$player_name$", to_player.getName());
-			}
+		}
 
-			if (from_tool_tips != null) {
+		if (from_tool_tips != null) {
+			if (from_player != null)
 				from_tool_tips = from_tool_tips.replace("%player_name%", from_player.getName());
+
+			if (to_player != null)
 				from_tool_tips = from_tool_tips.replace("$player_name$", to_player.getName());
-			}
+		}
 
-			if (to_message_format != null) {
+		if (to_message_format != null) {
+			if (from_player != null)
 				to_message_format = to_message_format.replace("%player_name%", from_player.getName());
-				to_message_format = to_message_format.replace("$player_name$", to_player.getName());
-			}
 
-			if (to_tool_tips != null) {
+			if (to_player != null)
+				to_message_format = to_message_format.replace("$player_name$", to_player.getName());
+		}
+
+		if (to_tool_tips != null) {
+			if (from_player != null)
 				to_tool_tips = to_tool_tips.replace("%player_name%", from_player.getName());
+
+			if (to_player != null)
 				to_tool_tips = to_tool_tips.replace("$player_name$", to_player.getName());
-			}
 		}
 
 		if (from_message_format != null) {
@@ -187,8 +219,8 @@ public interface Core {
 			int i = 10;
 			while (matcher.find()) {
 				String escape = matcher.group(0);
-				if (!from_escapes.contains(escape)) {
-					from_escapes.add(escape);
+				if (!from_messages_escapes.contains(escape)) {
+					from_messages_escapes.add(escape);
 					from_messages = from_messages.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
 					i++;
 				}
@@ -200,9 +232,35 @@ public interface Core {
 			int i = 10;
 			while (matcher.find()) {
 				String escape = matcher.group(0);
-				if (!to_escapes.contains(escape)) {
-					to_escapes.add(escape);
+				if (!to_messages_escapes.contains(escape)) {
+					to_messages_escapes.add(escape);
 					to_messages = to_messages.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
+					i++;
+				}
+			}
+		}
+
+		if (from_tool_tips != null) {
+			Matcher matcher = no_translate.matcher(from_tool_tips);
+			int i = 10;
+			while (matcher.find()) {
+				String escape = matcher.group(0);
+				if (!from_tool_tips_escapes.contains(escape)) {
+					from_tool_tips_escapes.add(escape);
+					from_tool_tips = from_tool_tips.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
+					i++;
+				}
+			}
+		}
+
+		if (to_tool_tips != null) {
+			Matcher matcher = no_translate.matcher(to_tool_tips);
+			int i = 10;
+			while (matcher.find()) {
+				String escape = matcher.group(0);
+				if (!to_tool_tips_escapes.contains(escape)) {
+					to_tool_tips_escapes.add(escape);
+					to_tool_tips = to_tool_tips.replace(escape, "x" + Str.rjust(Integer.toHexString(i), 2, "0"));
 					i++;
 				}
 			}
@@ -236,7 +294,7 @@ public interface Core {
 
 		if (from_messages != null) {
 			int i = 10;
-			for (String escape : from_escapes) {
+			for (String escape : from_messages_escapes) {
 				from_messages = from_messages.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
 				i++;
 			}
@@ -244,14 +302,30 @@ public interface Core {
 
 		if (to_messages != null) {
 			int i = 10;
-			for (String escape : to_escapes) {
+			for (String escape : to_messages_escapes) {
 				to_messages = to_messages.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
 				i++;
 			}
 		}
 
-		from_escapes = null;
-		to_escapes   = null;
+		if (from_tool_tips != null) {
+			int i = 10;
+			for (String escape : from_tool_tips_escapes) {
+				from_tool_tips = from_tool_tips.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
+				i++;
+			}
+		}
+
+		if (to_tool_tips != null) {
+			int i = 10;
+			for (String escape : to_tool_tips_escapes) {
+				to_tool_tips = to_tool_tips.replace("x" + Str.rjust(Integer.toHexString(i), 2, "0"), escape.substring(1, escape.length() - 1));
+				i++;
+			}
+		}
+
+		from_messages_escapes = null;
+		to_messages_escapes   = null;
 
 		if (from_message_format != null) {
 			from_message_format = from_message_format.replace("x00", "%ct_messages%");

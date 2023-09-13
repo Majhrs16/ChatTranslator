@@ -51,7 +51,7 @@ public class util {
 			from.setTo(null); // Necesario para evitar crashes.
 			from.setSender(Bukkit.getConsoleSender());
 			from.setMessageFormat("%ct_messages%");
-			from.setLangSource("es");
+			from.setLangSource(ChatTranslator.getInstance().messages.get().getString("native-lang"));
 			from.setLangTarget(ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
 			from.setColor(true);
 			from.setFormatPAPI(false);

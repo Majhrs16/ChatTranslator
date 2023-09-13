@@ -1,22 +1,26 @@
 package majhrs16.cht;
 
+import majhrs16.lib.storages.YAML.ParseYamlException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.CommandHandler;
+import majhrs16.cht.util.cache.internal.Texts;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.util.cache.Dependencies;
+import majhrs16.cht.events.CommandListener;
+import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
-import majhrs16.cht.bool.Dependencies;
+// import majhrs16.cht.events.TabCompleter;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Players;
 import majhrs16.cot.CoreTranslator;
+import majhrs16.cht.storage.SQLite;
 import majhrs16.lib.storages.YAML;
+import majhrs16.cht.storage.MySQL;
 import majhrs16.cht.util.Updater;
-import majhrs16.cht.storage.SQL;
 import majhrs16.cht.events.Chat;
-import majhrs16.cht.events.Msg;
 import majhrs16.cht.util.util;
 
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
@@ -25,10 +29,10 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 
 public class ChatTranslator extends JavaPlugin {
-	public SQL mysql;
-	public SQL sqlite;
 	public YAML signs;
 	public YAML config;
+	public MySQL mysql;
+	public SQLite sqlite;
 	public YAML messages;
 	public YAML commands;
 	public Players players;
@@ -36,144 +40,160 @@ public class ChatTranslator extends JavaPlugin {
 	private static ChatTranslator plugin;
 
 	private boolean is_disabled           = true;
-	private PluginDescriptionFile pdffile = getDescription();
 	private ChatTranslatorAPI API         = ChatTranslatorAPI.getInstance();
 
-	public final String name       = "&aChat&9Translator";
-	public final String version    = "&bb" + pdffile.getVersion().replace(".", "&f.&b");
-	public final String sep        = "&c<&4-------------------------&c>";
-	public final String title      = "&6<&e[ %name% &e]&6> ".replace("%name%", name);
-	public final String title_UTF8 = "\n"
-		+ "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗\n"
-		+ "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗\n"
-		+ "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝\n"
-		+ "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝";
+	private static class Events {
+		public static boolean installed = false;
+
+		public static CommandListener commandHandler  = new CommandListener();
+		public static MessageListener nessageListener = new MessageListener();
+//		public static TabCompleter tabCompleter       = new TabCompleter();
+		public static AccessPlayer accessPlayer       = new AccessPlayer();
+		public static SignHandler signHandler         = new SignHandler();
+		public static ChatLimiter chatLimiter         = new ChatLimiter();
+		public static Chat chat                       = new Chat();
+	}
 
 	public void onEnable() {
 		plugin  = this;
 
 		signs    = new YAML(plugin, "signs.yml");
 		config   = new YAML(plugin, "config.yml");
-		players  = new Players(plugin, "players.yml");
 		messages = new YAML(plugin, "messages.yml");
 		commands = new YAML(plugin, "commands.yml");
-		sqlite   = new SQL("org.sqlite.JDBC", "sqlite");
-		mysql    = new SQL("com.mysql.jdbc.Driver", "mysql");
+		players  = new Players(plugin, "players.yml");
+		sqlite   = new SQLite();
+		mysql    = new MySQL();
 
-		commands.register();
-		config.register();
-		signs.register();
-		new Updater().updateConfig();
-		if (registerStorage()) {
+		try {
+			messages.register();
+			commands.register();
+			config.register();
+			signs.register();
+
+		} catch (ParseYamlException e) {
+			Bukkit.getLogger().warning("[ERRFFF] FATAL");
+			return;
+		}
+
+		Updater updater = new Updater();
+		updater.updateConfig();
+		Texts.reload();
+
+		try {
+			registerPlayers();
+
+		} catch (SQLException | ParseYamlException e) {
+			Message from = util.getDataConfigDefault();
+			from.setMessages(e.getMessage());
+				API.sendMessage(from);
+
 			onDisable();
 			return;
 		}
-		registerCommands();
-		registerEvents();
-		new ChatLimiter();
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(sep);
+		registerCommands();
+		registerEvents();
+
+		from.setMessages(Texts.SEPARATOR);
 			API.sendMessage(from);
 
-/*
-		if (Dependencies.ProtocolLib.exist())
-			if (Bukkit.getVersion().contains("1.20")) {
-				from.setMessages("&eAdvertencia&f: &cProtocolLib no esta soportado en la 1.20.x&f(&7Hasta la fecha&f: &b12/08/2023&f), &eNo se asegura que funcione&f...");
-					API.sendMessage(from);
-			}
-*/
-
-//		from.setMessages(" "); API.sendMessage(from);
+		from.setMessages("	"); API.sendMessage(from);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
-			from.setMessages("&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en &BUTF&f-&b8&f.");
+			from.setMessages(Texts.PLUGIN.IS_UTF_8.YES);
 				API.sendMessage(from);
 
-			Bukkit.getConsoleSender().sendMessage(API.getColor(title_UTF8));
+			from.setMessages(Texts.PLUGIN.TITLE.UTF_8);
+				API.sendMessage(from);
 
-//			from.setMessages(" "); API.sendMessage(from);
+			from.setMessages("	"); API.sendMessage(from);
 
 		} else {
-			from.setMessages("&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&e en &bUTF&f-&b8&f.");
+			from.setMessages(Texts.PLUGIN.IS_UTF_8.NO);
 				API.sendMessage(from);
 
-			from.setMessages(title);
+			from.setMessages(Texts.PLUGIN.TITLE.TEXT);
 				API.sendMessage(from);
 		}
 
-		from.setMessages(String.format("&a	Activado&f, &7Version&f: &b%s&f.", version));
+		from.setMessages(Texts.PLUGIN.ON);
 			API.sendMessage(from);
 
-/*
-		if (!Dependencies.PAPI.exist()) {
-//			from.setMessages(" "); API.sendMessage(from);
+		if (Config.CHECK_UPDATES.IF())
+			updater.checkUpdate(Bukkit.getConsoleSender());
 
-			from.setMessages("&c	No esta disponible PlaceholderAPI&f, &ePor favor instalarlo para disfrutar de todas las caracteristicas&f.");
-				API.sendMessage(from);
-		}
-*/
+		from.setMessages("	"); API.sendMessage(from);
 
-		new Updater().updateChecker(Bukkit.getConsoleSender());
-
-//		from.setMessages(" "); API.sendMessage(from);
-
-		from.setMessages(sep);
+		from.setMessages(Texts.SEPARATOR);
 			API.sendMessage(from);
 
 		setDisabled(false);
 	}
 
 	public void onDisable() {
+		if (isDisabled())
+			return;
+
 		majhrs16.cht.util.ChatLimiter.chat.clear();
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(sep);
+		from.setMessages(Texts.SEPARATOR);
 			API.sendMessage(from);
 
-		from.setMessages(title);
+		from.setMessages(Texts.PLUGIN.TITLE.TEXT);
 			API.sendMessage(from);
 
 		switch (config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
-				players.register();
-				break;
-	
-			case "sqlite":
 				try {
-					sqlite.disconnect();
-					from.setMessages("\t&aDesconectado de SQLite&f.");
+					players.save();
+					from.setMessages(Texts.STORAGE.CLOSE.YAML.OK);
 						API.sendMessage(from);
 
-				} catch (SQLException e) {
-					from.setMessages("\t&4Error al desconectar a SQLite&f.");
+				} catch (IllegalArgumentException e) {
+					from.setMessages(Texts.STORAGE.CLOSE.YAML.ERROR);
 						API.sendMessage(from);
 					return;
 				}
 				break;
-	
-			case "mysql":
+
+			case "sqlite":
 				try {
-					mysql.disconnect();
-					from.setMessages("\t&aDesconectado de MySQL&f.");
+					sqlite.disconnect();
+					from.setMessages(Texts.STORAGE.CLOSE.SQLITE.OK);
 						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					from.setMessages("\t&4Error al desconectar a MySQL&f.");
+					from.setMessages(Texts.STORAGE.CLOSE.SQLITE.ERROR);
+						API.sendMessage(from);
+					return;
+				}
+				break;
+
+			case "mysql":
+				try {
+					mysql.disconnect();
+					from.setMessages(Texts.STORAGE.CLOSE.MYSQL.OK);
+						API.sendMessage(from);
+
+				} catch (SQLException e) {
+					from.setMessages(Texts.STORAGE.CLOSE.MYSQL.ERROR);
 						API.sendMessage(from);
 					return;
 				}
 				break;
 		}
 
-		from.setMessages("\t&cDesactivado&f.");
+		from.setMessages(Texts.PLUGIN.OFF);
 			API.sendMessage(from);
 
 //		from.setMessages(" "); API.sendMessage(from);
 
-		from.setMessages(sep);
+		from.setMessages(Texts.SEPARATOR);
 			API.sendMessage(from);
 
 		setDisabled(true);
@@ -219,27 +239,38 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerEvents() {
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new AccessPlayer(), this);
-		pm.registerEvents(new Chat(), this);
-		pm.registerEvents(new Msg(), this);
-		pm.registerEvents(new CommandHandler(), this);
+		if (Events.installed)
+			return;
 
-//		if (Dependencies.ProtocolLib.exist()) {
-			pm.registerEvents(new SignHandler(), this);
-//		}
+		PluginManager pm = getServer().getPluginManager();
+			pm.registerEvents(Events.nessageListener, this);
+			pm.registerEvents(Events.commandHandler, this);
+//			if (util.getMinecraftVersion() > 13.0) // 1.13.0 pm.registerEvents(Events.tabCompleter, this);
+			pm.registerEvents(Events.accessPlayer, this);
+			pm.registerEvents(Events.signHandler, this);
+			pm.registerEvents(Events.chat, this);
+			Events.chatLimiter.start();
 
 		if (Dependencies.PAPI.exist())
 			new CoreTranslator().register(); // Expansion de ChT para PAPI: CoT.
+
+		Events.installed = true;
 	}
 
-	public boolean registerStorage() {
+	public void registerPlayers() throws SQLException, ParseYamlException {
 		Message from = util.getDataConfigDefault();
-
 		String storageType = config.get().getString("storage.type").toLowerCase();
+
 		switch (storageType) {
 			case "yaml":
-				players.register();
+				try {
+					players.register();
+					from.setMessages(Texts.STORAGE.OPEN.YAML.OK);
+						API.sendMessage(from);
+
+				} catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(Texts.STORAGE.OPEN.YAML.ERROR + "\n\t" + e.toString());
+				}
 				break;
 
 			case "sqlite":
@@ -249,13 +280,11 @@ public class ChatTranslator extends JavaPlugin {
 					sqlite.createTable();
 
 					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-					from.setMessages(title + "&aConectado a SQLite&f.");
+					from.setMessages(Texts.STORAGE.OPEN.SQLITE.OK);
 						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					from.setMessages(title + "&4Error al conectar a SQLite&f.");
-						API.sendMessage(from);
-					return true;
+					throw new IllegalArgumentException(Texts.STORAGE.OPEN.SQLITE.ERROR + "\n\t" + e.toString());
 				}
 				break;
 
@@ -272,22 +301,17 @@ public class ChatTranslator extends JavaPlugin {
 					mysql.createTable();
 
 					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-					from.setMessages(title + "&aConectado a MySQL&f.");
+					from.setMessages(Texts.STORAGE.OPEN.MYSQL.OK);
 						API.sendMessage(from);
 
 				} catch (SQLException e) {
-					e.printStackTrace();
-					from.setMessages(title + "&4Error al conectar a MySQL&f.");
-						API.sendMessage(from);
-					return true;
+					throw new IllegalArgumentException(Texts.STORAGE.OPEN.MYSQL.ERROR + "\n\t" + e.toString());
 				}
 				break;
 
 			default:
-				from.setMessages(title + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+				from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
 					API.sendMessage(from);
 		}
-		
-		return false;
 	}
 }

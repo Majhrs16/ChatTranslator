@@ -10,7 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.bool.Config;
+import majhrs16.cht.util.cache.Config;
 
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;

@@ -1,12 +1,14 @@
 package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.CacheSpam;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.bool.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +17,10 @@ import java.util.Map;
 public class ChatLimiter {
 	private ChatTranslator plugin         = ChatTranslator.getInstance();
 	public static ArrayList<Message> chat = new ArrayList<Message>();
+	private BukkitTask task;
 
-	public ChatLimiter() {
-		Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+	public void start() {
+		task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
 			int max_messages_per_tick     = 7;
 			Map<Player, CacheSpam> counts = new HashMap<>();
 			FileConfiguration config      = plugin.config.get();
@@ -91,9 +94,13 @@ public class ChatLimiter {
 						counts.put(player, count);
 					}
 
-					spam.setCount(spam.getCount() + 5);
+					spam.setCount(spam.getCount() + 1);
 				}
 			}
-		}, 0L, 5L);
+		}, 0L, 1L);
+	}
+
+	public void stop() {
+		task.cancel();
 	}
 }

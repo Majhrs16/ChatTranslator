@@ -10,10 +10,10 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import majhrs16.cht.bool.Config;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.util.util;
+import majhrs16.cht.util.cache.Config;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -51,7 +51,7 @@ public interface Msgs {
 				 } else {
 					player.sendMessage(formatted.getMessageFormat());
 					if (formatted.getToolTips() != null)
-						player.sendMessage("        " + formatted.getToolTips());
+						player.sendMessage("    " + formatted.getToolTips());
 				 }
 
 				 if (formatted.getSounds() != null) {
@@ -80,7 +80,10 @@ public interface Msgs {
 			
 			} else {
 				CommandSender console = Bukkit.getConsoleSender();
-				console.sendMessage(formatted.getMessageFormat());
+				for (String line : formatted.getMessageFormat().split("\n")) {
+					console.sendMessage(line);
+				}
+
 				if (formatted.getToolTips() != null) {
 					for (String line : formatted.getToolTips().split("\n")) {
 						console.sendMessage(line);

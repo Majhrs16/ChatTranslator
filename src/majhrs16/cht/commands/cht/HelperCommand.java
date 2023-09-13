@@ -1,19 +1,19 @@
 package majhrs16.cht.commands.cht;
 
+import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@Deprecated
 public class HelperCommand {
-	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public String[] help = new String[] {
-		plugin.title + "\n"
+		Texts.PLUGIN.TITLE.TEXT + "\n"
 			+ "&aTraduce tu chat de Minecraft a cualquier idioma&f!!",
 		"&e  /cht\n"
 			+ "&aMuestra este mismo mensaje de ayuda&f.",

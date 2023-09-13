@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 
-public class Msg implements Listener {
+public class MessageListener implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 
 	@EventHandler (priority = EventPriority.LOWEST)

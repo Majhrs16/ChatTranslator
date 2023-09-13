@@ -54,7 +54,7 @@ auto-update-config: true
 show-native-chat:
   cancel-event: true
   clear-recipients: false
-max-spam-per-tick: 150.0007
+max-spam-per-tick: 20.0009
 use-PAPI-format: true
 check-updates: true
 config-version: 0

@@ -1,4 +1,4 @@
-package majhrs16.cht.bool;
+package majhrs16.cht.util.cache;
 
 public enum Dependencies {
 	ProtocolLib	("com.comphenix.protocol.ProtocolLib"),

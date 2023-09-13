@@ -1,6 +1,7 @@
 package majhrs16.cht.storage;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.storages.YAML;
@@ -18,7 +19,7 @@ public class Players extends YAML {
 		super(plugin, filename);
 	}
 
-	public void reloads() throws SQLException {
+	public void reloads() throws SQLException, ParseYamlException {
 		plugin.setDisabled(true);
 
 		String storageType = plugin.config.get().getString("storage.type").toLowerCase();
@@ -29,17 +30,17 @@ public class Players extends YAML {
 
 			case "sqlite":
 				plugin.sqlite.disconnect();
-				plugin.registerStorage();
+				plugin.registerPlayers();
 				break;
 
 			case "mysql":
 				plugin.mysql.disconnect();
-				plugin.registerStorage();
+				plugin.registerPlayers();
 				break;
 
 			default:
 				Message from = util.getDataConfigDefault();
-					from.setMessages(plugin.title + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
+					from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
 				API.sendMessage(from);
 		}
 

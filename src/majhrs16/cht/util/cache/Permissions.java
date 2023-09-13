@@ -1,4 +1,4 @@
-package majhrs16.cht.bool;
+package majhrs16.cht.util.cache;
 
 import org.bukkit.command.CommandSender;
 

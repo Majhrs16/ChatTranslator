@@ -2,11 +2,13 @@ package majhrs16.cht.commands.cht;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.Updater;
-import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.util;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.util.cache.Permissions;
+import majhrs16.cht.util.cache.internal.Texts;
+import majhrs16.lib.storages.YAML.ParseYamlException;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,7 +32,7 @@ public class MainCommand implements CommandExecutor {
 		if(args.length < 1) {
 			if (plugin.isDisabled())
 				return false;
-	
+
 			new HelperCommand().show(sender);
 			return true;
 		}
@@ -40,7 +42,7 @@ public class MainCommand implements CommandExecutor {
 				if (plugin.isDisabled())
 					return false;
 
-				DC.setMessages(plugin.title + plugin.version);
+				DC.setMessages(Texts.PLUGIN.TITLE.TEXT + Texts.PLUGIN.VERSION);
 					API.sendMessage(DC);
 				return true;
 
@@ -54,7 +56,7 @@ public class MainCommand implements CommandExecutor {
 					return false;
 				}
 
-				new Reloader().reloadConfig(DC);
+				new Reloader(DC).reloadConfig();
 				return true;
 
 			case "lang":
@@ -114,14 +116,20 @@ public class MainCommand implements CommandExecutor {
 				}
 
 			case "reset":
+
 				DC.setMessages("&aRestableciendo la config&f...");
 					API.sendMessage(DC);
 
-				plugin.config.reset();
-				new Updater().updateConfig();
+				try {
+					plugin.config.reset();
+					new Updater().updateConfig();
+					DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
 
-				DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
-					API.sendMessage(DC);
+				} catch (ParseYamlException e) {
+					DC.setMessages("&cNO se ha podido restablecer la config&f.");
+				}
+
+				API.sendMessage(DC);
 				return true;
 
 			default:

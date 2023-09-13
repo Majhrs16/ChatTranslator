@@ -1,25 +1,70 @@
 native-lang: es
 
+kernel:
+  version: "&b%_version%"
+
 plugin:
   name: "&aChat&9Translator"
-  version: "&b%version%"
+  version: "&bb%version%"
+  enable: "&a\tActivado&f, &7Version&f: %plugin.version%&f."
+  disable: "\t&cDesactivado&f."
   title:
-    text: "&6<&e[ %name% &e]&6>"
+    text: "&6<&e[ %plugin.name% &e]&6>"
     UTF-8:
     - ""
     - "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗"
     - "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗"
     - "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝"
     - "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝"
-  separator: "&c<&4-------------------------&c>"
-  UTF-8:
-    yes: "&eAdvertencia&f, &cPodria mostrarse feo el titulo si no ha configurado su consola&f(&eAdemas del Java&f)&c en &BUTF&f-&b8&f."
-    no: "&eAdvertencia&f, &eEs muy recomendable configurar su consola&f(&eAdemas del Java&f)&e en &bUTF&f-&b8&f."
 
-starting:
-- "%separator%"
-- "%title%"
-- "&a	Activado&f, &7Version&f: &b%version%&f."
-- "%separator%"
+  is-UTF-8:
+#    "true": ""
+    "false": "&eAdvertencia&f, &eEs muy recomendable configurar su java&f(&eAdemas de la consola&f)&e en &bUTF&f-&b8&f."
+
+storage:
+  open:
+    yaml:
+      ok: []
+      error: []
+
+    sqlite:
+      ok:
+      - "%plugin.title.text% &aConectado a &bSQLite&f."
+      error:
+      - "%plugin.title.text% &4Error al conectar con &bSQLite&f."
+
+    mysql:
+      ok:
+      - "%plugin.title.text% &aConectado a &bMySQL&f."
+      error:
+      - "%plugin.title.text% &4Error al conectar a &bMySQL&f."
+
+  close:
+    yaml:
+      ok: []
+      error: []
+
+    sqlite:
+      ok:
+      - "\t&aDesconectado de &bSQLite&f."
+      error:
+      - "\t&4Error al desconectar de &bSQLite&f."
+
+    mysql:
+      ok:
+      - "\t&aDesconectado de &bMySQL&f."
+      error:
+      - "\t&4Error al desconectar de &bMySQL&f."
+
+commands:
+  main:
+    showVersion:
+      text:
+      - "%plugin.title.text% %plugin.version%"
+
+      toolTips:
+      - "&4Kernel&f: %kernel.version%"
+
+separator: "&c<&4-------------------------&c>"
 
 config-version: 1

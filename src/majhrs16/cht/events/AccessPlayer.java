@@ -9,11 +9,11 @@ import org.bukkit.Bukkit;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.bool.Permissions;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.bool.Config;
 import majhrs16.cht.util.Updater;
 import majhrs16.cht.util.util;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.util.cache.Permissions;
 
 public class AccessPlayer implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -30,8 +30,8 @@ public class AccessPlayer implements Listener {
 
 		API.broadcast(to_model);
 
-		if (Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
-			new Updater().updateChecker(event.getPlayer());
+		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
+			new Updater().checkUpdate(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
