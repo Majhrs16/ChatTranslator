@@ -3,14 +3,14 @@ package majhrs16.cht;
 import majhrs16.lib.storages.YAML.ParseYamlException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.util.cache.internal.Texts;
-import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Dependencies;
+import majhrs16.cht.commands.CommandWrapper;
 import majhrs16.cht.events.CommandListener;
 import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
-// import majhrs16.cht.events.TabCompleter;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Players;
 import majhrs16.cot.CoreTranslator;
@@ -22,6 +22,7 @@ import majhrs16.cht.events.Chat;
 import majhrs16.cht.util.util;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Bukkit;
 
@@ -39,8 +40,8 @@ public class ChatTranslator extends JavaPlugin {
 
 	private static ChatTranslator plugin;
 
-	private boolean is_disabled           = true;
-	private ChatTranslatorAPI API         = ChatTranslatorAPI.getInstance();
+	private boolean is_disabled = true;
+	private ChatTranslatorAPI API;
 
 	private static class Events {
 		public static boolean installed = false;
@@ -56,6 +57,13 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void onEnable() {
 		plugin  = this;
+
+		if (util.getMinecraftVersion() < 5.2) {
+			Bukkit.getLogger().warning("[ERRFFF] ChatTranslator no compatible.");
+			return;
+		}
+
+		API = ChatTranslatorAPI.getInstance();
 
 		signs    = new YAML(plugin, "signs.yml");
 		config   = new YAML(plugin, "config.yml");
@@ -94,7 +102,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		Message from = util.getDataConfigDefault();
 
-		registerCommands();
+//		registerCommands();
 		registerEvents();
 
 		from.setMessages(Texts.SEPARATOR);
@@ -211,8 +219,7 @@ public class ChatTranslator extends JavaPlugin {
 		this.is_disabled = isDisabled;
 	}
 
-	public void registerCommands() {
-		/*
+	public void registerCommands() { // Sino se registran los comandos en el plugin,yml, no te dejara. Asi de simple.
 		for (String key : commands.get().getKeys(false)) {
 			if (!key.equals("config-version")) {
 				PluginCommand pc = getCommand(key);
@@ -220,16 +227,15 @@ public class ChatTranslator extends JavaPlugin {
 				if (pc == null) {
 					Message from = util.getDataConfigDefault();
 
-					from.setMessages("&cNo fue posible registrar el comando principal&f: &b`" + key + "`");
+					from.setMessages("&cNo fue posible registrar el comando raiz&f: &b`" + key + "`");
 						API.sendMessage(from);
 
 				} else {
-					CommandHandler ch = new CommandHandler(key);
+					CommandWrapper ch = new CommandWrapper(key);
 					pc.setExecutor(ch);
 				}
 			}
 		}
-		*/
 
 		/*
 		MainCommand main_command = new MainCommand(); 

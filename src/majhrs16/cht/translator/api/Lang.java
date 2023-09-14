@@ -13,39 +13,24 @@ import majhrs16.cht.util.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public interface Lang {
 	public class LocaleUtil {
-		private static Field localeField;
-		private static Method getHandleMethod;
-
-		static {
-			try {
-				getHandleMethod = Player.class.getDeclaredMethod("getHandle");
-				getHandleMethod.setAccessible(true);
-				Class<?> entityPlayerClass = getHandleMethod.getReturnType();
-				localeField = entityPlayerClass.getField("locale");
-			} catch (NoSuchMethodException | NoSuchFieldException e) {
-				e.printStackTrace();
-			}
-		}
-
 		public static String getPlayerLocale(Player player) {
-			FileConfiguration config = ChatTranslator.getInstance().config.get();
-
-			if (localeField == null)
-				return config.getString("defaultLang");
-
 			try {
-				Object entityPlayer = getHandleMethod.invoke(player);
-				return (String) localeField.get(entityPlayer);
+				Method getHandle = player.getClass().getDeclaredMethod("getHandle");
+				getHandle.setAccessible(true);
 
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				Object entityPlayer = getHandle.invoke(player);
+				Field locale = entityPlayer.getClass().getField("locale");
+
+				return (String) locale.get(entityPlayer);
+
+			} catch (Exception e) {
 				e.printStackTrace();
-				return config.getString("defaultLang");
+				return null;
 			}
 		}
 	}
@@ -76,12 +61,12 @@ public interface Lang {
 			uuid = ((Player) sender).getUniqueId();
 
 		} if (sender instanceof OfflinePlayer) {
-			try {
+/*			try {
 				uuid = ((OfflinePlayer) sender).getUniqueId();
 
-			} catch (NoSuchMethodError e) {
+			} catch (NoSuchMethodError e) {*/
 				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
-			}
+//			}
 
 		} else {
 			uuid = UUID.fromString(config.getString("server-uuid"));
@@ -138,7 +123,7 @@ public interface Lang {
 			DC.setTo(null); // Necesario para evitar crashes.
 			DC.setSender(Bukkit.getConsoleSender());
 			DC.setMessageFormat("%ct_messages%");
-			DC.setLangSource("es");
+			DC.setLangSource("es"); ////////////////////////////////////////////////////////////////////////////////
 			DC.setLangTarget(to_lang);
 			DC.setColor(true);
 			DC.setFormatPAPI(false);
@@ -147,12 +132,12 @@ public interface Lang {
 			uuid = ((Player) sender).getUniqueId();
 
 		} if (sender instanceof OfflinePlayer) {
-			try {
+/*			try {
 				uuid = ((OfflinePlayer) sender).getUniqueId();
 
-			} catch (NoSuchMethodError e) {
+			} catch (NoSuchMethodError e) {*/
 				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
-			}
+//			}
 
 		} else {
 			uuid = UUID.fromString(config.getString("server-uuid"));
@@ -196,11 +181,11 @@ public interface Lang {
 		if (lang == null || lang.equals("auto")) {
 			if (sender instanceof Player) { //  && util.checkPAPI()
 				String locale = LocaleUtil.getPlayerLocale((Player) sender);
-				if (locale != null) {
-					lang = locale.split("_")[0];
+				if (locale == null) {
+					lang = defaultLang;
 
 				} else {
-					lang = defaultLang;
+					lang = locale.split("_")[0];
 				}
 
 //				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");

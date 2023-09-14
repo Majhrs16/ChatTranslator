@@ -14,6 +14,7 @@ import majhrs16.cht.util.Updater;
 import majhrs16.cht.util.util;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Permissions;
+import majhrs16.cht.util.cache.internal.Texts;
 
 public class AccessPlayer implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -24,11 +25,19 @@ public class AccessPlayer implements Listener {
 		if (plugin.isDisabled() || !Config.TranslateOthers.ACCESS.IF())
 			return;
 
-		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getJoinMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "entry");
-
 		event.setJoinMessage("");
 
-		API.broadcast(to_model);
+		Message DC = util.getDataConfigDefault();
+
+		Message to_model = util.createChat(event.getPlayer(), Texts.EVENTS.ACCESS.ENTRY, DC.getLangSource(), API.getLang(event.getPlayer()), "entry");
+
+		Message from_console = to_model.clone();
+			Message console  = util.createChat(Bukkit.getConsoleSender(), Texts.EVENTS.ACCESS.ENTRY, DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "entry");
+
+			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
+
+		API.broadcast(to_model, froms -> froms.add(from_console));
 
 		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
 			new Updater().checkUpdate(event.getPlayer());
@@ -36,13 +45,21 @@ public class AccessPlayer implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onExit(PlayerQuitEvent event) {
-		if (plugin.isDisabled()|| !Config.TranslateOthers.ACCESS.IF())
+		if (plugin.isDisabled() || !Config.TranslateOthers.ACCESS.IF())
 			return;
-
-		Message to_model = util.createChat(Bukkit.getConsoleSender(), event.getQuitMessage(), "en", API.getLang(Bukkit.getConsoleSender()), "exit");
 
 		event.setQuitMessage("");
 
-		API.broadcast(to_model);
+		Message DC = util.getDataConfigDefault();
+
+		Message to_model = util.createChat(event.getPlayer(), Texts.EVENTS.ACCESS.EXIT, DC.getLangSource(), API.getLang(event.getPlayer()), "exit");
+
+		Message from_console = to_model.clone();
+			Message console  = util.createChat(Bukkit.getConsoleSender(), Texts.EVENTS.ACCESS.EXIT, DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "exit");
+
+			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
+
+		API.broadcast(to_model, froms -> froms.add(from_console));
 	}
 }

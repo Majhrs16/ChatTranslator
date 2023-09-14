@@ -24,17 +24,17 @@ formats:
 
   from_entry:
     messages:
-    - '&e%ct_messages%'
+    - '&a+ &e%player_name% %ct_messages%'
   to_entry:
     messages:
-    - '&e$ct_messages$'
+    - '&a+ &e%player_name% $ct_messages$'
 
   from_exit:
     messages:
-    - '&e%ct_messages%'
+    - '&c- %e%player_name% %ct_messages%'
   to_exit:
     messages:
-    - '&e$ct_messages$'
+    - '&c- &e%player_name% $ct_messages$'
 
 storage:
   type: sqlite

@@ -1,22 +1,18 @@
 package majhrs16.cht.translator.api;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.util.util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 
-import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.util.util;
-import majhrs16.cht.util.cache.Config;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface Msgs {
 	@SuppressWarnings("deprecation")
@@ -36,19 +32,32 @@ public interface Msgs {
 			 if (formatted.getSender() instanceof Player) {
 				Player player = ((Player) formatted.getSender());
 
-				 if (util.getMinecraftVersion() >= 8.0) { // 1.8.0
-					TextComponent message = new TextComponent(formatted.getMessageFormat());
+				 if (util.getMinecraftVersion() >= 7.10) { // 1.7.10
+//					 /*
+					 net.md_5.bungee.api.chat.HoverEvent hoverEvent;
+					 net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent(formatted.getMessageFormat());
 
 					if (formatted.getToolTips() != null) {
-						message.setHoverEvent(new HoverEvent(
-							HoverEvent.Action.SHOW_TEXT,
-							new ComponentBuilder(formatted.getToolTips()).create()
-						));
+						if (util.getMinecraftVersion() < 16.0) { // 1.16.0
+							hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(
+								net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+								new net.md_5.bungee.api.chat.ComponentBuilder(formatted.getToolTips()).create()
+							);
+
+						} else {
+							hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(
+								net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
+								new net.md_5.bungee.api.chat.hover.content.Text(formatted.getToolTips())
+							);
+						}
+
+						message.setHoverEvent(hoverEvent);
 					}
 
 					player.spigot().sendMessage(message);
+//					*/
 
-				 } else {
+				} else {
 					player.sendMessage(formatted.getMessageFormat());
 					if (formatted.getToolTips() != null)
 						player.sendMessage("    " + formatted.getToolTips());
@@ -72,7 +81,7 @@ public interface Msgs {
 							Message msg = util.getDataConfigDefault();
 								msg.setSender(Bukkit.getConsoleSender());
 								msg.setLangTarget(ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
-								msg.setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + line + "&f' &cinvalido&f.");
+								msg.setMessages("&eSonido &f'&bformats&f.&bfrom&f.&bsounds&f.&b" + parts[0] + "&f' &cinvalido&f.");
 							 sendMessage(msg);
 						}
 					}
@@ -161,13 +170,13 @@ public interface Msgs {
 		if (from.getTo() == null || from.getTo().equals(new Message()))
 			from.setTo(from.clone());
 
-		Message to_model                     = from.getTo();
-		List<Message> froms                  = new ArrayList<Message>();
-		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+		Message to_model    = from.getTo();
+		List<Message> froms = new ArrayList<Message>();
+		Player[] players    = util.getOnlinePlayers();
 
 		for (Player to_player : players) {
 			if (from.getSender() == to_player) {
-				if (players.size() > 1)
+				if (players.length > 1)
 					continue;
 
 				to_model.setSender(from.getSender());

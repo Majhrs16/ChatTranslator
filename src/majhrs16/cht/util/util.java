@@ -2,6 +2,7 @@ package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
@@ -12,10 +13,22 @@ import majhrs16.cht.ChatTranslator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.List;
 
 public class util {
 	private static ChatTranslator plugin = ChatTranslator.getInstance();
 	private static Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
+
+	public static Player[] getOnlinePlayers() {
+		List<Player> playerList = new ArrayList<Player>();
+
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			playerList.add(player);
+		}
+
+		return playerList.toArray(new Player[0]);
+	}
+
 
 	public static double getMinecraftVersion() {
 		Matcher matcher = version.matcher(Bukkit.getVersion());
@@ -59,9 +72,27 @@ public class util {
 		return from;
 	}
 
-	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
+	public static Message createGroupFormat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		FileConfiguration config = plugin.config.get();
 
+		return  new Message(
+			null,
+			sender,
+			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
+			messages,
+			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
+			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
+			false,
+
+			langSource,
+			langTarget,
+
+			IF(config, "chat-color-personalized"),
+			IF(config, "use-PAPI-format")
+		);
+	}
+
+	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		if (path == null)
 			path = "";
 
@@ -69,54 +100,12 @@ public class util {
 			path = "_" + path;
 
 		String _path = "formats.to" + path;
-		Message to = new Message(
-			null,
-			sender,
-			config.contains(_path + ".messages") ? String.join("\n", config.getStringList(_path + ".messages")).replace("\\t", "\t") : null,
-			messages,
-			config.contains(_path + ".toolTips") ? String.join("\n", config.getStringList(_path + ".toolTips")).replace("\\t", "\t") : null,
-			config.contains(_path + ".sounds")   ? String.join("\n", config.getStringList(_path + ".sounds")).replace("\\t", "\t")   : null,
-			false,
-
-			langSource,
-			langTarget,
-
-			IF(config, "chat-color-personalized"),
-			IF(config, "use-PAPI-format")
-		);
+		Message to = createGroupFormat(sender, messages, langSource, langTarget, _path);
 
 		_path = "formats.from" + path;
-		Message from = new Message(
-			to,
-			sender,
-			config.contains(_path + ".messages") ? String.join("\n", config.getStringList(_path + ".messages")).replace("\\t", "\t") : null,
-			messages,
-			config.contains(_path + ".toolTips") ? String.join("\n", config.getStringList(_path + ".toolTips")).replace("\\t", "\t") : null,
-			config.contains(_path + ".sounds")   ? String.join("\n", config.getStringList(_path + ".sounds")).replace("\\t", "\t")   : null,
-			false,
-
-			langSource,
-			langTarget,
-
-			IF(config, "chat-color-personalized"),
-			IF(config, "use-PAPI-format")
-		);
+		Message from = createGroupFormat(sender, messages, langSource, langTarget, _path);
+			from.setTo(to);
 
 		return from;
-	}
-
-	public static String wrapText(String text, int maxLength) {
-		if (text.length() <= maxLength)
-			return text;
-
-		ArrayList<String> segments = new ArrayList<>();
-		int currentIndex = 0;
-		while (currentIndex < text.length()) {
-			int endIndex = Math.min(currentIndex + maxLength, text.length());
-			segments.add(text.substring(currentIndex, endIndex));
-			currentIndex = endIndex;
-		}
-
-		return String.join("\n", segments);
 	}
 }

@@ -5,12 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.scanner.ScannerException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.util.cache.internal.Texts;
@@ -53,38 +48,44 @@ public class Updater {
 
 				} else {
 					if (to_sender instanceof Player) {
-						if (util.getMinecraftVersion() < 8.0) // 1.8.0
-							return;
+						if (util.getMinecraftVersion() >= 7.10) { // 1.7.10
+//							/*
+							Player player = (Player) to_sender;
 
-						Player player = (Player) to_sender;
+							DC.setMessages("&9link");
+							DC.setToolTips("&7Descargar " + Texts.PLUGIN.NAME + " &b" + latestVersion);
 
-						DC.setMessages("&9link");
-						DC.setToolTips("&7Descargar " + Texts.PLUGIN.NAME + " &b" + latestVersion);
+							net.md_5.bungee.api.chat.TextComponent linkText = new net.md_5.bungee.api.chat.TextComponent(API.formatMessage(DC).getMessages());
+								net.md_5.bungee.api.chat.ClickEvent clickEvent = new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/chattranslator.106604/");
+									linkText.setClickEvent(clickEvent);
 
-						TextComponent linkText = new TextComponent(API.formatMessage(DC).getMessages());
-							ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/chattranslator.106604/");
-								linkText.setClickEvent(clickEvent);
+								@SuppressWarnings("deprecation")
+								net.md_5.bungee.api.chat.HoverEvent hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.ComponentBuilder(API.formatMessage(DC).getToolTips()).create());
+									linkText.setHoverEvent(hoverEvent);
 
-							@SuppressWarnings("deprecation")
-							HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(API.formatMessage(DC).getToolTips()).create());
-								linkText.setHoverEvent(hoverEvent);
+							net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent("    ");
+								DC.setMessages("&aPuedes descargarla en este");
+								DC.setToolTips("&f!");
 
-						TextComponent message = new TextComponent("    ");
-							DC.setMessages("&aPuedes descargarla en este");
-							DC.setToolTips("&f!");
+								message.addExtra(API.formatMessage(DC).getMessages() + " ");
+								message.addExtra(linkText);
+								message.addExtra(API.formatMessage(DC).getToolTips());
 
-							message.addExtra(API.formatMessage(DC).getMessages() + " ");
-							message.addExtra(linkText);
-							message.addExtra(API.formatMessage(DC).getToolTips());
+							net.md_5.bungee.api.chat.TextComponent versionMessage = new net.md_5.bungee.api.chat.TextComponent();
+								DC.setMessages(String.format("&eHay una nueva versión disponible&f! &f(&B%s&f)", latestVersion));
+								DC.setToolTips(null);
 
-						TextComponent versionMessage = new TextComponent();
+								versionMessage.setText(API.formatMessage(DC).getMessages());
+
+							player.spigot().sendMessage(versionMessage);
+							player.spigot().sendMessage(message);
+//							*/
+
+						} else {
 							DC.setMessages(String.format("&eHay una nueva versión disponible&f! &f(&B%s&f)", latestVersion));
-							DC.setToolTips(null);
-
-							versionMessage.setText(API.formatMessage(DC).getMessages());
-
-						player.spigot().sendMessage(versionMessage);
-						player.spigot().sendMessage(message);
+							DC.setToolTips("&aPor favor vea su consola &f/ &aterminal&f.");
+								API.sendMessage(DC);
+						}
 
 					} else {
 						DC.setMessages(String.format("&e	Hay una nueva versión disponible&f! &f(&b%s&f)", latestVersion));

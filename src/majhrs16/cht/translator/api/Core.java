@@ -2,13 +2,12 @@ package majhrs16.cht.translator.api;
 
 import majhrs16.lib.network.translator.GoogleTranslator;
 import me.clip.placeholderapi.PlaceholderAPI;
-import majhrs16.cht.events.custom.Message;
-import net.md_5.bungee.api.ChatColor;
-import majhrs16.lib.utils.Str;
-import majhrs16.cht.util.util;
-import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.util.cache.Permissions;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.lib.utils.Str;
+import majhrs16.cht.util.util;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,9 +51,11 @@ public interface Core {
 			return text;
 
 		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
+			/*
 			Matcher matcher;
 			while ((matcher = color_hex.matcher(text)).find())
-				text = text.replace(matcher.group(0), "" + ChatColor.of(matcher.group(0)));
+				text = text.replace(matcher.group(0), "" + net.md_5.bungee.api.ChatColor.of(matcher.group(0)));
+			*/
 		}
 
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);
@@ -96,6 +97,12 @@ public interface Core {
 		if (to_message_format != null)
 			to_message_format   = convertVariablesToLowercase(to_message_format);
 
+		if (from_tool_tips != null)
+			from_tool_tips = convertVariablesToLowercase(from_tool_tips);
+	
+		if (to_tool_tips != null)
+			to_tool_tips = convertVariablesToLowercase(to_tool_tips);
+
 		if (from_message_format != null) {
 			if (from_lang_source != null)
 				from_message_format = from_message_format.replace("%ct_lang_source%", from_lang_source);
@@ -136,28 +143,28 @@ public interface Core {
 				from_message_format = from_message_format.replace("$player_name$", to_player.getName());
 		}
 
-		if (from_tool_tips != null) {
-			if (from_player != null)
-				from_tool_tips = from_tool_tips.replace("%player_name%", from_player.getName());
-
-			if (to_player != null)
-				from_tool_tips = from_tool_tips.replace("$player_name$", to_player.getName());
-		}
-
 		if (to_message_format != null) {
 			if (from_player != null)
-				to_message_format = to_message_format.replace("%player_name%", from_player.getName());
+				to_message_format = to_message_format.replace("%player_name%",  from_player.getName());
 
 			if (to_player != null)
 				to_message_format = to_message_format.replace("$player_name$", to_player.getName());
 		}
 
-		if (to_tool_tips != null) {
+		if (from_tool_tips != null) {
 			if (from_player != null)
-				to_tool_tips = to_tool_tips.replace("%player_name%", from_player.getName());
+				from_tool_tips = from_tool_tips.replace("%player_name%", "`" + from_player.getName() + "`");
 
 			if (to_player != null)
-				to_tool_tips = to_tool_tips.replace("$player_name$", to_player.getName());
+				from_tool_tips = from_tool_tips.replace("$player_name$", "`" + to_player.getName() + "`");
+		}
+
+		if (to_tool_tips != null) {
+			if (from_player != null)
+				to_tool_tips = to_tool_tips.replace("%player_name%", "`" + from_player.getName() + "`");
+
+			if (to_player != null)
+				to_tool_tips = to_tool_tips.replace("$player_name$", "`" + to_player.getName() + "`");
 		}
 
 		if (from_message_format != null) {
@@ -421,6 +428,18 @@ public interface Core {
 				to_message_format = to_message_format.replaceFirst("%ct_expand%", Str.repeat(" ", padding));
 			}
 		}
+
+		if (from_message_format != null)
+			from_message_format = from_message_format.replace("\\t", "\t"); 
+	
+		if (to_message_format != null)
+			to_message_format = to_message_format.replace("\\t", "\t"); 
+
+		if (from_tool_tips != null)
+			from_tool_tips = from_tool_tips.replace("\\t", "\t");
+	
+		if (to_tool_tips != null)
+			to_tool_tips = to_tool_tips.replace("\\t", "\t");
 
 		DC.setMessageFormat(from_message_format);
 		DC.setMessages(from_messages);

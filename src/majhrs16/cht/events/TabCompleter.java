@@ -1,19 +1,23 @@
 package majhrs16.cht.events;
 
+/*
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.TabCompleteEvent;
 
 import majhrs16.cht.ChatTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
+*/
 
+import org.bukkit.event.Listener;
+
+@Deprecated
 public class TabCompleter implements Listener {
+	/*
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 
     @EventHandler
-    public void onTabComplete(TabCompleteEvent event) {
+    public void onTabComplete(org.bukkit.event.server.TabCompleteEvent event) {
         String buffer = event.getBuffer();
 
         if (buffer.startsWith("/"))
@@ -36,5 +40,7 @@ public class TabCompleter implements Listener {
         System.out.println(completions.toString());
 
         event.setCompletions(completions);
+ 
     }
+    */
 }

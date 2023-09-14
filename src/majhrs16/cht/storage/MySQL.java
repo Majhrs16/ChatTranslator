@@ -17,7 +17,7 @@ public class MySQL extends SQL {
 			return;
 		}
 
-		String url = "jdbc:" + type + "://" + host + ":" + port + "/" + database;
+		String url = "jdbc:" + type + "://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false";
 		conn = DriverManager.getConnection(url, user, password);
 	}
 }

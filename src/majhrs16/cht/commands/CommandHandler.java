@@ -8,12 +8,8 @@ import org.bukkit.entity.Player;
 
 import majhrs16.lib.storages.YAML.ParseYamlException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.commands.cht.SetterLang;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.ClickEvent;
 import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.commands.cht.Reloader;
@@ -108,6 +104,8 @@ public class CommandHandler implements CommandExecutor {
 		if (text == null) return;
 
 		String description = String.join("\n", commands.getStringList(path + "toolTips"));
+
+		@SuppressWarnings("unused")
 		String suggest = commands.getString(path + "suggest");
 
 		Message DC = util.getDataConfigDefault();
@@ -121,20 +119,27 @@ public class CommandHandler implements CommandExecutor {
 				DC.setToolTips(description);
 			DC = API.formatMessage(DC);
 
-			TextComponent message = new TextComponent(DC.getMessages());
-				if (!description.isEmpty()) {
-					@SuppressWarnings("deprecation")
-					HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(DC.getToolTips()).create());
-						message.setHoverEvent(hoverEvent);
-				}
+			if (util.getMinecraftVersion() >= 7.10) {
+//				/*
+				net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent(DC.getMessages());
+					if (!description.isEmpty()) {
+						@SuppressWarnings("deprecation")
+						net.md_5.bungee.api.chat.HoverEvent hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.ComponentBuilder(DC.getToolTips()).create());
+							message.setHoverEvent(hoverEvent);
+					}
+	
+					if (suggest != null) {
+						DC.setMessages(null); // Optimizacion
+						DC.setToolTips("`/" + suggest + "`");
+						message.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.SUGGEST_COMMAND, API.formatMessage(DC).getToolTips()));
+					}
+	
+				((Player) DC.getSender()).spigot().sendMessage(message);
+//				*/
 
-				if (suggest != null) {
-					DC.setMessages(null); // Optimizacion
-					DC.setToolTips("`/" + suggest + "`");
-					message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, API.formatMessage(DC).getToolTips()));
-				}
-
-			((Player) DC.getSender()).spigot().sendMessage(message);
+			} else {
+				API.processMessage(DC);
+			}
 
 		} else {
 			DC.setMessages(text);

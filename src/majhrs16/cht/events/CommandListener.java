@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import majhrs16.cht.commands.CommandHandler;
+import majhrs16.cht.util.util;
 
 public class CommandListener implements Listener {
 	public boolean preProcessCommand(CommandSender sender, String command_line) {
@@ -30,5 +31,12 @@ public class CommandListener implements Listener {
 	public void onCommandPlayer(PlayerCommandPreprocessEvent event) { event.setCancelled(preProcessCommand(event.getPlayer(), event.getMessage())); }
 
 	@EventHandler
-	public void onCommandServer(ServerCommandEvent event) { event.setCancelled(preProcessCommand(event.getSender(), event.getCommand())); }
+	public void onCommandServer(ServerCommandEvent event) {
+		@SuppressWarnings("unused")
+		boolean status = preProcessCommand(event.getSender(), event.getCommand());
+
+		if (util.getMinecraftVersion() >= 8.0)
+//			event.setCancelled(status)
+		;
+	}
 }

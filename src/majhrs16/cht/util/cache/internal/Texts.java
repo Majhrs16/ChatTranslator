@@ -104,6 +104,16 @@ public class Texts {
 			}
 		}
 	}
+	
+	public static class EVENTS {
+		public static class ACCESS {
+			@Config("events.access.entry")
+			public static String ENTRY;
+
+			@Config("events.access.exit")
+			public static String EXIT;
+		}
+	}
 
 	@Config("separator")
 	public static String SEPARATOR;

@@ -65,6 +65,11 @@ commands:
       toolTips:
       - "&4Kernel&f: %kernel.version%"
 
+events:
+  access:
+    entry: "se ha unido al juego!"
+    exit: "ha abandonado el juego."
+
 separator: "&c<&4-------------------------&c>"
 
 config-version: 1

@@ -24,15 +24,116 @@ import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.lib.storages.YAML.ParseYamlException;
+import majhrs16.lib.utils.Str;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
-import java.util.List;
-
 public class SignHandler implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+
+	@EventHandler
+	public void updateSign(PlayerInteractEvent event) {
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
+			return;
+
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Block block = event.getClickedBlock();
+
+			if (!(block.getState() instanceof Sign))
+				return;
+
+			if (event.getPlayer().isSneaking())
+				event.setCancelled(true);
+
+			Sign sign = (Sign) block.getState();
+
+			String path   = String.format("%s_%s_%s_%s", block.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
+
+			FileConfiguration signs = plugin.signs.get();
+			Message from = util.getDataConfigDefault();
+				from.setSender(null);
+				from.setLangSource(signs.getString(path + ".lang"));
+				from.setLangTarget(API.getLang(event.getPlayer()));
+;
+			from.setMessages(String.join(" ", signs.getStringList(path + ".text")));
+			from = API.formatMessage(from);
+
+			int i = 0;
+			String[] lines = Str.wrapText(from.getMessages(), 15).split("\n");
+			for (; i < Math.min(lines.length, 4); i++) {
+				String line = lines[i];
+
+				System.out.println("Line sign: " + i + " text: '" + line + "'");
+
+				if (line.isEmpty()) {
+					sign.setLine(i, "");
+					continue;
+				}
+
+				sign.setLine(i, line);
+			}
+
+			for (; i < 4; i++)
+				sign.setLine(i, "");
+
+			sign.update();
+		}
+	}
+
+	@EventHandler
+	public void onSignBreak(BlockBreakEvent event) {
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
+			return;
+
+		FileConfiguration signs = plugin.signs.get();
+		Player player = event.getPlayer();
+		Block block   = event.getBlock();
+		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
+
+		if (signs.contains(path)) {
+			signs.set(path + ".text", null);
+			signs.set(path + ".lang", null);
+			signs.set(path, null);
+			plugin.signs.save();
+
+			try {
+				plugin.signs.reload();
+
+			} catch (ParseYamlException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@EventHandler
+	public void onSignPlace(SignChangeEvent event) {
+		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
+			return;
+
+		FileConfiguration signs = plugin.signs.get();
+		Player player = event.getPlayer();
+		Block block   = event.getBlock();
+		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), block.getX(), block.getY(), block.getZ());
+
+		if (event.getLines().equals(new String[] {"", "", "", ""}) || event.getLines().length == 0)
+			return;
+
+		signs.set(path + ".text", event.getLines());
+		signs.set(path + ".lang", API.getLang(player));
+		plugin.signs.save();
+		try {
+			plugin.signs.reload();
+
+		} catch (ParseYamlException e) {
+			e.printStackTrace();
+		}
+	}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//	private List<Player> showed = new ArrayList<Player>();
 
@@ -95,48 +196,6 @@ public class SignHandler implements Listener {
 	*/
 
 //	public void updateSign(/* BlockPosition blockPosition, int blockId, */ String[] lines, String fromLang, Player toPlayer) {
-	@EventHandler
-	public void updateSign(PlayerInteractEvent event) {
-		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
-			return;
-
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Block block = event.getClickedBlock();
-
-			if (!(block.getState() instanceof Sign))
-				return;
-
-			if (event.getPlayer().isSneaking())
-				event.setCancelled(true);
-
-			Sign sign = (Sign) block.getState();
-
-			String path   = String.format("%s_%s_%s_%s", block.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
-
-			FileConfiguration signs = plugin.signs.get();
-			Message from = util.getDataConfigDefault();
-				from.setLangSource(signs.getString(path + ".lang"));
-				from.setLangTarget(API.getLang(event.getPlayer()));
-
-			List<String> lines = signs.getStringList(path + ".text");
-			for (int i = 0; i < lines.size(); i++) {
-				String line = lines.get(i);
-
-				System.out.println("Line sign: " + i + " text: '" + line + "'");
-
-				if (line.isEmpty())
-					continue;
-
-				else
-					sign.setLine(i, "");
-
-				from.setMessages(line);
-				sign.setLine(i, API.formatMessage(from).getMessages());
-			}
-
-			sign.update();
-		}
-
 		/*
 		Message from = util.getDataConfigDefault();
 			from.setSender(toPlayer);
@@ -213,54 +272,4 @@ public class SignHandler implements Listener {
 			e.printStackTrace();
 		}
 		*/
-	}
-
-	@EventHandler
-	public void onSignBreak(BlockBreakEvent event) {
-		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
-			return;
-
-		FileConfiguration signs = plugin.signs.get();
-		Player player = event.getPlayer();
-		Block block   = event.getBlock();
-		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), (int) block.getX(), (int) block.getY(), (int) block.getZ());
-
-		if (signs.contains(path)) {
-			signs.set(path + ".text", null);
-			signs.set(path + ".lang", null);
-			signs.set(path, null);
-			plugin.signs.save();
-
-			try {
-				plugin.signs.reload();
-
-			} catch (ParseYamlException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@EventHandler
-	public void onSignPlace(SignChangeEvent event) {
-		if (plugin.isDisabled() && !Config.TranslateOthers.SIGNS.IF())
-			return;
-
-		FileConfiguration signs = plugin.signs.get();
-		Player player = event.getPlayer();
-		Block block   = event.getBlock();
-		String path   = String.format("%s_%s_%s_%s", player.getWorld().getName(), block.getX(), block.getY(), block.getZ());
-
-		if (event.getLines().equals(new String[] {"", "", "", ""}) || event.getLines().length == 0)
-			return;
-
-		signs.set(path + ".text", event.getLines());
-		signs.set(path + ".lang", API.getLang(player));
-		plugin.signs.save();
-		try {
-			plugin.signs.reload();
-
-		} catch (ParseYamlException e) {
-			e.printStackTrace();
-		}
-	}
 }
