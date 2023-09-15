@@ -1,7 +1,7 @@
 package majhrs16.cht;
 
-import majhrs16.lib.storages.YAML.ParseYamlException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.commands.CommandWrapper;
@@ -84,14 +84,15 @@ public class ChatTranslator extends JavaPlugin {
 			return;
 		}
 
-		Updater updater = new Updater();
-		updater.updateConfig();
 		Texts.reload();
 
 		try {
 			registerPlayers();
 
 		} catch (SQLException | ParseYamlException e) {
+			Updater updater = new Updater();
+			updater.updateConfig();
+
 			Message from = util.getDataConfigDefault();
 			from.setMessages(e.getMessage());
 				API.sendMessage(from);
@@ -99,6 +100,9 @@ public class ChatTranslator extends JavaPlugin {
 			onDisable();
 			return;
 		}
+
+		Updater updater = new Updater();
+		updater.updateConfig();
 
 		Message from = util.getDataConfigDefault();
 
@@ -264,27 +268,30 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerPlayers() throws SQLException, ParseYamlException {
-		Message from = util.getDataConfigDefault();
 		String storageType = config.get().getString("storage.type").toLowerCase();
 
 		switch (storageType) {
 			case "yaml":
 				try {
 					players.register();
+
+					Message from = util.getDataConfigDefault();
 					from.setMessages(Texts.STORAGE.OPEN.YAML.OK);
 						API.sendMessage(from);
 
-				} catch (IllegalArgumentException e) {
-					throw new IllegalArgumentException(Texts.STORAGE.OPEN.YAML.ERROR + "\n\t" + e.toString());
+				} catch (ParseYamlException e) {
+					throw new ParseYamlException(Texts.STORAGE.OPEN.YAML.ERROR + "\n\t" + e.toString());
 				}
 				break;
 
 			case "sqlite":
 				sqlite.set(null, 0, config.get().getString("storage.database"), null, null);
+
 				try {
 					sqlite.connect();
 					sqlite.createTable();
 
+					Message from = util.getDataConfigDefault();
 					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
 					from.setMessages(Texts.STORAGE.OPEN.SQLITE.OK);
 						API.sendMessage(from);
@@ -306,6 +313,7 @@ public class ChatTranslator extends JavaPlugin {
 					mysql.connect();
 					mysql.createTable();
 
+					Message from = util.getDataConfigDefault();
 					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
 					from.setMessages(Texts.STORAGE.OPEN.MYSQL.OK);
 						API.sendMessage(from);
@@ -316,6 +324,7 @@ public class ChatTranslator extends JavaPlugin {
 				break;
 
 			default:
+				Message from = util.getDataConfigDefault();
 				from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
 					API.sendMessage(from);
 		}

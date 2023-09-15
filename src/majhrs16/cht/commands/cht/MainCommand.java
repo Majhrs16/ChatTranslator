@@ -8,7 +8,7 @@ import majhrs16.cht.util.util;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.util.cache.internal.Texts;
-import majhrs16.lib.storages.YAML.ParseYamlException;
+import majhrs16.lib.storages.ParseYamlException;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

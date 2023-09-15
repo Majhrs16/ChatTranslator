@@ -1,6 +1,7 @@
 package majhrs16.cht.storage;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;

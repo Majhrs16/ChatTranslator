@@ -37,7 +37,12 @@ public class AccessPlayer implements Listener {
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(to_model, froms -> froms.add(from_console));
+		API.broadcast(to_model, froms -> {
+			froms.add(from_console);
+
+			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter.
+			froms.clear(); // Evitar usar el broadcast default.
+		});
 
 		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
 			new Updater().checkUpdate(event.getPlayer());
@@ -60,6 +65,11 @@ public class AccessPlayer implements Listener {
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(to_model, froms -> froms.add(from_console));
+		API.broadcast(to_model, froms -> {
+			froms.add(from_console);
+
+			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter.
+			froms.clear(); // Evitar usar el broadcast default.
+		});
 	}
 }
