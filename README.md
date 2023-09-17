@@ -55,7 +55,6 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
 4. Descarga las dependencias requeridas y colócalas en la carpeta "libs" dentro del proyecto:
 
-   - [ConditionalEvents.jar](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)
    - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/)
    - [Spigot 1.16.5.jar](https://getbukkit.org/download/spigot)
 
