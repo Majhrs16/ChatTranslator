@@ -2,6 +2,7 @@ package majhrs16.cht.util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
@@ -14,10 +15,36 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class util {
 	private static ChatTranslator plugin = ChatTranslator.getInstance();
+	private static ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 	private static Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
+
+	public static UUID getUUID(Object sender) {
+		UUID uuid;
+
+		if (sender instanceof Player) {
+			uuid = ((Player) sender).getUniqueId();
+
+		} if (sender instanceof OfflinePlayer) {
+			try {
+				uuid = ((OfflinePlayer) sender).getUniqueId();
+
+			} catch (NoSuchMethodError e) {
+				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
+			}
+
+		} else if (sender instanceof CommandSender) {
+			uuid = UUID.fromString(plugin.config.get().getString("server-uuid"));
+
+		} else {
+			uuid = null;
+		}
+
+		return uuid;
+	}
 
 	public static Player[] getOnlinePlayers() {
 		List<Player> playerList = new ArrayList<Player>();
@@ -42,7 +69,7 @@ public class util {
 	}
 
 	public static boolean IF(FileConfiguration cfg, String path) {
-			// Comprobador rapido si existe una configuracion.y si es true.
+			// Comprobador rapido si existe una configuracion y si es true.
 
 		return cfg.contains(path) && cfg.getBoolean(path);
 	}
@@ -59,15 +86,22 @@ public class util {
 		assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
 
-	public static Message getDataConfigDefault() {
+	public static Message _getDataConfigDefault() {
 		Message from = new Message();
 			from.setTo(null); // Necesario para evitar crashes.
 			from.setSender(Bukkit.getConsoleSender());
 			from.setMessageFormat("%ct_messages%");
-			from.setLangSource(ChatTranslator.getInstance().messages.get().getString("native-lang"));
-			from.setLangTarget(ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
+			from.setLangSource(plugin.messages.get().getString("native-lang"));
+			from.setLangTarget(plugin.storage.getDefaultLang());
 			from.setColor(true);
 			from.setFormatPAPI(false);
+
+		return from;
+	}
+
+	public static Message getDataConfigDefault() {
+		Message from = _getDataConfigDefault();
+			from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
 
 		return from;
 	}

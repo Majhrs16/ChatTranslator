@@ -139,20 +139,20 @@ public interface Msgs {
 	}
 
 	default public void broadcast(List<Message> messages, Consumer<Message> preBroadcastAction) {
-		for (Message to : messages) {
+		for (Message from : messages) {
 			try {
-				util.assertLang(to.getLangSource());
-				util.assertLang(to.getLangTarget());
+				util.assertLang(from.getLangSource());
+				util.assertLang(from.getLangTarget());
 
 				if (preBroadcastAction != null)
-					preBroadcastAction.accept(to);
+					preBroadcastAction.accept(from);
 
 			} catch (IllegalArgumentException e) {
 				Message alert = util.getDataConfigDefault();
 					alert.setMessages(String.format("&b%s&f: &cIdioma &f'&b%s&f' &cy&f/&co &f'&b%s&f' &cno soportado&f.",
-						to.getSenderName(),
-						to.getLangSource(),
-						to.getLangTarget()
+						from.getSenderName(),
+						from.getLangSource(),
+						from.getLangTarget()
 					));
 				sendMessage(alert);
 			}
@@ -160,7 +160,7 @@ public interface Msgs {
 	}
 
 	default public void broadcast(List<Message> messages) {
-		broadcast(messages, to -> majhrs16.cht.util.ChatLimiter.chat.add(to));
+		broadcast(messages, from -> majhrs16.cht.util.ChatLimiter.chat.add(from));
 	}
 
 	default  public void broadcast(Message from, Consumer<List<Message>> preBroadcastAction) {

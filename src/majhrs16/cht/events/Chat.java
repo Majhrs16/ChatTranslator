@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
-import majhrs16.cht.util.cache.Config;
 
 public class Chat implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -26,6 +26,7 @@ public class Chat implements Listener {
 		}
 
 		String from_lang = API.getLang(event.getPlayer());
+
 		Message to_model = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
 
 		Message from_console = to_model.clone();

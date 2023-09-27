@@ -1,20 +1,20 @@
 package majhrs16.cht.events;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.util.updater.UpdateChecker;
+import majhrs16.cht.util.cache.internal.Texts;
+import majhrs16.cht.util.cache.Permissions;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.util;
+
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
-
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.util.Updater;
-import majhrs16.cht.util.util;
-import majhrs16.cht.util.cache.Config;
-import majhrs16.cht.util.cache.Permissions;
-import majhrs16.cht.util.cache.internal.Texts;
 
 public class AccessPlayer implements Listener {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -45,7 +45,7 @@ public class AccessPlayer implements Listener {
 		});
 
 		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
-			new Updater().checkUpdate(event.getPlayer());
+			new UpdateChecker(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

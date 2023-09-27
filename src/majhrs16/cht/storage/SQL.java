@@ -6,9 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
+import javax.annotation.Nullable;
+
 import java.util.UUID;
 
 public abstract class SQL extends Database {
+	private String table = "Storage";
+
 	public SQL(String driver, String type) {
 		super(driver, type);
 	}
@@ -16,36 +20,76 @@ public abstract class SQL extends Database {
 	public abstract void connect() throws SQLException;
 
 	public void createTable() throws SQLException {
-		String sql = "CREATE TABLE IF NOT EXISTS Players (UUID TEXT, Lang TEXT)";
+		String sql = "CREATE TABLE IF NOT EXISTS " + table + " (uuid TEXT, discordID TEXT, lang TEXT)";
 		conn.createStatement().execute(sql);
 	}
 
-	public void insert(UUID uuid, String lang) throws SQLException {
-		String sql = "INSERT INTO Players (UUID, Lang) VALUES (?, ?)";
-		PreparedStatement statement = conn.prepareStatement(sql);
-		statement.setString(1, uuid.toString());
-		statement.setString(2, lang);
-		statement.executeUpdate();
+	public String[] get(UUID uuid) throws SQLException {
+		return getData("SELECT * FROM " + table + " WHERE uuid = ?", uuid.toString());
 	}
 
-	public String get(UUID uuid) throws SQLException {
-		String sql = "SELECT Lang FROM Players WHERE UUID = ?";
+	public String[] get(String discordID) throws SQLException {
+		return getData("SELECT * FROM " + table + " WHERE discordID = ?", discordID);
+	}
+
+	private String[] getData(String sql, String param) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(sql);
-		statement.setString(1, uuid.toString());
+		statement.setString(1, param);
 		ResultSet result = statement.executeQuery();
-		
+
 		if (result.next()) {
-			return result.getString("Lang");
+			return new String[] {
+				result.getString(0),
+				result.getString(1),
+				result.getString(2)
+			};
+
 		} else {
 			return null;
 		}
 	}
 
-	public void update(UUID uuid, String lang) throws SQLException {
-		String sql = "UPDATE Players SET Lang = ? WHERE UUID = ?";
+	public void insert(UUID uuid, @Nullable String discordID, String lang) throws SQLException {
+		String sql = "INSERT INTO " + table + " (uuid%s, lang) VALUES (?%s, ?)";
+
+		if (discordID == null) {
+			sql = String.format(sql, "", "");
+
+		} else {
+			sql = String.format(sql, ", discordID", ", ?");
+		}
+
 		PreparedStatement statement = conn.prepareStatement(sql);
+		statement.setString(1, uuid.toString());
+		statement.setString(2, lang);
+
+		if (discordID != null)
+			statement.setString(3, discordID);
+
+		statement.executeUpdate();
+	}
+
+	public void update(UUID uuid, @Nullable String discordID, String lang) throws SQLException {
+		String sql = "UPDATE " + table + " SET lang = ?%s WHERE uuid = ?";
+
+		if (discordID == null)
+			sql = String.format(sql, "");
+
+		else
+			sql = String.format(sql, ", discordID = ?");
+
+		PreparedStatement statement = conn.prepareStatement(sql);
+
 		statement.setString(1, lang);
-		statement.setString(2, uuid.toString());
+
+		if (discordID == null) {
+			statement.setString(2, uuid.toString());
+
+		} else {
+			statement.setString(2, discordID);
+			statement.setString(3, uuid.toString());
+		}
+
 		statement.executeUpdate();
 	}
 }

@@ -34,12 +34,8 @@ public class Toggler {
 	}
 	
 	public void TogglePlugin(CommandSender sender) {
-		if (plugin.isDisabled())
-			plugin.onEnable();
-
-		else
-			plugin.onDisable();
-
+		majhrs16.cht.util.ChatLimiter.chat.clear();
+		plugin.setDisabled(!plugin.isDisabled());
 		sender.sendMessage("" + !plugin.isDisabled());
 	}
 }

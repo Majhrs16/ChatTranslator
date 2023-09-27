@@ -9,16 +9,18 @@ import org.bukkit.entity.Player;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
-import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Message extends Event implements Cancellable {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final HandlerList HANDLERS = new HandlerList();
-
 
 	private Message to;
 	private CommandSender sender;
@@ -31,7 +33,6 @@ public class Message extends Event implements Cancellable {
 	private String lang_target;
 	private Boolean color       = true;
 	private Boolean format_papi = true;
-
 
 	public Message() {}
 
@@ -72,32 +73,56 @@ public class Message extends Event implements Cancellable {
 	
 	public boolean isCancelled() { return is_cancelled; }
 
-	public void setCancelledThis(boolean isCancelled) { this.is_cancelled = isCancelled; }
+	public void setCancelledThis(boolean isCancelled) { this.is_cancelled  = isCancelled; }
 	public void setCancelled(boolean isCancelled) { // Soporte con CE.
 		getTo().setCancelledThis(isCancelled); // Explosivo!!
 		setCancelledThis(isCancelled);
 	}
 
-	private String getChat(String format, String chat) {
-		if (format == null)
-			return format;
-		FileConfiguration config = plugin.config.get();
-		String path = "formats." + format + "."  + chat;
-		if (Config.DEBUG.IF())
-			System.out.println("DEBUG: " + config.contains(path));
-		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
+	private String getChat(String[] formats, String chat) {
+		if (formats == null || formats.length < 1)
+			return null;
+
+		List<String> result = new ArrayList<String>();
+
+		for (String format : formats) {
+			if (format == null)
+				continue;
+
+			FileConfiguration config = plugin.config.get();
+			String path = "formats." + format + "."  + chat;
+			if (Config.DEBUG.IF())
+				System.out.println("DEBUG exists '" + path + "' ?: '" + config.contains(path) + "'");
+			result.add(config.contains(path) ? String.join("\n", config.getStringList(path)) : format);
+		}
+
+		return result.size() > 0 ? String.join("\n", result) : null;
 	}
 
-	public void setTo(Message to)                       { this.to             = to == null ? new Message() : to; }
-	public void setSender(CommandSender sender)         { this.sender         = sender; }
-	public void setMessageFormat(String messageFormat)  { this.message_format = getChat(messageFormat, "messages") ; }
-	public void setMessages(String messages)            { this.messages       = messages; }
-	public void setToolTips(String toolTips)            { this.tool_tips      = getChat(toolTips, "toolTips"); }
-	public void setSounds(String sounds)                { this.sounds         = getChat(sounds, "sounds"); }
-	public void setLangSource(String lang)              { this.lang_source    = lang; }
-	public void setLangTarget(String lang)              { this.lang_target    = lang; }
-	public void setFormatPAPI(Boolean formatPAPI)       { this.format_papi    = formatPAPI; }
-	public void setColor(Boolean color)                 { this.color          = color; }
+	public void setTo(Message to)                       { this.to          = to == null ? new Message() : to; }
+	public void setSender(CommandSender sender)         { this.sender      = sender; }
+
+	public void setMessageFormat(String... messageFormat) {
+		this.message_format = getChat(messageFormat, "messages");
+	}
+
+	public void setMessages(String... messages) {
+		if (messages == null)
+			this.messages   = null;
+
+		else
+			this.messages   = String.join("\n", messages);
+	}
+
+	public void setToolTips(String... toolTips) {
+		this.tool_tips      = getChat(toolTips, "toolTips");
+	}
+
+	public void setSounds(String... sounds)             { this.sounds      = getChat(sounds, "sounds"); }
+	public void setLangSource(String lang)              { this.lang_source = lang; }
+	public void setLangTarget(String lang)              { this.lang_target = lang; }
+	public void setFormatPAPI(Boolean formatPAPI)       { this.format_papi = formatPAPI; }
+	public void setColor(Boolean color)                 { this.color       = color; }
 
 
 	public Message getTo()           { return to; }

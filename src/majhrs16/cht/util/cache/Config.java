@@ -44,6 +44,7 @@ public enum Config {
     }
 
     public enum TranslateOthers {
+    	DISCORD	("auto-translate-others.discord"),
         ACCESS	("auto-translate-others.access"),
     	SIGNS	("auto-translate-others.signs");
 

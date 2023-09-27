@@ -1,11 +1,8 @@
 native-lang: es
 
-kernel:
-  version: "&b%_version%"
-
 plugin:
   name: "&aChat&9Translator"
-  version: "&bb%version%"
+  version: "&b%versions.plugin%"
   enable: "&a\tActivado&f, &7Version&f: %plugin.version%&f."
   disable: "\t&cDesactivado&f."
   title:
@@ -18,8 +15,8 @@ plugin:
     - "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝"
 
   is-UTF-8:
-#    "true": ""
-    "false": "&eAdvertencia&f, &eEs muy recomendable configurar su java&f(&eAdemas de la consola&f)&e en &bUTF&f-&b8&f."
+    "true": ""
+    "false": "&eAdvertencia&f, &eEs muy recomendable configurar su Java&f(&eAdemas de la consola &f/ &eterminal&f)&e en &bUTF&f-&b8&f."
 
 storage:
   open:
@@ -63,7 +60,8 @@ commands:
       - "%plugin.title.text% %plugin.version%"
 
       toolTips:
-      - "&4Kernel&f: %kernel.version%"
+      - "&4Kernel&f: &b%versions.kernel%"
+      - "&9DST&f: &b%versions.dst%"
 
 events:
   access:

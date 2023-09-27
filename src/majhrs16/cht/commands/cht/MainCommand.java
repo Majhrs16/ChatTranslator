@@ -3,7 +3,6 @@ package majhrs16.cht.commands.cht;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.cht.util.Updater;
 import majhrs16.cht.util.util;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Permissions;
@@ -122,7 +121,7 @@ public class MainCommand implements CommandExecutor {
 
 				try {
 					plugin.config.reset();
-					new Updater().updateConfig();
+//					new Updater().updateConfig();
 					DC.setMessages("&aSe ha restablecido la config exitosamente&f.");
 
 				} catch (ParseYamlException e) {

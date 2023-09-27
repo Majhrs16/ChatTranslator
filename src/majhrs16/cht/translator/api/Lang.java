@@ -1,8 +1,6 @@
 package majhrs16.cht.translator.api;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.command.CommandSender;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
@@ -13,7 +11,6 @@ import majhrs16.cht.util.util;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.UUID;
 
 public interface Lang {
@@ -43,9 +40,7 @@ public interface Lang {
 
 //		setLang(Player/offlinePlayer, "Ekisde"); -> IllegalArgumentException...
 
-		UUID uuid;
 		ChatTranslator plugin     = ChatTranslator.getInstance();
-		FileConfiguration config  = plugin.config.get();
 		Message DC = util.getDataConfigDefault();
 
 		try {
@@ -57,130 +52,35 @@ public interface Lang {
 			return;
 		}
 
-		if (sender instanceof Player) {
-			uuid = ((Player) sender).getUniqueId();
+		UUID uuid = util.getUUID(sender);
 
-		} if (sender instanceof OfflinePlayer) {
-/*			try {
-				uuid = ((OfflinePlayer) sender).getUniqueId();
-
-			} catch (NoSuchMethodError e) {*/
-				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
-//			}
-
-		} else {
-			uuid = UUID.fromString(config.getString("server-uuid"));
-		}
-
-		switch (plugin.config.get().getString("storage.type").toLowerCase()) {
-			case "yaml":
-				plugin.players.get().set(uuid.toString(), lang);
-				plugin.players.save();
-				break;
-
-			case "sqlite":
-				try {
-					if (plugin.sqlite.get(uuid) == null) {
-						plugin.sqlite.insert(uuid, lang);
-
-					} else {
-						plugin.sqlite.update(uuid, lang);
-					}
-
-				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
-						ChatTranslatorAPI.getInstance().sendMessage(DC);
-				}
-				break;
-
-			case "mysql":
-				try {
-					if (plugin.mysql.get(uuid) == null) {
-						plugin.mysql.insert(uuid, lang);
-
-					} else {
-						plugin.mysql.update(uuid, lang);
-					}
-
-				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
-						ChatTranslatorAPI.getInstance().sendMessage(DC);
-				}
-				break;
-		}
+		plugin.storage.set(uuid, null, lang);
 	}
 
-	default String getLang(Object sender, String to_lang) {
+	default String getLang(Object sender) {
 	//		Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
 	//		Ejemplo: getLang(Alejo09Games) -> String = "en"
 
-		UUID uuid;
 		ChatTranslator plugin     = ChatTranslator.getInstance();
 		String lang               = null;
 		FileConfiguration config  = plugin.config.get();
 		String defaultLang        = config.getString("default-lang");
-		Message DC                = new Message(); // Duplique el codigo del util.getDataConfigDefault ya que no veo otra forma.
-			DC.setTo(null); // Necesario para evitar crashes.
-			DC.setSender(Bukkit.getConsoleSender());
-			DC.setMessageFormat("%ct_messages%");
-			DC.setLangSource("es"); ////////////////////////////////////////////////////////////////////////////////
-			DC.setLangTarget(to_lang);
-			DC.setColor(true);
-			DC.setFormatPAPI(false);
 
-		if (sender instanceof Player) {
-			uuid = ((Player) sender).getUniqueId();
+		Message DC = util._getDataConfigDefault();
 
-		} if (sender instanceof OfflinePlayer) {
-/*			try {
-				uuid = ((OfflinePlayer) sender).getUniqueId();
+		UUID uuid = util.getUUID(sender);
 
-			} catch (NoSuchMethodError e) {*/
-				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
-//			}
+		if (uuid != null) {
+			String[] values = plugin.storage.get(uuid);
 
-		} else {
-			uuid = UUID.fromString(config.getString("server-uuid"));
-		}
-
-		switch (plugin.config.get().getString("storage.type").toLowerCase()) {
-			case "yaml":
-				FileConfiguration players = plugin.players.get();
-				if (players.contains(uuid.toString())) {
-					lang = players.getString(uuid.toString());
-				}
-				break;
-
-			case "sqlite":
-				try {
-					lang = plugin.sqlite.get(uuid);
-
-				} catch (SQLException e) {
-					DC.setMessages("&cError al leer en SQLite&f.\n\t" + e.toString());
-						ChatTranslatorAPI.getInstance().sendMessage(DC);
-
-				} catch (NullPointerException e) {
-					;
-				}
-				break;
-
-			case "mysql":
-				try {
-					lang = plugin.mysql.get(uuid);
-
-				} catch (SQLException e) {
-					DC.setMessages("&cError al leer en MySQL&f.\n\t" + e.toString());
-						ChatTranslatorAPI.getInstance().sendMessage(DC);
-
-				} catch (NullPointerException e) {
-					;
-				}
-				break;
+			if (values != null)
+				lang = values[2];
 		}
 
 		if (lang == null || lang.equals("auto")) {
-			if (sender instanceof Player) { //  && util.checkPAPI()
+			if (sender instanceof Player) { // && util.checkPAPI()
 				String locale = LocaleUtil.getPlayerLocale((Player) sender);
+
 				if (locale == null) {
 					lang = defaultLang;
 
@@ -210,14 +110,5 @@ public interface Lang {
 		}
 
 		return lang;
-	}
-
-	default public String getLang(CommandSender sender) {
-		return getLang(
-			sender,
-			getLang(
-				Bukkit.getConsoleSender(),
-				ChatTranslator.getInstance().config.get().getString("default-lang")
-		));
 	}
 }

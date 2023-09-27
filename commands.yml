@@ -58,4 +58,11 @@ cht:
     toolTips:
     - "&4Restablece la config&f,&e Pero no los datos de lenguajes&f."
 
+  link:
+    type: "linker"
+    text: "&e    link"
+    suggest: "cht link"
+    toolTips:
+    - "&aVincula &7tu cuenta de &aMinecraft &7con tu cuenta de &9Discord&f."
+
 config-version: 1

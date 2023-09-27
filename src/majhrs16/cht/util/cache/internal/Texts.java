@@ -1,12 +1,14 @@
 package majhrs16.cht.util.cache.internal;
 
+import majhrs16.dst.DiscordTranslator;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.BaseLibrary;
 
 public class Texts {
-	public static class KERNEL {
-		@Config("kernel.version")
-		public static String VERSION;
+	public static class VERSIONS {
+		public static String PLUGIN = "b" + ChatTranslator.getInstance().getDescription().getVersion();
+		public static String KERNEL = BaseLibrary.version;
+		public static String DST    = DiscordTranslator.version;
 	}
 
 	public static class PLUGIN {
@@ -117,9 +119,6 @@ public class Texts {
 
 	@Config("separator")
 	public static String SEPARATOR;
-
-	public static String _VERSION = BaseLibrary.version;
-	public static String VERSION  = ChatTranslator.getInstance().getDescription().getVersion();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -21,7 +21,7 @@ public class Reloader {
 	}
 
 	public Reloader(Message DC) {
-		DC.setMessages("&7Recargando almacenamiento");
+		DC.setMessages("&7Recargando almacenamiento &f...");
 			API.sendMessage(DC);
 
 		this.DC = DC;
@@ -29,15 +29,15 @@ public class Reloader {
 
 	public void reloadAll() {
 		try {
+			reloadMessages();
+
 			reloadConfig();
 
 			reloadCommands();
 
-			reloadMessages();
-
 			reloadSigns();
 
-			reloadPlayers();
+			reloadStorage();
 
 		} catch (Exception e) {
 			if (Permissions.chattranslator.ADMIN.IF(DC.getSender())) {
@@ -65,7 +65,11 @@ public class Reloader {
 	}
 
 	public void reloadConfig() {
-		reload("&bconfig&f.&byml", () -> plugin.config.reload());
+		reload("&bconfig&f.&byml", () -> {
+			plugin.config.reload();
+			plugin.unregisterDiscordBot();
+			plugin.registerDiscordBot();
+		});
 	}
 
 	public void reloadSigns() {
@@ -83,10 +87,10 @@ public class Reloader {
 		});
 	}
 
-	public void reloadPlayers() {
+	public void reloadStorage() {
 		switch (plugin.config.get().getString("storage.type").toLowerCase()) {
 			case "yaml":
-				DC.setMessages("&bplayers&f.&byml&f");
+				DC.setMessages("&b" + plugin.config.get().getString("storage.database") + "&f.&byml");
 				break;
 
 			case "sqlite":
@@ -103,7 +107,7 @@ public class Reloader {
 		}
 
 		reload(DC.getMessages(), () -> {
-			plugin.players.reloads();
+			plugin.storage.yaml.reload();
 		});
 	}
 }
