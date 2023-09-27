@@ -55,8 +55,9 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
 
 4. Descarga las dependencias requeridas y colócalas en la carpeta "libs" dentro del proyecto:
 
-   - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/)
-   - [Spigot 1.16.5.jar](https://getbukkit.org/download/spigot)
+   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
+   - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/download?version=514383)
+   - [Spigot 1.16.5.jar](https://cdn.getbukkit.org/spigot/spigot-1.16.5.jar)
 
 5. Y ya por ultimo, ejecuta el compile.bat:
 
