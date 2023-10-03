@@ -1,30 +1,29 @@
-# ChatTranslator
+# ChatTranslator - Plugin Potente de Traducción y Formateo para Minecraft 1.5.2 - 1.20.1
+Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin problemas.
 
-ChatTranslator es un plugin para Minecraft 1.5.2 - 1.20.1 que permite la traducción en tiempo real de mensajes entre jugadores que hablan diferentes idiomas. Con ChatTranslator, puedes comunicarte con jugadores de todo el mundo sin tener que preocuparte por las barreras del idioma.
+## Características destacadas:
+1. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
+2. **Configuración Modular**: Personaliza fácilmente las configuraciónes `config.formats`, `messages.yml` y `commands.yml`.
+3. **Traducción de Carteles**: Simplemente haz click derecho o Shift + Click derecho en un letrero para traducirlo al instante.
+4. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
+5. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
+6. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los mensajes internos del plugin y las comunicaciones a la consola.
+7. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: YAML, SQLite y MySQL / MariaDB.
+8. **En Caso de Pérdida de Conexión**: Si pierdes la conexión a Internet, los mensajes locales llevarán el prefijo `[!]` para indicar su estado.
+9. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
+10. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando /cht link y traduce mensajes entre plataformas.
+11. **Detección Automática del Idioma**: Olvídate de configuraciones complicadas. ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!.
 
-## Características
-
-- Utilización de la API de [Google Translate](https://translate.google.com/) para llevar a cabo traducciones al idioma establecido, abarcando el chat y los mensajes de la consola, entre otros.
-- Configuración altamente personalizable para adecuar el formato del chat a las preferencias individuales, a través de `config.formats`.
-- En situaciones en las que la conexión a internet no esté disponible, se añade el prefijo `[!]` a la variable local `ct_messages`.
-- Los jugadores y la consola pueden especificar su idioma utilizando el comando `/cht lang [jugador] <código de idioma>`.
-- Capacidad para la traducción de carteles, y aún más características planificadas para futuras actualizaciones.
-- Compatibilidad con BungeeCord y la integración de bases de datos para un rendimiento óptimo.
-- Detección automática del idioma del jugador para facilitar la comunicación.
-- Funciones que se pueden activar o desactivar según las necesidades.
-- Opcionalmente, se puede aprovechar el potencial de las siguientes dependencias:
-  - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/).
-  - [ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/), brindando una manera sencilla de condicionar los chats.
-- Soporte parcial para otros plugins de chat, tales como:
-  - [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
-  - Soporte parcial para [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) a través del [ejemplo de configuración #4](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-discordsrv).
-  - Mediante el evento `majhrs16.cht.events.custom.Message`.
+## Características acoplables:
+12. **Compatibilidad con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
+13. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla los chats en base a condiciones específicas, como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
+14. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada.
 
 ## Instalación
 
 Para instalar ChatTranslator, sigue los siguientes pasos:
 
-1. Descarga la ultima version de ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
+1. Descarga la ultima version de ChatTranslator desde [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
 2. Copia el archivo .jar de ChatTranslator en la carpeta de plugins de tu servidor.
 3. Reinicia tu servidor.
 
@@ -34,7 +33,7 @@ Una vez instalado, puedes personalizar la configuración de ChatTranslator modif
 
 ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y una vez empiezas a chatear, se traduciran entre si automaticamente(Por defecto, dependiendo del idioma de su Minecraft).
 
-Si deseas cambiar tu idioma al automatico, puedes hacerlo usando el comando `/cht lang [jugador] auto`.
+Si deseas volver a la deteccion automatica tras establecer un idioma estatico, puedes hacerlo usando el comando por defecto: `/cht lang [jugador] auto`.
 
 ## Compilación(Para desarrolladores)
 
