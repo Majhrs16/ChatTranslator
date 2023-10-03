@@ -36,6 +36,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 		DST.registerCommands();
 	}
 
+	
 	@Override
 	public void onMessageContextInteraction(MessageContextInteractionEvent event) {
 		if (event.getName().equals("Traducir")) {
@@ -52,8 +53,8 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				UUID memberUuid = AccountManager.getMinecraft(member.getId());
 
 				if (memberUuid != null) {
-					String from = authorUuid == null ? "auto" : API.getLang(Bukkit.getOfflinePlayer(authorUuid)); // API.getLang(authorPlayer);
-					String to = API.getLang(Bukkit.getOfflinePlayer(memberUuid));
+					String from = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid)); // API.getLang(authorPlayer);
+					String to = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
 
 					if (from == to)
 						from = "auto";
@@ -87,7 +88,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				if (member != null) {
 					UUID memberUuid = AccountManager.getMinecraft(member.getId());
 					if (memberUuid != null)
-						DC.setLangTarget(API.getLang(Bukkit.getOfflinePlayer(memberUuid)));
+						DC.setLangTarget(API.getLang(AccountManager.getOfflinePlayer(memberUuid)));
 				}
 				DC.setColor(false);
 
@@ -141,7 +142,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				return;
 
 			UUID authorUuid  = AccountManager.getMinecraft(message.getAuthor().getId());
-			Player player    = authorUuid == null ? null : (Player) Bukkit.getOfflinePlayer(authorUuid);
+			Player player    = authorUuid == null ? null : (Player) AccountManager.getOfflinePlayer(authorUuid);
 			String from_lang = player == null ? "auto" : API.getLang(player);
 
 			majhrs16.cht.events.custom.Message to_model = util.createChat(
