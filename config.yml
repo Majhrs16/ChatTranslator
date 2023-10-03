@@ -45,6 +45,7 @@ storage:
   password: password
 
 auto-translate-others:
+  force-permission-per-world: false
   discord: false # beta
   access: true
   signs: true

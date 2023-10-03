@@ -32,11 +32,10 @@ public class CommandListener implements Listener {
 
 	@EventHandler
 	public void onCommandServer(ServerCommandEvent event) {
-//		@SuppressWarnings("unused")
 		boolean status = preProcessCommand(event.getSender(), event.getCommand());
 
 		if (util.getMinecraftVersion() >= 8.0)
-			event.setCancelled(status)
+				event.setCancelled(status)
 		;
 	}
 }

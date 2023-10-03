@@ -6,13 +6,13 @@ import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.util.updater.UpdateChecker;
 import majhrs16.cht.util.updater.ConfigUpdater;
 import majhrs16.cht.util.cache.Dependencies;
-import majhrs16.cht.commands.CommandWrapper;
 import majhrs16.cht.events.CommandListener;
 import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
-import majhrs16.dst.DiscordTranslator;
+// import majhrs16.dst.DiscordTranslator;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Storage;
@@ -22,13 +22,11 @@ import majhrs16.cht.events.Chat;
 import majhrs16.cht.util.util;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
 
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 
 public class ChatTranslator extends JavaPlugin {
 	public YAML signs;
@@ -43,32 +41,30 @@ public class ChatTranslator extends JavaPlugin {
 	private ChatTranslatorAPI API;
 
 	private static class Events {
-		public static DiscordTranslator discordTranslator;
+//		public static DiscordTranslator discordTranslator;
 
 		public static boolean installed = false;
 
-		public static CommandListener commandHandler      = new CommandListener();
-		public static MessageListener messageListener     = new MessageListener();
-//		public static TabCompleter tabCompleter           = new TabCompleter();
-		public static AccessPlayer accessPlayer           = new AccessPlayer();
-		public static SignHandler signHandler             = new SignHandler();
-		public static ChatLimiter chatLimiter             = new ChatLimiter();
-		public static Chat chat                           = new Chat();
+		public static CommandListener commandHandler	  = new CommandListener();
+		public static MessageListener messageListener	 = new MessageListener();
+//		public static TabCompleter tabCompleter		   = new TabCompleter();
+		public static AccessPlayer accessPlayer		   = new AccessPlayer();
+		public static SignHandler signHandler			 = new SignHandler();
+		public static ChatLimiter chatLimiter			 = new ChatLimiter();
+		public static Chat chat						   = new Chat();
 
 		static {
 			if (Config.TranslateOthers.DISCORD.IF()) {
-				discordTranslator = new DiscordTranslator();
+//				discordTranslator = new DiscordTranslator();
 			}
 		}
 	}
 
 	public void onEnable() {
-		plugin  = this;
+		plugin = this;
 
-		if (util.getMinecraftVersion() < 5.2) {
-			Bukkit.getLogger().warning("[ERRFFF] ChatTranslator no compatible.");
-			return;
-		}
+		if (util.getMinecraftVersion() < 5.2)
+			Bukkit.getLogger().severe("ChatTranslator don't tested for your version.");
 
 		API = ChatTranslatorAPI.getInstance();
 
@@ -76,6 +72,7 @@ public class ChatTranslator extends JavaPlugin {
 		config   = new YAML(plugin, "config.yml");
 		messages = new YAML(plugin, "messages.yml");
 		commands = new YAML(plugin, "commands.yml");
+		storage  = new Storage();
 
 		try {
 			messages.register();
@@ -84,11 +81,9 @@ public class ChatTranslator extends JavaPlugin {
 			signs.register();
 
 		} catch (ParseYamlException e) {
-			Bukkit.getLogger().warning("[ERRFFF] FATAL");
+			Bukkit.getLogger().severe("[ERRFFF] FATAL");
 			return;
 		}
-
-		storage  = new Storage();
 
 		Texts.reload();
 
@@ -96,7 +91,7 @@ public class ChatTranslator extends JavaPlugin {
 			new ConfigUpdater();
 			storage.register();
 
-		} catch (SQLException | ParseYamlException e) {
+		} catch (StorageRegisterFailedException e) {
 			Message from = util.getDataConfigDefault();
 			from.setMessages(e.getMessage());
 				API.sendMessage(from);
@@ -110,37 +105,40 @@ public class ChatTranslator extends JavaPlugin {
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(Texts.SEPARATOR);
+		from.setMessages(Texts.get("separator.horizontal"));
 			API.sendMessage(from);
 
-		from.setMessages("	"); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical"));
+			API.sendMessage(from);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
-			from.setMessages(Texts.PLUGIN.IS_UTF_8.YES);
+			from.setMessages(Texts.get("plugin.is-UTF-8.yes"));
 				API.sendMessage(from);
 
-			from.setMessages(Texts.PLUGIN.TITLE.UTF_8);
+			from.setMessages(Texts.get("plugin.title.UTF-8"));
 				API.sendMessage(from);
 
-			from.setMessages("	"); API.sendMessage(from);
+			from.setMessages(Texts.get("separator.vertical"));
+				API.sendMessage(from);
 
 		} else {
-			from.setMessages(Texts.PLUGIN.IS_UTF_8.NO);
+			from.setMessages(Texts.get("plugin.is-UTF-8.no"));
 				API.sendMessage(from);
 
-			from.setMessages(Texts.PLUGIN.TITLE.TEXT);
+			from.setMessages(Texts.get("plugin.title.text"));
 				API.sendMessage(from);
 		}
 
-		from.setMessages(Texts.PLUGIN.ON);
+		from.setMessages(Texts.get("plugin.enable"));
 			API.sendMessage(from);
 
 		if (Config.CHECK_UPDATES.IF())
 			new UpdateChecker(Bukkit.getConsoleSender());
 
-		from.setMessages("	"); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical"));
+			API.sendMessage(from);
 
-		from.setMessages(Texts.SEPARATOR);
+		from.setMessages(Texts.get("separator.horizontal"));
 			API.sendMessage(from);
 
 		setDisabled(false);
@@ -156,24 +154,29 @@ public class ChatTranslator extends JavaPlugin {
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(Texts.SEPARATOR);
+		from.setMessages(Texts.get("separator.horizontal"));
 			API.sendMessage(from);
 
-		from.setMessages(Texts.PLUGIN.TITLE.TEXT);
+		from.setMessages(Texts.get("separator.vertical"));
 			API.sendMessage(from);
 
-			// unregisterStorage();
-
-		from.setMessages(Texts.PLUGIN.OFF);
+		from.setMessages(Texts.get("plugin.title.text"));
 			API.sendMessage(from);
 
-//		from.setMessages(" "); API.sendMessage(from);
+		storage.unregister();
 
-		from.setMessages(Texts.SEPARATOR);
+		from.setMessages(Texts.get("plugin.disable"));
+			API.sendMessage(from);
+
+		from.setMessages(Texts.get("separator.vertical"));
+			API.sendMessage(from);
+
+		from.setMessages(Texts.get("separator.horizontal"));
 			API.sendMessage(from);
 
 		setDisabled(true);
 	}
+
 
 	public static ChatTranslator getInstance() {
 		return plugin;
@@ -187,6 +190,7 @@ public class ChatTranslator extends JavaPlugin {
 		this.is_disabled = isDisabled;
 	}
 
+	/*
 	public void registerCommands() { // Sino se registran los comandos en el plugin,yml, no te dejara. Asi de simple.
 		for (String key : commands.get().getKeys(false)) {
 			if (!key.equals("config-version")) {
@@ -205,12 +209,10 @@ public class ChatTranslator extends JavaPlugin {
 			}
 		}
 
-		/*
-		MainCommand main_command = new MainCommand(); 
-		getCommand("chattranslator").setExecutor(main_command);
-		getCommand("cht").setExecutor(main_command);
-		*/
-	}
+//		MainCommand main_command = new MainCommand(); 
+//		getCommand("chattranslator").setExecutor(main_command);
+//		getCommand("cht").setExecutor(main_command);
+	}*/
 
 	public void registerEvents() {
 		if (Events.installed)
@@ -235,13 +237,13 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {
+		if (Config.TranslateOthers.DISCORD.IF()) {/*
 			if (!Events.discordTranslator.connect()) {
 				Message from = util.getDataConfigDefault();
 
 				from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&cNo se pudo iniciar el bot de Discord.\n    Por favor verifique &bconfig&f.&bbot-token&f.");
 					API.sendMessage(from);
-			}
+			}*/
 		}
 	}
 
@@ -262,9 +264,10 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void unregisterDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {
+		if (Config.TranslateOthers.DISCORD.IF()) {/*
 			Events.discordTranslator.unregisterCommands();
 			Events.discordTranslator.disconnect();
+			*/
 		}
 	}
 }

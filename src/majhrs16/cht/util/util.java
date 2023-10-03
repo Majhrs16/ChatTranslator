@@ -9,53 +9,59 @@ import org.bukkit.Bukkit;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.translator.api.Core;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 public class util {
-	private static ChatTranslator plugin = ChatTranslator.getInstance();
-	private static ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-	private static Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
+	private static final ChatTranslator plugin = ChatTranslator.getInstance();
+	private static final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private static final Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
 
 	public static UUID getUUID(Object sender) {
-		UUID uuid;
+		UUID uuid = null;
 
 		if (sender instanceof Player) {
 			uuid = ((Player) sender).getUniqueId();
 
 		} if (sender instanceof OfflinePlayer) {
 			try {
-				uuid = ((OfflinePlayer) sender).getUniqueId();
-
-			} catch (NoSuchMethodError e) {
 				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
+
+			} catch (NullPointerException e) {
+//				uuid = ((OfflinePlayer) sender).getUniqueId();
 			}
 
 		} else if (sender instanceof CommandSender) {
 			uuid = UUID.fromString(plugin.config.get().getString("server-uuid"));
-
-		} else {
-			uuid = null;
 		}
 
 		return uuid;
 	}
 
 	public static Player[] getOnlinePlayers() {
-		List<Player> playerList = new ArrayList<Player>();
+		try {
+			Object players = Bukkit.getServer().getClass().getMethod("getOnlinePlayers").invoke(Bukkit.getServer());
 
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			playerList.add(player);
+			if (players instanceof Player[]) {
+				return (Player[]) players;
+
+			} else if (players instanceof Collection<?>) {
+				return ((Collection<?>) players).toArray(new Player[0]);
+
+			} else {
+				return null;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
-
-		return playerList.toArray(new Player[0]);
 	}
-
 
 	public static double getMinecraftVersion() {
 		Matcher matcher = version.matcher(Bukkit.getVersion());
@@ -112,32 +118,25 @@ public class util {
 		return  new Message(
 			null,
 			sender,
-			config.contains(path + ".messages") ? String.join("\n", config.getStringList(path + ".messages")) : null,
+			config.contains("formats." + path + ".messages") ? path : null,
 			messages,
-			config.contains(path + ".toolTips") ? String.join("\n", config.getStringList(path + ".toolTips")) : null,
-			config.contains(path + ".sounds")   ? String.join("\n", config.getStringList(path + ".sounds"))   : null,
+			config.contains("formats." + path + ".toolTips") ? path : null,
+			config.contains("formats." + path + ".sounds")   ? path : null,
 			false,
 
 			langSource,
 			langTarget,
 
-			IF(config, "chat-color-personalized"),
-			IF(config, "use-PAPI-format")
+			Config.CHAT_COLOR.IF(),
+			Config.FORMAT_PAPI.IF()
 		);
 	}
 
 	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
-		if (path == null)
-			path = "";
+		path = path == null ?  "" : "_" + path;
 
-		else
-			path = "_" + path;
-
-		String _path = "formats.to" + path;
-		Message to = createGroupFormat(sender, messages, langSource, langTarget, _path);
-
-		_path = "formats.from" + path;
-		Message from = createGroupFormat(sender, messages, langSource, langTarget, _path);
+		Message to   = createGroupFormat(sender, messages, langSource, langTarget, "to" + path);
+		Message from = createGroupFormat(sender, messages, langSource, langTarget, "from" + path);
 			from.setTo(to);
 
 		return from;

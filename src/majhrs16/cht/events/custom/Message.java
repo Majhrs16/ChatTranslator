@@ -19,15 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Message extends Event implements Cancellable {
-	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	private Message to;
 	private CommandSender sender;
-	private String message_format;
-	private String messages;
-	private String tool_tips;
-	private String sounds;
+	private String[] message_format;
+	private String[] messages;
+	private String[] tool_tips;
+	private String[] sounds;
 	private boolean is_cancelled = false;
 	private String lang_source;
 	private String lang_target;
@@ -79,61 +79,87 @@ public class Message extends Event implements Cancellable {
 		setCancelledThis(isCancelled);
 	}
 
-	private String getChat(String[] formats, String chat) {
-		if (formats == null || formats.length < 1)
-			return null;
+	private String[] getChat(String chat, String... formats) {
+//		if (formats == null || formats.length < 1)
+//			return null;
 
 		List<String> result = new ArrayList<String>();
 
 		for (String format : formats) {
-			if (format == null)
+			if (format == null
+					|| format.isEmpty()
+					|| format.equals("null") // El bug parece venir de afuera.
+					)
 				continue;
 
 			FileConfiguration config = plugin.config.get();
 			String path = "formats." + format + "."  + chat;
 			if (Config.DEBUG.IF())
-				System.out.println("DEBUG exists '" + path + "' ?: '" + config.contains(path) + "'");
+				System.out.println("DEBUG exists '" + path + "' ?: " + config.contains(path));
 			result.add(config.contains(path) ? String.join("\n", config.getStringList(path)) : format);
 		}
 
-		return result.size() > 0 ? String.join("\n", result) : null;
+		return result.toArray(new String[0]);
 	}
 
-	public void setTo(Message to)                       { this.to          = to == null ? new Message() : to; }
-	public void setSender(CommandSender sender)         { this.sender      = sender; }
+	public void setTo(Message to)                         { this.to             = to == null ? new Message() : to; }
+	public void setSender(CommandSender sender)           { this.sender         = sender; }
 
-	public void setMessageFormat(String... messageFormat) {
-		this.message_format = getChat(messageFormat, "messages");
-	}
+/*	public void setMessageFormat(int index, String messageFormat) { this.message_format = getChat("messages", messageFormat); }
+	public void setMessages(int index, String messages)           { this.messages       = new String[] {messages}; }
+	public void setToolTips(int index, String toolTips)           { this.tool_tips      = getChat("toolTips", toolTips); }
+	public void setSounds(int index, String sounds)               { this.sounds         = getChat("sounds", sounds); }*/
 
-	public void setMessages(String... messages) {
-		if (messages == null)
-			this.messages   = null;
+	public void setMessageFormat(String... messageFormat) { this.message_format = getChat("messages", messageFormat); }
+	public void setMessages(String... messages)           { this.messages       = messages; }
+	public void setToolTips(String... toolTips)           { this.tool_tips      = getChat("toolTips", toolTips); }
+	public void setSounds(String... sounds)               { this.sounds         = getChat("sounds", sounds); }
 
-		else
-			this.messages   = String.join("\n", messages);
-	}
+	public void setLangSource(String lang)                { this.lang_source    = lang; }
+	public void setLangTarget(String lang)                { this.lang_target    = lang; }
 
-	public void setToolTips(String... toolTips) {
-		this.tool_tips      = getChat(toolTips, "toolTips");
-	}
-
-	public void setSounds(String... sounds)             { this.sounds      = getChat(sounds, "sounds"); }
-	public void setLangSource(String lang)              { this.lang_source = lang; }
-	public void setLangTarget(String lang)              { this.lang_target = lang; }
-	public void setFormatPAPI(Boolean formatPAPI)       { this.format_papi = formatPAPI; }
-	public void setColor(Boolean color)                 { this.color       = color; }
+	public void setFormatPAPI(Boolean formatPAPI)         { this.format_papi    = formatPAPI; }
+	public void setColor(Boolean color)                   { this.color          = color; }
 
 
 	public Message getTo()           { return to; }
+
 	public CommandSender getSender() { return sender; }
 	public String getSenderName()    { return sender.getName(); }
-	public String getMessageFormat() { return message_format; }
-	public String getMessages()      { return messages; }
-	public String getToolTips()      { return tool_tips; }
-	public String getSounds()        { return sounds; }
+
+/*	public String getMessageFormat(int index) {
+		String out = message_format[index];
+		return out.isEmpty() ? null : out;
+	}
+
+	public String getMessages(int index) {
+		String out = messages[index];
+		return out.isEmpty() ? null : out;
+	}
+	public String getToolTips(int index) {
+		String out = tool_tips[index];
+		return out.isEmpty() ? null : out;
+	}
+	public String getSounds(int index)   {
+		String out = sounds[index];
+		return out.isEmpty() ? null : out;
+	}*/
+
+	private String getFormatAsString(String[] format) {
+		String out = null;
+		if (format != null)
+			out = String.join("\n", format);
+		return out == null || out.isEmpty() || out == "null" ? null : out;
+	}
+
+	public String getMessageFormat() { return getFormatAsString(message_format); }
+	public String getMessages()      { return getFormatAsString(messages); }
+	public String getToolTips()      { return getFormatAsString(tool_tips); }
+	public String getSounds()        { return getFormatAsString(sounds); }
+
 	public String getLangSource()    { return lang_source; }
 	public String getLangTarget()    { return lang_target; }
+
 	public Boolean getFormatPAPI()   { return format_papi; }
 	public Boolean getColor()        { return color; }
 
@@ -190,16 +216,16 @@ public class Message extends Event implements Cancellable {
 		try {
 			JSONArray jsonArray = (JSONArray) new JSONParser().parse(data);
 
-			String player_name = getJsonString(jsonArray.get(0));
+			String player_name    = getJsonString(jsonArray.get(0));
 			String message_format = (String) jsonArray.get(1);
-			String messages = getJsonString(jsonArray.get(2)); // Explosivo?
-			String tool_tips = getJsonString(jsonArray.get(3));
-			String sounds = getJsonString(jsonArray.get(4));
-			boolean show = (boolean) jsonArray.get(5);
-			String lang_source = (String) jsonArray.get(6);
-			String lang_target = getJsonString(jsonArray.get(7));
-			boolean color = (boolean) jsonArray.get(8);
-			boolean papi = (boolean) jsonArray.get(9);
+			String messages       = getJsonString(jsonArray.get(2)); // Explosivo?
+			String tool_tips      = getJsonString(jsonArray.get(3));
+			String sounds         = getJsonString(jsonArray.get(4));
+			boolean show          = (boolean) jsonArray.get(5);
+			String lang_source    = (String) jsonArray.get(6);
+			String lang_target    = getJsonString(jsonArray.get(7));
+			boolean color         = (boolean) jsonArray.get(8);
+			boolean papi          = (boolean) jsonArray.get(9);
 
 			Player player = null;
 			if (player_name != null && (player = Bukkit.getServer().getPlayer(player_name)) == null) {

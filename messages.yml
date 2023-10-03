@@ -18,44 +18,64 @@ plugin:
     "true": ""
     "false": "&eAdvertencia&f, &eEs muy recomendable configurar su Java&f(&eAdemas de la consola &f/ &eterminal&f)&e en &bUTF&f-&b8&f."
 
+  updates:
+    latest:
+    - "%plugin.title.text%"
+    - "%plugin.updates.tab% &aEstas usando la última versión del plugin &4<&c3"
+
+    new:
+      player:
+        message_format: '{"text": "%plugin.title.text% %s", "extra": [{"text": "\n    %s"}, {"text": "%s", "clickEvent": {"action": "open_url", "value": "https://www.spigotmc.org/resources/chattranslator.106604/"}, "hoverEvent": {"action": "show_text", "value": "&f%s"}}, {"text": "&f! (&b&l%latestVersion%&f)"}]}'
+        messages:
+        - '&eHay una nueva versión disponible&f!'
+        - "&aPuedes descargarla en este "
+        - '&9&llink'
+        - '&f¡&aHaz clic para descargar&f!'
+
+      console:
+        text:
+        - "&e\tHay una nueva versión disponible&f! &f(&b%version%&f)"
+        - "&a\t\tPuedes descargarla en &9%plugin.url%"
+
+    error:
+    - "\t&cError mientras se buscaban actualizaciones&f."
+
 storage:
+  errors:
+    write:
+    - "%plugin.title.text% &cError al escribir en el &bAlmacenamiento&f.&b%type%&f."
+    - "\t%reason%"
+
+    read:
+    - "%plugin.title.text% &cError al leer en el &bAlmacenamiento&f.&b%type%&f."
+    - "\t%reason%"
+
+    invalid-type:
+    - "%plugin.title.text% &eTipo de almacenamiento invalido: &b%type%&f."
+
+  done:
+    write:
+    - "%plugin.title.text% &aEscritura exitosa&f."
+    read:
+    - "%plugin.title.text% &aLectura exitosa&f."
+
   open:
-    yaml:
-      ok: []
-      error: []
+    ok:
+    - "%plugin.title.text% &aCargado &bAlmacenamiento&f.&b%type%&f."
 
-    sqlite:
-      ok:
-      - "%plugin.title.text% &aConectado a &bSQLite&f."
-      error:
-      - "%plugin.title.text% &4Error al conectar con &bSQLite&f."
-
-    mysql:
-      ok:
-      - "%plugin.title.text% &aConectado a &bMySQL&f."
-      error:
-      - "%plugin.title.text% &4Error al conectar a &bMySQL&f."
+    error:
+    - "%plugin.title.text% &aError al cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
 
   close:
-    yaml:
-      ok: []
-      error: []
+    ok:
+    - "\t&aDescargado &bAlmacenamiento&f.&b%type%&f."
 
-    sqlite:
-      ok:
-      - "\t&aDesconectado de &bSQLite&f."
-      error:
-      - "\t&4Error al desconectar de &bSQLite&f."
-
-    mysql:
-      ok:
-      - "\t&aDesconectado de &bMySQL&f."
-      error:
-      - "\t&4Error al desconectar de &bMySQL&f."
+    error:
+    - "\t&aError al des-cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
 
 commands:
   main:
-    showVersion:
+    version:
       text:
       - "%plugin.title.text% %plugin.version%"
 
@@ -65,9 +85,11 @@ commands:
 
 events:
   access:
-    entry: "se ha unido al juego!"
-    exit: "ha abandonado el juego."
+    entry: "se ha unido al juego&f! &a:D"
+    exit: "ha abandonado el juego&f, &c:("
 
-separator: "&c<&4-------------------------&c>"
+separator:
+  vertical: "\t"
+  horizontal: "&c<&4-------------------------&c>"
 
 config-version: 1

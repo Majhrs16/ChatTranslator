@@ -1,12 +1,12 @@
 package majhrs16.cht.storage;
 
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.Bukkit;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.util;
@@ -24,7 +24,7 @@ public class Storage {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public Storage() {
+	private void __init__() {
 		yaml   = new YAML(plugin, plugin.config.get().getString("storage.database") + ".yml", "storage.yml");
 		sqlite = new SQLite();
 		mysql  = new MySQL();
@@ -38,131 +38,98 @@ public class Storage {
 		return plugin.config.get().getString("default-lang");
 	}
 
-	public void register() throws SQLException, ParseYamlException {
+	public void register() throws StorageRegisterFailedException {
+		__init__();
+
+		Message from       = null;
 		String storageType = getType();
 
-		switch (storageType) {
-			case "yaml":
-				try {
+		try {
+			switch (storageType) {
+				case "yaml":
 					yaml.register();
+					break;
 
-					Message from = util.getDataConfigDefault();
-					from.setMessages(Texts.STORAGE.OPEN.YAML.OK);
-						API.sendMessage(from);
+				case "sqlite":
+					sqlite.set(null, 0, plugin.config.get().getString("storage.database"), null, null);
 
-				} catch (ParseYamlException e) {
-					throw new ParseYamlException(Texts.STORAGE.OPEN.YAML.ERROR + "\n\t" + e.toString());
-				}
-				break;
-
-			case "sqlite":
-				sqlite.set(null, 0, plugin.config.get().getString("storage.database"), null, null);
-
-				try {
 					sqlite.connect();
 					sqlite.createTable();
+					break;
 
-					Message from = util.getDataConfigDefault();
-					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-					from.setMessages(Texts.STORAGE.OPEN.SQLITE.OK);
-						API.sendMessage(from);
+				case "mysql":
+					FileConfiguration config = plugin.config.get();
 
-				} catch (SQLException e) {
-					throw new IllegalArgumentException(Texts.STORAGE.OPEN.SQLITE.ERROR + "\n\t" + e.toString());
-				}
-				break;
+					mysql.set(
+						config.getString("storage.host"),
+						config.getInt("storage.port"),
+						config.getString("storage.database"),
+						config.getString("storage.user"),
+						config.getString("storage.password")
+					);
 
-			case "mysql":
-				FileConfiguration config = plugin.config.get();
-
-				mysql.set(
-					config.getString("storage.host"),
-					config.getInt("storage.port"),
-					config.getString("storage.database"),
-					config.getString("storage.user"),
-					config.getString("storage.password")
-				);
-
-				try {
 					mysql.connect();
 					mysql.createTable();
+					break;
 
-					Message from = util.getDataConfigDefault();
-					from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-					from.setMessages(Texts.STORAGE.OPEN.MYSQL.OK);
-						API.sendMessage(from);
-
-				} catch (SQLException e) {
-					throw new IllegalArgumentException(Texts.STORAGE.OPEN.MYSQL.ERROR + "\n\t" + e.toString());
-				}
-				break;
-
-			default:
-				Message from = util.getDataConfigDefault();
-				from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
-					API.sendMessage(from);
+				default:
+					from = util.getDataConfigDefault();
+					from.setMessages(Texts.getString("storage.errors.invalid-type"));
+			}
+		
+		} catch (ParseYamlException  | SQLException e) {
+			throw new StorageRegisterFailedException(Texts.getString("storage.open.error").replace("%type%", storageType).replace("%reason%", e.toString()));
 		}
+
+		if (from == null) {
+			from = util.getDataConfigDefault();
+			from.setMessages(Texts.getString("storage.open.ok").replace("%type%", storageType));
+		}
+
+		API.sendMessage(from);
 	}
 
 	public void unregister() {
 		Message from = util.getDataConfigDefault();
 
-		switch (getType()) {
-			case "yaml":
-				try {
+		try {
+			switch (getType()) {
+				case "yaml":
 					yaml.save();
-					from.setMessages(Texts.STORAGE.CLOSE.YAML.OK);
-						API.sendMessage(from);
-	
-				} catch (IllegalArgumentException e) {
-					from.setMessages(Texts.STORAGE.CLOSE.YAML.ERROR);
-						API.sendMessage(from);
-					return;
-				}
-				break;
-	
-			case "sqlite":
-				try {
+					break;
+
+				case "sqlite":
 					sqlite.disconnect();
-					from.setMessages(Texts.STORAGE.CLOSE.SQLITE.OK);
-						API.sendMessage(from);
-	
-				} catch (SQLException e) {
-					from.setMessages(Texts.STORAGE.CLOSE.SQLITE.ERROR);
-						API.sendMessage(from);
-					return;
-				}
-				break;
-	
-			case "mysql":
-				try {
+					break;
+
+				case "mysql":
 					mysql.disconnect();
-					from.setMessages(Texts.STORAGE.CLOSE.MYSQL.OK);
-						API.sendMessage(from);
-	
-				} catch (SQLException e) {
-					from.setMessages(Texts.STORAGE.CLOSE.MYSQL.ERROR);
-						API.sendMessage(from);
-					return;
-				}
-				break;
+					break;
+			}
+
+			from.setMessages(Texts.getString("storage.close.ok").replace("%type%", getType()));
+
+		} catch (Exception e) {
+			from.setMessages(Texts.getString("storage.close.error").replace("%type%", getType()).replace("%reason%", e.toString()));
 		}
+
+		API.sendMessage(from);
 	}
 
 	public void set(UUID uuid, @Nullable String discordID, String lang) {
 		Message DC = util.getDataConfigDefault();
 
-		switch (getType()) {
-			case "yaml":
-				if (discordID != null)
-					yaml.get().set(uuid.toString() + ".discordID", discordID);
+		try {
+			switch (getType()) {
+				case "yaml":
+					if (discordID != null)
+						yaml.get().set(uuid.toString() + ".discordID", discordID);
 
-				yaml.get().set(uuid.toString() + ".lang", lang);
-				yaml.save();
-				break;
+					yaml.get().set(uuid.toString() + ".lang", lang);
+					yaml.save();
+					break;
 
-			case "sqlite":
-				try {
+				case "sqlite":
 					if (sqlite.get(uuid) == null) {
 						sqlite.insert(uuid, discordID, lang);
 
@@ -170,29 +137,25 @@ public class Storage {
 						sqlite.update(uuid, discordID, lang);
 					}
 
-				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en SQLite&f.\n\t" + e.toString());
-						API.sendMessage(DC);
-				}
-
-				break;
-
-			case "mysql":
-				try {
+					break;
+	
+				case "mysql":
 					if (mysql.get(uuid) == null) {
 						mysql.insert(uuid, discordID, lang);
-	
+
 					} else {
 						mysql.update(uuid, discordID, lang);
 					}
-	
-				} catch (SQLException e) {
-					DC.setMessages("&cError al escribir en MySQL&f.\n\t" + e.toString());
-						API.sendMessage(DC);
-				}
+					break;
+			}
 
-				break;
+			DC.setMessages(Texts.getString("storage.done.write").replace("%type%", getType()));
+
+		} catch (SQLException e) {
+			DC.setMessages(Texts.getString("storage.errors.write").replace("%type%", getType()).replace("%reason%", e.toString()));
 		}
+
+		API.sendMessage(DC);
 	}
 
 	public String[] get(UUID uuid) {
@@ -203,8 +166,8 @@ public class Storage {
 		try {
 			switch (getType()) {
 				case "yaml":
+					String path               = uuid.toString();
 					FileConfiguration storage = yaml.get();
-					String path = uuid.toString();
 					if (storage.contains(path + ".lang")) {
 						result = new String[]{
 								uuid.toString(),
@@ -223,13 +186,16 @@ public class Storage {
 					break;
 			}
 
+			DC.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
+
 		} catch (SQLException e) {
-			DC.setMessages("&cError al leer en &b" + getType() + "&f.\n\t" + e.toString());
-				API.sendMessage(DC);
+			DC.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
 
 		} catch (NullPointerException e) {
 			// Manejar la excepción de NullPointerException si es necesario.
 		}
+
+		API.sendMessage(DC);
 
 		return result;
 	}
@@ -266,9 +232,10 @@ public class Storage {
 					break;
 			}
 
+			DC.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
+
 		} catch (SQLException e) {
-			DC.setMessages("&cError al leer en &b" + getType() + "&f.\n\t" + e.toString());
-				API.sendMessage(DC);
+			DC.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
 
 		} catch (NullPointerException e) {
 			// Manejar la excepción de NullPointerException si es necesario.
@@ -277,30 +244,11 @@ public class Storage {
 		return result;
 	}
 
-	public void reload() throws SQLException, ParseYamlException {
+	public void reload() throws StorageRegisterFailedException, SQLException, ParseYamlException {
 		plugin.setDisabled(true);
 
-		String storageType = plugin.config.get().getString("storage.type").toLowerCase();
-		switch (storageType) {
-			case "yaml":
-				yaml.reload();
-				break;
-
-			case "sqlite":
-				sqlite.disconnect();
-				register();
-				break;
-
-			case "mysql":
-				mysql.disconnect();
-				register();
-				break;
-
-			default:
-				Message from = util.getDataConfigDefault();
-					from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&f[&4ERR100&f], &eTipo de almacenamiento invalido: &f'&b" + storageType + "&f'");
-				API.sendMessage(from);
-		}
+		unregister();
+		register();
 
 		plugin.setDisabled(false);
 	}

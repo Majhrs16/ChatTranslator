@@ -39,9 +39,9 @@ public abstract class SQL extends Database {
 
 		if (result.next()) {
 			return new String[] {
-				result.getString(0),
 				result.getString(1),
-				result.getString(2)
+				result.getString(2),
+				result.getString(3)
 			};
 
 		} else {
