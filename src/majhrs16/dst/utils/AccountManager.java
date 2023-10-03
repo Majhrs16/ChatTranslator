@@ -1,15 +1,16 @@
 package majhrs16.dst.utils;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.util.util;
 import majhrs16.cht.ChatTranslator;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Map;
-
 
 public class AccountManager {
 	private static ChatTranslator plugin = ChatTranslator.getInstance();
@@ -34,6 +35,20 @@ public class AccountManager {
 		return result[1];
 	}
 
+	public static OfflinePlayer getOfflinePlayer(UUID uuid) {
+		if (util.getMinecraftVersion() >= 7.2) {
+			return Bukkit.getOfflinePlayer(uuid);
+
+		} else {
+			for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
+				if (player.getPlayer().getUniqueId().equals(uuid))
+					return player;
+			}
+		}
+
+		return null;
+	}
+
 	public static boolean login(String key, String discordID) {
 		boolean status = linking.containsKey(key);
 
@@ -44,7 +59,7 @@ public class AccountManager {
 			plugin.storage.set(
 				uuid,
 				discordID,
-				API.getLang(Bukkit.getOfflinePlayer(uuid))
+				API.getLang(getOfflinePlayer(uuid))
 			);
 		}
 
