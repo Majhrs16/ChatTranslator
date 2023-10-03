@@ -141,6 +141,7 @@ public class CommandHandler implements CommandExecutor {
 
 		String description = String.join("\n", commands.getStringList(path + "toolTips"));
 
+		@SuppressWarnings("unused")
 		String suggest = commands.getString(path + "suggest");
 
 		Message DC = util.getDataConfigDefault();
@@ -155,7 +156,7 @@ public class CommandHandler implements CommandExecutor {
 			DC = API.formatMessage(DC);
 
 			if (util.getMinecraftVersion() >= 7.10) {
-//				/*
+/*
 				net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent(DC.getMessages());
 					if (!description.isEmpty()) {
 						@SuppressWarnings("deprecation") ////////////////////////////////
@@ -170,7 +171,7 @@ public class CommandHandler implements CommandExecutor {
 					}
 
 				((Player) DC.getSender()).spigot().sendMessage(message);
-//				*/
+// */
 
 			} else {
 				API.processMessage(DC);
@@ -281,8 +282,8 @@ public class CommandHandler implements CommandExecutor {
 		if (plugin.isDisabled())
 			return;
 
-		DC.setMessages(Texts.COMMANDS.MAIN.VERSION.TEXT);
-		DC.setToolTips(Texts.COMMANDS.MAIN.VERSION.TOOLTIPS);
+		DC.setMessages(Texts.get("commands.main.version.text"));
+		DC.setToolTips(Texts.get("commands.main.version.toolTips"));
 			API.sendMessage(DC);
 	}
 

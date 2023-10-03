@@ -29,10 +29,10 @@ public class AccessPlayer implements Listener {
 
 		Message DC = util.getDataConfigDefault();
 
-		Message to_model = util.createChat(event.getPlayer(), Texts.EVENTS.ACCESS.ENTRY, DC.getLangSource(), API.getLang(event.getPlayer()), "entry");
+		Message to_model = util.createChat(event.getPlayer(), String.join("\n", Texts.get("events.access.entry")), DC.getLangSource(), API.getLang(event.getPlayer()), "entry");
 
 		Message from_console = to_model.clone();
-			Message console  = util.createChat(Bukkit.getConsoleSender(), Texts.EVENTS.ACCESS.ENTRY, DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "entry");
+			Message console  = util.createChat(Bukkit.getConsoleSender(), String.join("\n", Texts.get("events.access.entry")), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "entry");
 
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
@@ -57,10 +57,10 @@ public class AccessPlayer implements Listener {
 
 		Message DC = util.getDataConfigDefault();
 
-		Message to_model = util.createChat(event.getPlayer(), Texts.EVENTS.ACCESS.EXIT, DC.getLangSource(), API.getLang(event.getPlayer()), "exit");
+		Message to_model = util.createChat(event.getPlayer(), String.join("\n", Texts.get("events.access.exit")), DC.getLangSource(), API.getLang(event.getPlayer()), "exit");
 
 		Message from_console = to_model.clone();
-			Message console  = util.createChat(Bukkit.getConsoleSender(), Texts.EVENTS.ACCESS.EXIT, DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "exit");
+			Message console  = util.createChat(Bukkit.getConsoleSender(), String.join("\n", Texts.get("events.access.exit")), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "exit");
 
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.

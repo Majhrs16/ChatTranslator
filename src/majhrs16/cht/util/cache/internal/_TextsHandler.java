@@ -1,5 +1,5 @@
 package majhrs16.cht.util.cache.internal;
-
+/*
 import org.bukkit.configuration.file.FileConfiguration;
 
 import majhrs16.cht.ChatTranslator;
@@ -7,8 +7,10 @@ import majhrs16.cht.ChatTranslator;
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+*/
 
-public class TextsHandler {
+@Deprecated
+public class _TextsHandler {/*
 	private static final Pattern pattern = Pattern.compile("%([\\.\\-A-Za-z0-9_]+)%");
 	private FileConfiguration messages;
 
@@ -35,6 +37,7 @@ public class TextsHandler {
 				if (!path.isEmpty() && messages.contains(path)) {
 					if (messages.isList(path)) {
 						value = String.join("\n", messages.getStringList(path));
+
 					} else if (messages.isString(path)) {
 						value = messages.getString(path);
 					}
@@ -47,6 +50,7 @@ public class TextsHandler {
 				try {
 					field.setAccessible(true);
 					field.set(null, value); // Usar null como objeto en este contexto
+
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
@@ -106,7 +110,6 @@ public class TextsHandler {
 				continue;
 
 			input = input.replace(matcher.group(0), replacement);
-
 		}
 
 		return input;
@@ -140,4 +143,4 @@ public class TextsHandler {
 			return null;
 		}
 	}
-}
+*/ }
