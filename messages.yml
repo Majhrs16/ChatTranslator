@@ -71,7 +71,7 @@ storage:
     - "\t&aDescargado &bAlmacenamiento&f.&b%type%&f."
 
     error:
-    - "\t&aError al descargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
+    - "\t&aError al des-cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
 
 commands:
   main:
