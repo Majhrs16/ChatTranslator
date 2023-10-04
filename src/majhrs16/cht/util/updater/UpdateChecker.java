@@ -31,63 +31,20 @@ public class UpdateChecker {
 			String latestVersion = new BufferedReader(new InputStreamReader(conn.getInputStream())).readLine();
 			if (latestVersion.length() <= 8) {
 				if (to_sender instanceof Player) {
-					if (ChatColor.stripColor(Texts.getString("versions.plugin")).equals(latestVersion))
-						return;
+					if (ChatColor.stripColor(Texts.getString("versions.plugin")).equals(latestVersion)) {
+						DC.setMessages(Texts.getString("plugin.updates.latest.player.text").replace("%latestVersion%", latestVersion));
 
-					@SuppressWarnings("unused")
-					Player player = (Player) to_sender;
-
-					if (util.getMinecraftVersion() >= 7.10) { // 1.7.10
+					} else {
 						DC.setMessages(Texts.get("plugin.updates.new.player.messages"));
-						DC.setMessageFormat(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(DC).getMessages().split("\n")));
-
-/*
-						DC.setMessages("&9link");
-						DC.setToolTips("&7Descargar " + Texts.get("plugin.name") + " &b" + latestVersion);
-
-						net.md_5.bungee.api.chat.TextComponent linkText = new net.md_5.bungee.api.chat.TextComponent(API.formatMessage(DC).getMessages());
-							linkText.setClickEvent(
-								new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, Texts.get("plugin.url")[0])
-							);
-
-							net.md_5.bungee.api.chat.HoverEvent hoverEvent;
-							if (util.getMinecraftVersion() < 16.0) { // 1.16.0
-								hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(
-									net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-									new net.md_5.bungee.api.chat.ComponentBuilder(API.formatMessage(DC).getToolTips()).create()
-								);
-
-							} else {
-								hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(
-									net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-									new net.md_5.bungee.api.chat.hover.content.Text(API.formatMessage(DC).getToolTips())
-								);
-							}
-
-							linkText.setHoverEvent(hoverEvent);
-
-						net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent("    ");
-							DC.setMessages("&aPuedes descargarla en este");
-							DC.setToolTips("&f!");
-
-							message.addExtra(API.formatMessage(DC).getMessages() + " ");
-							message.addExtra(linkText);
-							message.addExtra(API.formatMessage(DC).getToolTips());
-
-						DC.setMessages(String.format("&eHay una nueva versión disponible&f! &f(&B%s&f)", latestVersion));
-						DC.setToolTips();
-						player.spigot().sendMessage(new net.md_5.bungee.api.chat.TextComponent(API.formatMessage(DC).getMessages()));
-
-						player.spigot().sendMessage(message);
-// */
+						DC.setMessageFormat(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("$s", "%s").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(DC).getMessages().split("\n")));
 					}
 
 				} else {
 					if (ChatColor.stripColor(Texts.get("versions.plugin")[0]).equals(latestVersion)) {
-						DC.setMessages(Texts.get("plugin.updates.latest"));
+						DC.setMessages(Texts.getString("plugin.updates.latest.console.text").replace("%latestVersion%", latestVersion));
 
 					} else {
-						DC.setMessages(Texts.getString("plugin.updates.new.console").replace("%verion%", latestVersion));
+						DC.setMessages(Texts.getString("plugin.updates.new.console.text").replace("%latestVersion%", latestVersion));
 					}
 				}
 

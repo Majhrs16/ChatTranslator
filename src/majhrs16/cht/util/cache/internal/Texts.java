@@ -67,14 +67,13 @@ public class Texts {
 	}
 
 	private static String formatStringWithVariables(String input) {
-		Matcher matcher;
-		while ((matcher = VARIABLE_PATTERN.matcher(input)).find()) {
+		Matcher matcher = VARIABLE_PATTERN.matcher(input);
+
+		while (matcher.find()) {
 			Object value = dataMap.get(matcher.group(1));
 
-			if (value == null)
-				break;
-
-			input = input.replace(matcher.group(0), value.toString());
+			if (value != null)
+				matcher.reset(input = input.replace(matcher.group(0), value.toString()));
 		}
 
 		return input;

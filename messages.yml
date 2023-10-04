@@ -9,23 +9,26 @@ plugin:
     text: "&6<&e[ %plugin.name% &e]&6>"
     UTF-8:
     - ""
-    - "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗"
-    - "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗"
-    - "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝"
-    - "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝"
+    - "`&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗`"
+    - "`&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗`"
+    - "`&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝`"
+    - "`&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝`"
 
   is-UTF-8:
-    "true": ""
     "false": "&eAdvertencia&f, &eEs muy recomendable configurar su Java&f(&eAdemas de la consola &f/ &eterminal&f)&e en &bUTF&f-&b8&f."
 
   updates:
     latest:
-    - "%plugin.title.text%"
-    - "%plugin.updates.tab% &aEstas usando la última versión del plugin &4<&c3"
+      player:
+        text: []
+
+      console:
+        text:
+        - "\t&aEstas usando la última versión del plugin &4<&c3"
 
     new:
       player:
-        message_format: '{"text": "%plugin.title.text% %s", "extra": [{"text": "\n    %s"}, {"text": "%s", "clickEvent": {"action": "open_url", "value": "https://www.spigotmc.org/resources/chattranslator.106604/"}, "hoverEvent": {"action": "show_text", "value": "&f%s"}}, {"text": "&f! (&b&l%latestVersion%&f)"}]}'
+        message_format: '{"text": "%plugin.title.text% $s", "extra": [{"text": "\n    $s"}, {"text": "$s", "clickEvent": {"action": "open_url", "value": "%plugin.url%"}, "hoverEvent": {"action": "show_text", "value": "&f$s"}}, {"text": "&f! (&b&l%latestVersion%&f)"}]}'
         messages:
         - '&eHay una nueva versión disponible&f!'
         - "&aPuedes descargarla en este "
@@ -34,7 +37,7 @@ plugin:
 
       console:
         text:
-        - "&e\tHay una nueva versión disponible&f! &f(&b%version%&f)"
+        - "&e\tHay una nueva versión disponible&f! &f(&b%latestVersion%&f)"
         - "&a\t\tPuedes descargarla en &9%plugin.url%"
 
     error:
@@ -43,21 +46,19 @@ plugin:
 storage:
   errors:
     write:
-    - "%plugin.title.text% &cError al escribir en el &bAlmacenamiento&f.&b%type%&f."
+    - "%plugin.title.text% &cError al escribir en &b%type%&f."
     - "\t%reason%"
 
     read:
-    - "%plugin.title.text% &cError al leer en el &bAlmacenamiento&f.&b%type%&f."
+    - "%plugin.title.text% &cError al leer en &b%type%&f."
     - "\t%reason%"
 
     invalid-type:
     - "%plugin.title.text% &eTipo de almacenamiento invalido: &b%type%&f."
 
   done:
-    write:
-    - "%plugin.title.text% &aEscritura exitosa&f."
-    read:
-    - "%plugin.title.text% &aLectura exitosa&f."
+    write: []
+    read: []
 
   open:
     ok:
@@ -68,7 +69,7 @@ storage:
 
   close:
     ok:
-    - "\t&aDescargado &bAlmacenamiento&f.&b%type%&f."
+    - "\t&aDes-cargado &bAlmacenamiento&f.&b%type%&f."
 
     error:
     - "\t&aError al des-cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"

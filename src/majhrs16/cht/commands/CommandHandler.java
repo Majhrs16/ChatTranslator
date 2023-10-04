@@ -21,6 +21,7 @@ import majhrs16.cht.util.util;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.json.simple.JSONObject;
 
 public class CommandHandler implements CommandExecutor {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -127,6 +128,7 @@ public class CommandHandler implements CommandExecutor {
 		API.sendMessage(DC);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void sendMessagesAndToolTips(CommandSender sender, String path) {
 		FileConfiguration commands = plugin.commands.get();
 
@@ -141,49 +143,52 @@ public class CommandHandler implements CommandExecutor {
 
 		String description = String.join("\n", commands.getStringList(path + "toolTips"));
 
-		@SuppressWarnings("unused")
 		String suggest = commands.getString(path + "suggest");
 
 		Message DC = util.getDataConfigDefault();
+
+		DC.setMessages("`" + text + "`");
 
 		if (sender instanceof Player) {
 			DC.setSender(sender);                  // Optimizacion
 			DC.setLangTarget(API.getLang(sender)); // Optimizacion
 
-			DC.setMessages("`" + text + "`");
 			if (!description.isEmpty())
 				DC.setToolTips(description);
-			DC = API.formatMessage(DC);
 
-			if (util.getMinecraftVersion() >= 7.10) {
-/*
-				net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent(DC.getMessages());
-					if (!description.isEmpty()) {
-						@SuppressWarnings("deprecation") ////////////////////////////////
-						net.md_5.bungee.api.chat.HoverEvent hoverEvent = new net.md_5.bungee.api.chat.HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.ComponentBuilder(DC.getToolTips()).create());
-							message.setHoverEvent(hoverEvent);
-					}
+			if (util.getMinecraftVersion() >= 7.2) {
+				JSONObject jsonMessage = new JSONObject();
+				DC = API.formatMessage(DC);
 
-					if (suggest != null) {
-						DC.setMessages(); // Optimizacion
-						DC.setToolTips("`/" + suggest + "`");
-						message.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.SUGGEST_COMMAND, API.formatMessage(DC).getToolTips()));
-					}
+				jsonMessage.put("text", DC.getMessages());
 
-				((Player) DC.getSender()).spigot().sendMessage(message);
-// */
+				if (!description.isEmpty()) {
+					JSONObject hoverEvent = new JSONObject();
+						hoverEvent.put("action", "show_text");
+						hoverEvent.put("value", DC.getToolTips());
+					jsonMessage.put("hoverEvent", hoverEvent);
+				}
 
-			} else {
-				API.processMessage(DC);
+				if (suggest != null) {
+					DC.setMessages(); // Optimización
+					DC.setToolTips("`/" + suggest + "`");
+
+					JSONObject clickEvent = new JSONObject();
+						clickEvent.put("action", "suggest_command");
+						clickEvent.put("value", API.formatMessage(DC).getToolTips());
+					jsonMessage.put("clickEvent", clickEvent);
+				}
+
+				DC.setMessageFormat(jsonMessage.toString());
+				DC.setMessages(""); // Neceario para que funcione el sendMessage
+				DC.setToolTips();
 			}
 
 		} else {
-			DC.setMessages(text);
-			if (!description.isEmpty())
-				DC.setToolTips("\t" + description.replace("\n", "\n\t") + "\n\t");
-
-			API.sendMessage(DC);
+			DC.setToolTips("\t" + description.replace("\n", "\n\t") + "\n\t");
 		}
+
+		API.sendMessage(DC);
 	}
 
 	public void showHelp(CommandSender sender, String command_base) {
