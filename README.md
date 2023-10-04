@@ -2,7 +2,7 @@
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin problemas.
 
 ## Características destacadas:
-1. **Colores Personalizados**: Usa colores #RRGGBB(1.16.5+!
+1. **Colores Personalizados**: Usa colores `#RRGGBB`! (1.16.5+)
 2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes a través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
 4. **Configuración Modular**: Personaliza fácilmente las configuraciónes `config.formats`, `messages.yml` y `commands.yml`.
