@@ -5,8 +5,8 @@ Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin proble
 1. **Colores Personalizados**: Usa colores `#RRGGBB`! (1.16.5+)
 2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes a través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
-4. **Configuración Modular**: Personaliza fácilmente las configuraciónes `config.formats`, `messages.yml` y `commands.yml`.
-5. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft! (1.7.2+)
+4. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!
+5. **Configuración Modular**: Personaliza fácilmente las configuraciónes `config.formats`, `messages.yml` y `commands.yml`.
 6. **Traducción de Carteles**: Simplemente haz `Click Derecho` o `Shift + Click derecho` en un letrero para traducirlo al instante.
 7. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
 8. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
