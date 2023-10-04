@@ -11,10 +11,10 @@ Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin proble
 7. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
 8. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los mensajes internos del plugin y las comunicaciones a la consola.
 9. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: YAML, SQLite y MySQL / MariaDB.
-10. **En Caso de Pérdida de Conexión**: Si pierdes la conexión a Internet, los mensajes locales llevarán el prefijo `[!]` para indicar su estado.
+10. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, las variables locales `ct_messages` llevarán el prefijo `[!]` para indicarlo.
 11. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
-12. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando /cht link y traduce mensajes entre plataformas.
-13. **Detección Automática del Idioma**: Olvídate de configuraciones complicadas. ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!.
+12. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce mensajes entre plataformas.
+13. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft! (1.7.2+)
 
 ## Características acoplables:
 14. *Compatibilidad con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
