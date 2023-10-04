@@ -6,15 +6,15 @@ Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin proble
 2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes a través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
 4. **Configuración Modular**: Personaliza fácilmente las configuraciónes `config.formats`, `messages.yml` y `commands.yml`.
-5. **Traducción de Carteles**: Simplemente haz click derecho o Shift + Click derecho en un letrero para traducirlo al instante.
-6. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
-7. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
-8. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los mensajes internos del plugin y las comunicaciones a la consola.
-9. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: YAML, SQLite y MySQL / MariaDB.
-10. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, las variables locales `ct_messages` llevarán el prefijo `[!]` para indicarlo.
-11. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
-12. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce mensajes entre plataformas.
-13. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft! (1.7.2+)
+5. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft! (1.7.2+)
+6. **Traducción de Carteles**: Simplemente haz `Click Derecho` o `Shift + Click derecho` en un letrero para traducirlo al instante.
+7. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
+8. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
+9. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los mensajes internos del plugin y las comunicaciones a la consola.
+10. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
+11. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, las variables locales `ct_messages` llevarán el prefijo `[!]` para indicarlo.
+12. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: `YAML`, `SQLite` y `MySQL` / `MariaDB`.
+13. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce mensajes entre plataformas.
 
 ## Características acoplables:
 14. *Compatibilidad con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
