@@ -1,4 +1,4 @@
-# ChatTranslator - Plugin Potente de Traducción y Formateo para Minecraft 1.5.2 - 1.20.1
+# ChatTranslator - Plugin Potente de Traducción y Formato del Chat Para Minecraft 1.5.2 - 1.20.1
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin problemas.
 
 ## Características destacadas:
