@@ -9,19 +9,22 @@ import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.updater.ConfigUpdater;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.commands.cht.SetterLang;
-import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.commands.cht.Reloader;
 import majhrs16.cht.commands.cht.Toggler;
 import majhrs16.dst.utils.AccountManager;
 import majhrs16.dst.DiscordTranslator;
+import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
 import org.bukkit.command.Command;
-import org.bukkit.entity.Player;
 import org.json.simple.JSONObject;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+
+import java.util.Arrays;
 
 public class CommandHandler implements CommandExecutor {
 	private ChatTranslator plugin = ChatTranslator.getInstance();
@@ -93,6 +96,10 @@ public class CommandHandler implements CommandExecutor {
 				linker(DC, args);
 				break;
 
+			case "private":
+				sendPrivateMessage(DC, args);
+				break;
+
 			default:
 				unknownCommand(DC);
 		}
@@ -100,7 +107,31 @@ public class CommandHandler implements CommandExecutor {
 		return true;
 	}
 
-	private void linker(Message DC, String[] args) {
+	public void sendPrivateMessage(Message DC, String[] args) {
+		if (plugin.isDisabled())
+			return;
+
+		if (args.length < 3) { // /XD Player HOLA
+			unknownCommand(DC);
+			return;
+		}
+
+		CommandSender from_player = DC.getSender();
+		Player to_player = Bukkit.getPlayer(args[1]);
+
+		if (to_player == null) {
+			DC.setMessages("&cJugador `&F'&b" + args[1] + "&f'` &cno encontrado&f!");
+			DC.setToolTips();
+
+		} else {
+			DC.setMessages(Arrays.copyOfRange(args, 2, args.length));
+			DC = util.createChat(from_player, DC.getMessages(), DC.getLangSource(), API.getLang(to_player), "private");
+		}
+
+		API.sendMessage(DC);
+	}
+
+	public void linker(Message DC, String[] args) {
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			switch (args.length) {
 				case 1:

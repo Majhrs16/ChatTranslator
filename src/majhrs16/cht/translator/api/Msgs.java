@@ -5,12 +5,14 @@ import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.util;
 
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONObject;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
-import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
 import java.lang.reflect.Method;
 import java.lang.reflect.Array;
@@ -18,6 +20,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Msgs {
+	@SuppressWarnings("unchecked")
+	default void processOlderTooltipMessage(Message formatted, String version) throws ClassNotFoundException {
+		Object chatComponentText;
+		
+		Class<?> craftPlayerClass        = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
+		Class<?> iChatBaseComponent      = Class.forName("net.minecraft.server." + version + ".IChatBaseComponent");
+		Class<?> chatSerializerClass     = Class.forName("net.minecraft.server." + version + ".ChatSerializer");
+		Class<?> entityPlayerClass       = Class.forName("net.minecraft.server." + version + ".EntityPlayer");
+
+		for (String format : formatted.getMessageFormat().split("\n")) {
+			try {
+				JSONObject json = (JSONObject) new JSONParser().parse(format.startsWith("{") && format.endsWith("}") ? format : "{\"text\": \"" + format + "\"}");
+
+				if (formatted.getToolTips() != null) {
+					JSONObject hoverEvent = new JSONObject();
+						hoverEvent.put("action", "show_text");
+						hoverEvent.put("value", formatted.getToolTips());
+					json.put("hoverEvent", hoverEvent);
+				}
+
+				chatComponentText = chatSerializerClass.getMethod("a", String.class).invoke(null, json.toString());
+
+				Method sendMessageMethod = entityPlayerClass.getMethod("sendMessage", iChatBaseComponent);
+				sendMessageMethod.invoke(craftPlayerClass.getMethod("getHandle").invoke(craftPlayerClass.cast(formatted.getSender())), chatComponentText);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	default public void processMessage(Message formatted) {
 		if (!new Message().equals(formatted)
 			&& !formatted.isCancelled()
@@ -33,7 +66,9 @@ public interface Msgs {
 				Double version = util.getMinecraftVersion();
 
 				try {
-					if (version > 7.9) { // LIMITACION DE util.getMinecraftVersion, RETORNA MAL EL #, EJEMPLO REAL: 7.2 >= 7.0 = true (version = 7.10)
+					if (version > 7.9) { // LIMITACION DE util.getMinecraftVersion, RETORNA MAL EL #, EJEMPLO REAL: 7.2 >= 7.0 = true (version = 7.10) // LIMITACION LOCAL, NO ES POSIBLE DIVIDIR LOS MF, ES NECESARIO HACER UN FOREACH EN LOS MFs.
+						Object message;
+
 						Class<?> hoverEventActionClass    = Class.forName("net.md_5.bungee.api.chat.HoverEvent$Action");
 						Class<?> componentBuilderClass    = Class.forName("net.md_5.bungee.api.chat.ComponentBuilder");
 						Class<?> baseComponentArrayClass  = Class.forName("[Lnet.md_5.bungee.api.chat.BaseComponent;");
@@ -42,130 +77,60 @@ public interface Msgs {
 						Class<?> textComponentClass       = Class.forName("net.md_5.bungee.api.chat.TextComponent");
 						Class<?> hoverEventClass          = Class.forName("net.md_5.bungee.api.chat.HoverEvent");
 
-						Object message;
-
-						if (formatted.getMessageFormat().startsWith("{") && formatted.getMessageFormat().endsWith("}")) {
-							Method parseMethod = componentSerializerClass.getDeclaredMethod("parse", String.class);
-							message = parseMethod.invoke(null, formatted.getMessageFormat());
-
-						} else {
-							Object componentBuilder = componentBuilderClass.getConstructor(String.class).newInstance(formatted.getMessageFormat());
-							Method createMethod = componentBuilderClass.getMethod("create");
-							message = (Object[]) createMethod.invoke(componentBuilder);
-						}
-
-						if (formatted.getToolTips() != null) {
-							if (version < 16.0) {
-								@SuppressWarnings({ "unchecked", "rawtypes" })
-								Object hoverEvent = hoverEventClass
-									.getDeclaredConstructor(hoverEventActionClass, baseComponentArrayClass)
-									.newInstance(
-										Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"),
-										(Object[]) componentBuilderClass.getMethod("create")
-											.invoke(componentBuilderClass.getConstructor(String.class)
-											.newInstance(formatted.getToolTips()))
-									);
-
-								textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(((Object[]) message)[0], hoverEvent);
+						for (String format : formatted.getMessageFormat().split("\n")) {
+							if (format.startsWith("{") && format.endsWith("}")) {
+								Method parseMethod = componentSerializerClass.getDeclaredMethod("parse", String.class);
+								message = parseMethod.invoke(null, format);
 
 							} else {
-								// Crea un componente Text para las tooltips en versiones 1.16+
-								Object tooltipComponent = textComponentClass.getConstructor(String.class).newInstance(formatted.getToolTips());
-
-								// Crea un evento HoverEvent para mostrar el componente Text
-								@SuppressWarnings({ "unchecked", "rawtypes" })
-								Object hoverEvent = hoverEventClass.getConstructor(hoverEventActionClass, baseComponentClass)
-									.newInstance(Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"), tooltipComponent);
-
-								// Agregar el HoverEvent al mensaje principal
-								textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(message, hoverEvent);
+								Object componentBuilder = componentBuilderClass.getConstructor(String.class).newInstance(format);
+								Method createMethod = componentBuilderClass.getMethod("create");
+								message = (Object[]) createMethod.invoke(componentBuilder);
 							}
+
+							if (formatted.getToolTips() != null) {
+								if (version < 16.0) {
+									@SuppressWarnings({ "unchecked", "rawtypes" })
+									Object hoverEvent = hoverEventClass
+										.getDeclaredConstructor(hoverEventActionClass, baseComponentArrayClass)
+										.newInstance(
+											Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"),
+											(Object[]) componentBuilderClass.getMethod("create")
+												.invoke(componentBuilderClass.getConstructor(String.class)
+												.newInstance(formatted.getToolTips()))
+										);
+
+									textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(((Object[]) message)[0], hoverEvent);
+
+								} else {
+									// Crea un componente Text para las tooltips en versiones 1.16+
+									Object tooltipComponent = textComponentClass.getConstructor(String.class).newInstance(formatted.getToolTips());
+
+									// Crea un evento HoverEvent para mostrar el componente Text
+									@SuppressWarnings({ "unchecked", "rawtypes" })
+									Object hoverEvent = hoverEventClass.getConstructor(hoverEventActionClass, baseComponentClass)
+										.newInstance(Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"), tooltipComponent);
+
+									// Agregar el HoverEvent al mensaje principal
+									textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(message, hoverEvent);
+								}
+							}
+
+							Method sendMessageMethod = player.spigot().getClass().getMethod("sendMessage", Array.newInstance(baseComponentClass, 0).getClass());
+							sendMessageMethod.setAccessible(true);
+							sendMessageMethod.invoke(player.spigot(), message);
 						}
 
-						Method sendMessageMethod = player.spigot().getClass().getMethod("sendMessage", Array.newInstance(baseComponentClass, 0).getClass());
-						sendMessageMethod.setAccessible(true);
-						sendMessageMethod.invoke(player.spigot(), message);
-
-					} else if (version == 7.8 || version == 7.9) { // 1.7.8 - 1.7.9
-						Class<?> craftPlayerClass        = Class.forName("org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer");
-						Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server.v1_7_R3.IChatBaseComponent");
-						Class<?> packetPlayOutChatClass  = Class.forName("net.minecraft.server.v1_7_R3.PacketPlayOutChat");
-						Class<?> chatSerializerClass     = Class.forName("net.minecraft.server.v1_7_R3.ChatSerializer");
-						Class<?> packetClass             = Class.forName("net.minecraft.server.v1_7_R3.Packet");
-
+					} else if (version >= 7.5 && version <= 7.9) { // 1.7.5 - 1.7.8 / 1.7.9
 						try {
-							Method fromJsonMethod = chatSerializerClass.getMethod("a", String.class);
-							Object chatComponentText = fromJsonMethod.invoke(null, formatted.getMessageFormat());
+							processOlderTooltipMessage(formatted, "v1_7_R2");
 
-							Constructor<?> packetConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass);
-							Object chatPacket = packetConstructor.newInstance(chatComponentText);
-
-							Object craftPlayer = craftPlayerClass.cast(player);
-							Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
-							Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-
-							Method sendPacketMethod = playerConnection.getClass().getMethod("sendPacket", packetClass);
-							sendPacketMethod.invoke(playerConnection, chatPacket);
-
-						} catch (Exception e) {
-							player.sendMessage(formatted.getMessageFormat());
-							if (formatted.getToolTips() != null)
-								player.sendMessage("    " + formatted.getToolTips());
-						}
-
-					} else if (version == 7.5) { // 1.7.5
-						Class<?> craftPlayerClass        = Class.forName("org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer");
-						Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server.v1_7_R2.IChatBaseComponent");
-						Class<?> packetPlayOutChatClass  = Class.forName("net.minecraft.server.v1_7_R2.PacketPlayOutChat");
-						Class<?> chatSerializerClass     = Class.forName("net.minecraft.server.v1_7_R2.ChatSerializer");
-						Class<?> packetClass             = Class.forName("net.minecraft.server.v1_7_R2.Packet");
-
-						try {
-							Method fromJsonMethod = chatSerializerClass.getMethod("a", String.class);
-							Object chatComponentText = fromJsonMethod.invoke(null, formatted.getMessageFormat());
-
-							Constructor<?> packetConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass);
-							Object chatPacket = packetConstructor.newInstance(chatComponentText);
-
-							Object craftPlayer = craftPlayerClass.cast(player);
-							Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
-							Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-
-							Method sendPacketMethod = playerConnection.getClass().getMethod("sendPacket", packetClass);
-							sendPacketMethod.invoke(playerConnection, chatPacket);
-
-						} catch (Exception e) {
-							player.sendMessage(formatted.getMessageFormat());
-							if (formatted.getToolTips() != null)
-								player.sendMessage("    " + formatted.getToolTips());
+						} catch (ClassNotFoundException e) {
+							processOlderTooltipMessage(formatted, "v1_7_R3");
 						}
 
 					} else if (version == 7.2) { // 1.7.2
-						Class<?> craftPlayerClass        = Class.forName("org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer");
-						Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server.v1_7_R1.IChatBaseComponent");
-						Class<?> packetPlayOutChatClass  = Class.forName("net.minecraft.server.v1_7_R1.PacketPlayOutChat");
-						Class<?> chatSerializerClass     = Class.forName("net.minecraft.server.v1_7_R1.ChatSerializer");
-						Class<?> packetClass             = Class.forName("net.minecraft.server.v1_7_R1.Packet");
-
-						try {
-							Method fromJsonMethod = chatSerializerClass.getMethod("a", String.class);
-							Object chatComponentText = fromJsonMethod.invoke(null, formatted.getMessageFormat());
-
-							Constructor<?> packetConstructor = packetPlayOutChatClass.getConstructor(iChatBaseComponentClass);
-							Object chatPacket = packetConstructor.newInstance(chatComponentText);
-
-							Object craftPlayer = craftPlayerClass.cast(player);
-							Object handle = craftPlayerClass.getMethod("getHandle").invoke(craftPlayer);
-							Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-
-							Method sendPacketMethod = playerConnection.getClass().getMethod("sendPacket", packetClass);
-							sendPacketMethod.invoke(playerConnection, chatPacket);
-
-						} catch (Exception e) {
-							player.sendMessage(formatted.getMessageFormat());
-							if (formatted.getToolTips() != null)
-								player.sendMessage("    " + formatted.getToolTips());
-						}
+						processOlderTooltipMessage(formatted, "v1_7_R1");
 
 					} else {
 						player.sendMessage(formatted.getMessageFormat());

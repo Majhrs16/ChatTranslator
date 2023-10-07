@@ -4,17 +4,11 @@ formats:
     - '%ct_expand% &a%ct_messages%'
     toolTips:
     - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
-    sounds:
-    - BLOCK_NOTE_BLOCK_BELL; 1; 1
-    - NOTE_PLING; 1; 1
   to:
     messages:
     - '&f<&b%player_name%&f> &a$ct_messages$'
     toolTips:
     - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
-    sounds:
-    - ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1
-    - ORB_PICKUP; 1; 1
 
   to_console:
     messages:
@@ -35,6 +29,24 @@ formats:
   to_exit:
     messages:
     - '&c- &e%player_name% $ct_messages$'
+
+  from_private:
+    messages:
+    - '%ct_expand% &7%ct_messages%'
+    toolTips:
+    - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
+    sounds:
+    - BLOCK_NOTE_BLOCK_BELL; 1; 1
+    - NOTE_PLING; 1; 1
+  to_private:
+    messages:
+    - '{"text": "&f<&b%player_name%&f> &7$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% ..."}}'
+    toolTips:
+    - "&7Te han hablado al privado&f! &aHaz click para responder&f!"
+    - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
+    sounds:
+    - ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1
+    - ORB_PICKUP; 1; 1
 
 storage:
   type: sqlite

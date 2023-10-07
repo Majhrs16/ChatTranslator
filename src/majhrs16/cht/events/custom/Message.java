@@ -79,6 +79,14 @@ public class Message extends Event implements Cancellable {
 		setCancelledThis(isCancelled);
 	}
 
+	private String getFormat(String chat, String format) {
+		FileConfiguration config = plugin.config.get();
+		String path = "formats." + format + "."  + chat;
+		if (Config.DEBUG.IF())
+			System.out.println("DEBUG exists '" + path + "' ?: " + config.contains(path));
+		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
+	}
+
 	private String[] getChat(String chat, String... formats) {
 //		if (formats == null || formats.length < 1)
 //			return null;
@@ -92,11 +100,7 @@ public class Message extends Event implements Cancellable {
 					)
 				continue;
 
-			FileConfiguration config = plugin.config.get();
-			String path = "formats." + format + "."  + chat;
-			if (Config.DEBUG.IF())
-				System.out.println("DEBUG exists '" + path + "' ?: " + config.contains(path));
-			result.add(config.contains(path) ? String.join("\n", config.getStringList(path)) : format);
+			result.add(getFormat(chat, format));
 		}
 
 		return result.toArray(new String[0]);
@@ -105,10 +109,10 @@ public class Message extends Event implements Cancellable {
 	public void setTo(Message to)                         { this.to             = to == null ? new Message() : to; }
 	public void setSender(CommandSender sender)           { this.sender         = sender; }
 
-/*	public void setMessageFormat(int index, String messageFormat) { this.message_format = getChat("messages", messageFormat); }
-	public void setMessages(int index, String messages)           { this.messages       = new String[] {messages}; }
-	public void setToolTips(int index, String toolTips)           { this.tool_tips      = getChat("toolTips", toolTips); }
-	public void setSounds(int index, String sounds)               { this.sounds         = getChat("sounds", sounds); }*/
+	public void setMessageFormat(int index, String messageFormat) { this.message_format[index] = getFormat("messages", messageFormat); }
+	public void setMessages(int index, String messages)           { this.messages[index]       = messages; }
+	public void setToolTips(int index, String toolTips)           { this.tool_tips[index]      = getFormat("toolTips", toolTips); }
+	public void setSounds(int index, String sounds)               { this.sounds[index]         = getFormat("sounds", sounds); }
 
 	public void setMessageFormat(String... messageFormat) { this.message_format = getChat("messages", messageFormat); }
 	public void setMessages(String... messages)           { this.messages       = messages; }

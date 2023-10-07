@@ -65,4 +65,11 @@ cht:
     toolTips:
     - "&aVincula &7tu cuenta de &aMinecraft &7con tu cuenta de &9Discord&f."
 
+tell:
+ type: "private"
+ text: "&f/&etell"
+ suggest: "tell texto de ejemplo"
+ toolTips:
+ - "&aEnvia mensajes privados a alguien :D&f."
+
 config-version: 1
