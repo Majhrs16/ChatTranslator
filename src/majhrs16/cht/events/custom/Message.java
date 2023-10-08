@@ -114,6 +114,11 @@ public class Message extends Event implements Cancellable {
 	public void setToolTips(int index, String toolTips)           { this.tool_tips[index]      = getFormat("toolTips", toolTips); }
 	public void setSounds(int index, String sounds)               { this.sounds[index]         = getFormat("sounds", sounds); }
 
+	public void setMessageFormat(String messageFormat) { this.message_format = getChat("messages", messageFormat); }
+	public void setMessages(String messages)           { this.messages       = messages == null ? null : messages.split("\n"); }
+	public void setToolTips(String toolTips)           { this.tool_tips      = getChat("toolTips", toolTips); }
+	public void setSounds(String sounds)               { this.sounds         = getChat("sounds", sounds); }
+
 	public void setMessageFormat(String... messageFormat) { this.message_format = getChat("messages", messageFormat); }
 	public void setMessages(String... messages)           { this.messages       = messages; }
 	public void setToolTips(String... toolTips)           { this.tool_tips      = getChat("toolTips", toolTips); }

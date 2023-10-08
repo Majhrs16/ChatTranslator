@@ -33,7 +33,7 @@ public class util {
 				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
 
 			} catch (NullPointerException e) {
-//				uuid = ((OfflinePlayer) sender).getUniqueId();
+				uuid = ((OfflinePlayer) sender).getUniqueId();
 			}
 
 		} else if (sender instanceof CommandSender) {

@@ -21,7 +21,7 @@ import java.util.List;
 
 public interface Msgs {
 	@SuppressWarnings("unchecked")
-	default void processOlderTooltipMessage(Message formatted, String version) throws ClassNotFoundException {
+	default void processOlderMessage(Message formatted, String version) throws ClassNotFoundException {
 		Object chatComponentText;
 		
 		Class<?> craftPlayerClass        = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
@@ -63,10 +63,10 @@ public interface Msgs {
 
 			if (formatted.getSender() instanceof Player) {
 				Player player = (Player) formatted.getSender();
-				Double version = util.getMinecraftVersion();
+				Double version = util.getMinecraftVersion(); // LIMITACION: RETORNA MAL EL #, EJEMPLO REAL: 7.2 >= 7.0 = true (version = 7.10)
 
 				try {
-					if (version > 7.9) { // LIMITACION DE util.getMinecraftVersion, RETORNA MAL EL #, EJEMPLO REAL: 7.2 >= 7.0 = true (version = 7.10) // LIMITACION LOCAL, NO ES POSIBLE DIVIDIR LOS MF, ES NECESARIO HACER UN FOREACH EN LOS MFs.
+					if (version > 7.9) {
 						Object message;
 
 						Class<?> hoverEventActionClass    = Class.forName("net.md_5.bungee.api.chat.HoverEvent$Action");
@@ -123,14 +123,14 @@ public interface Msgs {
 
 					} else if (version >= 7.5 && version <= 7.9) { // 1.7.5 - 1.7.8 / 1.7.9
 						try {
-							processOlderTooltipMessage(formatted, "v1_7_R2");
+							processOlderMessage(formatted, "v1_7_R2");
 
 						} catch (ClassNotFoundException e) {
-							processOlderTooltipMessage(formatted, "v1_7_R3");
+							processOlderMessage(formatted, "v1_7_R3");
 						}
 
 					} else if (version == 7.2) { // 1.7.2
-						processOlderTooltipMessage(formatted, "v1_7_R1");
+						processOlderMessage(formatted, "v1_7_R1");
 
 					} else {
 						player.sendMessage(formatted.getMessageFormat());
@@ -142,9 +142,9 @@ public interface Msgs {
 						for (String line : formatted.getSounds().split("\n")) {
 							String[] parts = line.replace(" ", "").toUpperCase().split(";");
 							try {
-								Sound sound = Sound.valueOf(parts[0]);
+								Sound sound  = Sound.valueOf(parts[0]);
 								Float volume = Float.parseFloat(parts[1]);
-								Float pitch = Float.parseFloat(parts[2]);
+								Float pitch  = Float.parseFloat(parts[2]);
 								player.playSound(player.getLocation(), sound, pitch, volume);
 
 							} catch (IllegalArgumentException e) {

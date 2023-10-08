@@ -1,5 +1,6 @@
 package majhrs16.cht;
 
+import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
@@ -9,10 +10,9 @@ import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.events.CommandListener;
 import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
-// import majhrs16.dst.DiscordTranslator;
+import majhrs16.dst.DiscordTranslator;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Storage;
@@ -41,7 +41,7 @@ public class ChatTranslator extends JavaPlugin {
 	private ChatTranslatorAPI API;
 
 	private static class Events {
-//		public static DiscordTranslator discordTranslator;
+		public static DiscordTranslator discordTranslator;
 
 		public static boolean installed = false;
 
@@ -55,7 +55,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		static {
 			if (Config.TranslateOthers.DISCORD.IF()) {
-//				discordTranslator = new DiscordTranslator();
+				discordTranslator = new DiscordTranslator();
 			}
 		}
 	}
@@ -237,13 +237,13 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void registerDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {/*
+		if (Config.TranslateOthers.DISCORD.IF()) {
 			if (!Events.discordTranslator.connect()) {
 				Message from = util.getDataConfigDefault();
 
-				from.setMessages(Texts.PLUGIN.TITLE.TEXT + "&cNo se pudo iniciar el bot de Discord.\n    Por favor verifique &bconfig&f.&bbot-token&f.");
+				from.setMessages(Texts.getString("plugin.title.text") + "&cNo se pudo iniciar el bot de Discord.\n    Por favor verifique &bconfig&f.&bbot-token&f.");
 					API.sendMessage(from);
-			}*/
+			}
 		}
 	}
 
@@ -264,10 +264,9 @@ public class ChatTranslator extends JavaPlugin {
 	}
 
 	public void unregisterDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {/*
+		if (Config.TranslateOthers.DISCORD.IF()) {
 			Events.discordTranslator.unregisterCommands();
 			Events.discordTranslator.disconnect();
-			*/
 		}
 	}
 }
