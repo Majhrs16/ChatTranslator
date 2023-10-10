@@ -152,8 +152,8 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					from_lang,
 					null
 				);
-				to_model.setMessageFormat(to_model.getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
-				to_model.getTo().setMessageFormat(to_model.getTo().getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
+				to_model.setMessagesFormats(to_model.getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
+				to_model.getTo().setMessagesFormats(to_model.getTo().getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
 
 			majhrs16.cht.events.custom.Message from_console = to_model.clone();
 				majhrs16.cht.events.custom.Message console  = util.createChat(
@@ -167,7 +167,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
 				from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-				from_console.getTo().setMessageFormat(to_model.getTo().getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
+				from_console.getTo().setMessagesFormats(to_model.getTo().getMessageFormat().replace("%player_name%", event.getAuthor().getName()));
 
 			API.broadcast(to_model, froms -> {
 				froms.add(from_console);
