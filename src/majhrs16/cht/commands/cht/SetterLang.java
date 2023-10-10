@@ -68,7 +68,7 @@ public class SetterLang {
 			from.setMessages(msg);
 
 		Message to_model = from.clone();
-			to_model.setMessageFormat("$ct_messages$");
+			to_model.setMessagesFormats("$ct_messages$");
 		from.setTo(to_model);
 
 		API.broadcast(from);

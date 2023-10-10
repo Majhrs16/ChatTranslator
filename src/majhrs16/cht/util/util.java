@@ -96,7 +96,7 @@ public class util {
 		Message from = new Message();
 			from.setTo(null); // Necesario para evitar crashes.
 			from.setSender(Bukkit.getConsoleSender());
-			from.setMessageFormat("%ct_messages%");
+			from.setMessagesFormats("%ct_messages%");
 			from.setLangSource(plugin.messages.get().getString("native-lang"));
 			from.setLangTarget(plugin.storage.getDefaultLang());
 			from.setColor(true);
@@ -115,21 +115,19 @@ public class util {
 	public static Message createGroupFormat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		FileConfiguration config = plugin.config.get();
 
-		return  new Message(
-			null,
-			sender,
-			config.contains("formats." + path + ".messages") ? path : null,
-			messages,
-			config.contains("formats." + path + ".toolTips") ? path : null,
-			config.contains("formats." + path + ".sounds")   ? path : null,
-			false,
+		Message from = new Message();
+			from.setSender(sender);
+			from.setMessagesFormats(config.contains("formats." + path + ".messages") ? path : null);
+			from.setMessages(messages);
+			from.setToolTips(config.contains("formats." + path + ".toolTips") ? path : null);
+			from.setSounds(config.contains("formats." + path + ".sounds")   ? path : null);
 
-			langSource,
-			langTarget,
+			from.setLangSource(langSource);
+			from.setLangTarget(langTarget);
 
-			Config.CHAT_COLOR.IF(),
-			Config.FORMAT_PAPI.IF()
-		);
+			from.setColor(Config.CHAT_COLOR.IF());
+			from.setFormatPAPI(Config.FORMAT_PAPI.IF());
+		return from;
 	}
 
 	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {

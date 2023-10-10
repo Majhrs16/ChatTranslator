@@ -210,7 +210,7 @@ public class CommandHandler implements CommandExecutor {
 					jsonMessage.put("clickEvent", clickEvent);
 				}
 
-				DC.setMessageFormat(jsonMessage.toString());
+				DC.setMessagesFormats(jsonMessage.toString());
 				DC.setMessages(""); // Neceario para que funcione el sendMessage
 				DC.setToolTips();
 			}

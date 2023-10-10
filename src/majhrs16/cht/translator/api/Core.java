@@ -442,11 +442,11 @@ public interface Core {
 		if (to_tool_tips != null)
 			to_tool_tips = to_tool_tips.replace("\\t", "\t");
 
-		DC.setMessageFormat(from_message_format);
+		DC.setMessagesFormats(from_message_format);
 		DC.setMessages(from_messages);
 		DC.setToolTips(from_tool_tips);
 
-		DC.getTo().setMessageFormat(to_message_format);
+		DC.getTo().setMessagesFormats(to_message_format);
 		DC.getTo().setMessages(to_messages);
 		DC.getTo().setToolTips(to_tool_tips);
 

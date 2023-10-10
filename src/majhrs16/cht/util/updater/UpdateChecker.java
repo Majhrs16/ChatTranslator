@@ -36,7 +36,7 @@ public class UpdateChecker {
 
 					} else {
 						DC.setMessages(Texts.get("plugin.updates.new.player.messages"));
-						DC.setMessageFormat(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("$s", "%s").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(DC).getMessages().split("\n")));
+						DC.setMessagesFormats(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("$s", "%s").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(DC).getMessages().split("\n")));
 					}
 
 				} else {
