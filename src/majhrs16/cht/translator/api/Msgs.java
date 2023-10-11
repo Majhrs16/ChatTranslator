@@ -51,6 +51,7 @@ public interface Msgs {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	default public void processMessage(Message formatted) {
 		if (!new Message().equals(formatted)
 			&& !formatted.isCancelled()
@@ -67,54 +68,20 @@ public interface Msgs {
 
 				try {
 					if (version > 7.9) {
-						Object message;
-
-						Class<?> hoverEventActionClass    = Class.forName("net.md_5.bungee.api.chat.HoverEvent$Action");
-						Class<?> componentBuilderClass    = Class.forName("net.md_5.bungee.api.chat.ComponentBuilder");
-						Class<?> baseComponentArrayClass  = Class.forName("[Lnet.md_5.bungee.api.chat.BaseComponent;");
 						Class<?> componentSerializerClass = Class.forName("net.md_5.bungee.chat.ComponentSerializer");
 						Class<?> baseComponentClass       = Class.forName("net.md_5.bungee.api.chat.BaseComponent");
-						Class<?> textComponentClass       = Class.forName("net.md_5.bungee.api.chat.TextComponent");
-						Class<?> hoverEventClass          = Class.forName("net.md_5.bungee.api.chat.HoverEvent");
 
 						for (String format : formatted.getMessageFormat().split("\n")) {
-							if (format.startsWith("{") && format.endsWith("}")) {
-								Method parseMethod = componentSerializerClass.getDeclaredMethod("parse", String.class);
-								message = parseMethod.invoke(null, format);
-
-							} else {
-								Object componentBuilder = componentBuilderClass.getConstructor(String.class).newInstance(format);
-								Method createMethod = componentBuilderClass.getMethod("create");
-								message = (Object[]) createMethod.invoke(componentBuilder);
-							}
+							JSONObject json = (JSONObject) new JSONParser().parse(format.startsWith("{") && format.endsWith("}") ? format : "{\"text\": \"" + format + "\"}");
 
 							if (formatted.getToolTips() != null) {
-								if (version < 16.0) {
-									@SuppressWarnings({ "unchecked", "rawtypes" })
-									Object hoverEvent = hoverEventClass
-										.getDeclaredConstructor(hoverEventActionClass, baseComponentArrayClass)
-										.newInstance(
-											Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"),
-											(Object[]) componentBuilderClass.getMethod("create")
-												.invoke(componentBuilderClass.getConstructor(String.class)
-												.newInstance(formatted.getToolTips()))
-										);
-
-									textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(((Object[]) message)[0], hoverEvent);
-
-								} else {
-									// Crea un componente Text para las tooltips en versiones 1.16+
-									Object tooltipComponent = textComponentClass.getConstructor(String.class).newInstance(formatted.getToolTips());
-
-									// Crea un evento HoverEvent para mostrar el componente Text
-									@SuppressWarnings({ "unchecked", "rawtypes" })
-									Object hoverEvent = hoverEventClass.getConstructor(hoverEventActionClass, baseComponentClass)
-										.newInstance(Enum.valueOf((Class<Enum>) hoverEventActionClass, "SHOW_TEXT"), tooltipComponent);
-
-									// Agregar el HoverEvent al mensaje principal
-									textComponentClass.getMethod("setHoverEvent", hoverEventClass).invoke(message, hoverEvent);
-								}
+								JSONObject hoverEvent = new JSONObject();
+									hoverEvent.put("action", "show_text");
+									hoverEvent.put("value", formatted.getToolTips());
+								json.put("hoverEvent", hoverEvent);
 							}
+
+							Object message = componentSerializerClass.getDeclaredMethod("parse", String.class).invoke(null, json.toString());
 
 							Method sendMessageMethod = player.spigot().getClass().getMethod("sendMessage", Array.newInstance(baseComponentClass, 0).getClass());
 							sendMessageMethod.setAccessible(true);

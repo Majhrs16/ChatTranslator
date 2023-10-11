@@ -35,7 +35,7 @@ public class CommandListener implements Listener {
 		boolean status = preProcessCommand(event.getSender(), event.getCommand());
 
 		if (util.getMinecraftVersion() >= 8.0)
-				event.setCancelled(status)
+			event.setCancelled(status)
 		;
 	}
 }

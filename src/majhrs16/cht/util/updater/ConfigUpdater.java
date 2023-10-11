@@ -54,26 +54,13 @@ public class ConfigUpdater {
 				cancel_event     = false;
 				clear_recipients = false;
 
-			} else if (Dependencies.DiscordSRV.exist()) {
-				DC.setMessages("&aDetectado DiscordSRV&f.");
-					API.sendMessage(DC);
-
-				cancel_event     = false;
-				clear_recipients = true;
-
 			} else {
 				cancel_event     = true;
 				clear_recipients = false;
 			}
+
 			config.set(Config.NativeChat.CANCEL.getPath(), cancel_event);
 			config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
-
-			if (Dependencies.ProtocolLib.exist()) {
-				DC.setMessages("&aDetectado ProtocolLib&f.");
-					API.sendMessage(DC);
-
-				config.set(Config.TranslateOthers.SIGNS.getPath(), true);
-			}
 
 			config_version = 5;
 		}

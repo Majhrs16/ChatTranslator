@@ -24,10 +24,10 @@ public class MessageListener implements Listener {
 
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (chat == new Message())
+				if (event == new Message() || event.isCancelled())
 					return;
 
-				ChatTranslatorAPI.getInstance().sendMessage(chat);
+				API.sendMessage(chat);
 				event.setCancelled(true);
 		}}, 1L);
 	}
@@ -38,7 +38,7 @@ public class MessageListener implements Listener {
 
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (event == new Message() || chat.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
+				if (event == new Message() || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
 					return;
 
 				Message from = API.formatMessage(chat);

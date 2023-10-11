@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Message extends Event implements Cancellable {
-	private static final ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	private Message to;

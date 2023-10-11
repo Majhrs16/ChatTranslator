@@ -45,13 +45,13 @@ public class ChatTranslator extends JavaPlugin {
 
 		public static boolean installed = false;
 
-		public static CommandListener commandHandler	  = new CommandListener();
-		public static MessageListener messageListener	 = new MessageListener();
-//		public static TabCompleter tabCompleter		   = new TabCompleter();
-		public static AccessPlayer accessPlayer		   = new AccessPlayer();
-		public static SignHandler signHandler			 = new SignHandler();
-		public static ChatLimiter chatLimiter			 = new ChatLimiter();
-		public static Chat chat						   = new Chat();
+		public static CommandListener commandHandler  = new CommandListener();
+		public static MessageListener messageListener = new MessageListener();
+//		public static TabCompleter tabCompleter       = new TabCompleter();
+		public static AccessPlayer accessPlayer       = new AccessPlayer();
+		public static SignHandler signHandler         = new SignHandler();
+		public static ChatLimiter chatLimiter         = new ChatLimiter();
+		public static Chat chat	                      = new Chat();
 
 		static {
 			if (Config.TranslateOthers.DISCORD.IF()) {
