@@ -25,7 +25,7 @@ Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin proble
 14. *Compatibilidad con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
 15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla los chats en base a condiciones específicas, como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
 16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada.
-
+ 
 ## Instalación
 
 Para instalar ChatTranslator, sigue los siguientes pasos:
@@ -44,13 +44,13 @@ Si deseas volver a la deteccion automatica tras establecer un idioma estatico, p
 
 ## Compilación(Para desarrolladores)
 
-Para compilar el código fuente de ChatTranslator, sigue estos pasos:
+### Sin IDE.
 
 1. Asegúrate de tener instalado preferiblemente Java Development Kit (JDK) 8 en tu sistema.
-2. Clona este repositorio en tu máquina local utilizando el siguiente comando:
+2. Clona el repositorio ChatTranslator desde GitHub a tu máquina local. Puedes hacerlo descargando el código fuente como un archivo ZIP y extrayéndolo o usando git:
 
    ```
-   git clone https://github.com/Majhrs16/ChatTranslator.git
+   git clone https://github.com/Majhrs16/ChatTranslator/
    ```
 
 3. Navega al directorio del proyecto:
@@ -59,17 +59,47 @@ Para compilar el código fuente de ChatTranslator, sigue estos pasos:
    cd ChatTranslator
    ```
 
-4. Descarga las dependencias requeridas y colócalas en la carpeta "libs" dentro del proyecto:
+4. Descarga las dependencias requeridas y colócalas en la carpeta `libs` dentro del proyecto:
 
    - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
-   - [PlaceholderAPI.jar](https://www.spigotmc.org/resources/placeholderapi.6245/download?version=514383)
-   - [Spigot 1.16.5.jar](https://cdn.getbukkit.org/spigot/spigot-1.16.5.jar)
+   - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/download?version=514383)
+   - [Spigot 1.16.5](https://cdn.getbukkit.org/spigot/spigot-1.16.5.jar)
 
 5. Y ya por ultimo, ejecuta el compile.bat:
 
    Esto compilará todos los archivos fuente y generará un ChatTranslator.jar.
 
 Y eso es todo! :D
+
+### Con IntelliJ IDEA.
+
+Siga estos pasos para importar ChatTranslator en IntelliJ IDEA:
+
+1. Clona el repositorio ChatTranslator desde GitHub a tu máquina local. Puedes hacerlo descargando el código fuente como un archivo ZIP y extrayéndolo o usando git:
+
+   ```
+   git clone https://github.com/Majhrs16/ChatTranslator/
+   ```
+
+2. Descarga las dependencias requeridas y colócalas en la carpeta `libs` dentro del proyecto:
+
+   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
+   - [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/download?version=514383)
+   - [Spigot 1.16.5](https://cdn.getbukkit.org/spigot/spigot-1.16.5.jar)
+
+3. Abre IntelliJ IDEA y selecciona "Abrir proyecto" desde el menú principal.
+
+4. Navega hasta la carpeta donde clonaste o descomprimiste el proyecto y selecciónala.
+
+5. IntelliJ IDEA detectará automáticamente que estás trabajando en un proyecto de Java.
+
+6. Asegurate de establecer la version del JDK en 1.8.
+
+7. Configura las rutas de exportación. Dado que estoy exportando las bibliotecas JDA5 y Majhrs16.lib, asegúrate de que estén configuradas para exportarse al archivo JAR final.
+
+8. Recuerda marcar la carpeta `resources` como `Resources root`
+
+8. Una vez importado y configurado, puedes comenzar a trabajar en el proyecto.
 
 ## Lista de idiomas soportados:
 
