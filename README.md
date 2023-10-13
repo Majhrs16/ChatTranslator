@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="50%" height="50%">
+</p>
+
+
 # ChatTranslator - Plugin Potente de Traducción y Formato del Chat Para Minecraft 1.5.2 - 1.20.1
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin problemas.
 
