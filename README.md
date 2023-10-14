@@ -93,7 +93,7 @@ Siga estos pasos para importar ChatTranslator en IntelliJ IDEA:
 
 5. IntelliJ IDEA detectará automáticamente que estás trabajando en un proyecto de Java.
 
-6. Asegurate de establecer la version del JDK en 1.8.
+6. Asegurate de tener instalado preferiblemente el JDK 8.
 
 7. Configura las rutas de exportación. Dado que estoy exportando las bibliotecas JDA5 y Majhrs16.lib, asegúrate de que estén configuradas para exportarse al archivo JAR final.
 
