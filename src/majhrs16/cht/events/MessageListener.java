@@ -15,8 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 public class MessageListener implements Listener {
-	private ChatTranslator plugin = ChatTranslator.getInstance();
-	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	private void toMinecraft(Message event) {

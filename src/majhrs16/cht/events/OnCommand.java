@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import majhrs16.cht.commands.CommandHandler;
 import majhrs16.cht.util.util;
 
-public class CommandListener implements Listener {
+public class OnCommand implements Listener {
 	public boolean preProcessCommand(CommandSender sender, String command_line) {
 		String[] command_parts;
 

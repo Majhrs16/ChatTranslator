@@ -30,8 +30,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 public class SignHandler implements Listener {
-	private ChatTranslator plugin = ChatTranslator.getInstance();
-	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler
 	public void updateSign(PlayerInteractEvent event) {

@@ -2,18 +2,19 @@ package majhrs16.cht;
 
 import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.util.updater.CommandsUpdater;
 import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.util.updater.UpdateChecker;
 import majhrs16.cht.util.updater.ConfigUpdater;
 import majhrs16.cht.util.cache.Dependencies;
-import majhrs16.cht.events.CommandListener;
 import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
 import majhrs16.dst.DiscordTranslator;
 import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.events.OnCommand;
 import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Storage;
 import majhrs16.cot.CoreTranslator;
@@ -45,12 +46,11 @@ public class ChatTranslator extends JavaPlugin {
 
 		public static boolean installed = false;
 
-		public static CommandListener commandHandler  = new CommandListener();
 		public static MessageListener messageListener = new MessageListener();
-//		public static TabCompleter tabCompleter       = new TabCompleter();
 		public static AccessPlayer accessPlayer       = new AccessPlayer();
 		public static SignHandler signHandler         = new SignHandler();
 		public static ChatLimiter chatLimiter         = new ChatLimiter();
+		public static OnCommand commandHandler        = new OnCommand();
 		public static Chat chat	                      = new Chat();
 
 		static {
@@ -89,6 +89,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		try {
 			new ConfigUpdater();
+            new CommandsUpdater();
 			storage.register();
 
 		} catch (StorageRegisterFailedException e) {

@@ -31,8 +31,8 @@ public class Message extends Event implements Cancellable {
 	private boolean is_cancelled = false;
 	private String lang_source;
 	private String lang_target;
-	private Boolean color       = true;
-	private Boolean format_papi = true;
+	private Boolean color        = true;
+	private Boolean format_papi  = true;
 
 	public Message() {}
 
@@ -42,9 +42,9 @@ public class Message extends Event implements Cancellable {
 	public boolean isCancelled() { return is_cancelled; }
 
 	public void setCancelledThis(boolean isCancelled) { this.is_cancelled  = isCancelled; }
-	public void setCancelled(boolean isCancelled) { // Soporte con CE.
+	public void setCancelled(boolean isCancelled) {
 		try {
-			getTo().setCancelledThis(isCancelled);
+			getTo().setCancelledThis(isCancelled); // Soporte con CE.
 
 		} catch (NullPointerException e) {
 			e.printStackTrace();

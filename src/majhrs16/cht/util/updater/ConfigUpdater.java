@@ -21,8 +21,8 @@ import java.io.File;
 public class ConfigUpdater {
 	public int config_version;
 
-	private ChatTranslator plugin = ChatTranslator.getInstance();
-	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public ConfigUpdater() {
 		String path, tmp;
@@ -62,7 +62,8 @@ public class ConfigUpdater {
 			config.set(Config.NativeChat.CANCEL.getPath(), cancel_event);
 			config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
 
-			config_version = 5;
+			config_version = 6;
+			return;
 		}
 
 		path = "auto-update-config";
@@ -161,7 +162,7 @@ public class ConfigUpdater {
 			config.set("storage.type", "yaml");
 			config.set("storage.host", "localhost");
 			config.set("storage.port", 3306);
-			config.set("storage.database", "ChatTranslator");
+			config.set("storage.database", "players");
 			config.set("storage.user", "root");
 			config.set("storage.password", "password");
 
@@ -185,8 +186,8 @@ public class ConfigUpdater {
 
 			try {
 				upgradePlayers();
+
 			} catch (ParseYamlException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -200,7 +201,7 @@ public class ConfigUpdater {
 
 		if (config_version < 5) {
 			path = "chat-color-personalized";
-			config.set("chat-custom-colors", config.getString(path));
+			config.set("chat-custom-colors", util.IF(config, path));
 			config.set(path, null);
 
 			path = "formats.from_entry.messages";
@@ -220,6 +221,41 @@ public class ConfigUpdater {
 			}
 
 			config_version = 5;
+		}
+
+		if (config_version < 6) {
+			ArrayList<String> from_messages  = new ArrayList<String>();
+			ArrayList<String> from_tool_tips = new ArrayList<String>();
+			ArrayList<String> from_sounds    = new ArrayList<String>();
+				from_messages.add("%ct_expand% &7%ct_messages%");
+				from_tool_tips.add("&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>");
+				from_sounds.add("BLOCK_NOTE_BLOCK_BELL; 1; 1");
+				from_sounds.add("NOTE_PLING; 1; 1");
+
+			ArrayList<String> to_messages  = new ArrayList<String>();
+			ArrayList<String> to_tool_tips = new ArrayList<String>();
+			ArrayList<String> to_sounds    = new ArrayList<String>();
+				to_messages.add("{\"text\": \"&f<&b%player_name%&f> &7$ct_messages$\", \"clickEvent\": {\"action\": \"suggest_command\", \"value\": \"/tell %player_name% ...\"}}");
+				to_tool_tips.add("&7Te han hablado al privado&f! &aHaz click para responder&f!");
+				to_tool_tips.add("&f[&6%ct_lang_source%&f] &a%ct_messages%");
+				to_sounds.add("BLOCK_NOTE_BLOCK_BELL; 1; 1");
+				to_sounds.add("NOTE_PLING; 1; 1");
+
+			ArrayList<String> discord_channels = new ArrayList<String>();
+
+			config.set("formats.from_private.messages", from_messages);
+			config.set("formats.from_private.toolTips", from_tool_tips);
+			config.set("formats.from_private.sounds", from_sounds);
+
+			config.set("formats.to_private.messages", to_messages);
+			config.set("formats.to_private.toolTips", to_tool_tips);
+			config.set("formats.to_private.sounds", to_sounds);
+
+			config.set("auto-translate-others.force-permission-per-world", false);
+			config.set("auto-translate-others.discord", false);
+
+			config.set("discord.bot-token", "YOUR BOT TOKEN");
+			config.set("discord.channels", discord_channels);
 		}
 
 		config.set(_path, config_version);
