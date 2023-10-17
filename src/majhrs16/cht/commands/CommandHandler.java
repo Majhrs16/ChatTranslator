@@ -124,7 +124,7 @@ public class CommandHandler implements CommandExecutor {
 			DC.setToolTips();
 
 		} else {
-			DC.setMessages(Arrays.copyOfRange(args, 2, args.length));
+			DC.setMessages(String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
 			DC = util.createChat(from_player, DC.getMessages(), DC.getLangSource(), API.getLang(to_player), "private");
 		}
 
@@ -211,7 +211,7 @@ public class CommandHandler implements CommandExecutor {
 				}
 
 				DC.setMessagesFormats(jsonMessage.toString());
-				DC.setMessages(""); // Neceario para que funcione el sendMessage
+				DC.setMessages(" "); // Neceario para que funcione el sendMessage
 				DC.setToolTips();
 			}
 
@@ -229,7 +229,7 @@ public class CommandHandler implements CommandExecutor {
 		sendMessagesAndToolTips(sender, command_base);
 
 		for (String key : commands.getConfigurationSection(command_base).getKeys(false)) {
-			if (!key.equals("type") && !key.equals("text") && !key.equals("suggest") && !key.equals("toolTip")) {
+			if (!key.equals("type") && !key.equals("text") && !key.equals("suggest") && !key.equals("toolTips")) {
 				sendMessagesAndToolTips(sender, command_base + "." + key);
 			}
 		}

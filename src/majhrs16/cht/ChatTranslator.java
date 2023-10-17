@@ -42,22 +42,16 @@ public class ChatTranslator extends JavaPlugin {
 	private ChatTranslatorAPI API;
 
 	private static class Events {
-		public static DiscordTranslator discordTranslator;
 
 		public static boolean installed = false;
 
-		public static MessageListener messageListener = new MessageListener();
-		public static AccessPlayer accessPlayer       = new AccessPlayer();
-		public static SignHandler signHandler         = new SignHandler();
-		public static ChatLimiter chatLimiter         = new ChatLimiter();
-		public static OnCommand commandHandler        = new OnCommand();
-		public static Chat chat	                      = new Chat();
-
-		static {
-			if (Config.TranslateOthers.DISCORD.IF()) {
-				discordTranslator = new DiscordTranslator();
-			}
-		}
+		public static DiscordTranslator discordTranslator = new DiscordTranslator();
+		public static MessageListener messageListener     = new MessageListener();
+		public static AccessPlayer accessPlayer           = new AccessPlayer();
+		public static SignHandler signHandler             = new SignHandler();
+		public static ChatLimiter chatLimiter             = new ChatLimiter();
+		public static OnCommand commandHandler            = new OnCommand();
+		public static Chat chat	                          = new Chat();
 	}
 
 	public void onEnable() {

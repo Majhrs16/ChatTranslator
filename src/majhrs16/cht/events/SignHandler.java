@@ -65,8 +65,6 @@ public class SignHandler implements Listener {
 			for (; i < Math.min(lines.length, 4); i++) {
 				String line = lines[i];
 
-				System.out.println("Line sign: " + i + " text: '" + line + "'");
-
 				if (line.isEmpty()) {
 					sign.setLine(i, "");
 					continue;

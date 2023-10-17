@@ -1,5 +1,6 @@
 package majhrs16.cht.events.custom;
 
+import majhrs16.cht.translator.ChatTranslatorAPI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -148,16 +149,18 @@ public class Message extends Event implements Cancellable {
 	public Message clone() {
 		Message from = new Message();
 			Message to = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
-				to.setSender(getTo().getSender());
-				to.setMessagesFormats(getTo().getMessageFormat());
-				to.setMessages(getTo().getMessages());
-				to.setToolTips(getTo().getToolTips());
-				to.setSounds(getTo().getSounds());
-				to.setCancelledThis(getTo().isCancelled());
-				to.setLangSource(getTo().getLangSource());
-				to.setLangTarget(getTo().getLangTarget());
-				to.setColor(getTo().getColor());
-				to.setFormatPAPI(getTo().getFormatPAPI());
+				if (getTo() != null) {
+					to.setSender(getTo().getSender());
+					to.setMessagesFormats(getTo().getMessageFormat());
+					to.setMessages(getTo().getMessages());
+					to.setToolTips(getTo().getToolTips());
+					to.setSounds(getTo().getSounds());
+					to.setCancelledThis(getTo().isCancelled());
+					to.setLangSource(getTo().getLangSource());
+					to.setLangTarget(getTo().getLangTarget());
+					to.setColor(getTo().getColor());
+					to.setFormatPAPI(getTo().getFormatPAPI());
+				}
 			from.setTo(to);
 
 			from.setSender(getSender());
@@ -204,10 +207,18 @@ public class Message extends Event implements Cancellable {
 			boolean color         = (boolean) jsonArray.get(8);
 			boolean papi          = (boolean) jsonArray.get(9);
 
-			Player player = null;
-			if (player_name == null || (player = Bukkit.getServer().getPlayer(player_name)) == null) {
-				return null;
-			}
+			CommandSender player;
+			if (player_name == null)
+				player = Bukkit.getConsoleSender();
+	
+			else
+				player = Bukkit.getServer().getPlayer(player_name);
+
+			if (lang_source == null)
+				lang_source = ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender());
+
+			if (lang_target == null)
+				lang_target = ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender());
 
 			Message from = new Message();
 				from.setSender(player);

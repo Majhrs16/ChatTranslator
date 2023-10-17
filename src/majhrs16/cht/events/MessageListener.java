@@ -19,12 +19,12 @@ public class MessageListener implements Listener {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler (priority = EventPriority.LOWEST)
-	private void toMinecraft(Message event) {
+	public void toMinecraft(Message event) {
 		Message chat = event.clone();
 
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (event == new Message() || event.isCancelled())
+				if (event.equals(new Message()) || event.isCancelled())
 					return;
 
 				API.sendMessage(chat);
@@ -33,13 +33,15 @@ public class MessageListener implements Listener {
 	}
 
 	@EventHandler (priority = EventPriority.LOWEST)
-	private void toDiscord(Message event) {
+	public void toDiscord(Message event) {
 		Message chat = event.clone();
 
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (event == new Message() || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
+				if (event.equals(new Message()) || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
 					return;
+
+//				Agregar control del MF.
 
 				Message from = API.formatMessage(chat);
 

@@ -256,6 +256,7 @@ public class ConfigUpdater {
 
 			config.set("discord.bot-token", "YOUR BOT TOKEN");
 			config.set("discord.channels", discord_channels);
+            config_version = 6;
 		}
 
 		config.set(_path, config_version);
