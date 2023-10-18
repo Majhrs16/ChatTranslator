@@ -203,7 +203,7 @@ public interface Msgs {
 		broadcast(messages, from -> majhrs16.cht.util.ChatLimiter.chat.add(from));
 	}
 
-	default  public void broadcast(Message from, Consumer<List<Message>> preBroadcastAction) {
+	default public void broadcast(Message from, Consumer<List<Message>> preBroadcastAction) {
 		if (from == null || from.equals(new Message()))
 			return;
 

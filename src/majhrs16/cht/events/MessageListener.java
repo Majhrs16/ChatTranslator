@@ -19,47 +19,43 @@ public class MessageListener implements Listener {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler (priority = EventPriority.LOWEST)
-	public void toMinecraft(Message event) {
-		Message chat = event.clone();
+	public void onMessage(Message event) {
 
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
-				if (event.equals(new Message()) || event.isCancelled())
-					return;
-
-				API.sendMessage(chat);
+				toMinecraft(event);
+				toDiscord(event);
 				event.setCancelled(true);
-		}}, 1L);
+			}}, 1L);
 	}
 
-	@EventHandler (priority = EventPriority.LOWEST)
+	public void toMinecraft(Message event) {
+		if (event.equals(new Message()))
+			return;
+
+		API.sendMessage(event);
+	}
+
 	public void toDiscord(Message event) {
-		Message chat = event.clone();
+		if (event.equals(new Message()) || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
+			return;
 
-		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-			public void run() {
-				if (event.equals(new Message()) || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
-					return;
+//		Agregar control del MF.
 
-//				Agregar control del MF.
+		Message from = API.formatMessage(event);
 
-				Message from = API.formatMessage(chat);
+		for (String channelID : plugin.config.get().getStringList("discord.channels")) {
+			TextChannel channel = DiscordTranslator.getJda().getTextChannelById(channelID);
 
-				for (String channelID : plugin.config.get().getStringList("discord.channels")) {
-					TextChannel channel = DiscordTranslator.getJda().getTextChannelById(channelID);
+			if (channel == null)
+				continue;
 
-					if (channel == null)
-						continue;
+			channel.sendMessage(ChatColor.stripColor(from.getTo().getMessageFormat()))
+				/* .addActionRow(Button.primary("translate-" + from.getLangSource(), "Traducir")) */
+				.queue();
 
-					channel.sendMessage(ChatColor.stripColor(from.getTo().getMessageFormat()))
-						/* .addActionRow(Button.primary("translate-" + from.getLangSource(), "Traducir")) */
-						.queue();
-					
-					if (from.getTo().getToolTips() != null)
-						channel.sendMessage(ChatColor.stripColor(from.getTo().getToolTips())).queue();;
-				}
-
-				event.setCancelled(true);
-		}}, 1L);
+			if (from.getTo().getToolTips() != null)
+				channel.sendMessage(ChatColor.stripColor(from.getTo().getToolTips())).queue();;
+		}
 	}
 }
