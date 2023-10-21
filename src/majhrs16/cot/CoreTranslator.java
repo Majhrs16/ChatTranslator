@@ -19,12 +19,12 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 public class CoreTranslator extends PlaceholderExpansion {
-	private Pattern sendMessage          = Pattern.compile("sendMessage; *\\[(\\[.+\\]), *(\\[.+\\])?\\]", Pattern.CASE_INSENSITIVE);
-	private Pattern broadcast            = Pattern.compile("broadcast; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
-	private Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; (\\[.+\\])", Pattern.CASE_INSENSITIVE);
-	private Pattern translate            = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
-	private Pattern parser               = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
-	private Pattern lang                 = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
+	private final Pattern sendMessage          = Pattern.compile("sendMessage; *\\[(\\[.+\\]), *(\\[.+\\])?\\]", Pattern.CASE_INSENSITIVE);
+	private final Pattern broadcast            = Pattern.compile("broadcast; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
+	private final Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; (\\[.+\\])", Pattern.CASE_INSENSITIVE);
+	private final Pattern translate            = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
+	private final Pattern parser               = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
+	private final Pattern lang                 = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -64,7 +64,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		} else if ((matcher = lang.matcher(identifier)).find()) { // %ct_getLang_{player_name}%
 			player = Bukkit.getServer().getPlayer(matcher.group(1));
 			if (player == null)
-				result = getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
+				result = getMessageFormatted(null, "&4Error&f: &cJugador no encontrado&f.");
 
 			else
 				result = API.getLang(player);
@@ -96,7 +96,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 			channel.sendMessage(ChatColor.stripColor(from.getMessageFormat())).queue();
 
 			if (from.getToolTips() != null)
-				channel.sendMessage(ChatColor.stripColor(from.getToolTips())).queue();;
+				channel.sendMessage(ChatColor.stripColor(from.getToolTips())).queue();
 		}
 
 		return "ok";
