@@ -20,7 +20,6 @@ public class MessageListener implements Listener {
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onMessage(Message event) {
-
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
 				toMinecraft(event);

@@ -12,6 +12,7 @@ import majhrs16.cht.util.util;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -47,15 +48,27 @@ public interface Core {
 	default public String getColor(String text) {
 //			Convierte el color RGB y tradicional a un formato visible.
 
-		if (text == null)
-			return text;
+        if (text == null)
+            return text;
 
-		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
-			/*
+        Class<?> chatColorClass;
+        try {
+            chatColorClass = Class.forName("net.md_5.bungee.api.ChatColor");
+
+        } catch (ClassNotFoundException e) {
+            chatColorClass = null;
+        }
+
+		if (util.getMinecraftVersion() >= 16.0 && chatColorClass != null) { // 1.16.0
 			Matcher matcher;
-			while ((matcher = color_hex.matcher(text)).find())
-				text = text.replace(matcher.group(0), "" + net.md_5.bungee.api.ChatColor.of(matcher.group(0)));
-			*/
+			while ((matcher = color_hex.matcher(text)).find()) {
+                try {
+                    text = text.replace(matcher.group(0), "" + chatColorClass.getMethod("of", String.class).invoke(null, matcher.group(0)));
+
+                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);

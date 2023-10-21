@@ -9,6 +9,7 @@ import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
@@ -18,11 +19,17 @@ public interface Lang {
 			String playerLocale = null;
 
 			try {
-				Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+				Method getHandle = player.getClass().getDeclaredMethod("getHandle");
+				getHandle.setAccessible(true);
+
+				Object entityPlayer = getHandle.invoke(player);
 
 				if (entityPlayer != null) {
-					if (util.getMinecraftVersion() >= 7.2) {
+					if (util.getMinecraftVersion() >= 7.2 && util.getMinecraftVersion() <= 16.5) {
 						playerLocale = (String) entityPlayer.getClass().getField("locale").get(entityPlayer);
+
+					} else if (util.getMinecraftVersion() >= 20.0) {
+						playerLocale = (String) entityPlayer.getClass().getField("cM").get(entityPlayer);
 
 					} else { // Versión 1.7 o anterior
 						Field localeField   = entityPlayer.getClass().getDeclaredField("locale");
