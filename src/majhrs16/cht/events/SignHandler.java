@@ -60,6 +60,9 @@ public class SignHandler implements Listener {
 			from.setMessages(String.join(" ", signs.getStringList(path + ".text")));
 			from = API.formatMessage(from);
 
+			if (from.getMessages() == null) // WTF?
+				return;
+
 			int i = 0;
 			String[] lines = Str.wrapText(from.getMessages(), 15).split("\n");
 			for (; i < Math.min(lines.length, 4); i++) {

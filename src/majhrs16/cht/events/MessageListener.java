@@ -1,18 +1,17 @@
 package majhrs16.cht.events;
 
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import majhrs16.cht.translator.ChatTranslatorAPI;
-
-import majhrs16.cht.events.custom.Message;
-import majhrs16.dst.DiscordTranslator;
-import majhrs16.cht.util.cache.Config;
-import majhrs16.cht.ChatTranslator;
-
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
+
+import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.cache.Config;
+import majhrs16.cht.ChatTranslator;
+import majhrs16.dst.utils.Utils;
 
 public class MessageListener implements Listener {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -20,12 +19,12 @@ public class MessageListener implements Listener {
 
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onMessage(Message event) {
-		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-			public void run() {
-				toMinecraft(event);
-				toDiscord(event);
-				event.setCancelled(true);
-			}}, 1L);
+		Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
+			toMinecraft(event);
+			toDiscord(event);
+
+			event.setCancelled(true);
+		}, 1L);
 	}
 
 	public void toMinecraft(Message event) {
@@ -39,22 +38,26 @@ public class MessageListener implements Listener {
 		if (event.equals(new Message()) || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
 			return;
 
-//		Agregar control del MF.
+		String path;
+		FileConfiguration config = plugin.config.get();
+
+		path = "to_discord";
+		event.getTo().setMessagesFormats(config.contains("formats." + path + ".messages") ? path : null);
+		event.getTo().setToolTips(config.contains("formats." + path + ".toolTips")        ? path : null);
+		event.getTo().setSounds(config.contains("formats." + path + ".sounds")            ? path : null);
+
+		if (event.getTo().getMessageFormat() == null)
+			return;
 
 		Message from = API.formatMessage(event);
 
-		for (String channelID : plugin.config.get().getStringList("discord.channels")) {
-			TextChannel channel = DiscordTranslator.getJda().getTextChannelById(channelID);
-
-			if (channel == null)
-				continue;
-
+		Utils.broadcast("discord.channels.chat", channel -> {
 			channel.sendMessage(ChatColor.stripColor(from.getTo().getMessageFormat()))
-				/* .addActionRow(Button.primary("translate-" + from.getLangSource(), "Traducir")) */
-				.queue();
+					/* .addActionRow(Button.primary("translate-" + from.getLangSource(), "Traducir")) */
+					.queue();
 
 			if (from.getTo().getToolTips() != null)
-				channel.sendMessage(ChatColor.stripColor(from.getTo().getToolTips())).queue();;
-		}
+				channel.sendMessage(ChatColor.stripColor(from.getTo().getToolTips())).queue();
+		});
 	}
 }

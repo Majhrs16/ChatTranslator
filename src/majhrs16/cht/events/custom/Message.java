@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.bukkit.entity.Player;
 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
@@ -42,7 +41,11 @@ public class Message extends Event implements Cancellable {
 
 	public boolean isCancelled() { return is_cancelled; }
 
-	public void setCancelledThis(boolean isCancelled) { this.is_cancelled  = isCancelled; }
+	public Message setCancelledThis(boolean isCancelled) {
+		this.is_cancelled  = isCancelled;
+		return this;
+	}
+
 	public void setCancelled(boolean isCancelled) {
 		try {
 			getTo().setCancelledThis(isCancelled); // Soporte con CE.
@@ -81,34 +84,101 @@ public class Message extends Event implements Cancellable {
 		return result.toArray(new String[0]);
 	}
 
-	public void setTo(Message to)                                 { this.to             = to == null ? new Message() : to; }
-	public void setSender(CommandSender sender)                   { this.sender         = sender; }
+	public Message setTo(Message to) {
+		this.to             = to == null ? new Message() : to;
+		return this;
+	}
 
-	public void setMessageFormat(int index, String messageFormat) { this.messages_formats[index] = getFormat("messages", messageFormat); }
-	public void setMessage(int index, String messages)            { this.messages[index]         = messages; }
-	public void setToolTip(int index, String toolTips)            { this.tool_tips[index]        = getFormat("toolTips", toolTips); }
-	public void setSound(int index, String sounds)                { this.sounds[index]           = getFormat("sounds", sounds); }
+	public Message setSender(CommandSender sender) {
+		this.sender         = sender;
+		return this;
+	}
 
-	public void setMessagesFormats(String messageFormat)          { this.messages_formats = getChat("messages", messageFormat); }
-	public void setMessages(String messages)                      { this.messages         = messages == null ? null : messages.split("\n"); }
-	public void setToolTips(String toolTips)                      { this.tool_tips        = getChat("toolTips", toolTips); }
-	public void setSounds(String sounds)                          { this.sounds           = getChat("sounds", sounds); }
+	public Message setMessageFormat(int index, String messageFormat) {
+		this.messages_formats[index] = getFormat("messages", messageFormat);
+		return this;
+	}
 
-	public void setMessagesFormats(String... messageFormat)       { this.messages_formats = getChat("messages", messageFormat); }
-	public void setMessages(String... messages)                   { this.messages       = messages; }
-	public void setToolTips(String... toolTips)                   { this.tool_tips      = getChat("toolTips", toolTips); }
-	public void setSounds(String... sounds)                       { this.sounds         = getChat("sounds", sounds); }
+	public Message setMessage(int index, String messages) {
+		this.messages[index]         = messages;
+		return this;
+	}
 
-	public void setLangSource(String lang)                        { this.lang_source    = lang; }
-	public void setLangTarget(String lang)                        { this.lang_target    = lang; }
+	public Message setToolTip(int index, String toolTips) {
+		this.tool_tips[index]        = getFormat("toolTips", toolTips);
+		return this;
+	}
+	
+	public Message setSound(int index, String sounds) {
+		this.sounds[index]           = getFormat("sounds", sounds);
+		return this;
+	}
 
-	public void setFormatPAPI(Boolean formatPAPI)                 { this.format_papi    = formatPAPI; }
-	public void setColor(Boolean color)                           { this.color          = color; }
+	public Message setMessagesFormats(String messageFormat) {
+		this.messages_formats = getChat("messages", messageFormat);
+		return this;
+	}
+
+	public Message setMessages(String messages) {
+		this.messages         = messages == null ? null : messages.split("\n");
+		return this;
+	}
+
+	public Message setToolTips(String toolTips) {
+		this.tool_tips        = getChat("toolTips", toolTips);
+		return this;
+	}
+
+	public Message setSounds(String sounds) {
+		this.sounds           = getChat("sounds", sounds);
+		return this;
+	}
+
+	public Message setMessagesFormats(String... messageFormat) {
+		this.messages_formats = getChat("messages", messageFormat);
+		return this;
+	}
+
+	public Message setMessages(String... messages) {
+		this.messages       = messages;
+		return this;
+	}
+
+	public Message setToolTips(String... toolTips) {
+		this.tool_tips      = getChat("toolTips", toolTips);
+		return this;
+	}
+
+	public Message setSounds(String... sounds) {
+		this.sounds         = getChat("sounds", sounds);
+		return this;
+	}
+
+	public Message setLangSource(String lang) {
+		this.lang_source    = lang;
+		return this;
+	}
+
+	public Message setLangTarget(String lang) {
+		this.lang_target    = lang;
+		return this;
+	}
+
+	public Message setFormatPAPI(Boolean formatPAPI) {
+		this.format_papi    = formatPAPI;
+		return this;
+	}
+
+	public Message setColor(Boolean color) {
+		this.color          = color;
+		return this;
+	}
+
 
 	public Message getTo()           { return to; }
 
 	public CommandSender getSender() { return sender; }
-	public String getSenderName()    { return sender.getName(); }
+	public String getSenderName()    { return sender == null ? null : sender.getName(); }
 
 	public String getMessageFormat(int index) {
 		String out = messages_formats[index];
@@ -192,7 +262,7 @@ public class Message extends Event implements Cancellable {
 		return jsonArray.toString();
 	}
 
-	public Message valueOf(String json) {
+	public static Message valueOf(String json) {
 		try {
 			JSONArray jsonArray = (JSONArray) new JSONParser().parse(json);
 

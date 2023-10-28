@@ -25,13 +25,7 @@ public interface Lang {
 				Object entityPlayer = getHandle.invoke(player);
 
 				if (entityPlayer != null) {
-					if (util.getMinecraftVersion() >= 7.2 && util.getMinecraftVersion() <= 16.5) {
-						playerLocale = (String) entityPlayer.getClass().getField("locale").get(entityPlayer);
-
-					} else if (util.getMinecraftVersion() >= 20.0) {
-						playerLocale = (String) entityPlayer.getClass().getField("cM").get(entityPlayer);
-
-					} else { // Versión 1.7 o anterior
+					if (util.getMinecraftVersion() < 7.2) { // Por debajo de la 1.7.
 						Field localeField   = entityPlayer.getClass().getDeclaredField("locale");
 						localeField.setAccessible(true);
 						Object localeObject = localeField.get(entityPlayer);
@@ -41,6 +35,13 @@ public interface Lang {
 							eField.setAccessible(true);
 							playerLocale = (String) eField.get(localeObject);
 						}
+
+					} else if (util.getMinecraftVersion() <= 20.1) { // Version 1.20.1 o anterior.
+						playerLocale = (String) entityPlayer.getClass().getField("locale").get(entityPlayer);
+
+					} else if (util.getMinecraftVersion() >= 20.2) {  // Versión 1.20.2 o superior
+						playerLocale = (String) entityPlayer.getClass().getField("cM").get(entityPlayer);
+
 					}
 				}
 

@@ -20,6 +20,7 @@ import majhrs16.cht.storage.Storage;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.events.Chat;
+import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,25 +33,26 @@ import java.nio.charset.Charset;
 public class ChatTranslator extends JavaPlugin {
 	public YAML signs;
 	public YAML config;
+//	public YAML formats;
 	public YAML messages;
 	public YAML commands;
 	public Storage storage;
-	
+
+	private ChatTranslatorAPI API;
 	private static ChatTranslator plugin;
 
 	private boolean is_disabled = true;
-	private ChatTranslatorAPI API;
 
 	private static class Events {
 
-		public static boolean installed = false;
+		public static boolean is_installed = false;
 
 		public static DiscordTranslator discordTranslator = new DiscordTranslator();
 		public static MessageListener messageListener     = new MessageListener();
 		public static AccessPlayer accessPlayer           = new AccessPlayer();
 		public static SignHandler signHandler             = new SignHandler();
 		public static ChatLimiter chatLimiter             = new ChatLimiter();
-		public static OnCommand commandHandler            = new OnCommand();
+		public static OnCommand onCommand                 = new OnCommand();
 		public static Chat chat	                          = new Chat();
 	}
 
@@ -64,6 +66,7 @@ public class ChatTranslator extends JavaPlugin {
 
 		signs    = new YAML(plugin, "signs.yml");
 		config   = new YAML(plugin, "config.yml");
+//		formats  = new YAML(plugin, "formats.yml");
 		messages = new YAML(plugin, "messages.yml");
 		commands = new YAML(plugin, "commands.yml");
 		storage  = new Storage();
@@ -210,30 +213,56 @@ public class ChatTranslator extends JavaPlugin {
 	}*/
 
 	public void registerEvents() {
-		if (Events.installed)
+		if (Events.is_installed)
 			return;
 
 		PluginManager pm = getServer().getPluginManager();
 			pm.registerEvents(Events.messageListener, this);
-			pm.registerEvents(Events.commandHandler, this);
 //			if (util.getMinecraftVersion() > 13.0) // 1.13.0
 //				pm.registerEvents(Events.tabCompleter, this);
 			pm.registerEvents(Events.accessPlayer, this);
 			pm.registerEvents(Events.signHandler, this);
+			pm.registerEvents(Events.onCommand, this);
 			pm.registerEvents(Events.chat, this);
 			Events.chatLimiter.start();
-
-		registerDiscordBot();
 
 		if (Dependencies.PAPI.exist())
 			new CoreTranslator().register(); // Expansion de ChT para PAPI: CoT.
 
-		Events.installed = true;
+		registerDiscordBot();
+
+		Events.is_installed = true;
+	}
+
+	public void unregisterEvents() {
+		if (!Events.is_installed)
+			return;
+
+		Events.is_installed = false;
+
+		HandlerList.unregisterAll(Events.messageListener);
+		HandlerList.unregisterAll(Events.accessPlayer);
+		HandlerList.unregisterAll(Events.signHandler);
+		HandlerList.unregisterAll(Events.onCommand);
+		HandlerList.unregisterAll(Events.chat);
+		Events.chatLimiter.stop();
+
+		unregisterDiscordBot();
 	}
 
 	public void registerDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
-			if (!Events.discordTranslator.connect()) {
+			if (Events.discordTranslator.connect()) {
+				Events.discordTranslator.registerCommands();
+				Events.discordTranslator.registerEvents();
+
+				if (!Events.is_installed)
+					Utils.broadcast(
+						"discord.channels.server-status",
+						channel -> Utils.sendMessageEmbed(channel, "Servidor encendido!, :D", null, 0x00FF00)
+					);
+
+			} else {
 				Message from = util.getDataConfigDefault();
 
 				from.setMessages(Texts.getString("plugin.title.text") + "&cNo se pudo iniciar el bot de Discord.\n    Por favor verifique &bconfig&f.&bbot-token&f.");
@@ -242,24 +271,15 @@ public class ChatTranslator extends JavaPlugin {
 		}
 	}
 
-	public void unregisterEvents() {
-		if (!Events.installed) 
-			return;
-
-		HandlerList.unregisterAll(Events.messageListener);
-		HandlerList.unregisterAll(Events.commandHandler); ////////////////////////////////////////////////////////////
-		HandlerList.unregisterAll(Events.accessPlayer);
-		HandlerList.unregisterAll(Events.signHandler);
-		HandlerList.unregisterAll(Events.chat);
-		Events.chatLimiter.stop();
-
-		unregisterDiscordBot();
-
-//		Events.installed = false;
-	}
-
 	public void unregisterDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
+			if (!Events.is_installed)
+				Utils.broadcast(
+						"discord.channels.server-status",
+						channel -> Utils.sendMessageEmbed(channel, "Servidor apagado, :(", null, 0xFF0000)
+				);
+
+			Events.discordTranslator.unregisterEvents();
 			Events.discordTranslator.unregisterCommands();
 			Events.discordTranslator.disconnect();
 		}

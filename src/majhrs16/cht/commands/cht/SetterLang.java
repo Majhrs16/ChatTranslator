@@ -36,7 +36,7 @@ public class SetterLang {
 		try {
 			to_player = Bukkit.getOfflinePlayer(player);
 
-			if (to_player == null || !to_player.hasPlayedBefore()) {
+			if (!to_player.hasPlayedBefore()) {
 				throw new NullPointerException();
 			}
 
@@ -57,19 +57,15 @@ public class SetterLang {
 
 		API.setLang(to_player, lang);
 
-		String msg = String.format(
-			"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
-			DC.getSenderName(),
-			to_player.getName(),
-			GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
-		);
-
 		Message from = util.getDataConfigDefault();
-			from.setMessages(msg);
+			from.setMessages(String.format(
+				"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
+				DC.getSenderName(),
+				to_player.getName(),
+				GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
+			));
 
-		Message to_model = from.clone();
-			to_model.setMessagesFormats("$ct_messages$");
-		from.setTo(to_model);
+		from.setTo(from.clone().setMessagesFormats("$ct_messages$"));
 
 		API.broadcast(from);
 	}

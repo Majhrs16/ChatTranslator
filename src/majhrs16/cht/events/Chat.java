@@ -29,11 +29,24 @@ public class Chat implements Listener {
 
 		Message to_model = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
 
+		/*
 		Message from_console = to_model.clone();
 			Message console  = util.createChat(
 				Bukkit.getConsoleSender(), event.getMessage(), from_lang, API.getLang(Bukkit.getConsoleSender()), "console");
 
 			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
+		 */
+
+		Message from_console = util.createChat(
+				Bukkit.getConsoleSender(),
+				event.getMessage(),
+				from_lang,
+				API.getLang(Bukkit.getConsoleSender()),
+				"console"
+			);
+
+			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
 		API.broadcast(to_model, froms -> froms.add(from_console));

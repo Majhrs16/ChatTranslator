@@ -126,6 +126,9 @@ public class CommandHandler implements CommandExecutor {
 		} else {
 			DC.setMessages(String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
 			DC = util.createChat(from_player, DC.getMessages(), DC.getLangSource(), API.getLang(to_player), "private");
+
+			DC.getTo().setSender(to_player);
+			DC.getTo().setLangTarget(API.getLang(to_player));
 		}
 
 		API.sendMessage(DC);

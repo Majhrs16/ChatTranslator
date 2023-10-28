@@ -1,5 +1,6 @@
 package majhrs16.cht.commands.cht;
 
+import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
@@ -17,7 +18,7 @@ public class Reloader {
 
 	@FunctionalInterface
 	public interface RunnableWithException {
-		void run() throws SQLException, ParseYamlException;
+		void run() throws SQLException, ParseYamlException, StorageRegisterFailedException;
 	}
 
 	public Reloader(Message DC) {
@@ -59,6 +60,10 @@ public class Reloader {
 
 		} catch (ParseYamlException e) {
 			DC.setMessages("&7[ &cFAIL &7] " + text + "\n    " + e.getMessage());
+
+		} catch (StorageRegisterFailedException e) {
+			DC.setMessages("&7[ &cFAIL &7] " + text);
+			e.printStackTrace();
 		}
 
 		API.sendMessage(DC);
@@ -106,8 +111,11 @@ public class Reloader {
 				break;
 		}
 
-		reload(DC.getMessages(), () -> {
-			plugin.storage.yaml.reload();
+		reload(DC.getMessages(), new RunnableWithException() {
+			@Override
+			public void run() throws SQLException, ParseYamlException, StorageRegisterFailedException {
+				plugin.storage.reload();
+			}
 		});
 	}
 }

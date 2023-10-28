@@ -5,8 +5,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.lib.storages.ParseYamlException;
+import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.io.File;
 
 public class ConfigUpdater {
-	public int config_version;
+	public int version;
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -33,15 +33,15 @@ public class ConfigUpdater {
 		if (!config.contains(_path))
 			config.set(_path, -1);
 
-		config_version = config.getInt(_path);
-		int config_version_original = config_version;
+		version = config.getInt(_path);
+		int version_original = version;
 
-		if (config_version_original == 0)
+		if (version_original == 0)
 			config.set("server-uuid", UUID.randomUUID().toString()); // Para evitar crashes.
 
 		Message DC = util.getDataConfigDefault();
 
-		if (config_version_original == 0) {
+		if (version_original == 0) {
 			if (Dependencies.Chatty.exist()) {
 				DC.setMessages("&aDetectado Chatty&f.");
 					API.sendMessage(DC);
@@ -62,21 +62,20 @@ public class ConfigUpdater {
 			config.set(Config.NativeChat.CANCEL.getPath(), cancel_event);
 			config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
 
-			config_version = 6;
-			return;
+			version = 7;
 		}
 
 		path = "auto-update-config";
 		if (config.contains(path) && !util.IF(config, path)) { // Solo por nostalgia lo dejare asi :,3
-			config.set(_path, config_version);
+			config.set(_path, version);
 			plugin.config.save();
 			return;
 		}
 		
 		if (Config.DEBUG.IF())
-			System.out.println("Debug, config_version: " + config_version);
+			System.out.println("Debug, version: " + version);
 
-		if (config_version < 1) {
+		if (version < 1) {
 			ArrayList<String> formats_from_messages  = new ArrayList<String>();
 			ArrayList<String> formats_from_tool_tips = new ArrayList<String>();
 			ArrayList<String> formats_from_sounds    = new ArrayList<String>();
@@ -128,9 +127,9 @@ public class ConfigUpdater {
 
 			config.set("auto-update-config", true);
 
-			config_version = 1;
+			version = 1;
 
-		} if (config_version < 2) {
+		} if (version < 2) {
 			Boolean show_native_chat;
 
 			if (Dependencies.Chatty.exist()) {
@@ -149,10 +148,10 @@ public class ConfigUpdater {
 
 			config.set("max-spam-per-tick", 150.0007);
 
-			config_version = 2;
+			version = 2;
 		}
 		
-		if (config_version < 3) {
+		if (version < 3) {
 			path = "show-native-chat";
 			Boolean state = util.IF(config, path);
 			config.set(path, null);
@@ -185,21 +184,21 @@ public class ConfigUpdater {
 			config.set("auto-translate-others.signs", true);
 
 			try {
-				upgradePlayers();
+				new StorageYamlUpdater().initYaml();
 
 			} catch (ParseYamlException e) {
 				e.printStackTrace();
 			}
 
-			config_version = 3;
+			version = 3;
 		}
 
-		if (config_version < 4) {
+		if (version < 4) {
 			config.set("check-updates", true);
-			config_version = 4;
+			version = 4;
 		}
 
-		if (config_version < 5) {
+		if (version < 5) {
 			path = "chat-color-personalized";
 			config.set("chat-custom-colors", util.IF(config, path));
 			config.set(path, null);
@@ -220,28 +219,34 @@ public class ConfigUpdater {
 				config.set(path, from_exit);
 			}
 
-			config_version = 5;
+			version = 5;
 		}
 
-		if (config_version < 6) {
+		if (version < 6) {
 			ArrayList<String> from_messages  = new ArrayList<String>();
-			ArrayList<String> from_tool_tips = new ArrayList<String>();
-			ArrayList<String> from_sounds    = new ArrayList<String>();
 				from_messages.add("%ct_expand% &7%ct_messages%");
+
+			ArrayList<String> from_tool_tips = new ArrayList<String>();
 				from_tool_tips.add("&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>");
+
+			ArrayList<String> from_sounds    = new ArrayList<String>();
 				from_sounds.add("BLOCK_NOTE_BLOCK_BELL; 1; 1");
 				from_sounds.add("NOTE_PLING; 1; 1");
 
+
 			ArrayList<String> to_messages  = new ArrayList<String>();
-			ArrayList<String> to_tool_tips = new ArrayList<String>();
-			ArrayList<String> to_sounds    = new ArrayList<String>();
 				to_messages.add("{\"text\": \"&f<&b%player_name%&f> &7$ct_messages$\", \"clickEvent\": {\"action\": \"suggest_command\", \"value\": \"/tell %player_name% ...\"}}");
+
+			ArrayList<String> to_tool_tips = new ArrayList<String>();
 				to_tool_tips.add("&7Te han hablado al privado&f! &aHaz click para responder&f!");
 				to_tool_tips.add("&f[&6%ct_lang_source%&f] &a%ct_messages%");
+
+			ArrayList<String> to_sounds    = new ArrayList<String>();
 				to_sounds.add("BLOCK_NOTE_BLOCK_BELL; 1; 1");
 				to_sounds.add("NOTE_PLING; 1; 1");
 
 			ArrayList<String> discord_channels = new ArrayList<String>();
+
 
 			config.set("formats.from_private.messages", from_messages);
 			config.set("formats.from_private.toolTips", from_tool_tips);
@@ -251,43 +256,44 @@ public class ConfigUpdater {
 			config.set("formats.to_private.toolTips", to_tool_tips);
 			config.set("formats.to_private.sounds", to_sounds);
 
-			config.set("auto-translate-others.force-permission-per-world", false);
+			config.set("auto-translate-others.force-permission-per-world", false); // tremendo fail XD
 			config.set("auto-translate-others.discord", false);
 
-			config.set("discord.bot-token", "YOUR BOT TOKEN");
+			config.set("discord.bot-token", "''");
 			config.set("discord.channels", discord_channels);
-            config_version = 6;
+            version = 6;
 		}
 
-		config.set(_path, config_version);
+		if (version < 7) {
+			ArrayList<String> void_list = new ArrayList<>();
+
+			ArrayList<String> to_messages  = new ArrayList<>();
+			ArrayList<String> to_tool_tips = new ArrayList<>();
+				to_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
+
+			List<String> discord_channels_chat = config.getStringList("discord.channels");
+
+			config.set("formats.to_discord.messages", to_messages);
+			config.set("formats.to_discord.toolTips", to_tool_tips);
+
+			config.set("discord.channels", null);
+			config.set("discord.channels.chat", discord_channels_chat);
+			config.set("discord.channels.console", new ArrayList<>(void_list));
+			config.set("discord.channels.player-access", new ArrayList<>(void_list));
+
+			version = 7;
+		}
+
+		config.set(_path, version);
 		plugin.config.save();
 
-		if (config_version > config_version_original) {
+		if (version > version_original) {
 			DC.setMessages(String.format(
 				"&eSe ha actualizado la config de la version &b%s &ea la &b%s&f.",
-				"" + config_version_original,
-				"" + config_version
+				"" + version_original,
+				"" + version
 			));
 			API.sendMessage(DC);
 	    }
-	}
-	
-	public void upgradePlayers() throws ParseYamlException {
-		String filename = "players.yml";
-		File file       = new File(plugin.getDataFolder(), filename);
-
-		if (file.exists()) {
-			try {
-				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-				config.set("config-version", 1);
-				config.save(file);
-
-			} catch (ScannerException e) {
-				throw new ParseYamlException("[ERR021]");
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }

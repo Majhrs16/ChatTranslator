@@ -119,8 +119,8 @@ public class util {
 			from.setSender(sender);
 			from.setMessagesFormats(config.contains("formats." + path + ".messages") ? path : null);
 			from.setMessages(messages);
-			from.setToolTips(config.contains("formats." + path + ".toolTips") ? path : null);
-			from.setSounds(config.contains("formats." + path + ".sounds")   ? path : null);
+			from.setToolTips(config.contains("formats." + path + ".toolTips")        ? path : null);
+			from.setSounds(config.contains("formats." + path + ".sounds")            ? path : null);
 
 			from.setLangSource(langSource);
 			from.setLangTarget(langTarget);

@@ -7,6 +7,7 @@ import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
+import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 public class AccessPlayer implements Listener {
@@ -29,20 +31,18 @@ public class AccessPlayer implements Listener {
 
 		Message DC = util.getDataConfigDefault();
 
-		Message to_model = util.createChat(event.getPlayer(), String.join("\n", Texts.get("events.access.entry")), DC.getLangSource(), API.getLang(event.getPlayer()), "entry");
+		Message to_model = util.createChat(event.getPlayer(), Texts.getString("events.access.entry"), DC.getLangSource(), API.getLang(event.getPlayer()), "entry");
 
-		Message from_console = to_model.clone();
-			Message console  = util.createChat(Bukkit.getConsoleSender(), String.join("\n", Texts.get("events.access.entry")), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "entry");
-
-			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+		Message from_console = util.createChat(Bukkit.getConsoleSender(), Texts.getString("events.access.entry"), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "entry");
+			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
+		API.sendMessage(from_console);
 		API.broadcast(to_model, froms -> {
-			froms.add(from_console);
-
-			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter.
+			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter y por ende notificar a todos.
 			froms.clear(); // Evitar usar el broadcast default.
 		});
+		notifyToDiscord(to_model, 0x00FF00);
 
 		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
 			new UpdateChecker(event.getPlayer());
@@ -57,19 +57,38 @@ public class AccessPlayer implements Listener {
 
 		Message DC = util.getDataConfigDefault();
 
-		Message to_model = util.createChat(event.getPlayer(), String.join("\n", Texts.get("events.access.exit")), DC.getLangSource(), API.getLang(event.getPlayer()), "exit");
+		Message to_model = util.createChat(event.getPlayer(), Texts.getString("events.access.exit"), DC.getLangSource(), API.getLang(event.getPlayer()), "exit");
 
-		Message from_console = to_model.clone();
-			Message console  = util.createChat(Bukkit.getConsoleSender(), String.join("\n", Texts.get("events.access.exit")), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "exit");
-
-			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
+		Message from_console = util.createChat(Bukkit.getConsoleSender(), Texts.getString("events.access.exit"), DC.getLangSource(), API.getLang(Bukkit.getConsoleSender()), "exit");
+			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
+		API.sendMessage(from_console);
 		API.broadcast(to_model, froms -> {
-			froms.add(from_console);
-
-			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter.
+			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter y por ende notificar a todos.
 			froms.clear(); // Evitar usar el broadcast default.
 		});
+		notifyToDiscord(to_model, 0xFF0000);
+	}
+
+	public void notifyToDiscord(Message DC, int color) {
+		if (Config.TranslateOthers.DISCORD.IF()) {
+			Message from = util._getDataConfigDefault();
+				from.setSender(DC.getSender());
+				from.setMessagesFormats(DC.getMessageFormat());
+				from.setMessages(DC.getMessages());
+			from = API.formatMessage(from);
+
+			Message finalFrom = from;
+			Utils.broadcast(
+				"discord.channels.player-access",
+				channel -> Utils.sendMessageEmbed(
+					channel,
+					ChatColor.stripColor(finalFrom.getMessageFormat()),
+					finalFrom.getToolTips() == null ? null : ChatColor.stripColor(finalFrom.getToolTips()),
+					color
+				)
+			);
+		}
 	}
 }
