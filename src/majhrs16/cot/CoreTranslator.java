@@ -1,5 +1,6 @@
 package majhrs16.cot;
 
+import majhrs16.dst.utils.Utils;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -19,9 +20,9 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 public class CoreTranslator extends PlaceholderExpansion {
+	private final Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
 	private final Pattern sendMessage          = Pattern.compile("sendMessage; *\\[(\\[.+\\]), *(\\[.+\\])?\\]", Pattern.CASE_INSENSITIVE);
 	private final Pattern broadcast            = Pattern.compile("broadcast; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
-	private final Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; (\\[.+\\])", Pattern.CASE_INSENSITIVE);
 	private final Pattern translate            = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private final Pattern parser               = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private final Pattern lang                 = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
@@ -56,7 +57,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 			result = broadcast(player, matcher.group(1), matcher.group(2));
 
 		} else if ((matcher = sendMessageToDiscord.matcher(identifier)).find()) { // %ct_sendMessageToDiscord; ["Maj", "from", "Hola mundo", "from", "from", false, "es", "es", true, true]%
-			result = sendMessageToDiscord(player, matcher.group(1));
+			result = sendMessageToDiscord(player, matcher.group(1), matcher.group(2));
 
 		} else if ((matcher = sendMessage.matcher(identifier)).find()) { // %ct_sendMessage; [["Maj", "from", "Hola mundo", "from", "from", false, "es", "es", true, true], ["Maj", "to", "Que tal?", "to", "to", false, "es", "en", true, true]]%
 			result = sendMessage(player, matcher.group(1), matcher.group(2));
@@ -79,36 +80,39 @@ public class CoreTranslator extends PlaceholderExpansion {
 		return result;
 	}
 
-	public String sendMessageToDiscord(Player player, String from_json) {
-		Message from = new Message().valueOf(from_json);
-
+	public String sendMessageToDiscord(Player player, String from_json, String to_json) {
+		Message from = Message.valueOf(from_json);
 		if (from.getSender() == null)
-			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
+			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
 
-		from = API.formatMessage(from);
+		if (to_json != null) {
+			Message to = Message.valueOf(to_json);
 
-		for (String channelID : plugin.config.get().getStringList("discord.channels")) {
-			TextChannel channel = DiscordTranslator.getJda().getTextChannelById(channelID);
+			if (to.getSender() == null)
+				return getMessageFormatted(player, "&cJugador to no encontrado&f.");
 
-			if (channel == null)
-				continue;
-
-			channel.sendMessage(ChatColor.stripColor(from.getMessageFormat())).queue();
-
-			if (from.getToolTips() != null)
-				channel.sendMessage(ChatColor.stripColor(from.getToolTips())).queue();
+			from.setTo(to);
 		}
+
+		Message finalFrom = API.formatMessage(from);
+
+		Utils.broadcast("discord.channels.chat", channel -> {
+			channel.sendMessage(ChatColor.stripColor(finalFrom.getTo().getMessageFormat())).queue();
+
+			if (finalFrom.getToolTips() != null)
+				channel.sendMessage(ChatColor.stripColor(finalFrom.getTo().getToolTips())).queue();
+		});
 
 		return "ok";
 	}
 
 	private String broadcast(Player player, String from_json, String to_json) {
-		Message from = new Message().valueOf(from_json);
+		Message from = Message.valueOf(from_json);
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
 
-		from.setTo(new Message().valueOf(to_json));
+		from.setTo(Message.valueOf(to_json));
 
 		API.broadcast(from, froms -> {
 			API.broadcast(froms, _from -> { // Controlar cada from.
@@ -148,12 +152,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String sendMessage(Player player, String from_json, String to_json) {
-		Message from = new Message().valueOf(from_json);
+		Message from = Message.valueOf(from_json);
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
 
 		if (to_json != null) {
-			Message to = new Message().valueOf(to_json);
+			Message to = Message.valueOf(to_json);
 
 			if (to.getSender() == null)
 				return getMessageFormatted(player, "&cJugador to no encontrado&f.");
