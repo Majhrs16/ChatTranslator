@@ -145,8 +145,8 @@ public class JDAListener extends ListenerAdapter implements Listener {
 		} else if (plugin.config.get().getStringList("discord.channels.chat").contains(event.getChannel().getId())) {
 			Player[] players = util.getOnlinePlayers();
 
-			if (players.length < 1)
-				return;
+//			if (players.length < 1)
+//				return;
 
 			UUID authorUuid      = AccountManager.getMinecraft(message.getAuthor().getId());
 			OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
@@ -161,7 +161,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				);
 				to_model.setMessagesFormats(to_model.getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
 				to_model.getTo().setMessagesFormats(to_model.getTo().getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-				to_model.setCancelledThis(player == null);
+				to_model.setCancelledThis(player == null || !player.isOnline());
 
 			majhrs16.cht.events.custom.Message from_console = util.createChat(
 					Bukkit.getConsoleSender(),
@@ -177,24 +177,10 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				from_console.setSender(to_model.getSender());
 				from_console.setCancelledThis(true);
 
-			if (player != null)
+			if (player != null && player.isOnline())
 				message.delete().queue();
 
-			API.broadcast(to_model, froms -> {
-				froms.add(from_console);
-
-				/*
-				API.broadcast(froms, from -> {
-					if (from == new majhrs16.cht.events.custom.Message())
-						return;
-
-					API.sendMessage(from);
-					from.setCancelled(true);
-				});
-
-				froms.clear();
-				*/
-			});
+			API.broadcast(to_model, froms -> froms.add(from_console));
 		}
 	}
 
