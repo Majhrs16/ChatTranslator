@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
@@ -21,6 +22,10 @@ public class util {
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 	private static final Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
+
+	public static String stripColor(String input) {
+		return ChatColor.stripColor(input.replaceAll(Core.color_hex.pattern(), ""));
+	}
 
 	public static UUID getUUID(Object sender) {
 		UUID uuid = null;
@@ -92,24 +97,8 @@ public class util {
 		assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
 	}
 
-	public static Message _getDataConfigDefault() {
-		Message from = new Message();
-			from.setTo(null); // Necesario para evitar crashes.
-			from.setSender(Bukkit.getConsoleSender());
-			from.setMessagesFormats("%ct_messages%");
-			from.setLangSource(plugin.messages.get().getString("native-lang"));
-			from.setLangTarget(plugin.storage.getDefaultLang());
-			from.setColor(true);
-			from.setFormatPAPI(false);
-
-		return from;
-	}
-
 	public static Message getDataConfigDefault() {
-		Message from = _getDataConfigDefault();
-			from.setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-
-		return from;
+		return new Message().setLangTarget(API.getLang(Bukkit.getConsoleSender()));
 	}
 
 	public static Message createGroupFormat(CommandSender sender, String messages, String langSource, String langTarget, String path) {

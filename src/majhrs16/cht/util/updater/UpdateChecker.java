@@ -20,9 +20,9 @@ public class UpdateChecker {
 	private static final int timed_out   = 1500;
 
 	public UpdateChecker(CommandSender to_sender) {
-		Message DC = util.getDataConfigDefault();
-			DC.setSender(to_sender);
-			DC.setLangTarget(API.getLang(to_sender));
+		Message DC = util.getDataConfigDefault()
+			.setSender(to_sender)
+			.setLangTarget(API.getLang(to_sender));
 
 		try {
 			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=106604").openConnection();
@@ -33,6 +33,7 @@ public class UpdateChecker {
 				if (to_sender instanceof Player) {
 					if (ChatColor.stripColor(Texts.getString("versions.plugin")).equals(latestVersion)) {
 						DC.setMessages(Texts.getString("plugin.updates.latest.player.text").replace("%latestVersion%", latestVersion));
+						DC.setToolTips(Texts.getString("plugin.updates.latest.player.toolTips").replace("%latestVersion%", latestVersion));
 
 					} else {
 						DC.setMessages(Texts.get("plugin.updates.new.player.messages"));
@@ -42,18 +43,34 @@ public class UpdateChecker {
 				} else {
 					if (ChatColor.stripColor(Texts.get("versions.plugin")[0]).equals(latestVersion)) {
 						DC.setMessages(Texts.getString("plugin.updates.latest.console.text").replace("%latestVersion%", latestVersion));
+						DC.setToolTips(Texts.getString("plugin.updates.latest.console.toolTips").replace("%latestVersion%", latestVersion));
 
 					} else {
 						DC.setMessages(Texts.getString("plugin.updates.new.console.text").replace("%latestVersion%", latestVersion));
+						DC.setToolTips(Texts.getString("plugin.updates.new.console.toolTips").replace("%latestVersion%", latestVersion));
 					}
 				}
 
 			} else {
-				DC.setMessages(Texts.get("plugin.updates.error"));
+				if (to_sender instanceof Player) {
+					DC.setMessages(Texts.get("plugin.updates.error.player.text"));
+					DC.setToolTips(Texts.get("plugin.updates.error.player.toolTips"));
+
+				} else {
+					DC.setMessages(Texts.get("plugin.updates.error.console.text"));
+					DC.setToolTips(Texts.get("plugin.updates.error.console.toolTips"));
+				}
 			}
 
 		} catch (IOException ex) {
-			DC.setMessages(Texts.get("plugin.updates.error"));
+			if (to_sender instanceof Player) {
+				DC.setMessages(Texts.get("plugin.updates.error.player.text"));
+				DC.setToolTips(Texts.get("plugin.updates.error.player.toolTips"));
+
+			} else {
+				DC.setMessages(Texts.get("plugin.updates.error.console.text"));
+				DC.setToolTips(Texts.get("plugin.updates.error.console.toolTips"));
+			}
 		}
 
 		API.sendMessage(DC);

@@ -1,43 +1,39 @@
 package majhrs16.cht.events.custom;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONArray;
 
-import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Message extends Event implements Cancellable {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	private Message to;
-	private CommandSender sender;
-	private String[] messages_formats;
-	private String[] messages;
-	private String[] tool_tips;
-	private String[] sounds;
-	private boolean is_cancelled = false;
-	private String lang_source;
-	private String lang_target;
-	private Boolean color        = true;
-	private Boolean format_papi  = true;
+	private CommandSender sender      = Bukkit.getConsoleSender();
+	private String[] messages_formats = new String[] { "%ct_messages%" };
+	private String[] messages         = new String[0];
+	private String[] tool_tips        = new String[0];
+	private String[] sounds           = new String[0];
+	private boolean is_cancelled      = false;
+	private String lang_source        = plugin.messages.get().getString("native-lang");
+	private String lang_target        = plugin.storage.getDefaultLang();
+	private Boolean is_color          = true;
+	private Boolean is_format_papi    = true;
 
 	public Message() {}
 
-	public static HandlerList getHandlerList() { return HANDLERS; }
-	public HandlerList getHandlers()           { return HANDLERS; }
+	@NotNull public static HandlerList getHandlerList() { return HANDLERS; }
+	@NotNull public HandlerList getHandlers()           { return HANDLERS; }
 
 	public boolean isCancelled() { return is_cancelled; }
 
@@ -57,33 +53,6 @@ public class Message extends Event implements Cancellable {
 		setCancelledThis(isCancelled);
 	}
 
-	private String getFormat(String chat, String format) {
-		FileConfiguration config = plugin.config.get();
-		String path = "formats." + format + "."  + chat;
-		if (Config.DEBUG.IF())
-			System.out.println("DEBUG exists '" + path + "' ?: " + config.contains(path));
-		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
-	}
-
-	private String[] getChat(String chat, String... formats) {
-//		if (formats == null || formats.length < 1)
-//			return null;
-
-		List<String> result = new ArrayList<String>();
-
-		for (String format : formats) {
-			if (format == null
-					|| format.isEmpty()
-					|| format.equals("null") // El bug parece venir de afuera.
-					)
-				continue;
-
-			result.add(getFormat(chat, format));
-		}
-
-		return result.toArray(new String[0]);
-	}
-
 	public Message setTo(Message to) {
 		this.to             = to == null ? new Message() : to;
 		return this;
@@ -95,7 +64,7 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setMessageFormat(int index, String messageFormat) {
-		this.messages_formats[index] = getFormat("messages", messageFormat);
+		this.messages_formats[index] = messageFormat;
 		return this;
 	}
 
@@ -105,37 +74,37 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setToolTip(int index, String toolTips) {
-		this.tool_tips[index]        = getFormat("toolTips", toolTips);
+		this.tool_tips[index]        = toolTips;
 		return this;
 	}
 	
 	public Message setSound(int index, String sounds) {
-		this.sounds[index]           = getFormat("sounds", sounds);
+		this.sounds[index]           = sounds;
 		return this;
 	}
 
 	public Message setMessagesFormats(String messageFormat) {
-		this.messages_formats = getChat("messages", messageFormat);
+		this.messages_formats = messageFormat == null || messageFormat.isEmpty() ? new String[0] : messageFormat.split("\n");
 		return this;
 	}
 
 	public Message setMessages(String messages) {
-		this.messages         = messages == null ? null : messages.split("\n");
+		this.messages       = messages == null || messages.isEmpty() ? new String[0] : messages.split("\n");
 		return this;
 	}
 
 	public Message setToolTips(String toolTips) {
-		this.tool_tips        = getChat("toolTips", toolTips);
+		this.tool_tips      = toolTips == null || toolTips.isEmpty() ? new String[0] : toolTips.split("\n");
 		return this;
 	}
 
 	public Message setSounds(String sounds) {
-		this.sounds           = getChat("sounds", sounds);
+		this.sounds         = sounds == null || sounds.isEmpty() ? new String[0] : sounds.split("\n");
 		return this;
 	}
 
 	public Message setMessagesFormats(String... messageFormat) {
-		this.messages_formats = getChat("messages", messageFormat);
+		this.messages_formats = messageFormat;
 		return this;
 	}
 
@@ -145,12 +114,12 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setToolTips(String... toolTips) {
-		this.tool_tips      = getChat("toolTips", toolTips);
+		this.tool_tips      = toolTips;
 		return this;
 	}
 
 	public Message setSounds(String... sounds) {
-		this.sounds         = getChat("sounds", sounds);
+		this.sounds         = sounds;
 		return this;
 	}
 
@@ -165,12 +134,12 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setFormatPAPI(Boolean formatPAPI) {
-		this.format_papi    = formatPAPI;
+		this.is_format_papi    = formatPAPI;
 		return this;
 	}
 
 	public Message setColor(Boolean color) {
-		this.color          = color;
+		this.is_color          = color;
 		return this;
 	}
 
@@ -202,26 +171,26 @@ public class Message extends Event implements Cancellable {
 		String out = null;
 		if (format != null)
 			out = String.join("\n", format);
-		return out == null || out.isEmpty() || out == "null" ? null : out;
+		return out == null || out.isEmpty() || out.equals("null") ? null : out;
 	}
 
-	public String getMessageFormat() { return getFormatAsString(messages_formats); }
-	public String getMessages()      { return getFormatAsString(messages); }
-	public String getToolTips()      { return getFormatAsString(tool_tips); }
-	public String getSounds()        { return getFormatAsString(sounds); }
+	public String getMessagesFormats() { return getFormatAsString(messages_formats); }
+	public String getMessages()        { return getFormatAsString(messages); }
+	public String getToolTips()        { return getFormatAsString(tool_tips); }
+	public String getSounds()          { return getFormatAsString(sounds); }
 
-	public String getLangSource()    { return lang_source; }
-	public String getLangTarget()    { return lang_target; }
+	public String getLangSource()      { return lang_source; }
+	public String getLangTarget()      { return lang_target; }
 
-	public Boolean getFormatPAPI()   { return format_papi; }
-	public Boolean getColor()        { return color; }
+	public Boolean getFormatPAPI()     { return is_format_papi; }
+	public Boolean getColor()          { return is_color; }
 
 	public Message clone() {
 		Message from = new Message();
 			Message to = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
 				if (getTo() != null) {
 					to.setSender(getTo().getSender());
-					to.setMessagesFormats(getTo().getMessageFormat());
+					to.setMessagesFormats(getTo().getMessagesFormats());
 					to.setMessages(getTo().getMessages());
 					to.setToolTips(getTo().getToolTips());
 					to.setSounds(getTo().getSounds());
@@ -234,7 +203,7 @@ public class Message extends Event implements Cancellable {
 			from.setTo(to);
 
 			from.setSender(getSender());
-			from.setMessagesFormats(getMessageFormat());
+			from.setMessagesFormats(getMessagesFormats());
 			from.setMessages(getMessages());
 			from.setToolTips(getToolTips());
 			from.setSounds(getSounds());
@@ -250,7 +219,7 @@ public class Message extends Event implements Cancellable {
 	public String toString() {
 		JSONArray jsonArray = new JSONArray();
 			jsonArray.add(getSenderName());
-			jsonArray.add(getMessageFormat());
+			jsonArray.add(getMessagesFormats());
 			jsonArray.add(getMessages());
 			jsonArray.add(getToolTips());
 			jsonArray.add(getSounds());
@@ -314,5 +283,9 @@ public class Message extends Event implements Cancellable {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public boolean isEmpty() {
+		return this.equals(new Message());
 	}
 }

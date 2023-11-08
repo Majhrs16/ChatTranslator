@@ -2,6 +2,7 @@ package majhrs16.cht.commands.cht;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.ChatTranslator;
 
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,7 @@ public class Toggler {
 	}
 	
 	public void TogglePlugin(CommandSender sender) {
-		majhrs16.cht.util.ChatLimiter.chat.clear();
+		ChatLimiter.clear();
 		plugin.setDisabled(!plugin.isDisabled());
 		sender.sendMessage("" + !plugin.isDisabled());
 	}

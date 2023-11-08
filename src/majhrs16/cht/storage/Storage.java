@@ -1,15 +1,15 @@
 package majhrs16.cht.storage;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
+import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.lib.storages.ParseYamlException;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.cht.exceptions.StorageRegisterFailedException;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.util.util;
+
+import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.annotation.Nullable;
 
@@ -21,14 +21,8 @@ public class Storage {
 	public MySQL mysql;
 	public SQLite sqlite;
 
-	private ChatTranslator plugin = ChatTranslator.getInstance();
-	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-
-	private void __init__() {
-		yaml   = new YAML(plugin, plugin.config.get().getString("storage.database") + ".yml", "storage.yml");
-		sqlite = new SQLite();
-		mysql  = new MySQL();
-	}
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public String getType() {
 		return plugin.config.get().getString("storage.type").toLowerCase();
@@ -39,7 +33,9 @@ public class Storage {
 	}
 
 	public void register() throws StorageRegisterFailedException {
-		__init__();
+		yaml   = new YAML(plugin, plugin.config.get().getString("storage.database") + ".yml", "storage.yml");
+		sqlite = new SQLite();
+		mysql  = new MySQL();
 
 		Message from       = null;
 		String storageType = getType();
@@ -116,7 +112,7 @@ public class Storage {
 		API.sendMessage(from);
 	}
 
-	public void set(UUID uuid, @Nullable String discordID, String lang) {
+	public void set(UUID uuid, String discordID, String lang) {
 		Message DC = util.getDataConfigDefault();
 
 		try {
@@ -161,7 +157,7 @@ public class Storage {
 	public String[] get(UUID uuid) {
 		String[] result = null;
 
-		Message DC = util._getDataConfigDefault();
+		Message from = new Message();
 
 		try {
 			switch (getType()) {
@@ -186,24 +182,23 @@ public class Storage {
 					break;
 			}
 
-			DC.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
+			from.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
 
 		} catch (SQLException e) {
-			DC.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
+			from.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
 
 		} catch (NullPointerException e) {
 			// Manejar la excepción de NullPointerException si es necesario.
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 
 		return result;
 	}
 
 	public String[] get(String discordID) {
+		Message from    = new Message();
 		String[] result = null;
-
-		Message DC = util._getDataConfigDefault();
 
 		try {
 			switch (getType()) {
@@ -232,14 +227,16 @@ public class Storage {
 					break;
 			}
 
-			DC.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
+			from.setMessages(Texts.getString("storage.done.read").replace("%type%", getType()));
 
 		} catch (SQLException e) {
-			DC.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
+			from.setMessages(Texts.getString("storage.errors.read").replace("%type%", getType()).replace("%reason%", e.toString()));
 
 		} catch (NullPointerException e) {
 			// Manejar la excepción de NullPointerException si es necesario.
 		}
+
+		API.sendMessage(from);
 
 		return result;
 	}

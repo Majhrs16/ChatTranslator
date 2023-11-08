@@ -1,13 +1,12 @@
 package majhrs16.cht.util.cache.internal;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import majhrs16.dst.DiscordTranslator;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.BaseLibrary;
 
 import java.util.regex.Pattern;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
 import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,20 +15,18 @@ import java.util.Map;
 
 public class Texts {
 	private static Map<String, Object> dataMap;
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%(.*?)%");
+	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%(.+?)%");
 
 	public static void reload() {
-		dataMap                 = new HashMap<>();
+		dataMap                  = new HashMap<>();
 		FileConfiguration config = ChatTranslator.getInstance().messages.get();
 
-		for (String key : config.getKeys(true)) {
-			Object value = config.get(key);
-			dataMap.put(key, value);
-		}
+		for (String key : config.getKeys(true))
+			dataMap.put(key, config.get(key));
 
-		dataMap.put("versions.plugin", "b" + ChatTranslator.getInstance().getDescription().getVersion());
-		dataMap.put("versions.kernel", "" + BaseLibrary.version);
-		dataMap.put("versions.dst", "" + DiscordTranslator.version);
+		dataMap.put("versions.plugin", "v" + ChatTranslator.getInstance().getDescription().getVersion());
+		dataMap.put("versions.kernel", BaseLibrary.version);
+		dataMap.put("versions.dst", DiscordTranslator.version);
 
 		dataMap.put("plugin.url", "https://www.spigotmc.org/resources/chattranslator.106604/");
 
@@ -61,9 +58,8 @@ public class Texts {
 	}
 
 	private static void formatKeysWithVariables() {
-		for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+		for (Map.Entry<String, Object> entry : dataMap.entrySet())
 			entry.setValue(formatStringWithVariables(getString(entry.getKey())));
-		}
 	}
 
 	private static String formatStringWithVariables(String input) {

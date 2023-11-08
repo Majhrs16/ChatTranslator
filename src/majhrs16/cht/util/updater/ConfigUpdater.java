@@ -1,5 +1,6 @@
 package majhrs16.cht.util.updater;
 
+import majhrs16.cht.util.cache.internal.Texts;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.scanner.ScannerException;
@@ -65,15 +66,15 @@ public class ConfigUpdater {
 			version = 7;
 		}
 
-		path = "auto-update-config";
-		if (config.contains(path) && !util.IF(config, path)) { // Solo por nostalgia lo dejare asi :,3
+		path = Config.UPDATE_CONFIG.getPath();
+		if (Config.UPDATE_CONFIG.IF()) {
 			config.set(_path, version);
 			plugin.config.save();
 			return;
 		}
 		
 		if (Config.DEBUG.IF())
-			System.out.println("Debug, version: " + version);
+			System.out.println("Debug, config.version: " + version);
 
 		if (version < 1) {
 			ArrayList<String> formats_from_messages  = new ArrayList<String>();
@@ -267,21 +268,46 @@ public class ConfigUpdater {
 		if (version < 7) {
 			ArrayList<String> void_list = new ArrayList<>();
 
-			ArrayList<String> to_messages  = new ArrayList<>();
-			ArrayList<String> to_tool_tips = new ArrayList<>();
-				to_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
+			ArrayList<String> to_discord_messages  = new ArrayList<>();
+				to_discord_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
+			ArrayList<String> to_discord_tool_tips = new ArrayList<>();
 
 			List<String> discord_channels_chat = config.getStringList("discord.channels");
 
-			config.set("formats.to_discord.messages", to_messages);
-			config.set("formats.to_discord.toolTips", to_tool_tips);
+			config.set("formats.to_discord.messages", to_discord_messages);
+			config.set("formats.to_discord.toolTips", to_discord_tool_tips);
 
 			config.set("discord.channels", null);
 			config.set("discord.channels.chat", discord_channels_chat);
 			config.set("discord.channels.console", new ArrayList<>(void_list));
 			config.set("discord.channels.player-access", new ArrayList<>(void_list));
 
-			version = 7;
+
+			DC.setMessages(Texts.getString("plugin.title.text") + " &eADVERTENCIA&f: &6Apartir de ahora&f, &cNO &6se maneja los colores del chat por 1 configuracion&f. &aSino ahora por permisos&f.", "\t&aPor favor vease la &9Wiki&f.");
+			API.sendMessage(DC);
+
+			config.set("chat-custom-colors", null);
+
+			ArrayList<String> from_mention_messages  = new ArrayList<>();
+				from_mention_messages.add("%ct_expand% &a%ct_messages%");
+			ArrayList<String> from_mention_tool_tips = new ArrayList<>();
+				from_mention_tool_tips.add("&f[&6%ct_lang_source%&f] &f<&7%player_name%&f>");
+
+			ArrayList<String> to_mention_messages  = new ArrayList<>();
+				to_mention_messages.add("{\"text\": \"&f<&6%player_name%&f> &e$ct_messages$\", \"clickEvent\": {\"action\": \"suggest_command\", \"value\": \"/tell %player_name% ...\"}}");
+			ArrayList<String> to_mention_tool_tips = new ArrayList<>();
+				to_mention_tool_tips.add("&eTe han mencionado&f! &aHaz click para responder&f!");
+				to_mention_tool_tips.add("&f[&6%ct_lang_source%&f] &e%ct_messages%");
+			ArrayList<String> to_mention_sounds = new ArrayList<>();
+				to_mention_sounds.add("ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1");
+				to_mention_sounds.add("ORB_PICKUP; 1; 1");
+
+			config.set("formats.from_mention.messages", from_mention_messages);
+			config.set("formats.from_mention.toolTips", from_mention_tool_tips);
+
+			config.set("formats.to_mention.messages", to_mention_messages);
+			config.set("formats.to_mention.toolTips", to_mention_tool_tips);
+			config.set("formats.to_mention.sounds", to_mention_sounds);
 		}
 
 		config.set(_path, version);

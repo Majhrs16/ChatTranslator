@@ -62,14 +62,13 @@ public interface Lang {
 //		setLang(Player/offlinePlayer, "Ekisde"); -> IllegalArgumentException...
 
 		ChatTranslator plugin     = ChatTranslator.getInstance();
-		Message DC = util.getDataConfigDefault();
 
 		try {
 			util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
 
 		} catch (IllegalArgumentException e) {
-			DC.setMessages(e.getMessage());
-				ChatTranslatorAPI.getInstance().sendMessage(DC);
+			Message from = util.getDataConfigDefault();
+				from.setMessages(e.getMessage()); ChatTranslatorAPI.getInstance().sendMessage(from);
 			return;
 		}
 
@@ -83,11 +82,9 @@ public interface Lang {
 	//		Ejemplo: getLang(Alejo09Games) -> String = "en"
 
 		ChatTranslator plugin     = ChatTranslator.getInstance();
-		String lang               = null;
 		FileConfiguration config  = plugin.config.get();
 		String defaultLang        = config.getString("default-lang");
-
-		Message DC = util._getDataConfigDefault();
+		String lang               = null;
 
 		UUID uuid = util.getUUID(sender);
 
@@ -109,8 +106,6 @@ public interface Lang {
 					lang = locale.split("_")[0];
 				}
 
-//				lang = PlaceholderAPI.setPlaceholders((Player) sender, "%player_locale_short%");
-
 			} else {
 				lang = defaultLang;
 			}
@@ -118,8 +113,8 @@ public interface Lang {
 
 		if (!Core.GT.isSupport(lang)) {
 			if (Core.GT.isSupport(defaultLang)) {
-				DC.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
-				ChatTranslatorAPI.getInstance().sendMessage(DC);
+				Message from = new Message();
+					from.setMessages("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f."); ChatTranslatorAPI.getInstance().sendMessage(from);
 
 				lang = defaultLang;
 

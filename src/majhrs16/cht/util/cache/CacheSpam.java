@@ -1,8 +1,8 @@
 package majhrs16.cht.util.cache;
 
 public class CacheSpam {
+	Float count;
 	Float max;
-	Float count; 
 
 	public CacheSpam(Float count, Float max) {
 		if (count != null) setCount(count);
@@ -23,7 +23,7 @@ public class CacheSpam {
 	}
 
 	public Float getMaxInt() {
-		return Float.valueOf(max.intValue());
+		return (float) max.intValue();
 	}
 	
 	public Float getMaxFloat() {
@@ -36,7 +36,7 @@ public class CacheSpam {
 	}
 	
 	public Float getCountInt() {
-		return Float.valueOf(count.intValue());
+		return (float) count.intValue();
 	}
 	
 	public Float getCountFloat() {

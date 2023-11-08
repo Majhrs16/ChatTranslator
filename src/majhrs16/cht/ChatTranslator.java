@@ -60,7 +60,7 @@ public class ChatTranslator extends JavaPlugin {
 		plugin = this;
 
 		if (util.getMinecraftVersion() < 5.2)
-			Bukkit.getLogger().severe("ChatTranslator don't tested for your version.");
+			Bukkit.getLogger().severe("ChatTranslator don't tested for your version of Minecraft server.");
 
 		API = ChatTranslatorAPI.getInstance();
 
@@ -91,8 +91,8 @@ public class ChatTranslator extends JavaPlugin {
 
 		} catch (StorageRegisterFailedException e) {
 			Message from = util.getDataConfigDefault();
-			from.setMessages(e.getMessage());
-				API.sendMessage(from);
+
+			from.setMessages(e.getMessage()); API.sendMessage(from);
 
 			onDisable();
 			return;
@@ -103,41 +103,26 @@ public class ChatTranslator extends JavaPlugin {
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(Texts.get("separator.horizontal"));
-			API.sendMessage(from);
-
-		from.setMessages(Texts.get("separator.vertical"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("separator.horizontal")); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical")); API.sendMessage(from);
 
 		if (Charset.defaultCharset().name().equals("UTF-8")) {
-			from.setMessages(Texts.get("plugin.is-UTF-8.yes"));
-				API.sendMessage(from);
-
-			from.setMessages(Texts.get("plugin.title.UTF-8"));
-				API.sendMessage(from);
-
-			from.setMessages(Texts.get("separator.vertical"));
-				API.sendMessage(from);
+			from.setMessages(Texts.get("plugin.is-UTF-8.yes")); API.sendMessage(from);
+			from.setMessages(Texts.get("plugin.title.UTF-8")); API.sendMessage(from);
+			from.setMessages(Texts.get("separator.vertical")); API.sendMessage(from);
 
 		} else {
-			from.setMessages(Texts.get("plugin.is-UTF-8.no"));
-				API.sendMessage(from);
-
-			from.setMessages(Texts.get("plugin.title.text"));
-				API.sendMessage(from);
+			from.setMessages(Texts.get("plugin.is-UTF-8.no")); API.sendMessage(from);
+			from.setMessages(Texts.get("plugin.title.text")); API.sendMessage(from);
 		}
 
-		from.setMessages(Texts.get("plugin.enable"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("plugin.enable")); API.sendMessage(from);
 
 		if (Config.CHECK_UPDATES.IF())
 			new UpdateChecker(Bukkit.getConsoleSender());
 
-		from.setMessages(Texts.get("separator.vertical"));
-			API.sendMessage(from);
-
-		from.setMessages(Texts.get("separator.horizontal"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical")); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.horizontal")); API.sendMessage(from);
 
 		setDisabled(false);
 	}
@@ -148,29 +133,21 @@ public class ChatTranslator extends JavaPlugin {
 
 		unregisterEvents();
 
-		majhrs16.cht.util.ChatLimiter.chat.clear();
+		ChatLimiter.clear();
 
 		Message from = util.getDataConfigDefault();
 
-		from.setMessages(Texts.get("separator.horizontal"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("separator.horizontal")); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical")); API.sendMessage(from);
 
-		from.setMessages(Texts.get("separator.vertical"));
-			API.sendMessage(from);
-
-		from.setMessages(Texts.get("plugin.title.text"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("plugin.title.text")); API.sendMessage(from);
 
 		storage.unregister();
 
-		from.setMessages(Texts.get("plugin.disable"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("plugin.disable")); API.sendMessage(from);
 
-		from.setMessages(Texts.get("separator.vertical"));
-			API.sendMessage(from);
-
-		from.setMessages(Texts.get("separator.horizontal"));
-			API.sendMessage(from);
+		from.setMessages(Texts.get("separator.vertical")); API.sendMessage(from);
+		from.setMessages(Texts.get("separator.horizontal")); API.sendMessage(from);
 
 		setDisabled(true);
 	}
@@ -188,7 +165,7 @@ public class ChatTranslator extends JavaPlugin {
 		this.is_disabled = isDisabled;
 	}
 
-	/*
+/*
 	public void registerCommands() { // Sino se registran los comandos en el plugin,yml, no te dejara. Asi de simple.
 		for (String key : commands.get().getKeys(false)) {
 			if (!key.equals("config-version")) {
@@ -210,7 +187,8 @@ public class ChatTranslator extends JavaPlugin {
 //		MainCommand main_command = new MainCommand(); 
 //		getCommand("chattranslator").setExecutor(main_command);
 //		getCommand("cht").setExecutor(main_command);
-	}*/
+	}
+*/
 
 	public void registerEvents() {
 		if (Events.is_installed)
@@ -253,19 +231,20 @@ public class ChatTranslator extends JavaPlugin {
 	public void registerDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			if (Events.discordTranslator.connect()) {
-				Events.discordTranslator.registerCommands();
-				Events.discordTranslator.registerEvents();
+				if (!Events.is_installed) {
+					Events.discordTranslator.registerCommands();
+					Events.discordTranslator.registerEvents();
 
-				if (!Events.is_installed)
 					Utils.broadcast(
 						"discord.channels.server-status",
 						channel -> Utils.sendMessageEmbed(channel, "Servidor encendido!, :D", null, 0x00FF00)
 					);
+				}
 
 			} else {
 				Message from = util.getDataConfigDefault();
 
-				from.setMessages(Texts.getString("plugin.title.text") + "&cNo se pudo iniciar el bot de Discord.\n    Por favor verifique &bconfig&f.&bbot-token&f.");
+				from.setMessages(Texts.getString("plugin.title.text") + " &cNo se pudo iniciar el bot de Discord.\n    &ePor favor verifique su &bconfig&f.&bbot-token&f.");
 					API.sendMessage(from);
 			}
 		}
@@ -273,14 +252,16 @@ public class ChatTranslator extends JavaPlugin {
 
 	public void unregisterDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
-			if (!Events.is_installed)
+			if (!Events.is_installed) {
 				Utils.broadcast(
-						"discord.channels.server-status",
-						channel -> Utils.sendMessageEmbed(channel, "Servidor apagado, :(", null, 0xFF0000)
+					"discord.channels.server-status",
+					channel -> Utils.sendMessageEmbed(channel, "Servidor apagado, :(", null, 0xFF0000)
 				);
 
-			Events.discordTranslator.unregisterEvents();
-			Events.discordTranslator.unregisterCommands();
+				Events.discordTranslator.unregisterEvents();
+				Events.discordTranslator.unregisterCommands();
+			}
+
 			Events.discordTranslator.disconnect();
 		}
 	}

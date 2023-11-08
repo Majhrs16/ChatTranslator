@@ -12,12 +12,17 @@ import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
+import java.util.regex.Pattern;
+
+
 public class Chat implements Listener {
-	private final ChatTranslator plugin = ChatTranslator.getInstance();
-	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final ChatTranslator plugin  = ChatTranslator.getInstance();
+	private final ChatTranslatorAPI API  = ChatTranslatorAPI.getInstance();
+
+	public static final Pattern mentions = Pattern.compile("@([.A-Za-z0-9_]+)");
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onMessage(AsyncPlayerChatEvent event) {
+	public void onChat(AsyncPlayerChatEvent event) {
 		if (plugin.isDisabled() || event.isCancelled())
 			return;
 
@@ -29,18 +34,9 @@ public class Chat implements Listener {
 
 		Message to_model = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
 
-		/*
-		Message from_console = to_model.clone();
-			Message console  = util.createChat(
-				Bukkit.getConsoleSender(), event.getMessage(), from_lang, API.getLang(Bukkit.getConsoleSender()), "console");
-
-			from_console.setTo(console.getTo()); // Une el from del to_model con el to del console.
-			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
-		 */
-
 		Message from_console = util.createChat(
 				Bukkit.getConsoleSender(),
-				event.getMessage(),
+				event.getMessage().replace("\"", "\\\""),
 				from_lang,
 				API.getLang(Bukkit.getConsoleSender()),
 				"console"
@@ -49,7 +45,10 @@ public class Chat implements Listener {
 			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(to_model, froms -> froms.add(from_console));
+		API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
+			froms.add(from_console);
+			API.broadcast(froms);
+		});
 
 		if (Config.NativeChat.CLEAR.IF()) {
 			event.getRecipients().clear();

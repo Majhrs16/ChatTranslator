@@ -41,7 +41,7 @@ public class Reloader {
 			reloadStorage();
 
 		} catch (Exception e) {
-			if (Permissions.chattranslator.ADMIN.IF(DC.getSender())) {
+			if (Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
 				DC.setMessages(Texts.getString("plugin.title.text") + "&7[&4ERR110&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f.");
 					API.sendMessage(DC);
 			}

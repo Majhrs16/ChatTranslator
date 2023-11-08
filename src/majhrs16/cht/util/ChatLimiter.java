@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class ChatLimiter {
 	private ChatTranslator plugin         = ChatTranslator.getInstance();
-	public static ArrayList<Message> chat = new ArrayList<Message>();
+	private static ArrayList<Message> chat = new ArrayList<Message>();
 	private BukkitTask task;
 
 	public void start() {
@@ -102,5 +102,17 @@ public class ChatLimiter {
 
 	public void stop() {
 		task.cancel();
+	}
+
+	public static void add(Message message) {
+		chat.add(message);
+	}
+
+	public static void clear() {
+		chat.clear();
+	}
+
+	public static void remove(Message message) {
+		chat.remove(message);
 	}
 }

@@ -37,14 +37,13 @@ public class AccessPlayer implements Listener {
 			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.sendMessage(from_console);
-		API.broadcast(to_model, froms -> {
-			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter y por ende notificar a todos.
-			froms.clear(); // Evitar usar el broadcast default.
+		API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
+			froms.add(from_console);
+			API.broadcast(froms, API::sendMessage); // Evitar el ChatLimiter y por ende notificar a todos.
 		});
 		notifyToDiscord(to_model, 0x00FF00);
 
-		if (Config.CHECK_UPDATES.IF() && Permissions.chattranslator.ADMIN.IF(event.getPlayer()))
+		if (Config.CHECK_UPDATES.IF() && Permissions.ChatTranslator.ADMIN.IF(event.getPlayer()))
 			new UpdateChecker(event.getPlayer());
 	}
 
@@ -63,19 +62,18 @@ public class AccessPlayer implements Listener {
 			from_console.setSender(event.getPlayer());
 			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.sendMessage(from_console);
-		API.broadcast(to_model, froms -> {
-			API.broadcast(froms, from -> API.sendMessage(from)); // Evitar el ChatLimiter y por ende notificar a todos.
-			froms.clear(); // Evitar usar el broadcast default.
+		API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
+			froms.add(from_console);
+			API.broadcast(froms, API::sendMessage); // Evitar el ChatLimiter y por ende notificar a todos.
 		});
 		notifyToDiscord(to_model, 0xFF0000);
 	}
 
 	public void notifyToDiscord(Message DC, int color) {
 		if (Config.TranslateOthers.DISCORD.IF()) {
-			Message from = util._getDataConfigDefault();
+			Message from = new Message();
 				from.setSender(DC.getSender());
-				from.setMessagesFormats(DC.getMessageFormat());
+				from.setMessagesFormats(DC.getMessagesFormats());
 				from.setMessages(DC.getMessages());
 			from = API.formatMessage(from);
 
@@ -84,7 +82,7 @@ public class AccessPlayer implements Listener {
 				"discord.channels.player-access",
 				channel -> Utils.sendMessageEmbed(
 					channel,
-					ChatColor.stripColor(finalFrom.getMessageFormat()),
+					ChatColor.stripColor(finalFrom.getMessagesFormats()),
 					finalFrom.getToolTips() == null ? null : ChatColor.stripColor(finalFrom.getToolTips()),
 					color
 				)

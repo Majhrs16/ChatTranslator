@@ -265,7 +265,7 @@ public class CommandHandler implements CommandExecutor {
 	public void toggler(Message DC, String[] args) {
 		CommandSender sender = DC.getSender();
 
-		if (!Permissions.chattranslator.ADMIN.IF(sender)) {
+		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
 			DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 				API.sendMessage(DC);
 			return;
@@ -297,7 +297,7 @@ public class CommandHandler implements CommandExecutor {
 					break;
 
 				case 3:  // /XD lang Majhrs16 es
-					if (!Permissions.chattranslator.ADMIN.IF(DC.getSender())) {
+					if (!Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
 						DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 							API.sendMessage(DC);
 						break;
@@ -330,7 +330,7 @@ public class CommandHandler implements CommandExecutor {
 		if (plugin.isDisabled())
 			return;
 
-		if (!Permissions.chattranslator.ADMIN.IF(DC.getSender())) {
+		if (!Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
 			DC.setMessages("&cUsted no tiene permisos para ejecutar este comando&f.");
 				API.sendMessage(DC);
 			return;

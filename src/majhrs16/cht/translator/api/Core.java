@@ -1,7 +1,7 @@
 package majhrs16.cht.translator.api;
 
+import majhrs16.cht.ChatTranslator;
 import majhrs16.lib.network.translator.GoogleTranslator;
-import me.clip.placeholderapi.PlaceholderAPI;
 import majhrs16.cht.util.cache.Dependencies;
 import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.events.custom.Message;
@@ -9,21 +9,26 @@ import majhrs16.cht.util.cache.Config;
 import majhrs16.lib.utils.Str;
 import majhrs16.cht.util.util;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+
+import me.clip.placeholderapi.PlaceholderAPI;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public interface Core {
 	public GoogleTranslator GT = new GoogleTranslator();
 
 	Pattern sub_variables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
-	Pattern color_hex     = Pattern.compile("#[a-f0-9]{6}", Pattern.CASE_INSENSITIVE);
 	Pattern no_translate  = Pattern.compile("`(.+)`", Pattern.CASE_INSENSITIVE);
 	Pattern variables     = Pattern.compile("[\\%\\$][A-Z0-9_]+[\\%\\$]"); // ARREGLR EL lowercase EXCESIVO!!
+	Pattern color_hex     = Pattern.compile("#[a-fA-Z0-9]{6}");
 
 	default public String parseSubVarables(Player player, String input) {
 		if (input == null)
@@ -45,58 +50,83 @@ public interface Core {
 		return input;
 	}
 
+	@Deprecated
+	default public String getColorJ16(String text) {
+		try {
+			Class<?> chatColorClass = Class.forName("net.md_5.bungee.api.ChatColor");
+
+			Matcher matcher;
+			while ((matcher = color_hex.matcher(text)).find()) {
+				try {
+					Object chatColorObj = chatColorClass.getMethod("of", String.class).invoke(null, matcher.group(0));
+					String replacement  = (String) chatColorClass.getMethod("toString").invoke(chatColorObj);
+
+					text = text.replace(matcher.group(0), replacement);
+
+				} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return text;
+	}
+
 	default public String getColor(String text) {
-//			Convierte el color RGB y tradicional a un formato visible.
+//			Convierte tradicional a un formato visible.
 
         if (text == null)
             return text;
 
-        Class<?> chatColorClass;
-        try {
-            chatColorClass = Class.forName("net.md_5.bungee.api.ChatColor");
+/*		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
+			text = getColorJ16(text);
+		} */
 
-        } catch (ClassNotFoundException e) {
-            chatColorClass = null;
-        }
-
-		if (util.getMinecraftVersion() >= 16.0 && chatColorClass != null) { // 1.16.0
-			Matcher matcher;
-			while ((matcher = color_hex.matcher(text)).find()) {
-                try {
-                    text = text.replace(matcher.group(0), "" + chatColorClass.getMethod("of", String.class).invoke(null, matcher.group(0)));
-
-                } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-		}
 
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);
 	}
 
-	default public Message formatMessage(Message DC) {
+	default String getFormat(String chat, String format) {
+		FileConfiguration config = ChatTranslator.getInstance().config.get();
+		String path = "formats." + format + "."  + chat;
+		if (Config.DEBUG.IF())
+			System.out.println("DEBUG exists '" + path + "' ?: " + config.contains(path));
+		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
+	}
+
+	default public Message formatMessage(Message original) {
 //			Este formateador basicamente remplaza (sub)vriables PAPI y locales, colorea el chat y/o el formato de este, tambien para los tooltips, y ya por ultimo traduce el mensaje. 
 
-		DC = DC.clone(); // se clona para evitar sobreescrituras en el evento.
-
-		Message from               = DC;
+		Message from               = original.clone(); // se clona para evitar sobreescrituras en el evento.
 		CommandSender from_player  = from.getSender();
-		String from_message_format = from.getMessageFormat();
+
+		String from_message_format = getFormat("messages", from.getMessagesFormats());
 		String from_messages       = from.getMessages();
-		String from_tool_tips      = from.getToolTips();
+		String from_tool_tips      = getFormat("toolTips", from.getToolTips());
+		String from_sounds         = getFormat("sounds", from.getSounds());
+
 		String from_lang_source    = from.getLangSource();
 		String from_lang_target    = from.getLangTarget();
 
+
 		Message to               = from.getTo();
 		CommandSender to_player  = to.getSender();
-		String to_message_format = to.getMessageFormat();
+
+		String to_message_format = getFormat("messages", to.getMessagesFormats());
 		String to_messages       = to.getMessages();
-		String to_tool_tips      = to.getToolTips();
+		String to_tool_tips      = getFormat("toolTips", to.getToolTips());
+		String to_sounds         = getFormat("sounds", to.getSounds());
+
 		String to_lang_source    = to.getLangSource();
 		String to_lang_target    = to.getLangTarget();
 
+
 		Boolean color = to.getColor();
 		Boolean papi  = to.getFormatPAPI();
+
 
 		ArrayList<String> from_messages_escapes = new ArrayList<String>();
 		ArrayList<String> to_messages_escapes   = new ArrayList<String>();
@@ -365,11 +395,13 @@ public interface Core {
 			to_tool_tips = to_tool_tips.replace("x01", "$ct_messages$");
 		}
 
-		if (from_messages != null && (color || (from_player != null && Permissions.chattranslator.Color.FROM_COLOR.IF(from_player))))
-			from_messages = getColor(from_messages);
+		if (from_messages != null && color)
+			if (from_player != null && Permissions.ChatTranslator.Chat.COLOR.IF(original))
+				from_messages = getColor(from_messages);
 
-		if (to_messages != null && (color || (to_player != null && Permissions.chattranslator.Color.TO_COLOR.IF(to_player))))
-			to_messages = getColor(to_messages);
+		if (to_messages != null && color)
+			if (to_player != null && Permissions.ChatTranslator.Chat.COLOR.IF(original))
+				to_messages = getColor(to_messages);
 
 		if (from_message_format != null)
 			from_message_format = getColor(from_message_format);
@@ -418,7 +450,7 @@ public interface Core {
 		if (from_message_format != null) {
 			int count = Str.count(from_message_format, "%ct_expand%");
 			for(int i = count; i > 0; i--) {
-				int padding = (70 - org.bukkit.ChatColor.stripColor(from_message_format).replace("%ct_expand%", "").length()) / i;
+				int padding = (70 - util.stripColor(from_message_format).replace("%ct_expand%", "").length()) / i;
 
 				if (Config.DEBUG.IF()) {
 					System.out.println("Debug 03, i: " + i);
@@ -432,7 +464,7 @@ public interface Core {
 		if (to_message_format != null) {
 			int count = Str.count(to_message_format, "%ct_expand%");
 			for(int i = count; i > 0; i--) {
-				int padding = (70 - org.bukkit.ChatColor.stripColor(to_message_format).replace("%ct_expand%", "").length()) / i;
+				int padding = (70 - util.stripColor(to_message_format).replace("%ct_expand%", "").length()) / i;
 
 				if (Config.DEBUG.IF()) {
 					System.out.println("Debug 03, i: " + i);
@@ -455,14 +487,16 @@ public interface Core {
 		if (to_tool_tips != null)
 			to_tool_tips = to_tool_tips.replace("\\t", "\t");
 
-		DC.setMessagesFormats(from_message_format);
-		DC.setMessages(from_messages);
-		DC.setToolTips(from_tool_tips);
+		from.setMessagesFormats(from_message_format);
+		from.setMessages(from_messages);
+		from.setToolTips(from_tool_tips);
+		from.setSounds(from_sounds);
 
-		DC.getTo().setMessagesFormats(to_message_format);
-		DC.getTo().setMessages(to_messages);
-		DC.getTo().setToolTips(to_tool_tips);
+		to.setMessagesFormats(to_message_format);
+		to.setMessages(to_messages);
+		to.setToolTips(to_tool_tips);
+		to.setSounds(to_sounds);
 
-		return DC;
+		return from;
 	}
 }

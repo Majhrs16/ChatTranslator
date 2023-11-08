@@ -3,7 +3,6 @@ package majhrs16.cht.commands.cht;
 import majhrs16.lib.network.translator.GoogleTranslator;
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
-// import majhrs16.cht.ChatTranslator;
 import majhrs16.cht.util.util;
 
 import org.bukkit.OfflinePlayer;
@@ -57,16 +56,15 @@ public class SetterLang {
 
 		API.setLang(to_player, lang);
 
-		Message from = util.getDataConfigDefault();
-			from.setMessages(String.format(
+		Message to_model = util.getDataConfigDefault();
+			to_model.setMessages(String.format(
 				"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
 				DC.getSenderName(),
 				to_player.getName(),
 				GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
 			));
+		to_model.setTo(to_model.clone().setMessagesFormats("$ct_messages$"));
 
-		from.setTo(from.clone().setMessagesFormats("$ct_messages$"));
-
-		API.broadcast(from);
+		API.broadcast(to_model, util.getOnlinePlayers(), API::broadcast);
 	}
 }

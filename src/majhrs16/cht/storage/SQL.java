@@ -49,22 +49,13 @@ public abstract class SQL extends Database {
 		}
 	}
 
-	public void insert(UUID uuid, @Nullable String discordID, String lang) throws SQLException {
-		String sql = "INSERT INTO " + table + " (uuid%s, lang) VALUES (?%s, ?)";
-
-		if (discordID == null) {
-			sql = String.format(sql, "", "");
-
-		} else {
-			sql = String.format(sql, ", discordID", ", ?");
-		}
+	public void insert(UUID uuid, String discordID, String lang) throws SQLException {
+		String sql = "INSERT INTO " + table + " (uuid, discordID, lang) VALUES (?, ?, ?)";
 
 		PreparedStatement statement = conn.prepareStatement(sql);
 		statement.setString(1, uuid.toString());
-		statement.setString(2, lang);
-
-		if (discordID != null)
-			statement.setString(3, discordID);
+		statement.setString(2, discordID);
+		statement.setString(3, lang);
 
 		statement.executeUpdate();
 	}
