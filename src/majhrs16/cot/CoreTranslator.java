@@ -1,22 +1,16 @@
 package majhrs16.cot;
 
-import majhrs16.cht.events.Chat;
-import majhrs16.dst.utils.AccountManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
-import net.dv8tion.jda.api.entities.User;
-import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import org.bukkit.entity.Player;
-import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 import java.util.regex.Pattern;
