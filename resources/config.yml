@@ -9,12 +9,14 @@ formats:
     - '&f<&b%player_name%&f> &a$ct_messages$'
     toolTips:
     - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
-
   to_console:
     messages:
     - '&f<&b%player_name%&f> &a$ct_messages$'
     toolTips:
     - '\t&f[&6%ct_lang_source%&f] &a%ct_messages%'
+  to_discord:
+    messages:
+    - '<%player_name%> [%ct_lang_source%] $ct_messages$'
 
   from_entry:
     messages:
@@ -25,7 +27,7 @@ formats:
 
   from_exit:
     messages:
-    - '&c- %e%player_name% %ct_messages%'
+    - '&c- &e%player_name% %ct_messages%'
   to_exit:
     messages:
     - '&c- &e%player_name% $ct_messages$'
@@ -34,19 +36,34 @@ formats:
     messages:
     - '%ct_expand% &7%ct_messages%'
     toolTips:
-    - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
+    - '&f[&6%ct_lang_source%&f] &f<&7%player_name%&f>'
     sounds:
     - BLOCK_NOTE_BLOCK_BELL; 1; 1
     - NOTE_PLING; 1; 1
   to_private:
     messages:
-    - '{"text": "&f<&b%player_name%&f> &7$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% ..."}}'
+    - '{"text": "&f<&7%player_name%&f> &7$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% ..."}}'
     toolTips:
-    - "&7Te han hablado al privado&f! &aHaz click para responder&f!"
-    - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
+    - '&7Te han hablado al privado&f! &aHaz click para responder&f!'
+    - '&f[&6%ct_lang_source%&f] &7%ct_messages%'
     sounds:
     - ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1
     - ORB_PICKUP; 1; 1
+
+  from_mention:
+    messages:
+      - '%ct_expand% &a%ct_messages%'
+    toolTips:
+      - '&f[&6%ct_lang_source%&f] &f<&a%player_name%&f>'
+  to_mention:
+    messages:
+      - '{"text": "&f<&6%player_name%&f> &e$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% ..."}}'
+    toolTips:
+      - '&eTe han mencionado&f! &aHaz click para responder&f!'
+      - '&f[&6%ct_lang_source%&f] &e%ct_messages%'
+    sounds:
+      - ENTITY_EXPERIENCE_ORB_PICKUP; 1; 1
+      - ORB_PICKUP; 1; 1
 
 storage:
   type: sqlite
@@ -57,17 +74,19 @@ storage:
   password: password
 
 auto-translate-others:
-  force-permission-per-world: false
-  discord: false # beta
+  discord: false
   access: true
   signs: true
 
 discord:
   bot-token: ''
-  channels: []
+  channels:
+    chat: []
+    console: []
+    server-status: []
+    player-access: []
 
-server-uuid: "null"
-chat-custom-colors: true
+server-uuid: 'null"
 auto-update-config: true
 show-native-chat:
   cancel-event: true
