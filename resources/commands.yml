@@ -68,8 +68,8 @@ cht:
 tell:
  type: "private"
  text: "&f/&etell"
- suggest: "tell texto de ejemplo"
+ suggest: "tell %player_name% texto de ejemplo"
  toolTips:
  - "&aEnvia mensajes privados a alguien :D&f."
 
-config-version: 1
+config-version: 2
