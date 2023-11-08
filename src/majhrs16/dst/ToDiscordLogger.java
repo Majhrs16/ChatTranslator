@@ -1,9 +1,8 @@
 package majhrs16.dst;
 
 import majhrs16.cht.util.cache.Config;
-import majhrs16.dst.utils.Utils;
+import majhrs16.dst.utils.DiscordChat;
 
-import majhrs16.cht.ChatTranslator;
 import org.bukkit.Bukkit;
 
 import java.io.RandomAccessFile;
@@ -15,7 +14,6 @@ import java.util.Timer;
 public class ToDiscordLogger {
 	private Timer timer;
 	public final int MAX_LENGTH_MESSAGE = 1990;
-	private final ChatTranslator plugin = ChatTranslator.getInstance();
 
 	public void start() {
 		timer = new Timer(true);
@@ -42,27 +40,28 @@ public class ToDiscordLogger {
 
 				if (fileSize > lastFileSize) {
 					// Read new content from the log file
-					RandomAccessFile randomAccessFile = new RandomAccessFile(logFile, "r");
-					randomAccessFile.seek(lastFileSize);
-					byte[] buffer = new byte[MAX_LENGTH_MESSAGE];
-					int bytesRead = randomAccessFile.read(buffer);
+					try (RandomAccessFile randomAccessFile = new RandomAccessFile(logFile, "r")) {
+						randomAccessFile.seek(lastFileSize);
+						byte[] buffer = new byte[MAX_LENGTH_MESSAGE];
+						int bytesRead = randomAccessFile.read(buffer);
 
-					while (bytesRead != -1) {
-						String newLogContent = new String(buffer, 0, bytesRead);
-						// Send the new log content to Discord channels
-						try {
-							sendToDiscord(newLogContent);
+						while (bytesRead != -1) {
+							String newLogContent = new String(buffer, 0, bytesRead);
+							// Send the new log content to Discord channels
+							try {
+								sendToDiscord(newLogContent);
 
-						} catch (Exception e) {
-							Bukkit.getLogger().warning("[!] " + e.toString());
-							Thread.sleep(5000);
-							continue;
+							} catch (Exception e) {
+								Bukkit.getLogger().warning("[!] " + e.toString());
+								Thread.sleep(5000);
+								continue;
+							}
+
+							bytesRead = randomAccessFile.read(buffer);
 						}
 
-						bytesRead = randomAccessFile.read(buffer);
+						lastFileSize = fileSize;
 					}
-
-					lastFileSize = fileSize;
 				}
 
 			} catch (Exception e) {
@@ -77,10 +76,10 @@ public class ToDiscordLogger {
 	}
 
 	private int sendToDiscord(String message) throws Exception {
-		Utils.Integer ok = new Utils.Integer(0);
+		majhrs16.dst.utils.Integer ok = new majhrs16.dst.utils.Integer(0);
 
 		// Iterate through configured channels and send the message to each one
-		Utils.broadcast(
+		DiscordChat.broadcast(
 			"discord.channels.console",
 			channel -> {
 				channel.sendMessage(removeColorCodes("```" + message + "```")).queue();

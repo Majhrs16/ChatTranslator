@@ -8,25 +8,8 @@ import majhrs16.cht.ChatTranslator;
 
 import java.util.function.Consumer;
 
-public class Utils {
+public class DiscordChat {
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
-
-	public static class Integer {
-		private int integer;
-
-		public Integer(int start) {
-			integer = start;
-		}
-
-		public int get() {
-			return integer;
-		}
-
-		public int getAndIncrement() {
-			integer++;
-			return integer;
-		}
-	}
 	public static void sendMessageEmbed(TextChannel channel, String title, String description, int color) {
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.setColor(color);

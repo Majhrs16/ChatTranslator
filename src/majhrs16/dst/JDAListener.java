@@ -150,10 +150,12 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					from_lang,
 					null
 				);
-				to_model.setMessagesFormats(to_model.getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-				to_model.getTo().setMessagesFormats(to_model.getTo().getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
+				if (player == null)
+					to_model.setSenderName(message.getAuthor().getName());
+
 				to_model.setCancelledThis(player == null || !player.isOnline());
 
+/*
 			majhrs16.cht.events.custom.Message from_console = util.createChat(
 					Bukkit.getConsoleSender(),
 					message.getContentDisplay(),
@@ -162,17 +164,17 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					"console"
 				);
 
-//				from_console.setMessagesFormats(from_console.getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-				from_console.getTo().setMessagesFormats(from_console.getTo().getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-
 				from_console.setSender(to_model.getSender());
+				if (player == null)
+					from_console.setSenderName(message.getAuthor().getName());
 				from_console.setCancelledThis(true);
+*/
 
-			if (player != null && player.isOnline())
+			if (player != null && !player.isOnline())
 				message.delete().queue();
 
 			API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
-				froms.add(from_console);
+//				froms.add(from_console);
 				API.broadcast(froms);
 			});
 		}

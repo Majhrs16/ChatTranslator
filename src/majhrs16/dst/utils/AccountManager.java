@@ -70,7 +70,7 @@ public class AccountManager {
 	}
 
 	private static int getUniqueKey() {
-		Integer key = null;
+		java.lang.Integer key = null;
 
 		while (key == null || linking.containsKey(key.toString()))
 			key = new Random().nextInt(100_000); // 99_999
@@ -79,13 +79,13 @@ public class AccountManager {
 	}
 
 	public static int register(UUID uuid, Runnable timeout) {
-		int key = getUniqueKey();
+		java.lang.Integer key = getUniqueKey();
 
-		linking.put(Integer.toString(key), uuid.toString());
+		linking.put(key.toString(), uuid.toString());
 
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			if (linking.containsKey(Integer.toString(key))) {
-				linking.remove(Integer.toString(key));
+			if (linking.containsKey(key.toString())) {
+				linking.remove(key.toString());
 				if (timeout != null)
 					timeout.run();
 			}
