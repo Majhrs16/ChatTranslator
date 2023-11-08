@@ -33,7 +33,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 			Message message = event.getTarget();
 			Member member = event.getMember();
 
-			majhrs16.cht.events.custom.Message DC = util._getDataConfigDefault();
+			majhrs16.cht.events.custom.Message DC = new majhrs16.cht.events.custom.Message();
 				DC.setColor(false);
 
 			if (member != null) {
@@ -41,7 +41,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				UUID memberUuid = AccountManager.getMinecraft(member.getId());
 
 				if (memberUuid != null) {
-					String from = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid)); // API.getLang(authorPlayer);
+					String from = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid));
 					String to = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
 
 					if (from == to)
@@ -72,7 +72,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 			String[] args = message.getContentRaw().split(" ");
 			Member member = event.getMember();
 
-			majhrs16.cht.events.custom.Message DC = util._getDataConfigDefault();
+			majhrs16.cht.events.custom.Message DC = new majhrs16.cht.events.custom.Message();
 				if (member != null) {
 					UUID memberUuid = AccountManager.getMinecraft(member.getId());
 					if (memberUuid != null)
@@ -81,33 +81,29 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				DC.setColor(false);
 
 			if (args.length > 1) {
-				switch (args[1]) {
-					case "lang": // !cht lang CODE
-						String lang = args[2];
+				if (args[1].equals("lang")) { // !cht lang CODE
+					String lang = args[2];
 
-						try {
-							util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+					try {
+						util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
 
-							UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
+						UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
 
-							if (uuid == null) {
-								DC.setMessages("Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft.\n    Por favor, use el comando `/cht link` en el server.");
+						if (uuid == null) {
+							DC.setMessages("Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft.\n    Por favor, use el comando `/cht link` en el server.");
 
-							} else {
-								plugin.storage.set(uuid, null, lang);
+						} else {
+							plugin.storage.set(uuid, null, lang);
 
-								DC.setMessages("Su idioma ha sido establecido a `" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`.");
-								DC.setLangTarget(lang);
-							}
-
-						} catch (IllegalArgumentException e) {
-							DC.setMessages(e.getMessage());
+							DC.setMessages("Su idioma ha sido establecido a `" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`.");
+							DC.setLangTarget(lang);
 						}
 
-						break;
-
-					default:
-						DC.setMessages("Sintaxis invalida. Por favor use la sintaxis:\n    `!cht lang <codigo>`.");
+					} catch (IllegalArgumentException e) {
+						DC.setMessages(e.getMessage());
+					}
+				} else {
+					DC.setMessages("Sintaxis invalida. Por favor use la sintaxis:\n    `!cht lang <codigo>`.");
 				}
 			}
 
@@ -143,11 +139,6 @@ public class JDAListener extends ListenerAdapter implements Listener {
 			Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), event.getMessage().getContentRaw()));
 
 		} else if (plugin.config.get().getStringList("discord.channels.chat").contains(event.getChannel().getId())) {
-			Player[] players = util.getOnlinePlayers();
-
-//			if (players.length < 1)
-//				return;
-
 			UUID authorUuid      = AccountManager.getMinecraft(message.getAuthor().getId());
 			OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
 			String from_lang     = player == null ? "auto" : API.getLang(player);
@@ -159,8 +150,8 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					from_lang,
 					null
 				);
-				to_model.setMessagesFormats(to_model.getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-				to_model.getTo().setMessagesFormats(to_model.getTo().getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
+				to_model.setMessagesFormats(to_model.getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
+				to_model.getTo().setMessagesFormats(to_model.getTo().getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
 				to_model.setCancelledThis(player == null || !player.isOnline());
 
 			majhrs16.cht.events.custom.Message from_console = util.createChat(
@@ -171,8 +162,8 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					"console"
 				);
 
-//				from_console.setMessagesFormats(from_console.getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
-				from_console.getTo().setMessagesFormats(from_console.getTo().getMessageFormat().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
+//				from_console.setMessagesFormats(from_console.getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
+				from_console.getTo().setMessagesFormats(from_console.getTo().getMessagesFormats().replace("%player_name%", player == null ? event.getAuthor().getName() : player.getName() ));
 
 				from_console.setSender(to_model.getSender());
 				from_console.setCancelledThis(true);
@@ -180,7 +171,10 @@ public class JDAListener extends ListenerAdapter implements Listener {
 			if (player != null && player.isOnline())
 				message.delete().queue();
 
-			API.broadcast(to_model, froms -> froms.add(from_console));
+			API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
+				froms.add(from_console);
+				API.broadcast(froms);
+			});
 		}
 	}
 
