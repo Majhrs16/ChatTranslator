@@ -1,16 +1,19 @@
 package majhrs16.cot;
 
-import majhrs16.dst.utils.Utils;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-
+import majhrs16.cht.events.Chat;
+import majhrs16.dst.utils.AccountManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
+import majhrs16.cht.events.MessageListener;
 import majhrs16.cht.events.custom.Message;
-import majhrs16.dst.DiscordTranslator;
-import majhrs16.cht.ChatTranslator;
+import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
+
+import net.dv8tion.jda.api.entities.User;
+import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
@@ -20,24 +23,21 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 public class CoreTranslator extends PlaceholderExpansion {
-	private final Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
-	private final Pattern sendMessage          = Pattern.compile("sendMessage; *\\[(\\[.+\\]), *(\\[.+\\])?\\]", Pattern.CASE_INSENSITIVE);
-	private final Pattern broadcast            = Pattern.compile("broadcast; *\\[(\\[.+\\]), *(\\[.+\\])\\]", Pattern.CASE_INSENSITIVE);
+	private final Pattern sendMessageToDiscord = Pattern.compile("sendMessageToDiscord; *\\[(\\[.+]), *(\\[.+])]", Pattern.CASE_INSENSITIVE);
+	private final Pattern sendMessage          = Pattern.compile("sendMessage; *\\[(\\[.+]), *(\\[.+])?]", Pattern.CASE_INSENSITIVE);
+	private final Pattern broadcast            = Pattern.compile("broadcast; *\\[(\\[.+]), *(\\[.+])]", Pattern.CASE_INSENSITIVE);
 	private final Pattern translate            = Pattern.compile("translate; *(.+); *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private final Pattern parser               = Pattern.compile("papiParse; *(.+); *(.+)", Pattern.CASE_INSENSITIVE);
 	private final Pattern lang                 = Pattern.compile("getLang_(.+)", Pattern.CASE_INSENSITIVE);
 
-	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public boolean persist()      { return true; }
 	public boolean canRegister()  { return true; }
 
-	public String getAuthor()     { return "Majhrs16"; }
-	public String getVersion()    { return "b1.4"; }
-	public String getIdentifier() { return "cot"; }
-
-//	"\\[['\"]?.+['\"]?, *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *['\"].+['\"], *[true|false], *['\"]?.+['\"]?, *[true|false], *[true|false]\\]";
+	@NotNull public String getAuthor()     { return "Majhrs16"; }
+	@NotNull public String getVersion()    { return "v1.4"; }
+	@NotNull public String getIdentifier() { return "cot"; }
 
 	@Override
 	public String onPlaceholderRequest(Player player, String identifier) {
@@ -82,11 +82,14 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	public String sendMessageToDiscord(Player player, String from_json, String to_json) {
 		Message from = Message.valueOf(from_json);
+		assert from != null;
+
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
 
 		if (to_json != null) {
 			Message to = Message.valueOf(to_json);
+			assert to != null;
 
 			if (to.getSender() == null)
 				return getMessageFormatted(player, "&cJugador to no encontrado&f.");
@@ -94,40 +97,32 @@ public class CoreTranslator extends PlaceholderExpansion {
 			from.setTo(to);
 		}
 
-		Message finalFrom = API.formatMessage(from);
-
-		Utils.broadcast("discord.channels.chat", channel -> {
-			channel.sendMessage(ChatColor.stripColor(finalFrom.getTo().getMessageFormat())).queue();
-
-			if (finalFrom.getToolTips() != null)
-				channel.sendMessage(ChatColor.stripColor(finalFrom.getTo().getToolTips())).queue();
-		});
+		new MessageListener().toDiscord(from);
+		from.setCancelled(true);
 
 		return "ok";
 	}
 
 	private String broadcast(Player player, String from_json, String to_json) {
 		Message from = Message.valueOf(from_json);
+		assert from != null;
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
 
 		from.setTo(Message.valueOf(to_json));
 
-		API.broadcast(from, froms -> {
-			API.broadcast(froms, _from -> { // Controlar cada from.
-				API.sendMessage(_from);
-				_from.setCancelled(true); // Cancelar from y to alavez.
-			});
-
-			froms.clear(); // Evitar lanzar el broadcast por defecto.
-		});
+		MessageListener listener = new MessageListener();
+		API.broadcast(from, util.getOnlinePlayers(), froms -> API.broadcast(froms, _from -> {
+			listener.toMinecraft(_from);
+			_from.setCancelled(true);
+		}));
 
 		return "ok";
 	}
 
 	public String getMessageFormatted(Player player, String lang_source, String lang_target, String text) {
-		Message from = util._getDataConfigDefault();
+		Message from = new Message();
 			from.setSender(player);
 			from.setLangSource(lang_source);
 			from.setLangTarget(lang_target);
@@ -153,12 +148,15 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	public String sendMessage(Player player, String from_json, String to_json) {
 		Message from = Message.valueOf(from_json);
+		assert from != null;
+
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
 
 		if (to_json != null) {
 			Message to = Message.valueOf(to_json);
 
+			assert to != null;
 			if (to.getSender() == null)
 				return getMessageFormatted(player, "&cJugador to no encontrado&f.");
 
