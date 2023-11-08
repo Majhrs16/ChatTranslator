@@ -179,35 +179,35 @@ public interface Core {
 		}
 
 		if (from_message_format != null) {
-			if (from_player != null)
-				from_message_format = from_message_format.replace("%player_name%", from_player.getName());
+			if (from.getSenderName() != null)
+				from_message_format = from_message_format.replace("%player_name%", from.getSenderName());
 
-			if (to_player != null)
-				from_message_format = from_message_format.replace("$player_name$", to_player.getName());
+			if (to.getSenderName() != null)
+				from_message_format = from_message_format.replace("$player_name$", to.getSenderName());
 		}
 
 		if (to_message_format != null) {
-			if (from_player != null)
-				to_message_format = to_message_format.replace("%player_name%",  from_player.getName());
+			if (from.getSenderName() != null)
+				to_message_format = to_message_format.replace("%player_name%",  from.getSenderName());
 
-			if (to_player != null)
-				to_message_format = to_message_format.replace("$player_name$", to_player.getName());
+			if (to.getSenderName() != null)
+				to_message_format = to_message_format.replace("$player_name$", to.getSenderName());
 		}
 
 		if (from_tool_tips != null) {
-			if (from_player != null)
-				from_tool_tips = from_tool_tips.replace("%player_name%", "`" + from_player.getName() + "`");
+			if (from.getSenderName() != null)
+				from_tool_tips = from_tool_tips.replace("%player_name%", "`" + from.getSenderName() + "`");
 
-			if (to_player != null)
-				from_tool_tips = from_tool_tips.replace("$player_name$", "`" + to_player.getName() + "`");
+			if (to.getSenderName() != null)
+				from_tool_tips = from_tool_tips.replace("$player_name$", "`" + to.getSenderName() + "`");
 		}
 
 		if (to_tool_tips != null) {
-			if (from_player != null)
-				to_tool_tips = to_tool_tips.replace("%player_name%", "`" + from_player.getName() + "`");
+			if (from.getSenderName() != null)
+				to_tool_tips = to_tool_tips.replace("%player_name%", "`" + from.getSenderName() + "`");
 
-			if (to_player != null)
-				to_tool_tips = to_tool_tips.replace("$player_name$", "`" + to_player.getName() + "`");
+			if (to.getSenderName() != null)
+				to_tool_tips = to_tool_tips.replace("$player_name$", "`" + to.getSenderName() + "`");
 		}
 
 		if (from_message_format != null) {

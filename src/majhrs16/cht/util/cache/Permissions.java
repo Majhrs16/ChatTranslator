@@ -34,7 +34,10 @@ public enum Permissions {
 			}
 
 			public boolean IF(Message original) {
-				if (original.getSender().hasPermission(String.format(path, "*")))
+				if (original.getSender() == null)
+					return false;
+
+				else if (original.getSender().hasPermission(String.format(path, "*")))
 					return true;
 
 				else if (path.endsWith("messages") && original.getMessagesFormats() != null && !original.getMessagesFormats().isEmpty())

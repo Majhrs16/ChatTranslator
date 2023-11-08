@@ -13,6 +13,7 @@ import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.AccessPlayer;
 import majhrs16.cht.events.SignHandler;
 import majhrs16.dst.DiscordTranslator;
+import majhrs16.dst.utils.DiscordChat;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.events.OnCommand;
 import majhrs16.cht.util.ChatLimiter;
@@ -20,7 +21,6 @@ import majhrs16.cht.storage.Storage;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
 import majhrs16.cht.events.Chat;
-import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -235,9 +235,9 @@ public class ChatTranslator extends JavaPlugin {
 					Events.discordTranslator.registerCommands();
 					Events.discordTranslator.registerEvents();
 
-					Utils.broadcast(
+					DiscordChat.broadcast(
 						"discord.channels.server-status",
-						channel -> Utils.sendMessageEmbed(channel, "Servidor encendido!, :D", null, 0x00FF00)
+						channel -> DiscordChat.sendMessageEmbed(channel, "Servidor encendido!, :D", null, 0x00FF00)
 					);
 				}
 
@@ -253,9 +253,9 @@ public class ChatTranslator extends JavaPlugin {
 	public void unregisterDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			if (!Events.is_installed) {
-				Utils.broadcast(
+				DiscordChat.broadcast(
 					"discord.channels.server-status",
-					channel -> Utils.sendMessageEmbed(channel, "Servidor apagado, :(", null, 0xFF0000)
+					channel -> DiscordChat.sendMessageEmbed(channel, "Servidor apagado, :(", null, 0xFF0000)
 				);
 
 				Events.discordTranslator.unregisterEvents();

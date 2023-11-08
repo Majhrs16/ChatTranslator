@@ -5,9 +5,9 @@ import majhrs16.cht.util.updater.UpdateChecker;
 import majhrs16.cht.util.cache.internal.Texts;
 import majhrs16.cht.util.cache.Permissions;
 import majhrs16.cht.events.custom.Message;
+import majhrs16.dst.utils.DiscordChat;
 import majhrs16.cht.util.cache.Config;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -78,9 +78,9 @@ public class AccessPlayer implements Listener {
 			from = API.formatMessage(from);
 
 			Message finalFrom = from;
-			Utils.broadcast(
+			DiscordChat.broadcast(
 				"discord.channels.player-access",
-				channel -> Utils.sendMessageEmbed(
+				channel -> DiscordChat.sendMessageEmbed(
 					channel,
 					ChatColor.stripColor(finalFrom.getMessagesFormats()),
 					finalFrom.getToolTips() == null ? null : ChatColor.stripColor(finalFrom.getToolTips()),

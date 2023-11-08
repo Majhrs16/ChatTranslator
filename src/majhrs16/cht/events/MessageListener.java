@@ -12,8 +12,8 @@ import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.custom.Message;
 import majhrs16.dst.utils.AccountManager;
 import majhrs16.cht.util.cache.Config;
+import majhrs16.dst.utils.DiscordChat;
 import majhrs16.cht.ChatTranslator;
-import majhrs16.dst.utils.Utils;
 import majhrs16.cht.util.util;
 
 import net.dv8tion.jda.api.entities.User;
@@ -100,7 +100,7 @@ public class MessageListener implements Listener {
 
 		Message from = API.formatMessage(event);
 
-		Utils.broadcast("discord.channels.chat", channel -> {
+		DiscordChat.broadcast("discord.channels.chat", channel -> {
 			channel.sendMessage(util.stripColor(from.getTo().getMessagesFormats())).queue();
 
 			if (from.getTo().getToolTips() != null)

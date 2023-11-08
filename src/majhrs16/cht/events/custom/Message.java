@@ -20,6 +20,7 @@ public class Message extends Event implements Cancellable {
 
 	private Message to;
 	private CommandSender sender      = Bukkit.getConsoleSender();
+	private String name               = sender.getName();
 	private String[] messages_formats = new String[] { "%ct_messages%" };
 	private String[] messages         = new String[0];
 	private String[] tool_tips        = new String[0];
@@ -54,12 +55,19 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setTo(Message to) {
-		this.to             = to == null ? new Message() : to;
+		this.to = to == null ? new Message() : to;
 		return this;
 	}
 
 	public Message setSender(CommandSender sender) {
-		this.sender         = sender;
+		this.sender = sender;
+		if (sender != null)
+			setSenderName(sender.getName());
+		return this;
+	}
+
+	public Message setSenderName(String name) {
+		this.name = name;
 		return this;
 	}
 
@@ -69,17 +77,17 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setMessage(int index, String messages) {
-		this.messages[index]         = messages;
+		this.messages[index] = messages;
 		return this;
 	}
 
 	public Message setToolTip(int index, String toolTips) {
-		this.tool_tips[index]        = toolTips;
+		this.tool_tips[index] = toolTips;
 		return this;
 	}
 	
 	public Message setSound(int index, String sounds) {
-		this.sounds[index]           = sounds;
+		this.sounds[index] = sounds;
 		return this;
 	}
 
@@ -89,17 +97,17 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setMessages(String messages) {
-		this.messages       = messages == null || messages.isEmpty() ? new String[0] : messages.split("\n");
+		this.messages = messages == null || messages.isEmpty() ? new String[0] : messages.split("\n");
 		return this;
 	}
 
 	public Message setToolTips(String toolTips) {
-		this.tool_tips      = toolTips == null || toolTips.isEmpty() ? new String[0] : toolTips.split("\n");
+		this.tool_tips = toolTips == null || toolTips.isEmpty() ? new String[0] : toolTips.split("\n");
 		return this;
 	}
 
 	public Message setSounds(String sounds) {
-		this.sounds         = sounds == null || sounds.isEmpty() ? new String[0] : sounds.split("\n");
+		this.sounds = sounds == null || sounds.isEmpty() ? new String[0] : sounds.split("\n");
 		return this;
 	}
 
@@ -109,37 +117,37 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setMessages(String... messages) {
-		this.messages       = messages;
+		this.messages = messages;
 		return this;
 	}
 
 	public Message setToolTips(String... toolTips) {
-		this.tool_tips      = toolTips;
+		this.tool_tips = toolTips;
 		return this;
 	}
 
 	public Message setSounds(String... sounds) {
-		this.sounds         = sounds;
+		this.sounds = sounds;
 		return this;
 	}
 
 	public Message setLangSource(String lang) {
-		this.lang_source    = lang;
+		this.lang_source = lang;
 		return this;
 	}
 
 	public Message setLangTarget(String lang) {
-		this.lang_target    = lang;
+		this.lang_target = lang;
 		return this;
 	}
 
 	public Message setFormatPAPI(Boolean formatPAPI) {
-		this.is_format_papi    = formatPAPI;
+		this.is_format_papi = formatPAPI;
 		return this;
 	}
 
 	public Message setColor(Boolean color) {
-		this.is_color          = color;
+		this.is_color = color;
 		return this;
 	}
 
@@ -147,7 +155,7 @@ public class Message extends Event implements Cancellable {
 	public Message getTo()           { return to; }
 
 	public CommandSender getSender() { return sender; }
-	public String getSenderName()    { return sender == null ? null : sender.getName(); }
+	public String getSenderName()    { return name; }
 
 	public String getMessageFormat(int index) {
 		String out = messages_formats[index];
@@ -187,9 +195,10 @@ public class Message extends Event implements Cancellable {
 
 	public Message clone() {
 		Message from = new Message();
-			Message to = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia todo. O_o??
+			Message to = new Message(); // BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
 				if (getTo() != null) {
 					to.setSender(getTo().getSender());
+					to.setSenderName(getTo().getSenderName());
 					to.setMessagesFormats(getTo().getMessagesFormats());
 					to.setMessages(getTo().getMessages());
 					to.setToolTips(getTo().getToolTips());
@@ -203,6 +212,7 @@ public class Message extends Event implements Cancellable {
 			from.setTo(to);
 
 			from.setSender(getSender());
+			from.setSenderName(getSenderName());
 			from.setMessagesFormats(getMessagesFormats());
 			from.setMessages(getMessages());
 			from.setToolTips(getToolTips());
