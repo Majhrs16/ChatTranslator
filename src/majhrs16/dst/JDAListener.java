@@ -123,12 +123,11 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					
 					Player player    = (Player) AccountManager.getOfflinePlayer(authorUuid);
 
-					majhrs16.cht.events.custom.Message from = util.getDataConfigDefault();
-					from.setSender(player);
-					from.setMessages("&aSu cuenta ha sido vinculada exitosamente&f!");
-					from.setLangTarget(API.getLang(player));
-
-					API.sendMessage(from);
+					API.sendMessage(new majhrs16.cht.events.custom.Message()
+						.setSender(player)
+						.setMessages("&aSu cuenta ha sido vinculada exitosamente&f!")
+						.setLangTarget(API.getLang(player)
+					));
 				}, 5L);
 
 			} else {
@@ -143,7 +142,7 @@ public class JDAListener extends ListenerAdapter implements Listener {
 			OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
 			String from_lang     = player == null ? "auto" : API.getLang(player);
 
-			majhrs16.cht.events.custom.Message to_model = util.createChat(
+			majhrs16.cht.events.custom.Message model = util.createChat(
 					player == null ? null : player.getPlayer(),
 					message.getContentDisplay(),
 					from_lang,
@@ -151,12 +150,14 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					null
 				);
 				if (player == null)
-					to_model.setSenderName(message.getAuthor().getName());
+					model.setSenderName(message.getAuthor().getName());
 
-				to_model.setCancelledThis(player == null || !player.isOnline());
+				else
+					model.setSenderName(player.getName());
 
-/*
-			majhrs16.cht.events.custom.Message from_console = util.createChat(
+				model.setCancelledThis(player == null || !player.isOnline());
+
+			majhrs16.cht.events.custom.Message console = util.createChat(
 					Bukkit.getConsoleSender(),
 					message.getContentDisplay(),
 					from_lang,
@@ -164,17 +165,19 @@ public class JDAListener extends ListenerAdapter implements Listener {
 					"console"
 				);
 
-				from_console.setSender(to_model.getSender());
+				console.setSender(model.getSender());
 				if (player == null)
-					from_console.setSenderName(message.getAuthor().getName());
-				from_console.setCancelledThis(true);
-*/
+					console.setSenderName(message.getAuthor().getName());
 
-			if (player != null && !player.isOnline())
+				else
+					console.setSenderName(player.getName());
+				console.setCancelledThis(true);
+
+			if (player != null && player.isOnline())
 				message.delete().queue();
 
-			API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
-//				froms.add(from_console);
+			API.broadcast(model, util.getOnlinePlayers(), froms -> {
+				froms.add(console);
 				API.broadcast(froms);
 			});
 		}
