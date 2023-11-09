@@ -7,7 +7,6 @@ public enum Config {
     UPDATE_CONFIG	("auto-update-config"),
     CHECK_UPDATES	("check-updates"),
     FORMAT_PAPI		("use-PAPI-format"),
-    CHAT_COLOR		("chat-custom-colors"),
     DEBUG			("debug");
 
     private final String path;

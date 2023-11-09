@@ -114,7 +114,7 @@ public class util {
 			from.setLangSource(langSource);
 			from.setLangTarget(langTarget);
 
-			from.setColor(Config.CHAT_COLOR.IF());
+			from.setColor(true);
 			from.setFormatPAPI(Config.FORMAT_PAPI.IF());
 		return from;
 	}

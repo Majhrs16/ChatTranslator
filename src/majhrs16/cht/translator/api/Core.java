@@ -27,7 +27,7 @@ public interface Core {
 
 	Pattern sub_variables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
 	Pattern no_translate  = Pattern.compile("`(.+)`", Pattern.CASE_INSENSITIVE);
-	Pattern variables     = Pattern.compile("[\\%\\$][A-Z0-9_]+[\\%\\$]"); // ARREGLR EL lowercase EXCESIVO!!
+	Pattern variables     = Pattern.compile("[%$][A-Z0-9_]+[%$]"); // CORREGIR el mal procesado de PAPI con la modifiacion de ct_messages,
 	Pattern color_hex     = Pattern.compile("#[a-fA-Z0-9]{6}");
 
 	default public String parseSubVarables(Player player, String input) {

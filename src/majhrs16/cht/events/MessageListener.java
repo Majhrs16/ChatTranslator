@@ -61,7 +61,7 @@ public class MessageListener implements Listener {
 				continue;
 
 			else if (event.getTo().getSender() == to_player)
-				return;
+				continue; // return;
 
 			players.add(to_player);
 		}
