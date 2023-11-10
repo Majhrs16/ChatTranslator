@@ -1,6 +1,6 @@
 cd bin
-jar xf ..\libs\Majhrs16.lib.jar || Goto Error
-jar xf ..\libs\JDA*.jar || Goto Error
+jar xf ..\Libs\Majhrs16.lib.jar || Goto Error
+jar xf ..\Libs\JDA*.jar || Goto Error
 rmdir /S /Q META-INF || Goto Error
 cd ..
 Exit /B 0
