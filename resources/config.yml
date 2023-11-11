@@ -57,7 +57,7 @@ formats:
       - '&f[&6%ct_lang_source%&f] &f<&a%player_name%&f>'
   to_mention:
     messages:
-      - '{"text": "&f<&6%player_name%&f> &e$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% ..."}}'
+      - '{"text": "&f<&6%player_name%&f> &e$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "@%player_name% "}}'
     toolTips:
       - '&eTe han mencionado&f! &aHaz click para responder&f!'
       - '&f[&6%ct_lang_source%&f] &e%ct_messages%'
