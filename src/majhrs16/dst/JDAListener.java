@@ -19,6 +19,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class JDAListener extends ListenerAdapter implements Listener {
@@ -41,15 +42,15 @@ public class JDAListener extends ListenerAdapter implements Listener {
 				UUID memberUuid = AccountManager.getMinecraft(member.getId());
 
 				if (memberUuid != null) {
-					String from = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid));
-					String to = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
+					String from_lang = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid));
+					String to_lang = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
 
-					if (from == to)
-						from = "auto";
+					if (Objects.equals(from_lang, to_lang))
+						from_lang = "auto";
 
 					DC.setMessages(message.getContentDisplay());
-					DC.setLangSource(from);
-					DC.setLangTarget(to);
+					DC.setLangSource(from_lang);
+					DC.setLangTarget(to_lang);
 
 					event.getHook().sendMessage(API.formatMessage(DC).getMessages()).queue();
 					return;
