@@ -61,8 +61,7 @@ public class Message extends Event implements Cancellable {
 
 	public Message setSender(CommandSender sender) {
 		this.sender = sender;
-		if (sender != null)
-			setSenderName(sender.getName());
+		setSenderName(sender == null ? null : sender.getName());
 		return this;
 	}
 

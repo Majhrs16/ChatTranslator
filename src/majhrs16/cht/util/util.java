@@ -34,12 +34,14 @@ public class util {
 			uuid = ((Player) sender).getUniqueId();
 
 		} if (sender instanceof OfflinePlayer) {
-			try {
+			OfflinePlayer offlinePlayer = (OfflinePlayer) sender;
+
+			if (offlinePlayer.getPlayer() != null)
 				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
 
-			} catch (NullPointerException e) {
+			else
 				uuid = ((OfflinePlayer) sender).getUniqueId();
-			}
+
 
 		} else if (sender instanceof CommandSender) {
 			uuid = UUID.fromString(plugin.config.get().getString("server-uuid"));
@@ -122,7 +124,7 @@ public class util {
 	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		path = path == null ?  "" : "_" + path;
 
-		Message to   = createGroupFormat(sender, messages, langSource, langTarget, "to" + path);
+		Message to   = createGroupFormat(null, messages, langSource, null, "to" + path);
 		Message from = createGroupFormat(sender, messages, langSource, langTarget, "from" + path);
 			from.setTo(to);
 

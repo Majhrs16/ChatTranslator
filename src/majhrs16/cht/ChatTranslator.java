@@ -20,6 +20,7 @@ import majhrs16.cht.util.ChatLimiter;
 import majhrs16.cht.storage.Storage;
 import majhrs16.cot.CoreTranslator;
 import majhrs16.lib.storages.YAML;
+import majhrs16.cht.util.Metrics;
 import majhrs16.cht.events.Chat;
 import majhrs16.cht.util.util;
 
@@ -27,6 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
+
 
 import java.nio.charset.Charset;
 
@@ -42,18 +44,19 @@ public class ChatTranslator extends JavaPlugin {
 	private static ChatTranslator plugin;
 
 	private boolean is_disabled = true;
+	private static final int bSTATS_PLUGIN_ID = 20251;
 
 	private static class Events {
+		static boolean is_installed = false;
 
-		public static boolean is_installed = false;
-
-		public static DiscordTranslator discordTranslator = new DiscordTranslator();
-		public static MessageListener messageListener     = new MessageListener();
-		public static AccessPlayer accessPlayer           = new AccessPlayer();
-		public static SignHandler signHandler             = new SignHandler();
-		public static ChatLimiter chatLimiter             = new ChatLimiter();
-		public static OnCommand onCommand                 = new OnCommand();
-		public static Chat chat	                          = new Chat();
+		static final Metrics metrics                     = new Metrics(getInstance(), bSTATS_PLUGIN_ID);
+		static final DiscordTranslator discordTranslator = new DiscordTranslator();
+		static final MessageListener messageListener     = new MessageListener();
+		static final AccessPlayer accessPlayer           = new AccessPlayer();
+		static final SignHandler signHandler             = new SignHandler();
+		static final ChatLimiter chatLimiter             = new ChatLimiter();
+		static final OnCommand onCommand                 = new OnCommand();
+		static final Chat chat	                         = new Chat();
 	}
 
 	public void onEnable() {
@@ -224,6 +227,7 @@ public class ChatTranslator extends JavaPlugin {
 		HandlerList.unregisterAll(Events.onCommand);
 		HandlerList.unregisterAll(Events.chat);
 		Events.chatLimiter.stop();
+		Events.metrics.shutdown();
 
 		unregisterDiscordBot();
 	}

@@ -15,14 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ChatLimiter {
-	private ChatTranslator plugin         = ChatTranslator.getInstance();
-	private static ArrayList<Message> chat = new ArrayList<Message>();
 	private BukkitTask task;
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
+	private static final ArrayList<Message> chat = new ArrayList<>();
 
 	public void start() {
 		task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
-			int max_messages_per_tick     = 7;
-			Map<Player, CacheSpam> counts = new HashMap<>();
+			final int max_messages_per_tick     = 7;
+			final Map<Player, CacheSpam> counts = new HashMap<>();
 			FileConfiguration config      = plugin.config.get();
 			CacheSpam spam                = new CacheSpam(0.0F,
 				config.contains("max-spam-per-tick")
@@ -49,7 +49,7 @@ public class ChatLimiter {
 					);
 				}
 				
-				if (chat.size() > 0) {
+				if (!chat.isEmpty()) {
 					int end = Math.min(max_messages_per_tick, chat.size());
 
 					for (Message event : chat.subList(0, end)) {

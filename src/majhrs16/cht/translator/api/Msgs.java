@@ -312,33 +312,38 @@ public interface Msgs {
 		broadcast(messages, ChatLimiter::add);
 	}
 
-	default public void broadcast(Message from, Player[] players, Consumer<List<Message>> broadcastAction) {
-		if (from == null || from.equals(new Message()))
+	default public void broadcast(Message from_model, Player[] players, Consumer<List<Message>> broadcastAction) {
+		if (from_model == null || from_model.equals(new Message()))
 			return;
 
-		if (from.getTo() == null || from.getTo().equals(new Message()))
-			from.setTo(from.clone());
+		if (from_model.getTo() == null || from_model.getTo().isEmpty()) {
+			from_model.setTo(from_model.clone());
+			from_model.getTo().setSender(null);
+			from_model.getTo().setLangTarget(null);
+		}
 
-		Message to_model    = from.getTo();
-		List<Message> froms = new ArrayList<>();
+		Message to_model            = from_model.getTo();
+		List<Message> froms         = new ArrayList<>();
+		String original_lang_target = to_model.getLangTarget();
 
 		for (Player to_player : players) {
-			if (from.getSender() == to_player) {
+			to_model.setSender(to_player);
+
+			if (to_player.equals(from_model.getSender())) {
 				if (players.length > 1)
 					continue;
 
-				to_model.setSender(from.getSender());
-				to_model.setLangTarget(from.getLangTarget());
 				to_model.setCancelledThis(true);
 
 			} else {
-				to_model.setSender(to_player);
-				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 				to_model.setCancelledThis(false);
 			}
 
-			froms.add(from.clone());
-			from.setCancelledThis(true);
+			if (original_lang_target == null)
+				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
+
+			froms.add(from_model.clone());
+			from_model.setCancelledThis(true);
 		}
 
 		if (broadcastAction != null)
