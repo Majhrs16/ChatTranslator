@@ -26,11 +26,13 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
+	public static final String version = "v1.4";
+
 	public boolean persist()      { return true; }
 	public boolean canRegister()  { return true; }
 
 	@NotNull public String getAuthor()     { return "Majhrs16"; }
-	@NotNull public String getVersion()    { return "v1.4"; }
+	@NotNull public String getVersion()    { return version; }
 	@NotNull public String getIdentifier() { return "cot"; }
 
 	@Override
