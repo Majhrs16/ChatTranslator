@@ -23,14 +23,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public interface Core {
-	public GoogleTranslator GT = new GoogleTranslator();
+	GoogleTranslator GT = new GoogleTranslator();
 
 	Pattern sub_variables = Pattern.compile("\\{([a-z0-9_]+)\\}", Pattern.CASE_INSENSITIVE);
 	Pattern no_translate  = Pattern.compile("`(.+)`", Pattern.CASE_INSENSITIVE);
 	Pattern variables     = Pattern.compile("[%$][A-Z0-9_]+[%$]"); // CORREGIR el mal procesado de PAPI con la modifiacion de ct_messages,
 	Pattern color_hex     = Pattern.compile("#[a-fA-Z0-9]{6}");
 
-	default public String parseSubVarables(Player player, String input) {
+	default String parseSubVarables(Player player, String input) {
 		if (input == null)
 			return input;
 
@@ -40,7 +40,7 @@ public interface Core {
 		return  PlaceholderAPI.setPlaceholders(player, input);
 	}
 
-	default public String convertVariablesToLowercase(String input) {
+	default String convertVariablesToLowercase(String input) {
 		if (input == null)
 			return input;
 
@@ -51,7 +51,7 @@ public interface Core {
 	}
 
 	@Deprecated
-	default public String getColorJ16(String text) {
+	default String getColorJ16(String text) {
 		try {
 			Class<?> chatColorClass = Class.forName("net.md_5.bungee.api.ChatColor");
 
@@ -75,7 +75,7 @@ public interface Core {
 		return text;
 	}
 
-	default public String getColor(String text) {
+	default String getColor(String text) {
 //			Convierte tradicional a un formato visible.
 
         if (text == null)
@@ -83,7 +83,8 @@ public interface Core {
 
 /*		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
 			text = getColorJ16(text);
-		} */
+		}
+*/
 
 
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);
@@ -97,7 +98,7 @@ public interface Core {
 		return config.contains(path) ? String.join("\n", config.getStringList(path)) : format;
 	}
 
-	default public Message formatMessage(Message original) {
+	default Message formatMessage(Message original) {
 //			Este formateador basicamente remplaza (sub)vriables PAPI y locales, colorea el chat y/o el formato de este, tambien para los tooltips, y ya por ultimo traduce el mensaje. 
 
 		Message from               = original.clone(); // se clona para evitar sobreescrituras en el evento.

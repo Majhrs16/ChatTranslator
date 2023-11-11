@@ -26,32 +26,20 @@ public class Chat implements Listener {
 		if (plugin.isDisabled() || event.isCancelled())
 			return;
 
-		if (Config.NativeChat.CANCEL.IF()) {
-			event.setCancelled(true);
-		}
+		event.setCancelled(Config.NativeChat.CANCEL.IF());
 
 		String from_lang = API.getLang(event.getPlayer());
+		Message model    = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
+		Message console  = util.createChat(Bukkit.getConsoleSender(), event.getMessage().replace("\"", "\\\""),  from_lang,  API.getLang(Bukkit.getConsoleSender()),  "console")
+			.setSender(event.getPlayer())
+			.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		Message to_model = util.createChat(event.getPlayer(), event.getMessage(), from_lang, from_lang, null);
-
-		Message from_console = util.createChat(
-				Bukkit.getConsoleSender(),
-				event.getMessage().replace("\"", "\\\""),
-				from_lang,
-				API.getLang(Bukkit.getConsoleSender()),
-				"console"
-			);
-
-			from_console.setSender(event.getPlayer());
-			from_console.setCancelledThis(true); // Evitar duplicacion para el remitente.
-
-		API.broadcast(to_model, util.getOnlinePlayers(), froms -> {
-			froms.add(from_console);
+		API.broadcast(model, util.getOnlinePlayers(), froms -> {
+			froms.add(console);
 			API.broadcast(froms);
 		});
 
-		if (Config.NativeChat.CLEAR.IF()) {
+		if (Config.NativeChat.CLEAR.IF())
 			event.getRecipients().clear();
-		}
 	}
 }

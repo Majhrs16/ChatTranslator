@@ -1,5 +1,6 @@
 package majhrs16.cht.util.cache.internal;
 
+import majhrs16.cot.CoreTranslator;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import majhrs16.dst.DiscordTranslator;
@@ -25,8 +26,9 @@ public class Texts {
 			dataMap.put(key, config.get(key));
 
 		dataMap.put("versions.plugin", "v" + ChatTranslator.getInstance().getDescription().getVersion());
-		dataMap.put("versions.kernel", BaseLibrary.version);
 		dataMap.put("versions.dst", DiscordTranslator.version);
+		dataMap.put("versions.cot", CoreTranslator.version);
+		dataMap.put("versions.kernel", BaseLibrary.version);
 
 		dataMap.put("plugin.url", "https://www.spigotmc.org/resources/chattranslator.106604/");
 

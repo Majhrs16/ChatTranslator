@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 
 public class SetterLang {
 //	private ChatTranslator plugin = ChatTranslator.getInstance();
-	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public void setLang(Message DC, String lang) {
 		try {
@@ -35,7 +35,7 @@ public class SetterLang {
 		try {
 			to_player = Bukkit.getOfflinePlayer(player);
 
-			if (!to_player.hasPlayedBefore()) {
+			if (!to_player.isOnline() && !to_player.hasPlayedBefore()) {
 				throw new NullPointerException();
 			}
 

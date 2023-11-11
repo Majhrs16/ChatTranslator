@@ -124,7 +124,7 @@ public class util {
 	public static Message createChat(CommandSender sender, String messages, String langSource, String langTarget, String path) {
 		path = path == null ?  "" : "_" + path;
 
-		Message to   = createGroupFormat(null, messages, langSource, null, "to" + path);
+		Message to   = createGroupFormat(sender, messages, langSource, langTarget, "to" + path);
 		Message from = createGroupFormat(sender, messages, langSource, langTarget, "from" + path);
 			from.setTo(to);
 

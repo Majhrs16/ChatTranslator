@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.util.UUID;
 
 public interface Lang {
-	public class LocaleUtil {
+	class LocaleUtil {
 		public static String getPlayerLocale(Player player) {
 			String playerLocale = null;
 
@@ -53,7 +53,7 @@ public interface Lang {
 		}
 	}
 
-	default public void setLang(Object sender, String lang) throws IllegalArgumentException {
+	default void setLang(Object sender, String lang) throws IllegalArgumentException {
 //		Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
 //			setLang(player, "es");        -> null,
 //			setLang(console, "es");       -> null,

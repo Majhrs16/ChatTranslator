@@ -22,9 +22,9 @@ public class Message extends Event implements Cancellable {
 	private CommandSender sender      = Bukkit.getConsoleSender();
 	private String name               = sender.getName();
 	private String[] messages_formats = new String[] { "%ct_messages%" };
-	private String[] messages         = new String[0];
-	private String[] tool_tips        = new String[0];
-	private String[] sounds           = new String[0];
+	private String[] messages;
+	private String[] tool_tips;
+	private String[] sounds;
 	private boolean is_cancelled      = false;
 	private String lang_source        = plugin.messages.get().getString("native-lang");
 	private String lang_target        = plugin.storage.getDefaultLang();
@@ -91,22 +91,22 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public Message setMessagesFormats(String messageFormat) {
-		this.messages_formats = messageFormat == null || messageFormat.isEmpty() ? new String[0] : messageFormat.split("\n");
+		this.messages_formats = messageFormat == null || messageFormat.isEmpty() ? null : messageFormat.split("\n");
 		return this;
 	}
 
 	public Message setMessages(String messages) {
-		this.messages = messages == null || messages.isEmpty() ? new String[0] : messages.split("\n");
+		this.messages = messages == null || messages.isEmpty() ? null : messages.split("\n");
 		return this;
 	}
 
 	public Message setToolTips(String toolTips) {
-		this.tool_tips = toolTips == null || toolTips.isEmpty() ? new String[0] : toolTips.split("\n");
+		this.tool_tips = toolTips == null || toolTips.isEmpty() ? null : toolTips.split("\n");
 		return this;
 	}
 
 	public Message setSounds(String sounds) {
-		this.sounds = sounds == null || sounds.isEmpty() ? new String[0] : sounds.split("\n");
+		this.sounds = sounds == null || sounds.isEmpty() ? null : sounds.split("\n");
 		return this;
 	}
 

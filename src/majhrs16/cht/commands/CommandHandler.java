@@ -1,5 +1,6 @@
 package majhrs16.cht.commands;
 
+import majhrs16.lib.network.translator.GoogleTranslator;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,7 +39,7 @@ public class CommandHandler implements CommandExecutor {
 
 		String type = config.getString(label + ".type");
 
-		Message DC = util.getDataConfigDefault();
+		Message DC = new Message();
 			DC.setSender(sender);
 			DC.setLangTarget(API.getLang(sender));
 
@@ -292,6 +293,11 @@ public class CommandHandler implements CommandExecutor {
 
 		try {
 			switch (args.length) {
+				case 1: // /XD lang
+					DC.setMessages("&aSu idioma establecido es&f: &b" + GoogleTranslator.Languages.valueOf(API.getLang(DC.getSender()).toUpperCase()).getValue() + "&f.");
+						API.sendMessage(DC);
+					break;
+
 				case 2: // /XD lang es
 					setter.setLang(DC, args[1]);
 					break;

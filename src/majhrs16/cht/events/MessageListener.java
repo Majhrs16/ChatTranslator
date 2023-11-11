@@ -31,9 +31,8 @@ public class MessageListener implements Listener {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
 			toMinecraft(event);
 
+			String path              = "to_discord";
 			FileConfiguration config = plugin.config.get();
-			String path = "to_discord";
-
 			event.getTo().setMessagesFormats(config.contains("formats." + path + ".messages") ? path : null);
 			event.getTo().setToolTips(config.contains("formats." + path + ".toolTips")        ? path : null);
 			event.getTo().setSounds(config.contains("formats." + path + ".sounds")            ? path : null);
@@ -60,22 +59,28 @@ public class MessageListener implements Listener {
 			if (to_player == null || event.getSender() == to_player || players.contains(to_player))
 				continue;
 
-			else if (event.getTo().getSender() == to_player)
-				continue; // return;
+			else if (event.getTo().getSender().equals(to_player))
+				return;
 
 			players.add(to_player);
 		}
 
 		API.broadcast(to_model, players.toArray(new Player[0]), froms -> API.broadcast(froms, API::sendMessage));
-
 		API.sendMessage(event);
 	}
 
 	public void toDiscord(Message event) {
-		if (event.isEmpty() || event.isCancelled() || !Config.TranslateOthers.DISCORD.IF())
-			return;
-
-		if (event.getTo().getMessagesFormats().isEmpty())
+		if (event.isEmpty()
+				|| event.isCancelled()
+				|| !Config.TranslateOthers.DISCORD.IF()
+				|| event.getLangSource() == null
+				|| event.getLangTarget() == null
+				|| event.getLangSource().equals("disabled")
+				|| event.getLangTarget().equals("disabled")
+				|| event.getMessagesFormats() == null
+				|| event.getMessages() == null
+				|| event.getTo().getMessagesFormats() == null
+				|| event.getTo().getMessagesFormats().isEmpty())
 			return;
 
 		Matcher matcher = Chat.mentions.matcher(event.getMessages());
