@@ -94,6 +94,7 @@ commands:
       toolTips:
       - "&4Kernel&f: &b%versions.kernel%"
       - "&9DST&f: &b%versions.dst%"
+      - "&bCo&9T&f: &b%versions.cot%"
 
 events:
   access:
