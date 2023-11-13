@@ -64,10 +64,10 @@ public class JDAListener extends ListenerAdapter implements Listener {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		if (event.getAuthor().isBot())
-			return;
-
 		Message message = event.getMessage();
+
+		if (message.getAuthor().equals(DiscordTranslator.getJda().getSelfUser()))
+			return;
 
 		if (message.getContentRaw().startsWith("!cht")) {
 			String[] args = message.getContentRaw().split(" ");
