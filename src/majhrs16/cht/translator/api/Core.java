@@ -86,7 +86,6 @@ public interface Core {
 		}
 */
 
-
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', text);
 	}
 
