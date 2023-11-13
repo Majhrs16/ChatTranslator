@@ -86,7 +86,7 @@ discord:
     server-status: []
     player-access: []
 
-server-uuid: 'null"
+server-uuid: 'null'
 auto-update-config: true
 show-native-chat:
   cancel-event: true
