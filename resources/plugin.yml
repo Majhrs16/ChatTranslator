@@ -2,7 +2,7 @@ main: majhrs16.cht.ChatTranslator
 name: ChatTranslator
 author: Majhrs16
 load: STARTUP
-version: 1.7.12
+version: 1.7.13
 
 softdepend:
 - PlaceholderAPI

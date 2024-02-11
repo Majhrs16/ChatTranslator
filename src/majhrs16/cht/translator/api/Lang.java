@@ -36,12 +36,14 @@ public interface Lang {
 							playerLocale = (String) eField.get(localeObject);
 						}
 
-					} else if (util.getMinecraftVersion() <= 20.1) { // Version 1.20.1 o anterior.
+					} else if (util.getMinecraftVersion() <= 20.1) { // 1.20.1 o anterior.
 						playerLocale = (String) entityPlayer.getClass().getField("locale").get(entityPlayer);
 
-					} else if (util.getMinecraftVersion() >= 20.2) {  // Versión 1.20.2 o superior
+					} else if (util.getMinecraftVersion() == 20.2) { // 1.20.2
 						playerLocale = (String) entityPlayer.getClass().getField("cM").get(entityPlayer);
 
+					} else if (util.getMinecraftVersion() == 20.4) { // 1.20.4
+						playerLocale = (String) entityPlayer.getClass().getField("cO").get(entityPlayer);
 					}
 				}
 
