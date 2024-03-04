@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
 
@@ -52,6 +53,9 @@ public class Message extends Event implements Cancellable {
 	);
 
 	private Message to;
+	private CommandSender sender;
+	private String name;
+	private String sender_type;
 	private Formats messages       = new Formats();
 	private Formats tool_tips      = new Formats();
 	private String[] sounds        = new String[0];
@@ -103,7 +107,7 @@ public class Message extends Event implements Cancellable {
 	}
 
 	private Message setSenderType(String type) {
-		this.sendertype = type;
+		this.sender_type = type;
 		return this;
 	}
 
@@ -181,7 +185,7 @@ public class Message extends Event implements Cancellable {
 	public Message getTo()		      { return to; }
 
 	public CommandSender getSender()  { return sender; }
-	public String getSenderType()	  { return sendertype; }
+	public String getSenderType()	  { return sender_type; }
 	public String getSenderName()	  { return name; }
 
 	public String getSound(int index) { return sounds[index]; }
