@@ -1,0 +1,69 @@
+text: "&6<&e[ &aChat&9Translator &e]&6>"
+toolTips: []
+
+cht:
+  type: "main"
+  text: "&f/&echt"
+  suggest: "cht"
+  toolTips:
+  - "&aMuestra este mismo mensaje de ayuda&f."
+
+  lang:
+    type: "setterLang"
+    text: "&elang &f[&6player&f] <&6lang&f>"
+    suggest: "cht lang %player_name% %ct_lang_source%"
+    toolTips:
+    - "&7Especifique con su &bcodigo de idioma&f, &apara traducir el chat a su gusto&f,"
+    - "&f  (&7Independientemente de su lenguaje en el Minecraft&f)"
+    - ""
+    - "&aTrucos&f:"
+    - "&7  Puede poner &bauto &7como codigo para volver a la"
+    - "&7    deteccion automatica del idioma de su Minecraft,"
+    - ""
+    - "&7  Puede poner &boff &7como codigo para &cdeshabilitar &7la traduccion"
+    - "&7    automatica para el jugador especificado&f."
+
+  version:
+    type: "showVersion"
+    text: "&eversion"
+    suggest: "cht version"
+    toolTips:
+    - "&aVisualizar version&f."
+
+  reload:
+    type: "reloader"
+    text: "&ereload &f[&bformats &f| &bconfig &f| &bcommands &f| &bsigns &f| &bstorage&f]"
+    suggest: "cht reload "
+    toolTips:
+    - "&aRecargar configuracion &f(&7Por defecto todo&f)&f."
+
+  toggle:
+    type: "toggler"
+    text: "&etoggle &f[&6player&f]"
+    suggest: "cht toggle %player_name%"
+    toolTips:
+    - "&aActiva &7o &cdesactiva &7el chat para el jugador o por defecto en global&f,"
+    - "&e  Advertencia&f: &eEste comando limpia los mensajes pendientes del chat&f."
+
+  reset:
+    type: "resetterConfig"
+    text: "&ereset"
+    suggest: "cht reset"
+    toolTips:
+    - "&4Restablece la config&f,&e Pero no los datos de lenguajes&f."
+
+  link:
+    type: "discordLinker"
+    text: "&elink"
+    suggest: "cht link"
+    toolTips:
+    - "&aVincula &7tu cuenta de &aMinecraft &7con tu cuenta de &9Discord&f."
+
+tell:
+  type: "privateChat"
+  text: "&f/&etell"
+  suggest: "tell %player_name% texto de ejemplo"
+  toolTips:
+  - "&aEnvia mensajes privados a alguien :D&f."
+
+config-version: 2

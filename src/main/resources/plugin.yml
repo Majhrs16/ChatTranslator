@@ -1,0 +1,32 @@
+main: majhrs16.cht.ChatTranslator
+description: Translator and powerful chat formatter.
+name: ChatTranslator
+author: Majhrs16
+load: STARTUP
+version: 2.0
+prefix: ChT
+
+softdepend:
+- PlaceholderAPI
+- ConditionalEvents
+
+permissions:
+  ChatTranslator.admin:
+    descriptions: Administrate the plugin.
+    default: op
+
+  ChatTranslator.chat.*.messages:
+    descriptions: Send and receive messages.
+    default: true
+
+  ChatTranslator.chat.*.toolTips:
+    descriptions: Send and receive toolTips.
+    default: true
+
+  ChatTranslator.chat.*.sounds:
+    descriptions: Send and receive sounds.
+    default: true
+
+  ChatTranslator.chat.*.color:
+    descriptions: Send and receive custom colors.
+    default: op

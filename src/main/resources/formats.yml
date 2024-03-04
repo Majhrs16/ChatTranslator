@@ -1,0 +1,490 @@
+native-lang: es
+
+from:
+  messages:
+    formats:
+      - '%ct_expand% &a%ct_messages%'
+
+  toolTips:
+    formats:
+      - '&f[&6%ct_lang_source%&f] &f<&b%player_name%&f>'
+
+to:
+  messages:
+    formats:
+      - '&f<&b%player_name%&f> &a$ct_messages$'
+
+  toolTips:
+    formats:
+      - '&f[&6%ct_lang_source%&f] &a%ct_messages%'
+
+to_console:
+  messages:
+    formats:
+      - '&f<&b%player_name%&f> &a$ct_messages$'
+
+  toolTips:
+    formats:
+      - '\t&f[&6%ct_lang_source%&f] &a%ct_messages%'
+
+to_discord:
+  messages:
+    formats:
+      - '<%player_name%> [%ct_lang_source%] $ct_messages$'
+
+from_entry:
+  messages:
+    texts:
+      - "se ha unido al juego"
+
+    formats:
+      - '&a+ &e%player_name% {0}&f! &a:D'
+
+to_entry:
+  messages:
+    texts:
+      - "se ha unido al juego"
+
+    formats:
+      - '&a+ &e%player_name% {0}&f! &a:D'
+
+to_entry_discord:
+  color: "#00FF00"
+  messages:
+    texts:
+      - "se ha unido al juego"
+
+    formats:
+      - '&a+ &e%player_name% {0}&f! &a:D'
+
+to_entry_console:
+  messages:
+    texts:
+      - "se ha unido al juego"
+
+    formats:
+      - '&a+ &e%player_name% {0}&f! &a:D'
+
+from_exit:
+  messages:
+    texts:
+      - "ha abandonado el juego"
+
+    formats:
+      - '&c- &e%player_name% {0}&f, &c:('
+
+to_exit:
+  messages:
+    texts:
+      - "ha abandonado el juego"
+
+    formats:
+      - '&c- &e%player_name% {0}&f, &c:('
+
+to_exit_discord:
+  color: "#00FF00"
+  messages:
+    texts:
+      - "ha abandonado el juego"
+
+    formats:
+      - '&c- &e%player_name% {0}&f, &c:('
+
+to_exit_console:
+  messages:
+    texts:
+      - "ha abandonado el juego"
+
+    formats:
+      - '&c- &e%player_name% {0}&f, &c:('
+
+from_death:
+  messages:
+    formats:
+      - '&c%ct_messages%'
+
+to_death:
+  messages:
+    formats:
+      - '&c$ct_messages$'
+
+to_death_discord:
+  messages:
+    formats:
+      - '&c$ct_messages$'
+
+to_death_console:
+  messages:
+    formats:
+      - '&c$ct_messages$'
+
+from_private:
+  messages:
+    formats:
+      - '%ct_expand% &7%ct_messages%'
+
+  toolTips:
+    formats:
+      - '&f[&6%ct_lang_source%&f] &f<&7%player_name%&f>'
+
+  sounds:
+    ENTITY_EXPERIENCE_ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+    ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+to_private:
+  messages:
+    formats:
+      - '{"text": "&f<&7%player_name%&f> &7$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "/tell %player_name% "}}'
+
+  toolTips:
+    texts:
+      - '&7Te han hablado al privado&f! &aHaz click para responder&f!'
+
+    formats:
+      - "{0}"
+      - '&f[&6%ct_lang_source%&f] &7%ct_messages%'
+
+  sounds:
+    ENTITY_EXPERIENCE_ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+    ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+from_mention:
+  messages:
+    formats:
+      - '%ct_expand% &a%ct_messages%'
+
+  toolTips:
+    formats:
+      - '&f[&6%ct_lang_source%&f] &f<&a%player_name%&f>'
+
+to_mention:
+  messages:
+    formats:
+      - '{"text": "&f<&6%player_name%&f> &e$ct_messages$", "clickEvent": {"action": "suggest_command", "value": "@%player_name% "}}'
+
+  toolTips:
+    texts:
+      - '&eTe han mencionado&f! &aHaz click para responder&f!'
+
+    formats:
+      - "{0}"
+      - '&f[&6%ct_lang_source%&f] &e%ct_messages%'
+
+  sounds:
+    ENTITY_EXPERIENCE_ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+    ORB_PICKUP:
+      volume: 1
+      pitch: 1
+
+plugin:
+  name: "&aChat&9Translator"
+  version: "&b%versions.plugin%"
+
+  enable:
+    messages:
+      texts:
+        - "Activado"
+        - "Version"
+
+      formats:
+        - "&a\t{0}&f, &7{1}&f: %plugin.version%&f."
+
+  disable:
+    messages:
+      texts:
+        - "Desactivado"
+
+      formats:
+        - "\t&c{0}&f."
+
+  title:
+    min: "&6<&e[ &aCh&9T &e]&6>"
+    text: "&6<&e[ %plugin.name% &e]&6>"
+    UTF-8:
+      - "&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗"
+      - "&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗"
+      - "&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝"
+      - "&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝"
+
+  available-UTF-8:
+    "false":
+      messages:
+        texts:
+          - "&eAdvertencia&f, &eEs muy recomendable configurar su Java&f(&eAdemas de la consola &f/ &eterminal&f)&e en &bUTF&f-&b8&f."
+
+        formats:
+          - "{0}"
+
+    "true":
+      messages:
+        texts: []
+        formats: []
+
+  separator:
+    vertical: "\t"
+    horizontal: "&c<&4-------------------------&c>"
+
+  updates:
+    latest:
+      player:
+        messages:
+          texts: []
+          formats: []
+
+        toolTips: []
+
+      console:
+        messages:
+          text:
+            - "Estas usando la última versión del plugin"
+
+          formats:
+            - "\t&a{0} &4<&c3"
+
+    new:
+      player:
+        messages:
+          texts:
+            - 'Hay una nueva versión disponible'
+            - "Puedes descargarla en este"
+            - 'link'
+            - 'Haz clic para descargar'
+
+          formats:
+            - '%plugin.title.text% &e{0}&f!'
+            - '{
+                "text": "    &a{1} ",
+                "extra": [
+                  {
+                    "text": "&9&l&n{2}",
+                    "clickEvent": {
+                      "action": "open_url",
+                      "value": "%plugin.url%"
+                    },
+                    "hoverEvent": {
+                      "action": "show_text",
+                      "value": "&f¡&a{3}&f!"
+                    }
+                  },
+                  {"text": "&f! (&b&l%latestVersion%&f)"}
+                ]
+              }'
+
+      console:
+        messages:
+          texts:
+            - "Hay una nueva versión disponible"
+            - "Puedes descargarla en"
+
+          formats:
+            - "\t&e{0}&f! &f(&b%latestVersion%&f)"
+            - "\t\t&a{1} &9%plugin.url%"
+
+    error:
+      player:
+        messages:
+          texts:
+            - "Error mientras se buscaban actualizaciones"
+
+          formats:
+            - "    &c{0}&f."
+
+
+      console:
+        messages:
+          texts:
+            - "Error mientras se buscaban actualizaciones"
+
+          formats:
+            - "\t&c{0}&f."
+
+discord-translator:
+  name: "&9DST"
+
+  title:
+    min: "&6<&e[ %discord-translator.name% &e]&6>"
+
+  log4j:
+    done:
+      messages:
+        texts: []
+        formats: []
+
+    error:
+      messages:
+        texts:
+          - "NO SE PUDO INYECTAR EL LECTOR ANSI PARA LA CONSOLA"
+          - "Se usara en cambio el logger por defecto"
+          - "Razon"
+
+        formats:
+          - "%discord-translator.title.min% &c{0}&f."
+          - "\t&e{1}&f: &b%logger%&f."
+          - "\t&e{2}&f: %reason%"
+
+  load:
+    done:
+      discord:
+        messages:
+          texts:
+            - "Servidor encendido"
+
+          formats:
+            - "{0}! :D"
+
+        toolTips: []
+        color: "#00FF7F"
+
+      console:
+        messages:
+          texts:
+            - "Conectado"
+
+          formats:
+            - "%discord-translator.title.min% &a{0}&f."
+
+    error:
+      messages:
+        texts:
+          - "No se pudo iniciar el bot de Discord"
+          - "Por favor verifique su"
+
+        formats:
+          - "%plugin.title.text% &c{0}."
+          - "\t&e{1} &bconfig&f.&bdiscord&f.&bbot-token&f."
+
+  unload:
+    done:
+      discord:
+        messages:
+          texts:
+            - "Servidor apagado"
+
+          formats:
+            - "{0}! :("
+
+        toolTips: []
+        color: "#FF0000"
+
+      console:
+        messages:
+          texts:
+            - "Desconectado"
+
+          formats:
+            - "%discord-translator.title.min% &c{0}&f."
+
+        toolTips: []
+
+    error:
+      messages:
+        texts:
+          - "No se pudo apagar el bot de Discord"
+          - "Por favor verifique su conexion a internet"
+
+        formats:
+          - "%discord-translator.title.min% &c{0}."
+          - "\t&e{1}&f."
+
+storage:
+  error:
+    write:
+      messages:
+        texts:
+          - "Error al escribir en"
+
+        formats:
+          - "%plugin.title.min% &c{0} &b%type%&f."
+          - "\t%reason%"
+
+    read:
+      texts:
+        - "Error al leer en"
+
+      formats:
+        - "%plugin.title.min% &c{0} &b%type%&f."
+        - "\t%reason%"
+
+    invalid-type:
+      texts:
+        - "Tipo de almacenamiento invalido"
+
+      formats:
+        - "&c{0}&f: &b%type%&f."
+
+    open:
+      messages:
+        texts:
+          - "Error al cargar el"
+          - "Almacenamiento"
+
+        formats:
+          - "%plugin.title.min% &c{0} &b{1}&f.&b%type%&f."
+          - "\t%reason%"
+
+    close:
+      messages:
+        texts:
+          - "Error al des-cargar el"
+          - "Almacenamiento"
+
+        formats:
+          - "\t&c{0} &b{1}&f.&b%type%&f."
+          - "\t%reason%"
+
+  done:
+    write:
+      messages:
+        texts: []
+        formats: []
+
+    read:
+      messages:
+        texts: []
+        formats: []
+
+    open:
+      messages:
+        texts:
+          - "Cargado"
+          - "Almacenamiento"
+
+        formats:
+          - "%plugin.title.min% &a{0} &b{1}&f.&b%type%&f."
+
+    close:
+      messages:
+        texts:
+          - "Des-cargado"
+          - "Almacenamiento"
+
+        formats:
+          - "\t&a{0} &b{1}&f.&b%type%&f."
+
+commands:
+  main:
+    version:
+      messages:
+        formats:
+          - "%plugin.title.text% %plugin.version%"
+
+      toolTips:
+        formats:
+          - "&4Kernel&f: &b%versions.kernel%"
+          - "&9DST&f: &b%versions.dst%"
+          - "&bCo&9T&f: &b%versions.cot%"
+
+config-version: 8

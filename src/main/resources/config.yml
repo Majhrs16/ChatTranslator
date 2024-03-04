@@ -1,0 +1,35 @@
+storage:
+  type: sqlite
+  host: localhost
+  port: 3306
+  database: ChatTranslator
+  user: root
+  password: password
+
+auto-translate-others:
+  discord: false
+  access: true
+  signs:
+    enable: true
+    wrapText: false
+
+discord:
+  bot-token: ''
+  channels:
+    chat: []
+    deaths: []
+    console: []
+    server-status: []
+    player-access: []
+
+server-uuid: 'null'
+auto-update-config: true
+show-native-chat:
+  cancel-event: true
+  clear-recipients: false
+max-spam-per-tick: 90.0009
+use-PAPI-format: true
+check-updates: true
+config-version: 0
+default-lang: es
+debug: false

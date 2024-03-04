@@ -1,0 +1,157 @@
+native-lang: es
+
+plugin:
+  name: "&aChat&9Translator"
+  version: "&b%versions.plugin%"
+  enable: "&a\tActivado&f, &7Version&f: %plugin.version%&f."
+  disable: "\t&cDesactivado&f."
+  title:
+    min: "&6<&e[ &aCh&9T &e]&6>"
+    text: "&6<&e[ %plugin.name% &e]&6>"
+    UTF-8:
+    - "`&a╔═╦╗   ╔╗ &9╔══╗        ╔╗  ╔╗`"
+    - "`&a║╔╣╚╦═╦╣╠╗&9╚╣╠╬═╦═╦═╦══╣╠═╦╣╠╦═╦═╗`"
+    - "`&a║╚╣║╠╝╠╗╔╣&9 ║║║╠╬╝║║╠╗╚╣╠╝╠╗╔╣║║╠╝`"
+    - "`&a╚═╩╩╩═╝╚═╝&9 ╚╝╚╝╚═╩╩╩══╩╩═╝╚═╩═╩╝`"
+
+  separator:
+    vertical: "\t"
+    horizontal: "&c<&4-------------------------&c>"
+
+  is-UTF-8:
+    "false": "&eAdvertencia&f, &eEs muy recomendable configurar su Java&f(&eAdemas de la consola &f/ &eterminal&f)&e en &bUTF&f-&b8&f."
+
+  updates:
+    latest:
+      player:
+        text: []
+        toolTips: []
+
+      console:
+        text:
+        - "\t&aEstas usando la última versión del plugin &4<&c3"
+
+    new:
+      player:
+        messages:
+          texts:
+          - '&eHay una nueva versión disponible&f!'
+          - "&aPuedes descargarla en este "
+          - '&9&llink'
+          - '&f¡&aHaz clic para descargar&f!'
+
+          formats:
+          - '{"text": "%plugin.title.text% {0}", "extra": [{"text": "\n    {1}"}, {"text": "{2}", "underlined": true, "clickEvent": {"action": "open_url", "value": "%plugin.url%"}, "hoverEvent": {"action": "show_text", "value": "{3}"}}, {"text": "&f! (&b&l%latestVersion%&f)"}]}'
+
+      console:
+        text:
+        - "&e\tHay una nueva versión disponible&f! &f(&b%latestVersion%&f)"
+        - "&a\t\tPuedes descargarla en &9%plugin.url%"
+
+    error:
+      player:
+        text:
+        - "    &cError mientras se buscaban actualizaciones&f."
+        toolTips: []
+
+      console:
+        text:
+        - "\t&cError mientras se buscaban actualizaciones&f."
+        toolTips: []
+
+discord-translator:
+  name: "&9DST"
+
+  title:
+    min: "&6<&e[ %discord-translator.name% &e]&6>"
+
+  log4j:
+    inject-reader:
+      done: []
+      error:
+        - "%discord-translator.title.min% &cNO SE PUDO INYECTAR EL LECTOR ANSI PARA LA CONSOLA&f."
+        - "\t&eSe usara en cambio el logger por defecto: &b%s&f."
+        - "\t&eRazon&f: %reason%"
+
+  load:
+    done:
+      discord:
+        text:
+        - "Servidor encendido! :D"
+        toolTips: []
+        color: "#00FF7F"
+
+      console:
+        text:
+        - "%discord-translator.title.min% &aConectado&f."
+        toolTips: []
+
+    error:
+    - "%plugin.title.text% &cNo se pudo iniciar el bot de Discord."
+    - "\t&ePor favor verifique su &bconfig&f.&bdiscord&f.&bbot-token&f."
+
+  unload:
+    done:
+      discord:
+        texts:
+        - "Servidor apagado! :("
+        toolTips: []
+        color: "#FF0000"
+
+      console:
+        text:
+        - "%discord-translator.title.min% &cDesconectado&f."
+        toolTips: []
+
+    error:
+    - "%discord-translator.title.min% &cNo se pudo apagar el bot de Discord."
+    - "\t&ePor favor verifique su conexion a internet&f."
+
+storage:
+  errors:
+    write:
+    - "%plugin.title.min% &cError al escribir en &b%type%&f."
+    - "\t%reason%"
+
+    read:
+    - "%plugin.title.min% &cError al leer en &b%type%&f."
+    - "\t%reason%"
+
+    invalid-type:
+    - "%plugin.title.min% &eTipo de almacenamiento invalido: &b%type%&f."
+
+  done:
+    write: []
+    read: []
+
+  open:
+    ok:
+    - "%plugin.title.min% &aCargado &bAlmacenamiento&f.&b%type%&f."
+
+    error:
+    - "%plugin.title.min% &cError al cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
+
+  close:
+    ok:
+    - "\t&aDes-cargado &bAlmacenamiento&f.&b%type%&f."
+
+    error:
+    - "\t&cError al des-cargar el &bAlmacenamiento&f.&b%type%&f.\n\t%reason%"
+
+commands:
+  main:
+    version:
+      text:
+      - "%plugin.title.text% %plugin.version%"
+
+      toolTips:
+      - "&4Kernel&f: &b%versions.kernel%"
+      - "&9DST&f: &b%versions.dst%"
+      - "&bCo&9T&f: &b%versions.cot%"
+
+events:
+  access:
+    entry: "se ha unido al juego&f! &a:D"
+    exit: "ha abandonado el juego&f, &c:("
+
+config-version: 6
