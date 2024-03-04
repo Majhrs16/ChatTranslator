@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+shadowJar {
+//    relocate 'org.apache.logging.log4j', 'majhrs16.dst.libs.org.apache.logging.log4j' // ERROR LOG4J core no encontrado!
+}
+
+group = 'majhrs16.cht'
+version = 'v2.0'
+
+compileJava.options.encoding = 'UTF-8'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation fileTree(dir: 'Libs', include: ['*.jar'])
+
+    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.22.0'
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.22.0'
+    compileOnly 'me.clip:placeholderapi:2.11.4'
+}
+
+test {
+    useJUnitPlatform()
+}
