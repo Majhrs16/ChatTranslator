@@ -46,6 +46,14 @@ public class Message extends Event implements Cancellable {
 				else
 					throw new IllegalArgumentException();
 			},
+			(arg) -> {
+				arg = arg.toLowerCase();
+				if (arg.equals("null"))
+					return null;
+
+				else
+					throw new IllegalArgumentException();
+			},
 			Integer::parseInt,
 			Float::parseFloat,
 			Double::parseDouble
