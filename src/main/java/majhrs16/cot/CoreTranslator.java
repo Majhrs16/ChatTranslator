@@ -1,7 +1,6 @@
 package majhrs16.cot;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 import majhrs16.cht.translator.ChatTranslatorAPI;
 import majhrs16.cht.events.MessageListener;
@@ -9,9 +8,9 @@ import majhrs16.cht.events.custom.Message;
 import majhrs16.cht.events.ChatLimiter;
 import majhrs16.cht.util.util;
 
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
@@ -48,6 +47,10 @@ public class CoreTranslator extends PlaceholderExpansion {
 						result = sendDiscord(player, matcher.group(1), matcher.group(2));
 						break;
 
+					case TRANSLATE:
+						result = API.getTranslator().translate(matcher.group(1), matcher.group(2), matcher.group(3));
+						break;
+
 					case BROADCAST:
 						result = broadcast(player, matcher.group(1));
 						break;
@@ -57,7 +60,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case LANG:
-						Player targetPlayer = Bukkit.getServer().getPlayer(matcher.group(1));
+						CommandSender targetPlayer = util.getSenderByName(matcher.group(1));
 						if (targetPlayer == null)
 							result = getMessageFormatted(null, "&4Error&f: &cJugador no encontrado&f.");
 

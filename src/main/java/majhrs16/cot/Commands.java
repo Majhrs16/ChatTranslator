@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 public enum Commands {
     SEND_DISCORD("^sendDiscord;\\s*(.+?);\\s*(.+?)$"),
+    TRANSLATE("^translate;\\s*(.+?);\\s*(.+?);\\s*(.+?)$"),
     BROADCAST("^broadcast;\\s*(.+?)$"),
     VAR("^var;\\s*(.+?)(;\\s*(.+?))?$"),
     SEND("^send;\\s*(.+?)$"),
