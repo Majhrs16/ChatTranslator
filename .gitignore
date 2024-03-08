@@ -1,4 +1,4 @@
-/build/
 /.gradle/
-/Libs/
 /.idea/
+/build/
+/Libs/JDA*.jar
