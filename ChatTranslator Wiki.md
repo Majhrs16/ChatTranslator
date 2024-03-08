@@ -94,6 +94,7 @@ to:
   messages:
     texts:
       - Traduccion
+
     formats:
       - '&e[&6{0}&e]'
       - ''
