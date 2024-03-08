@@ -216,6 +216,7 @@ class Example {
 ```
 
 1.1. `Broadcast de medio nivel.`
+
    Esta variante de la anterior, es la simplificacion del segundo parametro, por defecto se usara ChatLimiter.
 
 **Sintaxis:**
@@ -224,7 +225,7 @@ public interface Messages {
 	void broadcast(
 //		Lista de remitentes(Pueden ser todos iguales),
 //		cada uno con su propio destinario.
-		List<Message> messages,
+		List<Message> messages
 	);
 }
 ```
@@ -248,6 +249,7 @@ class Example {
 ```
 
 2.0. `Broadcast de alto nivel.`
+
    Esta variante es similar a la primera. Te permite enviar un mensaje a todos los jugadores mas facilmente. El parámetro `model` es un modelo de mensaje que se enviará a todos los jugadores online. La función se encargará de clonar inicialmente el mensaje modelo y luego modificarlo en función de cada jugador antes de enviarlo, ademas de cancelar cada remitente tras su primer uso para evitar duplicaciones inesperadas del mensaje por cada destinario.
 
 **Sintaxis:**
@@ -272,12 +274,12 @@ class Example {
 	Example() {
 //		Crear el mensaje modelo para los destinarios.
 		Message to_model = new Message();
-		  ...
+//		  ...
 		  to_model.getMessages().setFormats("$ct_messages$");
 
 //		Crear el mensaje para el remitente.
 		Message from_model = new Message();
-		  ...
+//		  ...
 		from_model.setTo(to_model);
 
 //		Enviar el mensaje de cada objeto Message a todos los jugadores en línea(Incluyendo from) usando el mensaje modelo atravez del ChatLimiter.
@@ -314,6 +316,7 @@ class Example {
 ```
 
 2.1. `Broadcast para tambien la consola!`
+
    Esta variante de la anterior, permite ejecutar demas acciones, permitiendo la oportunidad de agregar por ejemplo el message de la consola u otras acciones.
 
 **Ejemplo de uso:**
@@ -359,6 +362,7 @@ class Example {
 En todos los casos, los mensajes se enviarán a los remitentes y destinatarios especificados con sus respectivas traducciones y personalizaciones.
 
 3.0. `Lanzar el evento Message`
+
    Finalmente, si desea enviar al sendMessage y al mismo tiempo notificar a todos sobre este mensaje, puede hacerlo de la siguiente forma:
 
 **Ejemplo de uso:**
@@ -389,58 +393,58 @@ Tiene varios métodos y atributos para facilitar la personalización de mensajes
 ```java
 public class Message {
 //	Establece el destinario como otro objeto Message para este remitente.
-	Message setTo(Message to)
+	Message setTo(Message to);
 //	Obtiene el destinario como otro objeto Message.
-	Message getTo()
+	Message getTo();
 
 //	Establece el jugador(online) o consola.
-	Message setSender(CommandSender sender)
+	Message setSender(CommandSender sender);
 //	Obtiene el sender.
-	CommandSender getSender()
+	CommandSender getSender();
 
 //	Cambia el nombre del sender(Solo a nivel de ChT).
-	String setSenderName()
+	String setSenderName();
 //	Obtiene el nombre del sender.
-	String getSenderName()
+	String getSenderName();
 
 //	Obtiene los formatos de los mensajes/toolTips.
-	Formats getMessages()
-	Formats getToolTips()
+	Formats getMessages();
+	Formats getToolTips();
 
 //	Establece los sonidos.
-	Message setSounds(String sounds)
+	Message setSounds(String sounds);
 //	Establece un sonido.
-	Message setSound(int index, String sound)
+	Message setSound(int index, String sound);
 //	Obtiene un sonido en especifico.
-	String getSound(int index)
+	String getSound(int index);
 //	Obtiene todos los sonidos.
-	String getSounds()
+	String getSounds();
 
 //	Indica si este mensaje se mostrará o no.
-	Message setCancelledThis(boolean isCancelled)
+	Message setCancelledThis(boolean isCancelled);
 
 //	Indica si este chat se mostrará o no.
-	Message setCancelled(boolean isCancelled)
+	Message setCancelled(boolean isCancelled);
 
 //	Establece el idioma origen.
-	Message setLangSource(String lang)
+	Message setLangSource(String lang);
 //	Obtiene el idioma de origen.
-	String getLangSource()
+	String getLangSource();
 
 //	Establece el idioma destino.
-	Message setLangTarget(String lang)
+	Message setLangTarget(String lang);
 //	Obtiene el idioma destino.
-	String getLangTarget()
+	String getLangTarget();
 
 //	Indica si se utilizará PlaceholderAPI para formatear el mensaje.
-	Message setFormatPAPI(boolean formatPAPI)
+	Message setFormatPAPI(boolean formatPAPI);
 //	Obtiene si se utilizará PlaceholderAPI.
-	Boolean getFormatPAPI()
+	Boolean getFormatPAPI();
 
 //	Indica si se forzara a usar los colores, caso contrario dependera del permiso.
-	Message setForceColor(boolean color)
+	Message setForceColor(boolean color);
 //	Obtiene si se forzara los colores.
-	Boolean isForceColor()
+	Boolean isForceColor();
 }
 ```
 
