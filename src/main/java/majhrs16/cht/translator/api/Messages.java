@@ -91,21 +91,21 @@ public interface Messages {
 		}
 	}
 
-	default void sendMessage(Message event) {
+	default void sendMessage(Message original) {
 //			Envia los mensajes especificados en el from(Objeto Message actual) y to.
 
-		if (event == null || event.isEmpty())
+		if (original == null || original.isEmpty())
 			return;
 
 		try {
-			logger.debug("API.Messages.sendMessage.PRE: %s", JsonFormatter.format(event.toString()));
+			logger.debug("API.Messages.sendMessage.PRE: %s", JsonFormatter.format(original.toString()));
 
-			Message formatted = ChatTranslatorAPI.getInstance().formatMessage(event);
+			Message formatted = ChatTranslatorAPI.getInstance().formatMessage(original);
 
 			logger.debug("API.Messages.sendMessage.POST: %s", JsonFormatter.format(formatted.toString()));
 
-			showMessage(event, formatted);
-			showMessage(event.getTo(), formatted.getTo());
+			showMessage(original, formatted);
+			showMessage(original.getTo(), formatted.getTo());
 
 			logger.debug("API.Messages.sendMessage.SEP:  ------------------------------------------------");
 
@@ -140,24 +140,24 @@ public interface Messages {
 		broadcast(messages, ChatLimiter::add);
 	}
 
-	default void broadcast(Message from_model, Player[] players, Consumer<List<Message>> broadcastAction) {
-		if (from_model == null || from_model.isEmpty())
+	default void broadcast(Message model, Player[] players, Consumer<List<Message>> broadcastAction) {
+		if (model == null || model.isEmpty())
 			return;
 
-		if (from_model.getTo() == null || from_model.getTo().isEmpty()) {
-			from_model.setTo(from_model.clone());
-			from_model.getTo().setSender(null);
-			from_model.getTo().setLangTarget(null);
+		if (model.getTo() == null || model.getTo().isEmpty()) {
+			model.setTo(model.clone());
+			model.getTo().setSender(null);
+			model.getTo().setLangTarget(null);
 		}
 
-		Message to_model    = from_model.getTo();
+		Message to_model    = model.getTo();
 		List<Message> froms = new ArrayList<>();
 //		String original_lang_target = to_model.getLangTarget(); // Limitacion necesaria por ahora...
 
 		for (Player to_player : players) {
 			to_model.setSender(to_player);
 
-			if (to_player.equals(from_model.getSender())) {
+			if (to_player.equals(model.getSender())) {
 				if (players.length > 1)
 					continue;
 
@@ -170,8 +170,8 @@ public interface Messages {
 //			if (original_lang_target == null) // Limitacion necesaria por ahora...
 			to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 
-			froms.add(from_model.clone());
-			from_model.setCancelledThis(true);
+			froms.add(model.clone());
+			model.setCancelledThis(true);
 		}
 
 		if (broadcastAction != null)
