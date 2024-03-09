@@ -1,4 +1,4 @@
-main: majhrs16.cht.ChatTranslator
+main: me.majhrs16.cht.ChatTranslator
 description: Translator and powerful chat formatter.
 name: ChatTranslator
 author: Majhrs16
