@@ -27,8 +27,8 @@ discord:
     player-access: []
 
 spam:
-  max-ticks: 20
-  max-messages: 9
+  max-ticks: 60
+  max-messages: 7
 
 server-uuid: 'null'
 auto-update-config: true
