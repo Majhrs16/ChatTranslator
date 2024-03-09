@@ -155,7 +155,7 @@ Para usar esta configuracion tal cual, debe de tener previamente 3 grupos en Luc
   ChT_Enhancer:
     type: custom
     custom_event_data:
-      event: majhrs16.cht.events.custom.Message
+      event: me.majhrs16.cht.events.custom.Message
       player_variable: getSender()
       variables_to_capture:
       - '%uuid%; getUUID()'

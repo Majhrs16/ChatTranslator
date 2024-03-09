@@ -8,7 +8,7 @@ Para utilizar la API de ChatTranslator, primero debes asegurarte de tener el com
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
 
 import org.bukkit.Bukkit;
 
@@ -35,7 +35,7 @@ public class Lang {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
 
 import org.bukkit.Bukkit;
 
@@ -80,7 +80,7 @@ public interface Lang {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
 
 import org.bukkit.Bukkit;
 
@@ -119,8 +119,8 @@ public interface Messages {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
 class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -165,8 +165,8 @@ public interface Messages {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
 import java.util.ArrayList;
 
@@ -233,8 +233,8 @@ public interface Messages {
 **Ejemplo de uso:**
 
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
 class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -265,8 +265,8 @@ public interface Messages {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
 class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -295,8 +295,8 @@ Se explica en su seccion.
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
 class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -321,10 +321,10 @@ class Example {
 
 **Ejemplo de uso:**
 ```java
-import majhrs16.cht.translator.ChatTranslatorAPI;
-import majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
 
-import majhrs16.cht.util.util;
+import me.majhrs16.cht.util.util;
 
 class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -517,9 +517,7 @@ El parámetro `json` debe ser una cadena de datos en formato JSON que contenga l
 	"isPAPI": true
   },
 
-  "to": {
-//	...
-  }
+  "to": {}
 }
 
 ```
