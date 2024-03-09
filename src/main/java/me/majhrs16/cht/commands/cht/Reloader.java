@@ -84,7 +84,7 @@ public class Reloader implements CommandExecutor {
 					Texts.getString("plugin.title.text") + "&7[&4ERR110&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f."
 				);
 
-			e.printStackTrace();
+			plugin.logger.error(e.toString());
 		}
 	}
 
@@ -93,21 +93,15 @@ public class Reloader implements CommandExecutor {
 			action.run();
 			DC.getMessages().setFormats("&7[  &aOK  &7] " + text);
 
-		} catch (SQLException e) {
+		} catch (SQLException | ParseYamlException e) {
 			DC.getMessages().setFormats(
 				"&7[ &cFAIL &7] " + text,
-				"    " + e.toString()
-			);
-
-		} catch (ParseYamlException e) {
-			DC.getMessages().setFormats(
-				"&7[ &cFAIL &7] " + text,
-				"    " + e.getMessage()
+				"    " + e
 			);
 
 		} catch (StorageRegisterFailedException e) {
 			DC.getMessages().setFormats("&7[ &cFAIL &7] " + text);
-			e.printStackTrace();
+			plugin.logger.error(e.toString());
 		}
 
 		API.sendMessage(DC);

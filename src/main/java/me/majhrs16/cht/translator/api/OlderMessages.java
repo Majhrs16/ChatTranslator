@@ -1,14 +1,18 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
 
+import me.majhrs16.lib.logger.Logger;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.Method;
 
 class OlderMessages {
+	private static final Logger logger = ChatTranslator.getInstance().logger;
+
 	@SuppressWarnings("unchecked")
 	private static void processJ7(Message formatted, String version) throws ClassNotFoundException {
 		Class<?> craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftPlayer");
@@ -44,7 +48,7 @@ class OlderMessages {
 				sendMessageMethod.invoke(craftPlayerClass.getMethod("getHandle").invoke(craftPlayerClass.cast(formatted.getSender())), chatComponentText);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.toString());
 			}
 		}
 	}

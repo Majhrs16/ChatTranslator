@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.util.UUID;
 
 public abstract class SQL extends Database {
-	private String table = "Storage";
+	private final String table = "Storage";
 
 	public SQL(String driver, String type) {
 		super(driver, type);

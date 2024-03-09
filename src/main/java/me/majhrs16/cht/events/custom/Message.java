@@ -433,7 +433,7 @@ public class Message extends Event implements Cancellable {
 		if (methods.length == 0)
 			throw new NoSuchMethodException("Method " + methodName + " not found");
 
-		Object result = null;;
+		Object result = null;
 		Exception last_exception = null;
 		Object[] convertedArgs = arguments.isEmpty() ? new Object[0] : convertArguments(arguments);
 
@@ -447,17 +447,13 @@ public class Message extends Event implements Cancellable {
 				result = method.invoke(obj, (Object) convertedArgs);
 				break;
 
-			} catch (IllegalArgumentException ignored) {
-				;
-			}
+			} catch (IllegalArgumentException ignored) {}
 
 			try {
 				result = method.invoke(obj, convertedArgs[0]);
 				break;
 
-			} catch (IllegalArgumentException ignored) {
-				;
-			}
+			} catch (IllegalArgumentException ignored) {}
 
 			try {
 				String[] convertedArgsArray = new String[convertedArgs.length];
@@ -470,7 +466,6 @@ public class Message extends Event implements Cancellable {
 
 			} catch (Exception e) {
 				last_exception = e;
-				continue;
 			}
 		}
 
@@ -490,7 +485,6 @@ public class Message extends Event implements Cancellable {
 				if (!insideQuotes) {
 					pathComponents.add(currentComponent.toString());
 					currentComponent.setLength(0); // Clear StringBuilder
-					continue;
 				}
 
 			} else if (c == '"') {

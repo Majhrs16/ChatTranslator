@@ -22,7 +22,7 @@ public class Chat implements Listener {
 	private final ChatTranslator plugin  = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API  = ChatTranslatorAPI.getInstance();
 
-	public static final Pattern mentions = Pattern.compile("@([A-Za-z0-9_\\.]+)");
+	public static final Pattern mentions = Pattern.compile("@([A-Za-z0-9_.]+)");
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent event) {

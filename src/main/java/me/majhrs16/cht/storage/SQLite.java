@@ -16,7 +16,7 @@ public class SQLite extends SQL {
 			Class.forName(driver);
 
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			ChatTranslator.getInstance().logger.error(e.toString());
 			return;
 		}
 

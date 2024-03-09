@@ -104,9 +104,7 @@ public class TerminalLogger {
 								try {
 									Thread.sleep(2000);
 
-								} catch (InterruptedException ignored) {
-									;
-								}
+								} catch (InterruptedException ignored) {}
 
 								return;
 							}
@@ -123,7 +121,7 @@ public class TerminalLogger {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				plugin.logger.error(e.toString());
 			}
 		}
 	}

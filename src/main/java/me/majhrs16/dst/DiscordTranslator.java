@@ -1,6 +1,5 @@
 package me.majhrs16.dst;
 
-import me.majhrs16.dst.events.JDAListener;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -8,14 +7,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 
-import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.dst.events.JDAListener;
 
 public class DiscordTranslator {
 	private static JDA jda;
 
-	private final ChatTranslator plugin  = ChatTranslator.getInstance();
-	private final JDAListener listener   = new JDAListener();
-	public final static String version   = "b3.6";
+	private final JDAListener listener = new JDAListener();
+	public final static String version = "b3.6";
 
 	private final TerminalLogger terminalLogger = new TerminalLogger();
 
@@ -50,7 +48,6 @@ public class DiscordTranslator {
 	}
 
 	public void unregisterCommands() {
-		;
 	}
 
 	public void disconnect() {

@@ -98,7 +98,7 @@ public class Signs implements Listener {
 				plugin.signs.reload();
 
 			} catch (ParseYamlException e) {
-				e.printStackTrace();
+				plugin.logger.error(e.toString());
 			}
 		}
 	}
@@ -123,7 +123,7 @@ public class Signs implements Listener {
 			plugin.signs.reload();
 
 		} catch (ParseYamlException e) {
-			e.printStackTrace();
+			plugin.logger.error(e.toString());
 		}
 	}
 }

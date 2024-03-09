@@ -1,5 +1,7 @@
 package me.majhrs16.cht.storage;
 
+import me.majhrs16.cht.ChatTranslator;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -13,7 +15,7 @@ public class MySQL extends SQL {
 			Class.forName(driver);
 
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			ChatTranslator.getInstance().logger.error(e.toString());
 			return;
 		}
 

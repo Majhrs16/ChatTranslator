@@ -32,7 +32,7 @@ public class DiscordChat {
 					oks++;
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					plugin.logger.error(e.toString());
 				}
 			}
 		}

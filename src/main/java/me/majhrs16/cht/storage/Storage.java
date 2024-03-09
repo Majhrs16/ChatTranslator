@@ -12,6 +12,7 @@ import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.storages.YAML;
 
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Storage {
@@ -23,7 +24,12 @@ public class Storage {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public String getType() {
-		return plugin.config.get().getString("storage.type").toLowerCase();
+		String type = plugin.config.get().getString("storage.type");
+
+		if (type == null)
+			type = "sqlite";
+
+		return type.toLowerCase();
 	}
 
 	public String getDefaultLang() {
@@ -177,10 +183,10 @@ public class Storage {
 					String path               = uuid.toString();
 					FileConfiguration storage = yaml.get();
 					if (storage.contains(path + ".lang")) {
-						result = new String[]{
+						result = new String[] {
 							uuid.toString(),
-							storage.getString(uuid.toString() + ".discordID"),
-							storage.getString(uuid.toString() + ".lang")
+							storage.getString(uuid + ".discordID"),
+							storage.getString(uuid + ".lang")
 						};
 					}
 					break;
@@ -201,9 +207,7 @@ public class Storage {
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
 
-		} catch (NullPointerException ignored) {
-			;
-		}
+		} catch (NullPointerException ignored) {}
 
 		API.sendMessage(from);
 
@@ -222,7 +226,7 @@ public class Storage {
 
 					for (String uuid : storage.getKeys(false)) {
 						String path = uuid + ".discordID";
-						if (storage.contains(path) && storage.getString(path).equals(discordID)) {
+						if (storage.contains(path) && Objects.equals(storage.getString(path), discordID)) {
 							path = uuid + ".lang";
 							if (storage.contains(path)) {
 								result = new String[] {uuid, discordID, storage.getString(path)};
@@ -250,9 +254,7 @@ public class Storage {
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
 
-		} catch (NullPointerException ignored) {
-			;
-		}
+		} catch (NullPointerException ignored) {}
 
 		API.sendMessage(from);
 

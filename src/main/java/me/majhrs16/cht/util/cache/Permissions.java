@@ -9,7 +9,7 @@ public enum Permissions {
 	public enum ChatTranslator {
 		ADMIN 		("ChatTranslator.admin");
 		
-		private String path;
+		private final String path;
 
 		ChatTranslator(String path) {
 			this.path = path;

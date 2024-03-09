@@ -1,5 +1,6 @@
 package me.majhrs16.cht.util;
 
+import me.majhrs16.cht.ChatTranslator;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -39,7 +40,7 @@ public class LocaleUtil {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			ChatTranslator.getInstance().logger.error(e.toString());
 		}
 
 		return playerLocale;

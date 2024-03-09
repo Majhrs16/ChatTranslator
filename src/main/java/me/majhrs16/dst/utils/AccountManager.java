@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -42,9 +43,10 @@ public class AccountManager {
 		if (util.getMinecraftVersion() >= 7.2)
 			return Bukkit.getOfflinePlayer(uuid);
 
-		for (OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-			if (player.getPlayer().getUniqueId().equals(uuid))
-				return player;
+		for (OfflinePlayer offplayer : Bukkit.getOfflinePlayers()) {
+			Player player = offplayer.getPlayer();
+			if (player != null && player.getUniqueId().equals(uuid))
+				return offplayer;
 		}
 
 		return null;
@@ -77,13 +79,13 @@ public class AccountManager {
 	}
 
 	public static int preLink(UUID uuid, Runnable timeout) {
-		Integer key = getUniqueKey();
+		int key = getUniqueKey();
 
-		linking.put(key.toString(), uuid.toString());
+		linking.put(Integer.toString(key), uuid.toString());
 
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			if (linking.containsKey(key.toString())) {
-				linking.remove(key.toString());
+			if (linking.containsKey(Integer.toString(key))) {
+				linking.remove(Integer.toString(key));
 				if (timeout != null)
 					timeout.run();
 			}

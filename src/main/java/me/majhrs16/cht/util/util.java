@@ -90,7 +90,7 @@ public class util {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			plugin.logger.error(e.toString());
 			return null;
 		}
 	}

@@ -62,7 +62,7 @@ public interface Messages {
 				Sounds.playSounds(formatted);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.toString());
 			}
 
 		} else {
@@ -109,7 +109,7 @@ public interface Messages {
 			logger.debug("SEP:  ------------------------------------------------");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.toString());
 		}
 	}
 

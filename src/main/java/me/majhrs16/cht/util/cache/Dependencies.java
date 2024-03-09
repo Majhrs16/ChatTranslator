@@ -1,13 +1,11 @@
 package me.majhrs16.cht.util.cache;
 
 public enum Dependencies {
-	ProtocolLib	("com.comphenix.protocol.ProtocolLib"),
 	ChatManager	("me.h1dd3nxn1nja.chatmanager.Main"),
-	DiscordSRV	("github.scarsz.discordsrv.DiscordSRV"),
 	Chatty		("ru.mrbrikster.chatty.api.ChattyApi"),
 	PAPI		("me.clip.placeholderapi.PlaceholderAPI");
 
-	private boolean exist;
+	private final boolean exist;
 
 	Dependencies(String string) {
 		exist = exist(string);
@@ -18,7 +16,7 @@ public enum Dependencies {
 	}
 
 	public static Boolean exist(String dependency) {
-		Boolean haveDependency = null;
+		boolean haveDependency;
 
 		try {
 			Class.forName(dependency);

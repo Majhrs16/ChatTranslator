@@ -27,7 +27,7 @@ public class StorageYamlUpdater {
 				throw new ParseYamlException("[ERR021]");
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				ChatTranslator.getInstance().logger.error(e.toString());
 			}
 		}
 	}
