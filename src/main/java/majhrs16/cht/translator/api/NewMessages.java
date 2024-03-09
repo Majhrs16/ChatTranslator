@@ -1,6 +1,7 @@
 package majhrs16.cht.translator.api;
 
 import majhrs16.cht.ChatTranslator;
+import majhrs16.cht.util.JsonFormatter;
 import majhrs16.lib.logger.Logger;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -132,7 +133,7 @@ class NewMessages {
 				}
 			}
 
-			logger.debug("API.NewMessages.J7_J20.json: ", json.toString());
+			logger.debug("Json: ", JsonFormatter.format(json.toString()));
 
 			BaseComponent[] message = ComponentSerializer.parse(json.toString());
 			player.spigot().sendMessage(message);

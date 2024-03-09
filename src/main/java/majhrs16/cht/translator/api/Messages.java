@@ -98,16 +98,16 @@ public interface Messages {
 			return;
 
 		try {
-			logger.debug("API.Messages.sendMessage.PRE: %s", JsonFormatter.format(original.toString()));
+			logger.debug("PRE:  %s", JsonFormatter.format(original.toJson()));
 
 			Message formatted = ChatTranslatorAPI.getInstance().formatMessage(original);
 
-			logger.debug("API.Messages.sendMessage.POST: %s", JsonFormatter.format(formatted.toString()));
+			logger.debug("POST: %s", JsonFormatter.format(formatted.toJson()));
 
 			showMessage(original, formatted);
 			showMessage(original.getTo(), formatted.getTo());
 
-			logger.debug("API.Messages.sendMessage.SEP:  ------------------------------------------------");
+			logger.debug("SEP:  ------------------------------------------------");
 
 		} catch (Exception e) {
 			e.printStackTrace();

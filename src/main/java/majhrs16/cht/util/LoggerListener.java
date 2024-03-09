@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 public class LoggerListener implements majhrs16.lib.logger.LoggerListener<String> {
 	private String format(String format, Object... args) {
 		StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-		return stackTrace[6].getClassName() + ": " + String.format(format, args);
+		return stackTrace[6].getClassName() + "." + stackTrace[6].getMethodName() + ": " + String.format(format, args);
 	}
 
 	public String debug(String format, Object... args) {
