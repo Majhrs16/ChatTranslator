@@ -1,5 +1,7 @@
 package me.majhrs16.dst.events;
 
+import me.majhrs16.cht.util.util;
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,11 +32,13 @@ public class Commands extends ListenerAdapter {
 				UUID memberUuid = AccountManager.getMinecraft(member.getId());
 
 				if (memberUuid != null) {
-					String from_lang = authorUuid == null ? "auto" : API.getLang(AccountManager.getOfflinePlayer(authorUuid));
-					String to_lang = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
+					TranslatorBase.LanguagesBase from_lang = authorUuid == null
+						? util.convertStringToLang("auto")
+						: API.getLang(AccountManager.getOfflinePlayer(authorUuid));
+					TranslatorBase.LanguagesBase to_lang = API.getLang(AccountManager.getOfflinePlayer(memberUuid));
 
 					if (Objects.equals(from_lang, to_lang))
-						from_lang = "auto";
+						from_lang = util.convertStringToLang("auto");
 
 					DC.getMessages().setTexts(message.getContentDisplay());
 					DC.setLangSource(from_lang);

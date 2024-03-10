@@ -51,7 +51,7 @@ public class ConfigUpdater {
 		if (version_original == 0)   // Inicializar el plugin por primera vez.
 			config.set("server-uuid", UUID.randomUUID().toString()); // Para evitar crashes.
 
-		Message DC = util.getDataConfigDefault();
+		Message DC = new Message();
 
 		if (version_original == 0) { // Inicializar el plugin por primera vez.
 			applyConfigVersion0(config, DC);

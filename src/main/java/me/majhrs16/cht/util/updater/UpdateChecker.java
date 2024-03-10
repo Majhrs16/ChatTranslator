@@ -20,7 +20,7 @@ public class UpdateChecker {
 	private static final int timed_out   = 1500;
 
 	public UpdateChecker(CommandSender to_sender) {
-		Message DC = util.getDataConfigDefault()
+		Message DC = new Message()
 			.setSender(to_sender)
 			.setLangTarget(API.getLang(to_sender));
 

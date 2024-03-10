@@ -33,10 +33,8 @@ public interface Core {
 		String[] newArray = messages.clone();
 
 		if (formats.length > 0
-				&& sourceLang != null
-				&& targetLang != null
-				&& !sourceLang.equals("off")
-				&& !targetLang.equals("off")
+				&& !sourceLang.equals("OFF")
+				&& !targetLang.equals("OFF")
 				&& !sourceLang.equals(targetLang)) {
 
 			for (int i = 0; i < newArray.length; i++)
@@ -202,8 +200,8 @@ public interface Core {
 		String[] from_messages_texts    = from.getMessages().getTexts();
 		String[] from_sounds            = from.getSounds();
 
-		String from_lang_source = from.getLangSource();
-		String from_lang_target = from.getLangTarget();
+		String from_lang_source = from.getLangSource().getCode();
+		String from_lang_target = from.getLangTarget().getCode();
 
 
 		Message to              = from.getTo();
@@ -215,8 +213,8 @@ public interface Core {
 		String[] to_messages_texts    = to.getMessages().getTexts();
 		String[] to_sounds            = to.getSounds();
 
-		String to_lang_source = to.getLangSource();
-		String to_lang_target = to.getLangTarget();
+		String to_lang_source = to.getLangSource().getCode();
+		String to_lang_target = to.getLangTarget().getCode();
 
 
 		Boolean color = from.isForceColor();

@@ -30,7 +30,7 @@ public class TerminalLogger {
 	public final int MAX_LENGTH_MESSAGE = 1900; // Dejare un espacio libre por si acaso...
 
 	public TerminalLogger() {
-		Message from = util.getDataConfigDefault();
+		Message from = new Message();
 
 		try {
 			if (util.getMinecraftVersion() <= 8.0)
@@ -122,6 +122,7 @@ public class TerminalLogger {
 
 			} catch (Exception e) {
 				plugin.logger.error(e.toString());
+				e.printStackTrace();
 			}
 		}
 	}
@@ -158,7 +159,7 @@ public class TerminalLogger {
 		List<String> channels = DiscordChat.getChannels("discord.channels.console");
 
 		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size()) {
-			Message from = util.getDataConfigDefault();
+			Message from = new Message();
 				from.getMessages().setTexts(
 					"&e[&6!&e] &9DST&f: &cNO SE REDIRECCIONO LA CONSOLA A TODOS SUS CANALESA&f!"
 				);

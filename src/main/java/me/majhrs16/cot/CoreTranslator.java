@@ -8,6 +8,7 @@ import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.util;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,7 +65,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 							result = getMessageFormatted(null, "&4Error&f: &cJugador no encontrado&f.");
 
 						else
-							result = API.getLang(targetPlayer);
+							result = API.getLang(targetPlayer).getCode();
 						break;
 
 					case VAR:
@@ -155,7 +156,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 	////////////////
 	// UTILS!
 
-	public String getMessageFormatted(Player player, String lang_source, String lang_target, String text) {
+	public String getMessageFormatted(
+			Player player,
+			TranslatorBase.LanguagesBase lang_source,
+			TranslatorBase.LanguagesBase lang_target,
+			String text) {
+
 		Message from = new Message();
 			from.setSender(player);
 			from.setLangSource(lang_source);
@@ -166,6 +172,6 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String getMessageFormatted(Player player, String text) {
-		return getMessageFormatted(player, "es", API.getLang(player), text);
+		return getMessageFormatted(player, util.convertStringToLang("es"), API.getLang(player), text);
 	}
 }

@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
@@ -31,7 +32,7 @@ public class Chat implements Listener {
 
 		event.setCancelled(Config.NativeChat.CANCEL.IF());
 
-		String from_lang = API.getLang(event.getPlayer());
+		TranslatorBase.LanguagesBase from_lang = API.getLang(event.getPlayer());
 		Message console  = util.createChat(
 				Bukkit.getConsoleSender(),
 				new String[] { event.getMessage() },

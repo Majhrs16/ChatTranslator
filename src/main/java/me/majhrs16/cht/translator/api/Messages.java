@@ -22,12 +22,11 @@ public interface Messages {
 
 	default void showMessage(Message original, Message formatted) {
 		if (original == null
-				|| original.isEmpty()
 				|| original.isCancelled()
 				|| original.getLangSource() == null
 				|| original.getLangTarget() == null
-				|| original.getLangSource().equals("disabled")
-				|| original.getLangTarget().equals("disabled")
+				|| original.getLangSource().getCode().equals("DISABLED")
+				|| original.getLangTarget().getCode().equals("DISABLED")
 				|| original.getMessages().getFormats().length == 0
 				|| original.getMessages().getFormat(0).isEmpty()
 				|| original.getMessages().getTexts().length == 0) {
@@ -115,23 +114,8 @@ public interface Messages {
 
 	default void broadcast(List<Message> messages, Consumer<Message> broadcastAction) {
 		for (Message from : messages) {
-			try {
-				util.assertLang(from.getLangSource());
-				util.assertLang(from.getLangTarget());
-
-				if (broadcastAction != null)
-					broadcastAction.accept(from);
-
-			} catch (IllegalArgumentException e) {
-				Message alert = util.getDataConfigDefault();
-					alert.getMessages().setTexts(String.format("&b%s&f: &cIdioma &f'&b%s&f' &cy&f/&co &f'&b%s&f' &cno soportado&f.",
-						from.getSenderName(),
-						from.getLangSource(),
-						from.getLangTarget()
-					));
-
-				sendMessage(alert);
-			}
+			if (broadcastAction != null)
+				broadcastAction.accept(from);
 		}
 	}
 

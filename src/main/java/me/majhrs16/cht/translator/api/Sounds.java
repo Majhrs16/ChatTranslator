@@ -24,7 +24,7 @@ public class Sounds {
 					player.playSound(player.getLocation(), sound, pitch, volume);
 
 				} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
-					Message from = util.getDataConfigDefault();
+					Message from = new Message();
 					from.getMessages().setTexts("&eSonido &f'&bformats&f.&b" + formatted.getLastFormatPath() + "&f.&bsounds&f.&b" + parts[0] + "&f' &cinvalido&f.");
 					ChatTranslatorAPI.getInstance().sendMessage(from);
 				}

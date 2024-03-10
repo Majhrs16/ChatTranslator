@@ -1,5 +1,9 @@
 package me.majhrs16.cht.util;
 
+import me.clip.placeholderapi.libs.kyori.adventure.translation.Translator;
+import me.majhrs16.lib.network.translator.GoogleTranslator;
+import me.majhrs16.lib.network.translator.LibreTranslator;
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
@@ -41,8 +45,23 @@ public class util {
 		return newArray;
 	}
 
-	public static String getNativeLang() {
-		return plugin.formats.get().getString("native-lang");
+	public static TranslatorBase.LanguagesBase convertStringToLang(String lang) {
+		lang = lang.toUpperCase();
+
+		TranslatorBase translator = API.getTranslator();
+		if (translator instanceof GoogleTranslator)
+			return GoogleTranslator.Languages.valueOf(lang);
+
+		else if (translator instanceof LibreTranslator)
+			return GoogleTranslator.Languages.valueOf(lang);
+
+		else
+			throw new IllegalArgumentException("Translator engine invalid!");
+	}
+
+	public static TranslatorBase.LanguagesBase getNativeLang() {
+		String lang = plugin.formats.get().getString("native-lang");
+		return convertStringToLang(lang);
 	}
 
 	public static UUID getUUID(Object sender) {
@@ -110,21 +129,13 @@ public class util {
 		return cfg.contains(path) && cfg.getBoolean(path);
 	}
 
-	public static void assertLang(String lang, String text) {
-		if (!API.getTranslator().isSupport(lang)) {
-			throw new IllegalArgumentException(text);
-		}
-	}
+	public static Message createGroupFormat(
+			CommandSender sender,
+			String[] messages,
+			TranslatorBase.LanguagesBase langSource,
+			TranslatorBase.LanguagesBase langTarget,
+			String path) {
 
-	public static void assertLang(String lang) {
-		assertLang(lang, "El lenguaje '" + lang + "' no esta soportado.");
-	}
-
-	public static Message getDataConfigDefault() {
-		return new Message().setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-	}
-
-	public static Message createGroupFormat(CommandSender sender, String[] messages, String langSource, String langTarget, String path) {
 		Message DC = new Message();
 			DC.setSender(sender);
 			DC.getMessages().setTexts(messages);
@@ -141,8 +152,8 @@ public class util {
 	public static Message createChat(
 			CommandSender sender,
 			String[] messages,
-			String langSource,
-			String langTarget,
+			TranslatorBase.LanguagesBase langSource,
+			TranslatorBase.LanguagesBase langTarget,
 			String path) {
 
 		path = path == null ?  "" : "_" + path;

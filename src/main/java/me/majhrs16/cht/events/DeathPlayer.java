@@ -7,6 +7,7 @@ import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,10 +22,12 @@ public class DeathPlayer implements Listener {
 	public void onDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity().getPlayer();
 
+		TranslatorBase.LanguagesBase from_lang = util.convertStringToLang("en");
+
 		Message model = util.createChat(
 			player,
 			new String[] { event.getDeathMessage() },
-			"en",
+			from_lang,
 			API.getLang(player),
 			"death"
 		);
@@ -32,7 +35,7 @@ public class DeathPlayer implements Listener {
 		Message console = util.createChat(
 				Bukkit.getConsoleSender(),
 				new String[] { event.getDeathMessage() },
-				"en",
+				from_lang,
 				API.getLang(Bukkit.getConsoleSender()),
 				"death_console")
 			.setSender(player)
@@ -47,7 +50,7 @@ public class DeathPlayer implements Listener {
 			Message model_discord = util.createChat(
 				player,
 				new String[] { event.getDeathMessage() },
-				"en",
+				util.convertStringToLang("en"),
 				plugin.storage.getDefaultLang(),
 				"death_discord"
 			);

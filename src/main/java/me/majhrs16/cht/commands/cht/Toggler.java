@@ -1,5 +1,6 @@
 package me.majhrs16.cht.commands.cht;
 
+import me.majhrs16.cht.util.util;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
@@ -55,7 +56,7 @@ public class Toggler implements CommandExecutor {
 			return;
 		}
 
-		API.setLang(player2, "disabled");
+		API.setLang(player2, util.convertStringToLang("disabled"));
 
 		sender.getMessages().setTexts(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
 	}

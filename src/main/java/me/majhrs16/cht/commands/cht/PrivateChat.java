@@ -7,6 +7,7 @@ import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class PrivateChat implements CommandExecutor {
 			return true;
 		}
 
-		String from_lang = API.getLang(sender);
+		TranslatorBase.LanguagesBase from_lang = API.getLang(sender);
 		DC.getMessages().setTexts(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 		DC = util.createChat(sender, DC.getMessages().getTexts(), from_lang, from_lang, "private");
 

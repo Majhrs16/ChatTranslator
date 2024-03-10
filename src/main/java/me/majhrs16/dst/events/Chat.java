@@ -1,5 +1,6 @@
 package me.majhrs16.dst.events;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -7,12 +8,12 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Member;
 
-import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.dst.utils.AccountManager;
-import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
+
+import me.majhrs16.dst.utils.AccountManager;
+import me.majhrs16.dst.DiscordTranslator;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -50,7 +51,7 @@ public class Chat extends ListenerAdapter {
 
 		UUID authorUuid      = AccountManager.getMinecraft(message.getAuthor().getId());
 		OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
-		String from_lang     = player == null ? "auto" : API.getLang(player);
+		TranslatorBase.LanguagesBase from_lang = player == null ? util.convertStringToLang("auto") : API.getLang(player);
 
 		me.majhrs16.cht.events.custom.Message model = util.createChat(
 				player == null ? null : player.getPlayer(),
@@ -142,9 +143,7 @@ public class Chat extends ListenerAdapter {
 			if (args[1].equals("lang")) { // !cht lang CODE
 				String lang = args[2];
 
-				try {
-					util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
-
+				if (API.getTranslator().isSupport(lang)) {
 					UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
 
 					if (uuid == null) {
@@ -156,15 +155,19 @@ public class Chat extends ListenerAdapter {
 					} else {
 						plugin.storage.set(uuid, null, lang);
 
+						TranslatorBase.LanguagesBase language = util.convertStringToLang(lang);
+
 						DC.getMessages().setTexts(
-								"Su idioma ha sido establecido a `" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`."
+							"Su idioma ha sido establecido a `" + language.getValue() + "`."
 						);
-						DC.setLangTarget(lang);
+
+						DC.setLangTarget(language);
 					}
 
-				} catch (IllegalArgumentException e) {
-					DC.getMessages().setTexts(e.getMessage());
+				} else {
+					DC.getMessages().setTexts("El idioma '" + lang + "' no esta soportado!.");
 				}
+
 			} else {
 				DC.getMessages().setTexts("Sintaxis invalida. Por favor use la sintaxis:\n    `!cht lang <codigo>`.");
 			}

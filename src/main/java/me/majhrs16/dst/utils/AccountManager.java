@@ -62,7 +62,7 @@ public class AccountManager {
 			plugin.storage.set(
 				uuid,
 				discordID,
-				API.getLang(getOfflinePlayer(uuid))
+				API.getLang(getOfflinePlayer(uuid)).getCode()
 			);
 		}
 

@@ -1,6 +1,5 @@
 package me.majhrs16.cht.commands.cht;
 
-import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
@@ -8,6 +7,7 @@ import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.command.CommandSender;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ public class SetterLang implements CommandExecutor {
 		try {
 			switch (args.length) {
 				case 0: // /cht lang
-					DC.getMessages().setTexts("&aSu idioma establecido es&f: &b" + GoogleTranslator.Languages.valueOf(API.getLang(DC.getSender()).toUpperCase()).getValue() + "&f.");
+					DC.getMessages().setTexts("&aSu idioma establecido es&f: &b" + API.getLang(DC.getSender()).getValue() + "&f.");
 					API.sendMessage(DC);
 					break;
 
@@ -62,32 +62,36 @@ public class SetterLang implements CommandExecutor {
 	}
 
 	public void setLang(Message DC, String lang) {
-		try {
-			util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
-
-		} catch (IllegalArgumentException e) {
-			DC.getMessages().setTexts(e.getMessage());
-				API.sendMessage(DC);
+		if (!API.getTranslator().isSupport(lang)) {
+			DC.getMessages().setTexts("&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+			API.sendMessage(DC);
 			return;
 		}
 
-		API.setLang(DC.getSender(), lang);
+		TranslatorBase.LanguagesBase language = util.convertStringToLang(lang);
 
-		DC.getMessages().setTexts("&7Su idioma ha sido &aestablecido&7 a &b`" + GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue() + "`&f.");
-		DC.setLangTarget(lang);
+		API.setLang(DC.getSender(), language);
+
+		DC.getMessages().setTexts("&7Su idioma ha sido &aestablecido&7 a &b`" + language.getValue() + "`&f.");
+		DC.setLangTarget(language);
 
 		API.sendMessage(DC);
 	}
 
 	@SuppressWarnings("deprecation")
 	public void setLangAnother(Message DC, String player, String lang) {
+		if (!API.getTranslator().isSupport(lang)) {
+			DC.getMessages().setTexts("&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+			API.sendMessage(DC);
+			return;
+		}
+
 		OfflinePlayer to_player;
 		try {
 			to_player = Bukkit.getOfflinePlayer(player);
 
-			if (!to_player.isOnline() && !to_player.hasPlayedBefore()) {
+			if (!to_player.isOnline() && !to_player.hasPlayedBefore())
 				throw new NullPointerException();
-			}
 
 		} catch (NullPointerException e) {
 			DC.getMessages().setTexts("&7El jugador &f'&b" + player + "&f' &cno &cexiste&f.");
@@ -95,23 +99,14 @@ public class SetterLang implements CommandExecutor {
 			return;
 		}
 
-		try {
-			util.assertLang(lang, "&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+		API.setLang(to_player, util.convertStringToLang(lang));
 
-		} catch (IllegalArgumentException e) {
-			DC.getMessages().setTexts(e.getMessage());
-				API.sendMessage(DC);
-			return;
-		}
-
-		API.setLang(to_player, lang);
-
-		Message model = util.getDataConfigDefault();
+		Message model = new Message();
 			model.getMessages().setTexts(String.format(
 				"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
 				DC.getSenderName(),
 				to_player.getName(),
-				GoogleTranslator.Languages.valueOf(lang.toUpperCase()).getValue()
+				util.convertStringToLang(lang).getValue()
 			));
 
 		Message to_model = model.clone();

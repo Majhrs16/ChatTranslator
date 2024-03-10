@@ -58,7 +58,7 @@ public class ChatTranslator extends PluginBase {
 
 		super.onEnable();
 
-		Message from = util.getDataConfigDefault();
+		Message from = new Message();
 
 		API.sendMessage(from.format("plugin.separator.horizontal"));
 		API.sendMessage(from.format("plugin.separator.vertical"));
@@ -95,12 +95,20 @@ public class ChatTranslator extends PluginBase {
 
 		ChatLimiter.clear();
 
-		Message from = util.getDataConfigDefault();
+		Message from = new Message();
 
 		API.sendMessage(from.format("plugin.separator.horizontal"));
 		API.sendMessage(from.format("plugin.separator.vertical"));
 
-		API.sendMessage(from.format("plugin.title.UTF-8"));
+		if (Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
+			API.sendMessage(from.format("plugin.available-UTF-8.true"));
+			API.sendMessage(from.format("plugin.title.UTF-8"));
+			API.sendMessage(from.format("plugin.separator.vertical"));
+
+		} else {
+			API.sendMessage(from.format("plugin.available-UTF-8.false"));
+			API.sendMessage(from.format("plugin.title.text"));
+		}
 
 		API.sendMessage(from.format("plugin.disable"));
 		storage.unregister();
@@ -200,7 +208,7 @@ public class ChatTranslator extends PluginBase {
 
 	public void registerDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
-			Message from = util.getDataConfigDefault();
+			Message from = new Message();
 
 			try {
 				discordTranslator.connect(
@@ -251,7 +259,7 @@ public class ChatTranslator extends PluginBase {
 
 	public void unregisterDiscordBot() {
 		if (Config.TranslateOthers.DISCORD.IF()) {
-			Message from = util.getDataConfigDefault();
+			Message from = new Message();
 
 			try {
 				if (isDisabled()) {

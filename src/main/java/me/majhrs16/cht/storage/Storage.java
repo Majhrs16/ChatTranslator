@@ -6,6 +6,7 @@ import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.majhrs16.lib.exceptions.ParseYamlException;
@@ -32,8 +33,8 @@ public class Storage {
 		return type.toLowerCase();
 	}
 
-	public String getDefaultLang() {
-		return plugin.config.get().getString("default-lang");
+	public TranslatorBase.LanguagesBase getDefaultLang() {
+		return util.convertStringToLang(plugin.config.get().getString("default-lang"));
 	}
 
 	public void register() throws StorageRegisterFailedException {
@@ -73,13 +74,13 @@ public class Storage {
 					break;
 
 				default:
-					from = util.getDataConfigDefault();
+					from = new Message();
 					from.format("storage.errors.invalid-type");
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 		} catch (ParseYamlException  | SQLException | RuntimeException e) {
-			from = util.getDataConfigDefault();
+			from = new Message();
 			from.format("storage.error.open", formats -> formats
 				.replace("%type%", storage_type)
 				.replace("%reason%", e.toString())
@@ -90,13 +91,13 @@ public class Storage {
 			throw new StorageRegisterFailedException(String.join("\n", from.getMessages().getFormats()));
 		}
 
-		from = util.getDataConfigDefault();
+		from = new Message();
 		from.format("storage.done.open", formats -> formats.replace("%type%", storage_type));
 		API.sendMessage(from);
 	}
 
 	public void unregister() {
-		Message from        = util.getDataConfigDefault();
+		Message from        = new Message();
 		String storage_type = getType();
 
 		try {
@@ -127,7 +128,7 @@ public class Storage {
 	}
 
 	public void set(UUID uuid, String discordID, String lang) {
-		Message from        = util.getDataConfigDefault();
+		Message from        = new Message();
 		String storage_type = getType();
 
 		try {
@@ -174,7 +175,8 @@ public class Storage {
 	public String[] get(UUID uuid) {
 		String[] result = null;
 
-		Message from        = new Message();
+		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
+		from.setTo(new Message(util.getNativeLang(), plugin.storage.getDefaultLang())); // Yes, simply void Message xD.
 		String storage_type = getType();
 
 		try {
@@ -209,7 +211,7 @@ public class Storage {
 
 		} catch (NullPointerException ignored) {}
 
-		API.sendMessage(from);
+		API.showMessage(from, API.formatMessage(from)); // INSECURE!!
 
 		return result;
 	}

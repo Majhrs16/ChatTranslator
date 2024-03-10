@@ -19,7 +19,7 @@ public class CommandsUpdater {
         version = config.getInt("config-version");
         int version_original = version;
 
-        Message DC = util.getDataConfigDefault();
+        Message DC = new Message();;
 
         if (version < 2) {
             ArrayList<String> linker_tool_tips = new ArrayList<>();

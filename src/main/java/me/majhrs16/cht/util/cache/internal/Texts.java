@@ -1,6 +1,7 @@
 package me.majhrs16.cht.util.cache.internal;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.util.util;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.majhrs16.cht.events.custom.Message;
@@ -18,11 +19,12 @@ import java.util.Map;
 
 public class Texts {
 	private static Map<String, Object> dataMap;
+	private static ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%(.+?)%");
 
 	public static void reload() {
 		dataMap                  = new HashMap<>();
-		FileConfiguration config = ChatTranslator.getInstance().formats.get();
+		FileConfiguration config = plugin.formats.get();
 
 		for (String key : config.getKeys(true))
 			dataMap.put(key, config.get(key));

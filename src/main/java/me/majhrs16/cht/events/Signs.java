@@ -45,9 +45,9 @@ public class Signs implements Listener {
 			String path = String.format("%s_%s_%s_%s", block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
 
 			FileConfiguration signs = plugin.signs.get();
-			Message from = util.getDataConfigDefault();
+			Message from = new Message();
 				from.setSender(null);
-				from.setLangSource(signs.getString(path + ".lang"));
+				from.setLangSource(util.convertStringToLang(signs.getString(path + ".lang")));
 				from.setLangTarget(API.getLang(event.getPlayer()));
 
 			from.getMessages().setTexts(signs.getStringList(path + ".text").toArray(new String[0]));

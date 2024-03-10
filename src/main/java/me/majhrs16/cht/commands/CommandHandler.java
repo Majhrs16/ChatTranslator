@@ -21,7 +21,7 @@ public class CommandHandler extends me.majhrs16.lib.minecraft.commands.CommandHa
 	protected void showCommandHelp(CommandSender sender, String text, String[] description, String suggest) {
 		ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-		Message from = util.getDataConfigDefault();
+		Message from = new Message();
 			from.setSender(sender);
 			from.setLangTarget(API.getLang(sender));
 			from.getMessages().setFormats(text);
