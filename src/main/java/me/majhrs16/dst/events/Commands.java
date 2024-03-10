@@ -1,10 +1,17 @@
 package me.majhrs16.dst.events;
 
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Member;
 
-@Deprecated
-public class JDAListener extends ListenerAdapter {
-/*
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.dst.utils.AccountManager;
+
+import java.util.Objects;
+import java.util.UUID;
+
+public class Commands extends ListenerAdapter {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@Override
@@ -16,7 +23,7 @@ public class JDAListener extends ListenerAdapter {
 			Member member = event.getMember();
 
 			me.majhrs16.cht.events.custom.Message DC = new me.majhrs16.cht.events.custom.Message();
-				DC.setForceColor(false);
+			DC.setForceColor(false);
 
 			if (member != null) {
 				UUID authorUuid = AccountManager.getMinecraft(message.getAuthor().getId());
@@ -45,33 +52,4 @@ public class JDAListener extends ListenerAdapter {
 			event.getHook().sendMessage(String.join("\n", API.formatMessage(DC).getMessages().getFormats())).queue();
 		}
 	}
-
-	@Override
-	public void onButtonInteraction(ButtonInteractionEvent event) {
-		String ID = event.getComponentId();
-
-		if (ID.startsWith("translate")) {
-			event.deferReply(true).queue();
-
-			String to_lang;
-			UUID userUuid = AccountManager.getMinecraft(event.getUser().getId());
-
-			if (userUuid == null)
-				to_lang = plugin.storage.getDefaultLang();
-
-			else
-				to_lang = API.getLang(Bukkit.getOfflinePlayer(userUuid));
-
-			String from_lang = ID.split("-")[1];
-
-			me.majhrs16.cht.events.custom.Message DC = util.getDataConfigDefault();
-				DC.setMessages(event.getMessage().getContentDisplay());
-				DC.setLangSource(from_lang);
-				DC.setLangTarget(to_lang);
-				DC.setColor(false);
-
-			event.getHook().sendMessage(API.formatMessage(DC).getMessages()).queue();
-		}
-	}
-	*/
 }
