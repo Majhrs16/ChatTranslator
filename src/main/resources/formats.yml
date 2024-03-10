@@ -357,14 +357,25 @@ discord-translator:
             - "%discord-translator.title.min% &a{0}&f."
 
     error:
-      messages:
-        texts:
-          - "No se pudo iniciar el bot de Discord"
-          - "Por favor verifique su"
+      token:
+        messages:
+          texts:
+            - "No se pudo iniciar el bot de Discord"
+            - "Por favor verifique su token:"
 
-        formats:
-          - "%plugin.title.text% &c{0}."
-          - "\t&e{1} &bconfig&f.&bdiscord&f.&bbot-token&f."
+          formats:
+            - "%discord-translator.title.min% &c{0}."
+            - "\t&e{1} &bconfig&f.&bdiscord&f.&bbot-token&f."
+
+      intents:
+        messages:
+          texts:
+            - "No se pudo iniciar el bot de Discord"
+            - "Por favor habilite el PRESENCE INTENT y MESSAGE CONTENT INTENT en su &9Discord developer portal"
+
+          formats:
+            - "%discord-translator.title.min% &c{0}."
+            - "\t&e{1}&f."
 
   unload:
     done:

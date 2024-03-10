@@ -208,8 +208,8 @@ public class ChatTranslator extends PluginBase {
 				);
 
 				if (isDisabled()) {
-					discordTranslator.registerCommands();
 					discordTranslator.registerEvents();
+					discordTranslator.registerCommands();
 
 					from.format("discord-translator.load.done.discord");
 
@@ -225,12 +225,24 @@ public class ChatTranslator extends PluginBase {
 
 				from.format("discord-translator.load.done.console");
 
-			} catch (InvalidTokenException | InterruptedException e) {
+			} catch (InvalidTokenException e) {
 				discordTranslator.disconnect();
 
-				from.format("discord-translator.load.error",
+				from.format("discord-translator.load.error.token",
 					format -> format.replace("%reason%", e.toString())
 				);
+
+			} catch (IllegalStateException e) {
+				discordTranslator.disconnect();
+
+				from.format("discord-translator.load.error.intents",
+					format -> format.replace("%reason%", e.toString())
+				);
+
+			} catch (InterruptedException e) {
+				discordTranslator.disconnect();
+
+				logger.error(e.toString());
 			}
 
 			API.sendMessage(from);
