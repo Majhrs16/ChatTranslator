@@ -281,6 +281,15 @@ public interface Core {
 		to_messages_formats    = replaceArray(to_messages_formats, "%ct_messages%", "[00]");
 		to_messages_formats    = replaceArray(to_messages_formats, "$ct_messages$", "[01]");
 
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_toolTips%", "[02]");
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_toolTips$", "[03]");
+		from_messages_formats  = replaceArray(from_messages_formats, "%ct_toolTips%", "[02]");
+		from_messages_formats  = replaceArray(from_messages_formats, "$ct_toolTips$", "[03]");
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_toolTips%", "[02]");
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_toolTips$", "[03]");
+		to_messages_formats    = replaceArray(to_messages_formats, "%ct_toolTips%", "[02]");
+		to_messages_formats    = replaceArray(to_messages_formats, "$ct_toolTips$", "[03]");
+
 		if (papi && Dependencies.PAPI.exist()) {
 			Player _from_player    = (from_player instanceof Player) ? (Player) from_player : null;
 			Player _to_player      = (to_player instanceof Player)   ? (Player) to_player   : null;
@@ -324,6 +333,15 @@ public interface Core {
 		to_messages_formats    = replaceArray(to_messages_formats, "[00]", "%ct_messages%");
 		to_messages_formats    = replaceArray(to_messages_formats, "[01]", "$ct_messages$");
 
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[02]", "%ct_toolTips%");
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[03]", "$ct_toolTips$");
+		from_messages_formats  = replaceArray(from_messages_formats, "[02]", "%ct_toolTips%");
+		from_messages_formats  = replaceArray(from_messages_formats, "[03]", "$ct_toolTips$");
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[02]", "%ct_toolTips%");
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[03]", "$ct_toolTips$");
+		to_messages_formats    = replaceArray(to_messages_formats, "[02]", "%ct_toolTips%");
+		to_messages_formats    = replaceArray(to_messages_formats, "[03]", "$ct_toolTips$");
+
 		from_tool_tips_texts = replaceEscapes(from_tool_tips_texts, from_tool_tips_escapes);
 		from_messages_texts  = replaceEscapes(from_messages_texts, from_messages_escapes);
 		to_tool_tips_texts   = replaceEscapes(to_tool_tips_texts, to_tool_tips_escapes);
@@ -345,17 +363,32 @@ public interface Core {
 		to_tool_tips_formats    = convertColor(to_tool_tips_formats);
 		to_messages_formats     = convertColor(to_messages_formats);
 
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_messages%", from_tool_tips_texts);
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_messages$", to_tool_tips_texts);
+
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_messages%", from_messages_texts);
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_messages$", to_messages_texts);
 
 		from_messages_formats  = replaceArray(from_messages_formats, "%ct_messages%", from_messages_texts);
 		from_messages_formats  = replaceArray(from_messages_formats, "$ct_messages$", to_messages_texts);
 
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_messages%", from_tool_tips_texts);
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_messages$", to_tool_tips_texts);
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_messages%", from_messages_texts);
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_messages$", to_messages_texts);
 
 		to_messages_formats    = replaceArray(to_messages_formats, "%ct_messages%", from_messages_texts);
 		to_messages_formats    = replaceArray(to_messages_formats, "$ct_messages$", to_messages_texts);
+
+
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_toolTips%", from_tool_tips_texts);
+		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_toolTips$", to_tool_tips_texts);
+
+		from_messages_formats  = replaceArray(from_messages_formats, "%ct_toolTips%", from_tool_tips_texts);
+		from_messages_formats  = replaceArray(from_messages_formats, "$ct_toolTips$", to_tool_tips_texts);
+
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_toolTips%", from_tool_tips_texts);
+		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_toolTips$", to_tool_tips_texts);
+
+		to_messages_formats    = replaceArray(to_messages_formats, "%ct_toolTips%", from_tool_tips_texts);
+		to_messages_formats    = replaceArray(to_messages_formats, "$ct_toolTips$", to_tool_tips_texts);
+
 
 		from_messages_formats = processExpand(from_messages_formats);
 		to_messages_formats   = processExpand(to_messages_formats);
