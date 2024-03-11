@@ -164,6 +164,18 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
+	@Deprecated
+	public Message setLangSource(String lang) {
+		this.lang_source = util.convertStringToLang(lang);
+		return this;
+	}
+
+	@Deprecated
+	public Message setLangTarget(String lang) {
+		this.lang_target = util.convertStringToLang(lang);
+		return this;
+	}
+
 	public Message setFormatPAPI(Boolean formatPAPI) {
 		this.is_format_papi = formatPAPI;
 		return this;
@@ -326,8 +338,8 @@ public class Message extends Event implements Cancellable {
 
 					from.setSounds((String[]) fromJson.get("sounds"));
 					from.setCancelledThis((Boolean) fromJson.get("isCancelled"));
-//					from.setLangSource((String) fromJson.get("langSource"));
-//					from.setLangTarget((String) fromJson.get("langTarget"));
+					from.setLangSource((String) fromJson.get("langSource"));
+					from.setLangTarget((String) fromJson.get("langTarget"));
 					from.setForceColor((Boolean) fromJson.get("isColor"));
 					from.setFormatPAPI((Boolean) fromJson.get("isPAPI"));
 
@@ -346,8 +358,8 @@ public class Message extends Event implements Cancellable {
 
 						to.setSounds((String[]) toJson.get("sounds"));
 						to.setCancelledThis((Boolean) toJson.get("isCancelled"));
-//						to.setLangSource((String) toJson.get("langSource"));
-//						to.setLangTarget((String) toJson.get("langTarget"));
+						to.setLangSource((String) toJson.get("langSource"));
+						to.setLangTarget((String) toJson.get("langTarget"));
 						to.setForceColor((Boolean) toJson.get("isColor"));
 						to.setFormatPAPI((Boolean) toJson.get("isPAPI"));
 					}
