@@ -31,8 +31,7 @@ public class MessageListener implements Listener {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
 			toMinecraft(event);
 
-//			event.getTo().setLangTarget(plugin.storage.getDefaultLang());
-//			No me parece adecuado, teniendo en cuenta que los tooltips se ven feos en Discord.
+			event.getTo().setLangTarget(plugin.storage.getDefaultLang());
 
 			event.getTo().format("to_discord");
 			toDiscord(event, DiscordChat.getChannels("discord.channels.chat"));
