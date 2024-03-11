@@ -188,50 +188,8 @@ public class util {
 			sounds = temp_sounds.toArray(new String[0]);
 		}
 
-		if (sounds.length > 0)
-			original.setSounds(sounds);
+		original.setSounds(sounds);
 	}
-
-	/*
-	@Deprecated
-	private static void applyTextFormat(Message original, String[] formats, String[] texts, Consumer<String[]> formatSetter) {
-		Message DC = original.clone();
-
-		DC.getMessages().setFormats(formats);
-		DC.getMessages().setTexts(texts);
-
-		Message translated = API.formatMessage(DC);
-
-		try {
-			for (int i = 0; i < formats.length; i++) {
-				String input = formats[i];
-
-				Matcher matcher = FORMAT_INDEX.matcher(input);
-				while (matcher.find()) {
-					input = input.replace(
-						matcher.group(0),
-						translated.getMessages().getFormat(Integer.parseInt(matcher.group(1)))
-					);
-				}
-
-				formats[i] = input;
-			}
-
-		} catch (IndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
-
-		if (formats.length > 0)
-			formatSetter.accept(formats);
-
-		if (original.getMessages().getTexts().length == 0)
-			original.getMessages().setTexts(texts);
-
-		// En caso de no haber textos originales, esto es necesario para mostrarse por API.Messages.processMessage.
-		if (!original.getMessages().getFormat(0).equals("%ct_messages%")
-				&& original.getMessages().getTexts().length == 0)
-			original.getMessages().setTexts("\t");
-	}*/
 
 	public static void applyToolTipsFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
 		String[] formats = Texts.get(path + ".toolTips.formats");
@@ -251,11 +209,8 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
-		if (formats.length > 0)
-			original.getToolTips().setFormats(formats);
-
-		if (texts.length > 0)
-			original.getToolTips().setTexts(texts);
+		original.getToolTips().setFormats(formats);
+		original.getToolTips().setTexts(texts);
 	}
 
 	public static void applyMessagesFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
