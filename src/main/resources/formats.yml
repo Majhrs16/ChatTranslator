@@ -345,7 +345,8 @@ discord-translator:
           formats:
             - "{0}! :D"
 
-        toolTips: []
+        toolTips:
+          formats: []
         color: "#00FF7F"
 
       console:
@@ -387,7 +388,9 @@ discord-translator:
           formats:
             - "{0}! :("
 
-        toolTips: []
+        toolTips:
+          formats: []
+
         color: "#FF0000"
 
       console:
@@ -398,7 +401,8 @@ discord-translator:
           formats:
             - "%discord-translator.title.min% &c{0}&f."
 
-        toolTips: []
+        toolTips:
+          formats: []
 
     error:
       messages:
