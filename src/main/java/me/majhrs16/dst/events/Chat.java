@@ -1,20 +1,24 @@
 package me.majhrs16.dst.events;
 
-import me.majhrs16.lib.network.translator.TranslatorBase;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Member;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import me.majhrs16.dst.utils.AccountManager;
 import me.majhrs16.dst.DiscordTranslator;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
@@ -32,18 +36,62 @@ public class Chat extends ListenerAdapter {
 		if (message.getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
 			return;
 
-		if (message.getContentRaw().startsWith("!cht")) {
+		FileConfiguration config = plugin.config.get();
+
+		if (event.getMessage().getMessageReference() != null) {
+			handleRefMessage(event);
+
+		} else if (message.getContentRaw().startsWith("!cht")) {
 			handleChtCommand(event);
 
 		} else if (event.isFromType(ChannelType.PRIVATE)) {
 			handlePrivateMessage(event);
 
-		} else if (plugin.config.get().getStringList("discord.channels.console").contains(event.getChannel().getId())) {
+		} else if (config.getStringList("discord.channels.console").contains(event.getChannel().getId())) {
 			handleConsoleCommand(event);
 
-		} else if (plugin.config.get().getStringList("discord.channels.chat").contains(event.getChannel().getId())) {
+		} else if (config.getStringList("discord.channels.chat").contains(event.getChannel().getId())) {
 			handleChatMessage(event);
 		}
+	}
+
+	private void handleRefMessage(MessageReceivedEvent event) {
+		if (!Config.TranslateOthers.DISCORD_REPLY.IF())
+			return;
+
+		MessageReference ref = event.getMessage().getMessageReference();
+
+		if (ref == null)
+			return;
+
+		Message message = ref.getMessage();
+
+		if (message == null)
+			return;
+
+
+		me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
+		from.setSenderName(message.getAuthor().getName());
+		from.getMessages().setFormats("%player_name%: %ct_messages%");
+		from.getMessages().setTexts(event.getMessage().getContentDisplay());
+
+		UUID from_uuid = AccountManager.getMinecraft(message.getAuthor().getId());
+		UUID to_uuid   = AccountManager.getMinecraft(event.getMessage().getAuthor().getId());
+
+		if (from_uuid == null || to_uuid == null)
+			return;
+
+		OfflinePlayer from_player = AccountManager.getOfflinePlayer(from_uuid);
+		OfflinePlayer to_player   = AccountManager.getOfflinePlayer(to_uuid);
+
+		if (from_player == null || to_player == null)
+			return;
+
+		from.setLangSource(API.getLang(from_player));
+		from.setLangTarget(API.getLang(to_player));
+
+		message.reply(API.formatMessage(from).getMessages().getFormat(0)).queue();
+		event.getMessage().delete().queue();
 	}
 
 	private void handleChatMessage(MessageReceivedEvent event) {
