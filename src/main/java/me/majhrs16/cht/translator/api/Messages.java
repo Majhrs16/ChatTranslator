@@ -127,11 +127,8 @@ public interface Messages {
 		if (model == null || model.isEmpty())
 			return;
 
-		if (model.getTo() == null || model.getTo().isEmpty()) {
+		if (model.getTo() == null || model.getTo().isEmpty())
 			model.setTo(model.clone());
-			model.getTo().setSender(null);
-			model.getTo().setLangTarget(null);
-		}
 
 		Message to_model    = model.getTo();
 		List<Message> froms = new ArrayList<>();
