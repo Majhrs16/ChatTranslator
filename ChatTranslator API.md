@@ -427,12 +427,14 @@ public class Message {
 	Message setCancelled(boolean isCancelled);
 
 //	Establece el idioma origen.
-	Message setLangSource(String lang);
+    Message setLangSource(TranslatorBase.LanguagesBase lang);
+    @Deprecated Message setLangSource(String lang);
 //	Obtiene el idioma de origen.
 	String getLangSource();
 
 //	Establece el idioma destino.
-	Message setLangTarget(String lang);
+    Message setLangTarget(TranslatorBase.LanguagesBase lang);
+    @Deprecated Message setLangTarget(String lang);
 //	Obtiene el idioma destino.
 	String getLangTarget();
 
@@ -530,6 +532,56 @@ Este método te permite cargar mensajes previamente guardados y utilizarlos como
 
 Primero que nada, todos los metodos de esta clase son estaticos.
 
+### Obtener el remitente por nombre de jugador.
+
+```java
+public class util {
+	CommandSender getSenderByName(String playerName);
+}
+```
+
+Este método devuelve un objeto `CommandSender` que corresponde al nombre del jugador proporcionado. Si el nombre del jugador es `null`, devuelve el remitente de la consola.
+
+### Eliminar el color de una matriz de cadenas.
+
+```java
+public class util {
+	String[] stripColor(String... array);
+}
+```
+
+Este método elimina cualquier color de una matriz de cadenas. Devuelve una nueva matriz con las cadenas sin color.
+
+### Convertir una cadena a un idioma.
+
+```java
+public class util {
+	TranslatorBase.LanguagesBase convertStringToLang(String lang);
+}
+```
+
+Este método convierte una cadena a un objeto `LanguagesBase` correspondiente al idioma proporcionado. El idioma se convierte a mayúsculas y se compara con los idiomas disponibles en el traductor actual.
+
+### Obtener el UUID de un objeto remitente.
+
+```java
+public class util {
+    UUID getUUID(Object sender);
+}
+```
+
+Este método obtiene el UUID de un objeto `sender`. El objeto `sender` puede ser una instancia de `Player`, `OfflinePlayer` o `CommandSender`. Si no se puede obtener un UUID, el método devuelve `null`.
+
+### Obtener todos los jugadores en línea como un array.
+
+```java
+public class util {
+	Player[] getOnlinePlayers();
+}
+```
+
+Este método devuelve una matriz de todos los jugadores en línea. Si ocurre una excepción durante la obtención de los jugadores en línea, el método devuelve `null`.
+
 ### Obtener la version del servidor.
 
 ```java
@@ -541,37 +593,11 @@ public class util {
 Este devolvera la version como un double pero sin el primer `1.`, por ejemplo 16.5, 8.8, 20.1, etc. TENER CUIDADO CON LA 1."7.10", pues la unica forma de comprobarlo es `if (value > 7.9) {...}`
   Sorry, pequeña limitacion por ahora...
 
-### Comprobar si existe y si es true una config booleana(Hoy dia en desuso).
+### Comprobar si existe y si es verdadera una config booleana(Hoy dia CASI en desuso).
 
 ```java
 public class util {
 	boolean IF(FileConfiguration cfg, String path);
-}
-```
-
-### Lanzar excepcion junto con un texto si el idioma no esta soportado.
-
-```java
-public class util {
-	void assertLang(String lang, String text);
-}
-```
-
-O tambien se puede llamar sin el text pero este sera: `"El lenguaje '" + lang + "' no esta soportado."`:
-
-```java
-public class util {
-	void assertLang(String lang);
-}
-```
-
-### Obtener un Message por defecto ideal para la consola.
-
-```java
-public class util {
-	public static Message getDataConfigDefault() {
-		return new Message().setLangTarget(API.getLang(Bukkit.getConsoleSender()));
-	}
 }
 ```
 
@@ -582,8 +608,8 @@ public class util {
 	Message createChat(
 		CommandSender sender,
 		String[] messages,
-		String langSource,
-		String langTarget,
+        TranslatorBase.LanguagesBase langSource,
+        TranslatorBase.LanguagesBase langTarget,
 		String path
 	);
 }
