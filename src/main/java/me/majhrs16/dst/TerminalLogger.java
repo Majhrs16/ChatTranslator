@@ -122,7 +122,6 @@ public class TerminalLogger {
 
 			} catch (Exception e) {
 				plugin.logger.error(e.toString());
-				e.printStackTrace();
 			}
 		}
 	}
@@ -161,7 +160,7 @@ public class TerminalLogger {
 		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size()) {
 			Message from = new Message();
 				from.getMessages().setTexts(
-					"&e[&6!&e] &9DST&f: &cNO SE REDIRECCIONO LA CONSOLA A TODOS SUS CANALESA&f!"
+					"&e[&6!&e] &9DST&f: &cNO SE REDIRECCIONO LA CONSOLA A TODOS SUS CANALES&f!"
 				);
 			API.sendMessage(from);
 		}
