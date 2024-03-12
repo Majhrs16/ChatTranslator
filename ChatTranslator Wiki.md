@@ -44,8 +44,10 @@ Variables locales: Sin necesidad de PlaceholderAPI...
 - `%ct_expand%` Expande horizontalmente hasta el maximo del ancho del chat(Se puede usar varias veces).
 - `%player_name%` Se remplazara por el nombre del remitente.
 - `$player_name$` Se remplazara por el nombre del destinario.
-- `%ct_messages%` Se remplazara normalmente el mensaje original sin traducir.
-- `$ct_messages$` Se remplazara normalmente por el mensaje ya traducido.
+- `%ct_messages%` Se remplazara normalmente por los mensajes originales sin traducir.
+- `$ct_messages$` Se remplazara normalmente por los mensajes ya traducidos.
+- `%ct_tooLTips%` Se remplazara normalmente por los mensajes originales sin traducir de lps toolTips.
+- `$ct_tooLTips$` Se remplazara normalmente por los mensajes ya traducidos de los toolTips.
 - `%ct_lang_source%` Se remplazara por el idioma inicial del remitente.
 - `$ct_lang_source$` Se remplazara por el idioma inicial del destinario.
 - `%ct_lang_target%` Se remplazara por el idioma destino del remitente.
@@ -89,7 +91,7 @@ to:
 ### Soporte parcial para otros plugins de chat.
 
 ```yaml
-FORMATS.yml
+# FORMATS.yml
 to:
   messages:
     texts:
@@ -112,7 +114,7 @@ to:
       volume: 1
       pitch: 1
 
-CONFIG.yml
+# CONFIG.yml
 show-native-chat:
   cancel-event: false
   clear-recipients: false
@@ -158,8 +160,8 @@ Para usar esta configuracion tal cual, debe de tener previamente 3 grupos en Luc
       event: me.majhrs16.cht.events.custom.Message
       player_variable: getSender()
       variables_to_capture:
-      - '%uuid%; getUUID()'
-      - '%type%; getSenderType()'
+      - '%uuid%;getUUID()'
+      - '%type%;getSenderType()'
 
     conditions:
     - "'%luckperms_prefix%' != ''"
