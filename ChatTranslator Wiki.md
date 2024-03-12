@@ -47,7 +47,7 @@ Variables locales: Sin necesidad de PlaceholderAPI...
 - `%ct_messages%` Se remplazara normalmente por los mensajes originales sin traducir.
 - `$ct_messages$` Se remplazara normalmente por los mensajes ya traducidos.
 - `%ct_tooLTips%` Se remplazara normalmente por los mensajes originales sin traducir de lps toolTips.
-- `$ct_tooLTips$` Se remplazara normalmente por los mensajes ya traducidos de los toolTips.
+- `$ct_tooLTips$` Se remplazara normalmente por los mensajes ya traducidos de los toolTips. 
 - `%ct_lang_source%` Se remplazara por el idioma inicial del remitente.
 - `$ct_lang_source$` Se remplazara por el idioma inicial del destinario.
 - `%ct_lang_target%` Se remplazara por el idioma destino del remitente.
