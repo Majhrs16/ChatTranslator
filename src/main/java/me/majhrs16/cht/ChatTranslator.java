@@ -28,11 +28,15 @@ import me.majhrs16.lib.storages.YAML;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
@@ -171,6 +175,8 @@ public class ChatTranslator extends PluginBase {
 	}
 
 	public void registerEvents() {
+		metrics.addCustomChart(new Metrics.DrilldownPie("used_extensions", new UsedExtensionsMetric()));
+
 		eventManager.addExecutor("commandListener", new CommandListener(commandHandler, commands));
 		eventManager.addExecutor("messageListener", new MessageListener());
 		eventManager.addExecutor("accessPlayer", new AccessPlayer());

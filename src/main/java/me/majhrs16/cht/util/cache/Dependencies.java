@@ -3,7 +3,9 @@ package me.majhrs16.cht.util.cache;
 public enum Dependencies {
 	ChatManager	("me.h1dd3nxn1nja.chatmanager.Main"),
 	Chatty		("ru.mrbrikster.chatty.api.ChattyApi"),
-	PAPI		("me.clip.placeholderapi.PlaceholderAPI");
+	PAPI		("me.clip.placeholderapi.PlaceholderAPI"),
+	LP          ("me.lucko.luckperms.bukkit.loader.BukkitLoaderPlugin"),
+	CE          ("ce.ajneb97.ConditionalEvents");
 
 	private final boolean exist;
 
