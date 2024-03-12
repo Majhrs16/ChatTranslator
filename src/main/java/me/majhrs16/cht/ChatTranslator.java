@@ -215,10 +215,10 @@ public class ChatTranslator extends PluginBase {
 					config.get().getString("discord.bot-token")
 				);
 
-				if (isDisabled()) {
-					discordTranslator.registerEvents();
-					discordTranslator.registerCommands();
+				discordTranslator.registerEvents();
+				discordTranslator.registerCommands();
 
+				if (isDisabled()) {
 					from.format("discord-translator.load.done.discord");
 
 					Message _from = API.formatMessage(from);
@@ -273,10 +273,10 @@ public class ChatTranslator extends PluginBase {
 						_from.getToolTips().getFormats(),
 						Integer.parseInt(Texts.get("discord-translator.unload.done.discord.color")[0].substring(1), 16)
 					);
-
-					discordTranslator.unregisterEvents();
-					discordTranslator.unregisterCommands();
 				}
+
+				discordTranslator.unregisterEvents();
+				discordTranslator.unregisterCommands();
 
 				discordTranslator.disconnect();
 
