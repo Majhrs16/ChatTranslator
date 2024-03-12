@@ -43,7 +43,8 @@ public enum Config {
     }
 
     public enum TranslateOthers {
-    	DISCORD	("auto-translate-others.discord"),
+        DISCORD_REPLY	("auto-translate-others.discord-reply"),
+        DISCORD	("auto-translate-others.discord"),
         ACCESS	("auto-translate-others.access");
 
         private final String path;

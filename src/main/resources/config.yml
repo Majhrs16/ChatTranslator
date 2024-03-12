@@ -1,4 +1,5 @@
 auto-translate-others:
+  discord-reply: true
   discord: false
   access: true
   signs:
