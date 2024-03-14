@@ -3,20 +3,14 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-shadowJar {
-//    relocate 'org.apache.logging.log4j', 'majhrs16.dst.libs.org.apache.logging.log4j' // ERROR LOG4J core no encontrado!
-}
-
 group = 'majhrs16.cht'
 version = 'v2.0'
 
 compileJava.options.encoding = 'UTF-8'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
+java { toolchain {
+    languageVersion = JavaLanguageVersion.of(8)
+}}
 
 repositories {
     mavenCentral()
