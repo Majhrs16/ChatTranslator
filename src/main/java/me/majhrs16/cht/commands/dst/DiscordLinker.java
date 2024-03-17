@@ -1,4 +1,4 @@
-package me.majhrs16.cht.commands.cht;
+package me.majhrs16.cht.commands.dst;
 
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 

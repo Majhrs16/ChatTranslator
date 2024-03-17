@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -8,17 +9,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 
 import me.majhrs16.lib.exceptions.ParseYamlException;
+import me.majhrs16.lib.utils.Str;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
-import me.majhrs16.lib.utils.Str;
 import me.majhrs16.cht.util.util;
-
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 
 import java.util.Arrays;
 
@@ -46,14 +47,14 @@ public class Signs implements Listener {
 
 			FileConfiguration signs = plugin.signs.get();
 			Message from = new Message();
-				from.setSender(null);
+				from.setSender((CommandSender) null);
 				from.setLangSource(util.convertStringToLang(signs.getString(path + ".lang")));
 				from.setLangTarget(API.getLang(event.getPlayer()));
 
 			from.getMessages().setTexts(signs.getStringList(path + ".text").toArray(new String[0]));
 			from = API.formatMessage(from);
 
-			if (from.getMessages() == null) // WTF?
+			if (from.getMessages().getFormats().length == 0)
 				return;
 
 			String[] lines;
@@ -67,13 +68,8 @@ public class Signs implements Listener {
 			else
 				lines = from.getMessages().getTexts();
 
-			int i = 0;
-			for (; i < Math.min(lines.length, 4); i++)
+			for (int i = 0; i < Math.min(lines.length, 4); i++)
 				sign.setLine(i, lines[i]);
-
-			for (; i < 4; i++)
-				sign.setLine(i, "");
-
 			sign.update();
 		}
 	}
@@ -117,7 +113,7 @@ public class Signs implements Listener {
 			return;
 
 		signs.set(path + ".text", event.getLines());
-		signs.set(path + ".lang", API.getLang(player));
+		signs.set(path + ".lang", API.getLang(player).getCode());
 		plugin.signs.save();
 		try {
 			plugin.signs.reload();

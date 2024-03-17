@@ -59,6 +59,7 @@ public class Storage {
 					break;
 
 				case "mysql":
+				case "mariadb":
 					FileConfiguration config = plugin.config.get();
 
 					mysql.set(
@@ -111,6 +112,7 @@ public class Storage {
 					break;
 
 				case "mysql":
+				case "mariadb":
 					mysql.disconnect();
 					break;
 			}
@@ -198,6 +200,7 @@ public class Storage {
 					break;
 
 				case "mysql":
+				case "mariadb":
 					result = mysql.get(uuid);
 					break;
 			}
@@ -244,6 +247,7 @@ public class Storage {
 					break;
 
 				case "mysql":
+				case "mariadb":
 					result = mysql.get(discordID);
 					break;
 			}

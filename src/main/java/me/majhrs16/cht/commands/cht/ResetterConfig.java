@@ -26,6 +26,7 @@ public class ResetterConfig implements CommandExecutor {
 		try {
 			plugin.config.reset();
 			new ConfigUpdater();
+			new Reloader().reloadAll(DC);
 			DC.getMessages().setTexts("&aSe ha restablecido la config exitosamente&f.");
 
 		} catch (ParseYamlException e) {

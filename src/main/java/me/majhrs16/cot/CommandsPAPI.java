@@ -2,7 +2,7 @@ package me.majhrs16.cot;
 
 import java.util.regex.Pattern;
 
-public enum Commands {
+public enum CommandsPAPI {
     SEND_DISCORD("^sendDiscord;\\s*(.+?);\\s*(.+?)$"),
     TRANSLATE("^translate;\\s*(.+?);\\s*(.+?);\\s*(.+?)$"),
     BROADCAST("^broadcast;\\s*(.+?)$"),
@@ -13,16 +13,8 @@ public enum Commands {
 
     private final Pattern pattern;
 
-    Commands(String regex) {
+    CommandsPAPI(String regex) {
         this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-    }
-
-    public boolean matches(String input) {
-        return pattern.matcher(input).matches();
-    }
-
-    public boolean find(String input) {
-        return pattern.matcher(input).find();
     }
 
     public Pattern getPattern() {

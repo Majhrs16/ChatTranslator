@@ -37,8 +37,12 @@ public interface Core {
 				&& !targetLang.equals("OFF")
 				&& !sourceLang.equals(targetLang)) {
 
-			for (int i = 0; i < newArray.length; i++)
+			for (int i = 0; i < newArray.length; i++) {
+				if (newArray[i].isEmpty())
+					continue;
+
 				newArray[i] = translator.translate(newArray[i], sourceLang, targetLang);
+			}
 		}
 
 		return newArray;

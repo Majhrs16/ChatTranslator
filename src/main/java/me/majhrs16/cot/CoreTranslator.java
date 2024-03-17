@@ -2,16 +2,17 @@ package me.majhrs16.cot;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.MessageListener;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.util;
 
-import me.majhrs16.lib.network.translator.TranslatorBase;
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
@@ -23,23 +24,19 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	public static final String version = "b1.6";
 
-	public boolean persist()	  { return true; }
-	public boolean canRegister()  { return true; }
-
 	@NotNull public String getAuthor()	   { return "Majhrs16"; }
 	@NotNull public String getVersion()	   { return version; }
 	@NotNull public String getIdentifier() { return "cot"; }
+	public boolean canRegister()           { return true; }
+	public boolean persist()	           { return true; }
 
 	@Override
-	public String onPlaceholderRequest(Player player, String identifier) {
-		if (!identifier.contains("{") && identifier.contains("}")) // bug CE, agrega un innecesario: }
-			identifier = identifier.replace("}", "");
-
+	public String onPlaceholderRequest(Player player, @NotNull String identifier) {
 		identifier = API.parseSubVariables(player, identifier)[0];
 
 		String result = null;
 
-		for (Commands command : Commands.values()) {
+		for (CommandsPAPI command : CommandsPAPI.values()) {
 			Matcher matcher = command.getPattern().matcher(identifier);
 			if (matcher.find()) {
 				switch (command) {

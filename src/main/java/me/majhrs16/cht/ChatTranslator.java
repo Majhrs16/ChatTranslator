@@ -3,6 +3,7 @@ package me.majhrs16.cht;
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.updater.CommandsUpdater;
+import me.majhrs16.cht.commands.dst.DiscordLinker;
 import me.majhrs16.cht.util.updater.UpdateChecker;
 import me.majhrs16.cht.util.updater.ConfigUpdater;
 import me.majhrs16.cht.util.cache.internal.Texts;
@@ -14,9 +15,7 @@ import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.storage.Storage;
 import me.majhrs16.cht.events.Metrics;
-import me.majhrs16.cot.CoreTranslator;
 import me.majhrs16.cht.commands.cht.*;
-import me.majhrs16.cht.util.util;
 import me.majhrs16.cht.events.*;
 
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
@@ -28,15 +27,13 @@ import me.majhrs16.lib.storages.YAML;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
 
+import me.majhrs16.cot.CoreTranslator;
+
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
@@ -115,10 +112,11 @@ public class ChatTranslator extends PluginBase {
 		}
 
 		API.sendMessage(from.format("plugin.disable"));
-		storage.unregister();
 
 		API.sendMessage(from.format("plugin.separator.vertical"));
 		API.sendMessage(from.format("plugin.separator.horizontal"));
+
+		storage.unregister();
 	}
 
 	public boolean isDisabled() {
@@ -155,23 +153,29 @@ public class ChatTranslator extends PluginBase {
 	}
 
 	public void registerCommands() {
+//      ChT
 		commandManager.addExecutor("resetterConfig", new ResetterConfig());
-		commandManager.addExecutor("discordLinker", new DiscordLinker());
 		commandManager.addExecutor("showVersion", new ShowVersion());
 		commandManager.addExecutor("privateChat", new PrivateChat());
 		commandManager.addExecutor("setterlang", new SetterLang());
 		commandManager.addExecutor("reloader", new Reloader());
 		commandManager.addExecutor("toggler", new Toggler());
+
+//      DST:
+		commandManager.addExecutor("discordLinker", new DiscordLinker());
 	}
 
 	protected void unregisterCommands() {
-		commandManager.removeExecutor("resetterConfig", new ResetterConfig());
-		commandManager.removeExecutor("discordLinker", new DiscordLinker());
-		commandManager.removeExecutor("showVersion", new ShowVersion());
-		commandManager.removeExecutor("privateChat", new PrivateChat());
-		commandManager.removeExecutor("setterlang", new SetterLang());
-		commandManager.removeExecutor("reloader", new Reloader());
-		commandManager.removeExecutor("toggler", new Toggler());
+//      ChT
+		commandManager.removeExecutor("resetterConfig");
+		commandManager.removeExecutor("showVersion");
+		commandManager.removeExecutor("privateChat");
+		commandManager.removeExecutor("setterlang");
+		commandManager.removeExecutor("reloader");
+		commandManager.removeExecutor("toggler");
+
+//      DST
+		commandManager.removeExecutor("discordLinker");
 	}
 
 	public void registerEvents() {

@@ -1,9 +1,12 @@
 package me.majhrs16.cht.events.custom;
 
-import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.lib.network.translator.GoogleTranslator;
-import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.logger.Logger;
+
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.util;
+
 import org.json.simple.parser.ParseException;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
@@ -26,14 +29,15 @@ import java.util.UUID;
 
 import java.lang.reflect.Method;
 
-import me.majhrs16.cht.ChatTranslator;
-import me.majhrs16.cht.util.util;
-
-import me.majhrs16.lib.logger.Logger;
-
 public class Message extends Event implements Cancellable {
 	private interface Converter {
 		Object convert(String arg) throws Exception;
+	}
+
+	private enum SenderTypes {
+		UNKNOWN,
+		CONSOLE,
+		PLAYER;
 	}
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -61,13 +65,12 @@ public class Message extends Event implements Cancellable {
 			Integer::parseInt,
 			Float::parseFloat,
 			Double::parseDouble
-			// Agrega más convertidores según sea necesario para otros tipos de datos
 	);
 
 	private Message to;
 	private CommandSender sender;
 	private String name;
-	private String sender_type;
+	private SenderTypes sender_type;
 	private Formats messages       = new Formats();
 	private Formats tool_tips      = new Formats();
 	private String[] sounds        = new String[0];
@@ -79,7 +82,13 @@ public class Message extends Event implements Cancellable {
 	private String last_format     = "UNKNOWN";
 
 	public Message(TranslatorBase.LanguagesBase langSource, TranslatorBase.LanguagesBase langTarget) {
-		setSender(Bukkit.getConsoleSender());
+		CommandSender term = Bukkit.getConsoleSender();
+		setSender(term);
+		if (term == null) { // 1.5.2 bug!
+			setSenderName("CONSOLE");
+			setSenderType(SenderTypes.CONSOLE);
+		}
+
 		getMessages().setFormats("%ct_messages%");
 
 		lang_source = langSource;
@@ -120,12 +129,25 @@ public class Message extends Event implements Cancellable {
 
 	public Message setSender(CommandSender sender) {
 		this.sender = sender;
-		setSenderName(sender == null ? "CONSOLE" : sender.getName());
-		setSenderType(sender instanceof Player ? "PLAYER" : "CONSOLE");
+		setSenderName(sender == null ? "UNKNOWN" : sender.getName());
+
+		if (sender == null)
+			setSenderType(SenderTypes.UNKNOWN);
+
+		else
+			setSenderType(sender instanceof Player ? SenderTypes.PLAYER : SenderTypes.CONSOLE);
+
 		return this;
 	}
 
-	private Message setSenderType(String type) {
+	public Message setSender(String sender) {
+		// Support for CoT + CE!.
+		setSender(util.getSenderByName(sender));
+
+		return this;
+	}
+
+	private Message setSenderType(SenderTypes type) {
 		this.sender_type = type;
 		return this;
 	}
@@ -164,14 +186,14 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
-	@Deprecated
 	public Message setLangSource(String lang) {
+		// Support for CoT + CE!
 		this.lang_source = util.convertStringToLang(lang);
 		return this;
 	}
 
-	@Deprecated
 	public Message setLangTarget(String lang) {
+		// Support for CoT + CE!
 		this.lang_target = util.convertStringToLang(lang);
 		return this;
 	}
@@ -216,7 +238,7 @@ public class Message extends Event implements Cancellable {
 	public Message getTo()		      { return to; }
 
 	public CommandSender getSender()  { return sender; }
-	public String getSenderType()	  { return sender_type; }
+	public String getSenderType()	  { return sender_type.toString(); }
 	public String getSenderName()	  { return name; }
 
 	public String getSound(int index) { return sounds[index]; }

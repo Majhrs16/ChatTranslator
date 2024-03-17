@@ -52,17 +52,24 @@ cht:
     toolTips:
     - "&4Restablece la config&f,&e Pero no los datos de lenguajes&f."
 
+dst:
+  type: "main"
+  text: "&f/&edst"
+  suggest: "dst"
+  toolTips:
+    - "&aMuestra este mismo mensaje de ayuda&f."
+
   link:
     type: "discordLinker"
     text: "&elink"
-    suggest: "cht link"
+    suggest: "dst link"
     toolTips:
     - "&aVincula &7tu cuenta de &aMinecraft &7con tu cuenta de &9Discord&f."
 
 tell:
   type: "privateChat"
   text: "&f/&etell"
-  suggest: "tell %player_name% texto de ejemplo"
+  suggest: "tell %player_name% "
   toolTips:
   - "&aEnvia mensajes privados a alguien :D&f."
 

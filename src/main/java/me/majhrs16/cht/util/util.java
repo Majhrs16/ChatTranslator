@@ -1,11 +1,11 @@
 package me.majhrs16.cht.util;
 
-import me.clip.placeholderapi.libs.kyori.adventure.translation.Translator;
 import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
-import org.bukkit.configuration.ConfigurationSection;
+
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -235,6 +235,7 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
+		// En caso de no existir el grupo de formato, usar los datos en memoria,
 		if (formats.length > 0)
 			original.getMessages().setFormats(formats);
 

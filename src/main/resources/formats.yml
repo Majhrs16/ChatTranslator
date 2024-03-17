@@ -426,19 +426,21 @@ storage:
           - "\t%reason%"
 
     read:
-      texts:
-        - "Error al leer en"
+      messages:
+        texts:
+          - "Error al leer en"
 
-      formats:
-        - "%plugin.title.min% &c{0} &b%type%&f."
-        - "\t%reason%"
+        formats:
+          - "%plugin.title.min% &c{0} &b%type%&f."
+          - "\t%reason%"
 
     invalid-type:
-      texts:
-        - "Tipo de almacenamiento invalido"
+      messages:
+        texts:
+          - "Tipo de almacenamiento invalido"
 
-      formats:
-        - "&c{0}&f: &b%type%&f."
+        formats:
+          - "&c{0}&f: &b%type%&f."
 
     open:
       messages:
@@ -457,7 +459,7 @@ storage:
           - "Almacenamiento"
 
         formats:
-          - "\t&c{0} &b{1}&f.&b%type%&f."
+          - "%plugin.title.min% &c{0} &b{1}&f.&b%type%&f."
           - "\t%reason%"
 
   done:
@@ -487,7 +489,7 @@ storage:
           - "Almacenamiento"
 
         formats:
-          - "\t&a{0} &b{1}&f.&b%type%&f."
+          - "%plugin.title.min% &a{0} &b{1}&f.&b%type%&f."
 
 commands:
   main:

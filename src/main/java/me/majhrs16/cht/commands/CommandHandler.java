@@ -27,11 +27,14 @@ public class CommandHandler extends me.majhrs16.lib.minecraft.commands.CommandHa
 			from.getMessages().setFormats(text);
 
 		if (description.length > 0) {
-			from.getToolTips().setFormats("%ct_messages%");
+			from.getToolTips().setFormats("{0}", "");
 			from.getToolTips().setTexts(description);
 		}
 
 		if (sender instanceof Player && util.getMinecraftVersion() >= 7.2) {
+			if (description.length > 0)
+				from.getToolTips().setFormats("{0}");
+
 			JSONObject jsonMessage = new JSONObject();
 
 			Message tmp = from.clone();
