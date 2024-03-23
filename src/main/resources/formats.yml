@@ -492,6 +492,23 @@ storage:
           - "%plugin.title.min% &a{0} &b{1}&f.&b%type%&f."
 
 commands:
+  errors:
+    noPermission:
+      messages:
+        texts:
+          - "Usted no tiene permisos para ejecutar este comando"
+
+        formats:
+          - "&c{0}&f."
+
+    noFoundPlayer:
+      messages:
+        texts:
+          - "&7El jugador &f'&b%player%&f'&c no esta disponible&f."
+
+        formats:
+          - "{0}"
+
   main:
     version:
       messages:
@@ -503,5 +520,176 @@ commands:
           - "&4Kernel&f: &b%versions.kernel%"
           - "&9DST&f: &b%versions.dst%"
           - "&bCo&9T&f: &b%versions.cot%"
+
+  reloader:
+    messages:
+      texts:
+        - "Recargando almacenamiento"
+
+      formats:
+        - "&7{0} &f..."
+
+    done:
+      messages:
+        formats:
+          - "&7[  &aOK  &7] %file%"
+
+    error:
+      fatal:
+        messages:
+          texts:
+            - "ERROR DESCONOCIDO INTERNO"
+
+          formats:
+            - "&4{0}&f."
+
+      file:
+        messages:
+          formats:
+            - "&7[ &cFAIL &7] %file%"
+            - "    %reason%"
+
+      invalid:
+        messages:
+          texts:
+            - "Tipo de almacenamiento invalido"
+
+          formats:
+            - "&7[ &cFAIL &7] &c{0}&f."
+
+  resetterConfig:
+    messages:
+      texts:
+        - "Restableciendo la config"
+
+      formats:
+        - "&a{0}&f..."
+
+    done:
+      messages:
+        texts:
+          - "Se ha restablecido las configs exitosamente"
+
+        formats:
+          - "&a{0}&f."
+
+    error:
+      messages:
+        texts:
+          - "NO se ha podido restablecer la config"
+
+        formats:
+          - "&a{0}&f."
+
+  setterLang:
+    error:
+      messages:
+        texts:
+          - "Sintaxis invalida"
+          - "Por favor use la sintaxis"
+
+        formats:
+          - "&c{0}&f. &a{1}&f:",
+          - "    &e/cht lang &f[&6player&f] &f<&6codigo&f>&f."
+
+    getLang:
+      messages:
+        texts:
+          - "Su idioma establecido es"
+
+        formats:
+          - "&a{0}&f: &b%ct_lang_target%"
+
+    setLang:
+      done:
+        messages:
+          texts:
+            - "Su idioma ha sido&a establecido&7 a"
+
+          formats:
+            - "&7{0}&f: '&b%ct_lang_target%&f'&f."
+
+      error:
+        messages:
+          texts:
+            - "&7El idioma &f'&b%lang%&f' &cno &7esta soportado&f!."
+
+          formats:
+            - "{0}"
+
+    setLangAnother:
+      done:
+        from:
+          messages:
+            texts:
+              - "&f'&b%from_player%&f' &7ha cambiado el idioma de &f'&b`%to_player%`&f'&7 a &b%lang%&f."
+
+            formats:
+              - "{0}"
+
+        to:
+          messages:
+            texts:
+              - "&f'&b%from_player%&f' &7ha cambiado el idioma de &f'&b`%to_player%`&f'&7 a &b%lang%&f."
+
+            formats:
+              - "{0}"
+
+  toggler:
+    toggleOffPlayer:
+      messages:
+        texts:
+          - "Se ha desactivado el chat para"
+
+        formats:
+          - "&c{0} &f'&b%to_player%&f'."
+
+    togglePlugin:
+      "true":
+        messages:
+          formats:
+            - "true"
+
+      "false":
+        messages:
+          formats:
+            - "false"
+
+  discordLinker:
+    onlyPlayer:
+      messages:
+        texts:
+          - "Solo se puede ejecutar este comando desde un jugador"
+
+        formats:
+          - "&c{0}&f."
+
+    activateBot:
+      messages:
+        textS:
+          - "Debe activar"
+          - "para usar este comando"
+
+        formats:
+          - "&c{0} &bconfig&f.&btranslate-others&f.&bdiscord &c{1}&f."
+
+    timeout:
+      messages:
+        textS:
+          - "Tiempo de espera agotado para su vinculacion de cuenta"
+
+        formats:
+          - "&c{0}&f."
+
+    done:
+      messages:
+        textS:
+          - "Su codigo de verificacion es"
+          - "Y expira en 1 minuto"
+          - "Por favor escribalo por privado al bot del servidor de"
+
+        formats:
+          - "&e{0}&f: '&b%code%&f', &6{1}&f.",
+          - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
 
 config-version: 8
