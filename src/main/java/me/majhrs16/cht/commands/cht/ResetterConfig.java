@@ -20,20 +20,19 @@ public class ResetterConfig implements CommandExecutor {
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		DC.getMessages().setTexts("&aRestableciendo la config&f...");
+		DC.format("commands.resetterConfig");
 		API.sendMessage(DC);
 
 		try {
 			plugin.config.reset();
 			new ConfigUpdater();
 			new Reloader().reloadAll(DC);
-			DC.getMessages().setTexts("&aSe ha restablecido la config exitosamente&f.");
+			DC.format("commands.resetterConfig.done");
 
 		} catch (ParseYamlException e) {
-			DC.getMessages().setTexts("&cNO se ha podido restablecer la config&f.");
+			DC.format("commands.resetterConfig.error");
 		}
 
-		DC.getMessages().setFormats("{0}");
 		API.sendMessage(DC);
 		return true;
 	}

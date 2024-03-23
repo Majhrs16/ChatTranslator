@@ -1,16 +1,16 @@
 package me.majhrs16.cht.commands.cht;
 
-import me.majhrs16.cht.util.util;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.util;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 
 public class Toggler implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -22,7 +22,7 @@ public class Toggler implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			DC.getMessages().setTexts("&cUsted no tiene permisos para ejecutar este comando&f.");
+			DC.format("commands.noPermission");
 			API.sendMessage(DC);
 			return true; // Para evitar mostrar el unknown command.
 		}
@@ -41,29 +41,27 @@ public class Toggler implements CommandExecutor {
 		return true;
 	}
 	
-	public void ToggleOffPlayer(Message sender, String player) {
-		Player player2;
-		try {
-			player2 = Bukkit.getServer().getPlayer(player);
+	public void ToggleOffPlayer(Message from, String player) {
+		if (player == null)
+			throw new NullPointerException("String player is null");
 
-		} catch (NullPointerException e) {
-			player2 = null;
-		}
+		Player to_player = (Player) util.getSenderByName(player);
 
-		if (player2 == null) {
-			sender.getMessages().setTexts("&7El jugador &f'&b" + player + "&f' &cno &7esta &cdisponible&f.");
-				API.sendMessage(sender);
+		if (to_player == null) {
+			API.sendMessage(from.format("commands.noFoundPlayer"));
 			return;
 		}
 
-		API.setLang(player2, util.convertStringToLang("disabled"));
+		API.setLang(to_player, util.convertStringToLang("disabled"));
 
-		sender.getMessages().setTexts(String.format("&cSe ha desactivado el chat para &f'&b%s&f'&f.", player2.getName()));
+		from.format("commands.toggler.toggleoffPlayer", s -> s
+			.replace("%to_player%", to_player.getName())
+		);
 	}
 	
-	public void TogglePlugin(Message sender) {
+	public void TogglePlugin(Message from) {
 		ChatLimiter.clear();
 		plugin.setDisabled(!plugin.isDisabled());
-		sender.getMessages().setFormats("" + !plugin.isDisabled());
+		from.format("commands.toggler.togglePlugin." + !plugin.isDisabled());
 	}
 }

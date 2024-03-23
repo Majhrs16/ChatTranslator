@@ -28,12 +28,11 @@ public class Reloader implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
-			DC.getMessages().setTexts("&cUsted no tiene permisos para ejecutar este comando&f.");
-			API.sendMessage(DC);
+			API.sendMessage(DC.format("commands.noPermission"));
 			return true; // true para evitar mostrar el Unknown command
 		}
 
-		DC.getMessages().setTexts("&7Recargando almacenamiento &f...");
+		DC.format("commands.reloader");
 		API.sendMessage(DC);
 
 		switch (args.length == 0 ? "all" : args[0].toLowerCase()) {
@@ -62,7 +61,7 @@ public class Reloader implements CommandExecutor {
 				break;
 
 			default:
-				DC.getMessages().setTexts("&7[ &cFAIL &7] &cTipo de almacenamiento no valido&f.");
+				DC.getMessages().setTexts("");
 				API.sendMessage(DC);
 				break;
 		}
@@ -80,9 +79,7 @@ public class Reloader implements CommandExecutor {
 
 		} catch (Exception e) {
 			if (Permissions.ChatTranslator.ADMIN.IF(DC.getSender()))
-				DC.getMessages().setTexts(
-					Texts.getString("plugin.title.text") + "&7[&4ERR110&7] &cNO se pudo recargar la config&f. &ePor favor&f, &evea su consola &f/ &eterminal&f."
-				);
+				DC.format("commands.error.fatal");
 
 			plugin.logger.error(e.toString());
 		}
@@ -91,17 +88,15 @@ public class Reloader implements CommandExecutor {
 	private void reload(Message DC, String text, RunnableWithTriException<SQLException, ParseYamlException, StorageRegisterFailedException> action) {
 		try {
 			action.run();
-			DC.getMessages().setFormats("&7[  &aOK  &7] " + text);
-
-		} catch (SQLException | ParseYamlException e) {
-			DC.getMessages().setFormats(
-				"&7[ &cFAIL &7] " + text,
-				"    " + e
+			DC.format("commands.reloader.done", s -> s
+				.replace("%file%", text)
 			);
 
-		} catch (StorageRegisterFailedException e) {
-			DC.getMessages().setFormats("&7[ &cFAIL &7] " + text);
-			plugin.logger.error(e.toString());
+		} catch (SQLException | ParseYamlException | StorageRegisterFailedException e) {
+			DC.format("commands.reloader.error.file", s -> s
+				.replace("%file%", text)
+				.replace("%reason%", e.toString())
+			);
 		}
 
 		API.sendMessage(DC);
@@ -145,7 +140,7 @@ public class Reloader implements CommandExecutor {
 				break;
 
 			default:
-				DC.getMessages().setFormats("&7[&4ERR100&7]"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+				DC.getMessages().setFormats("&9???"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
 				break;
 		}
 

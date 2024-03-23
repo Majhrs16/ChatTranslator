@@ -33,7 +33,7 @@ public class PrivateChat implements CommandExecutor {
 		CommandSender to_player = util.getSenderByName(player_name);
 
 		if (to_player == null) {
-			DC.getMessages().setTexts("&cJugador `&F'&b" + player_name + "&f'` &cno encontrado&f!");
+			DC.format("commands.noFoundPlayer");
 			API.sendMessage(DC);
 			return true;
 		}

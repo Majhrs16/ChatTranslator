@@ -28,21 +28,21 @@ public class DiscordLinker implements CommandExecutor {
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			if (DC.getSender() instanceof Player) {
 				int code = AccountManager.preLink(((Player) DC.getSender()).getUniqueId(), () -> {
-					DC.getMessages().setTexts("&cTiempo de espera agotado para su vinculacion de cuenta&f.");
+					DC.format("commands.discordLinker.timeout");
 					API.sendMessage(DC);
 				});
 
-				DC.getMessages().setTexts(
-					"&eSu codigo de verificacion es&f: '&b" + code + "&f', &6Y expira en 1 minuto&f.",
-					"    &6Por favor escribalo por privado al bot del servidor de &9Discord&f: (&b`" + DiscordTranslator.getJDA().getSelfUser().getName() + "`&f)"
+				DC.format("commands.discordLinker.done", s -> s
+					.replace("%code%", "" + code)
+					.replace("%discord_bot_name%", DiscordTranslator.getJDA().getSelfUser().getName())
 				);
 
 			} else {
-				DC.getMessages().setTexts("&cSolo se puede ejecutar este comando desde un jugador.");
+				DC.format("commands.discordLinker.onlyPlayer");
 			}
 
 		} else {
-			DC.getMessages().setTexts("&cDebe activar `&bconfig." + Config.TranslateOthers.DISCORD.getPath() + "` &cpara usar este comando&f.");
+			DC.format("commands.discordLinker.activateBot");
 		}
 
 		API.sendMessage(DC);

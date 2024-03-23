@@ -27,17 +27,19 @@ public class SetterLang implements CommandExecutor {
 		try {
 			switch (args.length) {
 				case 0: // /cht lang
-					DC.getMessages().setTexts("&aSu idioma establecido es&f: &b" + API.getLang(DC.getSender()).getValue() + "&f.");
+					DC.format("commands.setterLang.getLang");
 					API.sendMessage(DC);
 					break;
 
 				case 1: // /cht lang es
+					// agregar el comando: /cht lang Majhrs16
+
 					setLang(DC, args[0]);
 					break;
 
 				case 2:  // /cht lang Majhrs16 es
 					if (!Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
-						DC.getMessages().setTexts("&cUsted no tiene permisos para ejecutar este comando&f.");
+						DC.format("commands.noPermission");
 						API.sendMessage(DC);
 						break;
 					}
@@ -46,10 +48,7 @@ public class SetterLang implements CommandExecutor {
 					break;
 
 				default:
-					DC.getMessages().setTexts(
-						"&cSintaxis invalida&f. &aPor favor use la sintaxis&f:",
-						"    &e/cht lang &f[&6player&f] &f<&6codigo&f>&f."
-					);
+					DC.format("commands.setterLang.error");
 					API.sendMessage(DC);
 			}
 
@@ -63,7 +62,9 @@ public class SetterLang implements CommandExecutor {
 
 	public void setLang(Message DC, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			DC.getMessages().setTexts("&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
+			DC.format("commands.setterLang.setLang.error", null, s -> s
+				.replace("%lang%", lang)
+			);
 			API.sendMessage(DC);
 			return;
 		}
@@ -72,7 +73,7 @@ public class SetterLang implements CommandExecutor {
 
 		API.setLang(DC.getSender(), language);
 
-		DC.getMessages().setTexts("&7Su idioma ha sido &aestablecido&7 a &b`" + language.getValue() + "`&f.");
+		DC.format("commands.setterLang.setLang.done");
 		DC.setLangTarget(language);
 
 		API.sendMessage(DC);
@@ -81,8 +82,9 @@ public class SetterLang implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void setLangAnother(Message DC, String player, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			DC.getMessages().setTexts("&7El idioma &f'&b" + lang + "&f'&c no &7esta soportado&f!.");
-			API.sendMessage(DC);
+			API.sendMessage(DC.format("commands.setterLang.setLang.error", null, s -> s
+				.replace("%lang%", lang)
+			););
 			return;
 		}
 
@@ -94,23 +96,25 @@ public class SetterLang implements CommandExecutor {
 				throw new NullPointerException();
 
 		} catch (NullPointerException e) {
-			DC.getMessages().setTexts("&7El jugador &f'&b" + player + "&f' &cno &cexiste&f.");
-				API.sendMessage(DC);
+			API.sendMessage(DC.format("commands.noFoundPlayer"));
 			return;
 		}
 
 		API.setLang(to_player, util.convertStringToLang(lang));
 
 		Message model = new Message();
-			model.getMessages().setTexts(String.format(
-				"&f'&b%s&f' &7ha cambiado el idioma de &f'&b%s&f'&7 a &b`%s`&f.",
-				DC.getSenderName(),
-				to_player.getName(),
-				util.convertStringToLang(lang).getValue()
-			));
+			model.format("commands.setterLang.setLangAnother.done.from", null, s -> s
+				.replace("%lang%", util.convertStringToLang(lang).getValue())
+				.replace("%from_player%", DC.getSenderName())
+				.replace("%to_player%", to_player.getName())
+			);
 
 		Message to_model = model.clone();
-			to_model.getMessages().setFormats("$ct_messages$");
+			to_model.format("commands.setterLang.setLangAnother.done.to", null, s -> s
+				.replace("%lang%", util.convertStringToLang(lang).getValue())
+				.replace("%from_player%", DC.getSenderName())
+				.replace("%to_player%", to_player.getName())
+			);
 		model.setTo(to_model);
 
 		API.broadcast(model, util.getOnlinePlayers(), API::broadcast);
