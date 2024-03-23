@@ -1,5 +1,6 @@
 package me.majhrs16.cht;
 
+import me.majhrs16.cht.commands.utils.TranslateYaml;
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.updater.CommandsUpdater;
@@ -161,8 +162,11 @@ public class ChatTranslator extends PluginBase {
 		commandManager.addExecutor("reloader", new Reloader());
 		commandManager.addExecutor("toggler", new Toggler());
 
-//      DST:
+//      DST
 		commandManager.addExecutor("discordLinker", new DiscordLinker());
+
+//		UTILS
+		commandManager.addExecutor("translateYaml", new TranslateYaml());
 	}
 
 	protected void unregisterCommands() {
@@ -176,6 +180,9 @@ public class ChatTranslator extends PluginBase {
 
 //      DST
 		commandManager.removeExecutor("discordLinker");
+
+//		UTILS
+		commandManager.removeExecutor("translateYaml");
 	}
 
 	public void registerEvents() {
