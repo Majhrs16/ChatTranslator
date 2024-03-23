@@ -63,6 +63,7 @@ Variables externas:
 ### Sin chat, ideal para lobbys de login ;D
 ```yaml
 from:
+  sourceLang: es
   messages:
     texts:
       - "No esta permitido hablar"
@@ -93,13 +94,14 @@ to:
 ```yaml
 # FORMATS.yml
 to:
+  sourceLang: es
   messages:
     texts:
-      - Traduccion
+    - Traduccion
 
     formats:
-      - '&e[&6{0}&e]'
-      - ''
+    - '&e[&6{0}&e]'
+    - ''
 
   toolTips:
     formats:
@@ -127,9 +129,11 @@ to:
   messages:
     formats:
       - '{"text": "", "extra": [{"text": "&a%player_name%", "hoverEvent": {"action": "SHOW_TEXT", "value": "&f[&6%ct_lang_source% &f-> &6$ct_lang_target$&f]"}}, {"text": " &f> "}, {"text": "%ct_messages%", "hoverEvent": {"action": "SHOW_TEXT", "value": "&a%ct_messages%"}}]}'
+
   toolTips:
     texts: []
     formats: []
+
   sounds:
     ENTITY_EXPERIENCE_ORB_PICKUP:
       volume: 1
