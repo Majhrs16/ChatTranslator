@@ -215,7 +215,9 @@ public class util {
 
 	public static void applyMessagesFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
 		String[] formats = Texts.get(path + ".messages.formats");
-		String[] texts = Texts.get(path + ".messages.texts");
+		String[] texts   = Texts.get(path + ".messages.texts");
+		String[] source  = Texts.get(path + ".sourceLang");
+		String[] target  = Texts.get(path + ".targetLang");
 
 		// En caso contrario: Variable literal.
 		if (formats.length == 0)
@@ -241,6 +243,12 @@ public class util {
 
 		if (texts.length > 0)
 			original.getMessages().setTexts(texts);
+
+		if (source.length > 0)
+			original.setLangSource(source[0]);
+
+		if (target.length > 0)
+			original.setLangTarget(target[0]);
 	}
 
 	@Deprecated

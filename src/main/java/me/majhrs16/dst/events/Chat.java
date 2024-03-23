@@ -162,9 +162,9 @@ public class Chat extends ListenerAdapter {
 				Player player    = (Player) AccountManager.getOfflinePlayer(authorUuid);
 
 				me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
-				from.setSender(player);
-				from.getMessages().setTexts("&aSu cuenta ha sido vinculada exitosamente&f!");
-				from.setLangTarget(API.getLang(player));
+					from.setSender(player);
+					from.format("discord-translator.discordLink");
+					from.setLangTarget(API.getLang(player));
 				API.sendMessage(from);
 			}, 5L);
 
@@ -195,29 +195,25 @@ public class Chat extends ListenerAdapter {
 					UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
 
 					if (uuid == null) {
-						DC.getMessages().setTexts(
-								"Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft.",
-								"    Por favor, use el comando `/cht link` en el server."
-						);
+						DC.format("discord-translator.unlinked");
 
 					} else {
 						plugin.storage.set(uuid, null, lang);
 
 						TranslatorBase.LanguagesBase language = util.convertStringToLang(lang);
 
-						DC.getMessages().setTexts(
-							"Su idioma ha sido establecido a `" + language.getValue() + "`."
-						);
-
 						DC.setLangTarget(language);
+						DC.format("discord-translator.setLang.done", s -> s
+							.replace("%lang%", language.getValue())
+						);
 					}
 
 				} else {
-					DC.getMessages().setTexts("El idioma '" + lang + "' no esta soportado!.");
+					DC.format("discord-translator.setLang.error.unsupported");
 				}
 
 			} else {
-				DC.getMessages().setTexts("Sintaxis invalida. Por favor use la sintaxis:\n    `!cht lang <codigo>`.");
+				DC.format("discord-translator.setLang.error.syntax");
 			}
 		}
 

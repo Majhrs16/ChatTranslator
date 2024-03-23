@@ -73,8 +73,8 @@ public class SetterLang implements CommandExecutor {
 
 		API.setLang(DC.getSender(), language);
 
-		DC.format("commands.setterLang.setLang.done");
 		DC.setLangTarget(language);
+		DC.format("commands.setterLang.setLang.done");
 
 		API.sendMessage(DC);
 	}

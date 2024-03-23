@@ -49,10 +49,7 @@ public class Commands extends ListenerAdapter {
 				}
 			}
 
-			DC.getMessages().setTexts(
-				"Debe vincular su cuenta de Discord con su Minecraft.",
-				"    Por favor, use el comando `/cht link`"
-			);
+			DC.format("discord-translator.unlinked");
 			event.getHook().sendMessage(String.join("\n", API.formatMessage(DC).getMessages().getFormats())).queue();
 		}
 	}

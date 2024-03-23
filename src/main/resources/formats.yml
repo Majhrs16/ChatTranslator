@@ -414,6 +414,69 @@ discord-translator:
           - "%discord-translator.title.min% &c{0}."
           - "\t&e{1}&f."
 
+  terminalLogger:
+    sendDiscord:
+      messages:
+        texts:
+          - "NO SE REDIRECCIONO LA CONSOLA A TODOS SUS CANALES"
+
+        formats:
+          - "&e[&6!&e] %discord-translator.title.min% &c{0}&f!"
+
+    LogReaderTask:
+      messages:
+        texts:
+          - "NO INTERNET"
+
+        formats:
+          - "&e[&6!&e] %discord-translator.title.min% &c{0}&f!"
+
+  discordLink:
+    messages:
+      texts:
+        - "Su cuenta ha sido vinculada exitosamente"
+
+      formats:
+      - "&a{0}&f!"
+
+  unlinked:
+    messages:
+      texts:
+        - "Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft."
+        - "    Por favor, use el comando `/cht link` en el servidor de Minecraft."
+
+      formats:
+        - "{0}"
+        - "{1}"
+
+  setLang:
+    error:
+      unsupported:
+        messages:
+          texts:
+            - "El idioma '%lang%' no esta soportado!."
+
+          formats:
+            - "{0}"
+
+      syntax:
+        messages:
+          texts:
+            - "Sintaxis invalida. Por favor use la sintaxis:",
+            - "codigo"
+
+          formats:
+            - "{0}"
+            - "    `!cht lang <{1}>"
+
+    done:
+      messages:
+        texts:
+          - "Su idioma ha sido establecido a"
+
+        formats:
+          - "{0} %lang%"
+
 storage:
   error:
     write:

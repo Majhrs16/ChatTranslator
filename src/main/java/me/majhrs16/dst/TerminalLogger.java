@@ -99,11 +99,9 @@ public class TerminalLogger {
 								}
 
 							} else {
-								Bukkit.getLogger().severe("[!] DST: NO INTERNET");
+								API.sendMessage(new Message().format("discord-translator."));
 
-								try {
-									Thread.sleep(2000);
-
+								try { Thread.sleep(2000);
 								} catch (InterruptedException ignored) {}
 
 								return;
@@ -157,12 +155,7 @@ public class TerminalLogger {
 	private void sendToDiscord(String message) {
 		List<String> channels = DiscordChat.getChannels("discord.channels.console");
 
-		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size()) {
-			Message from = new Message();
-				from.getMessages().setTexts(
-					"&e[&6!&e] &9DST&f: &cNO SE REDIRECCIONO LA CONSOLA A TODOS SUS CANALES&f!"
-				);
-			API.sendMessage(from);
-		}
+		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size())
+			API.sendMessage(new Message().format("discord-translator.terminalLogger.sendDiscord"));
 	}
 }
