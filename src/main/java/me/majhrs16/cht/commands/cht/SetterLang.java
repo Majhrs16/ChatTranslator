@@ -84,7 +84,7 @@ public class SetterLang implements CommandExecutor {
 		if (!API.getTranslator().isSupport(lang)) {
 			API.sendMessage(DC.format("commands.setterLang.setLang.error", null, s -> s
 				.replace("%lang%", lang)
-			););
+			));
 			return;
 		}
 
