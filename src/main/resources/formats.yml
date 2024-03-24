@@ -462,7 +462,7 @@ discord-translator:
       syntax:
         messages:
           texts:
-            - "Sintaxis invalida. Por favor use la sintaxis:",
+            - "Sintaxis invalida. Por favor use la sintaxis:"
             - "codigo"
 
           formats:
@@ -612,14 +612,6 @@ commands:
             - "&7[ &cFAIL &7] %file%"
             - "    %reason%"
 
-      invalid:
-        messages:
-          texts:
-            - "Tipo de almacenamiento invalido"
-
-          formats:
-            - "&7[ &cFAIL &7] &c{0}&f."
-
   resetterConfig:
     messages:
       texts:
@@ -652,7 +644,7 @@ commands:
           - "Por favor use la sintaxis"
 
         formats:
-          - "&c{0}&f. &a{1}&f:",
+          - "&c{0}&f. &a{1}&f:"
           - "    &e/cht lang &f[&6player&f] &f<&6codigo&f>&f."
 
     getLang:
@@ -752,7 +744,7 @@ commands:
           - "Por favor escribalo por privado al bot del servidor de"
 
         formats:
-          - "&e{0}&f: '&b%code%&f', &6{1}&f.",
+          - "&e{0}&f: '&b%code%&f', &6{1}&f."
           - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
 
 config-version: 8

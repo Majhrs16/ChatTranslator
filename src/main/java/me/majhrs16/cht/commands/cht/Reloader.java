@@ -1,6 +1,7 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
+import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.cht.util.RunnableWithTriException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
@@ -14,6 +15,7 @@ import me.majhrs16.lib.exceptions.ParseYamlException;
 import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class Reloader implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -40,16 +42,16 @@ public class Reloader implements CommandExecutor {
 				reloadAll(DC);
 				break;
 
+			case "formats":
+				reloadFormats(DC);
+				break;
+
 			case "config":
 				reloadConfig(DC);
 				break;
 
 			case "commands":
 				reloadCommands(DC);
-				break;
-
-			case "formats":
-				reloadFormats(DC);
 				break;
 
 			case "signs":
@@ -61,7 +63,7 @@ public class Reloader implements CommandExecutor {
 				break;
 
 			default:
-				DC.getMessages().setTexts("");
+				DC.getMessages().setFormats("&7[ &cFAIL &7] &c" + args[0]);
 				API.sendMessage(DC);
 				break;
 		}
@@ -79,7 +81,7 @@ public class Reloader implements CommandExecutor {
 
 		} catch (Exception e) {
 			if (Permissions.ChatTranslator.ADMIN.IF(DC.getSender()))
-				DC.format("commands.error.fatal");
+				API.sendMessage(DC.format("commands.error.fatal"));
 
 			plugin.logger.error(e.toString());
 		}
@@ -88,6 +90,7 @@ public class Reloader implements CommandExecutor {
 	private void reload(Message DC, String text, RunnableWithTriException<SQLException, ParseYamlException, StorageRegisterFailedException> action) {
 		try {
 			action.run();
+
 			DC.format("commands.reloader.done", s -> s
 				.replace("%file%", text)
 			);
@@ -100,6 +103,13 @@ public class Reloader implements CommandExecutor {
 		}
 
 		API.sendMessage(DC);
+	}
+
+	public void reloadFormats(Message DC) {
+		reload(DC, "&bformats&f.&byml", () -> {
+			plugin.formats.reload();
+			Texts.reload();
+		});
 	}
 
 	public void reloadConfig(Message DC) {
@@ -116,13 +126,6 @@ public class Reloader implements CommandExecutor {
 
 	public void reloadCommands(Message DC) {
 		reload(DC, "&bcommands&f.&byml", plugin.commands::reload);
-	}
-
-	public void reloadFormats(Message DC) {
-		reload(DC, "&bformats&f.&byml", () -> {
-			plugin.formats.reload();
-			Texts.reload();
-		});
 	}
 
 	public void reloadStorage(Message DC) {
