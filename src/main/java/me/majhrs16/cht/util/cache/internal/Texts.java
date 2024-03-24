@@ -10,12 +10,9 @@ import me.majhrs16.cot.CoreTranslator;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.lib.Kernel;
 
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Texts {
 	private static Map<String, Object> dataMap;
@@ -53,12 +50,11 @@ public class Texts {
 			result.add(((String) value).replace("\\t", "\t"));
 
 		} else if (value instanceof List) {
-			for (Object sub_value : (List<?>) value) {
+			for (Object sub_value : (List<?>) value)
 				result.add(((String) sub_value).replace("\\t", "\t"));
-			}
 
 		} else if (value instanceof String[]) {
-			return (String[]) value;
+			result.addAll(Arrays.asList((String[]) value));
 		}
 
 		return result.toArray(new String[0]);
