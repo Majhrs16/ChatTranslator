@@ -100,10 +100,6 @@ public class TerminalLogger {
 
 							} else {
 								API.sendMessage(new Message().format("discord-translator."));
-
-								try { Thread.sleep(2000);
-								} catch (InterruptedException ignored) {}
-
 								return;
 							}
 						}
