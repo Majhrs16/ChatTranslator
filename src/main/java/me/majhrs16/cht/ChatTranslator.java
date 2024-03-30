@@ -1,6 +1,7 @@
 package me.majhrs16.cht;
 
 import me.majhrs16.cht.commands.utils.TranslateYaml;
+
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.updater.CommandsUpdater;
