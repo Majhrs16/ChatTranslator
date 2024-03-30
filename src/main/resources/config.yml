@@ -21,11 +21,23 @@ storage:
 discord:
   bot-token: ''
   channels:
-    chat: []
-    deaths: []
-    console: []
-    server-status: []
-    player-access: []
+    chat:
+      - "<Public channel ID>"
+    deaths:
+      - "<Public channel ID>"
+    console:
+      - "<PRIVATE channel ID>"
+    server-status:
+      - "<Public channel ID>"
+    player-access:
+      - "<Public channel ID>"
+
+  sync:
+    permissions:
+      "<RoleID>": "DiscordTranslator.sync.test1"
+
+    roles:
+      "<RoleID>": "DiscordTranslator.sync.test2"
 
 spam:
   max-ticks: 60

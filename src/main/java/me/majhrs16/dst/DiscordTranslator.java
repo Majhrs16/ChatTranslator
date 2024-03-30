@@ -8,21 +8,18 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 
-import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.dst.events.Chat;
 
 public class DiscordTranslator {
 	private static JDA jda;
 
 	public final static String version  = "b3.6";
-	private final ChatTranslator plugin = ChatTranslator.getInstance();
-	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-	private final TerminalLogger terminalLogger = new TerminalLogger();
 
 	private static class Events {
-		private static final Chat chat = new Chat();
 		private static final me.majhrs16.dst.events.Commands commands = new me.majhrs16.dst.events.Commands();
+		private static final TerminalLogger terminalLogger = new TerminalLogger();
+		private static final DiscordSync discordSync = new DiscordSync();
+		private static final Chat chat = new Chat();
 	}
 
 	public JDA connect(String bot_token) throws InvalidTokenException, InterruptedException {
@@ -31,6 +28,7 @@ public class DiscordTranslator {
 
 		JDABuilder builder = JDABuilder.createDefault(bot_token);
 		builder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
+		builder.enableIntents(GatewayIntent.GUILD_PRESENCES);
 
 		jda = builder.build();
 		return jda.awaitReady();
@@ -39,29 +37,31 @@ public class DiscordTranslator {
 	public void registerEvents() {
 		jda.addEventListener(Events.commands);
 		jda.addEventListener(Events.chat);
-		terminalLogger.start();
+		Events.terminalLogger.start();
+		Events.discordSync.start();
 	}
 
 	public void unregisterEvents() {
 		jda.removeEventListener(Events.commands);
 		jda.removeEventListener(Events.chat);
-		terminalLogger.stop();
+		Events.terminalLogger.stop();
+		Events.discordSync.stop();
 	}
 
 	public void registerCommands() {
-		if (jda != null) {
-			for (Guild guild : jda.getGuilds()) {
-				guild.updateCommands().addCommands( Commands.message("Traducir") ).queue();
-			}
-		}
+		if (jda == null) return;
+
+		for (Guild guild : jda.getGuilds())
+			guild.updateCommands().addCommands(Commands.message("Translate")).queue();
 	}
 
 	public void unregisterCommands() {
 	}
 
 	public void disconnect() {
-		if (jda != null)
-			jda.shutdown();
+		if (jda == null) return;
+
+		jda.shutdown();
 	}
 
 	public static JDA getJDA() {
