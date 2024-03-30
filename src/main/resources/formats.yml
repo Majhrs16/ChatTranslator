@@ -721,7 +721,7 @@ commands:
 
     activateBot:
       messages:
-        textS:
+        texts:
           - "Debe activar"
           - "para usar este comando"
 
@@ -730,7 +730,7 @@ commands:
 
     timeout:
       messages:
-        textS:
+        texts:
           - "Tiempo de espera agotado para su vinculacion de cuenta"
 
         formats:
@@ -738,7 +738,7 @@ commands:
 
     done:
       messages:
-        textS:
+        texts:
           - "Su codigo de verificacion es"
           - "Y expira en 1 minuto"
           - "Por favor escribalo por privado al bot del servidor de"
@@ -746,5 +746,45 @@ commands:
         formats:
           - "&e{0}&f: '&b%code%&f', &6{1}&f."
           - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
+
+configUpdater:
+  done:
+    messages:
+      texts:
+        - "&eSe ha actualizado la config de la version &b%original%&e a la &b%new%&f."
+
+      formats:
+        - "{0}"
+
+  detected:
+    Chatty:
+      messages:
+        texts:
+          - "Detectado: Chatty"
+
+        formats:
+          - "&a{0}&f."
+
+    ChatManager:
+      messages:
+        texts:
+          - "Detectado: ChatManager"
+
+        formats:
+          - "&a{0}&f."
+
+  version7:
+    unsupportedColorConfig:
+      messages:
+        texts:
+          - "ADVERTENCIA"
+          - "Apartir de ahora NO se maneja los colores del chat por 1 configuracion"
+          - "Sino ahora por permisos"
+          - "Por favor mire la &9Wiki"
+
+        formats:
+          - "%plugin.title.min% &e{0}&f: &6{1}&f, &a{2}&f."
+          - "\t&a{3}&f."
+
 
 config-version: 8

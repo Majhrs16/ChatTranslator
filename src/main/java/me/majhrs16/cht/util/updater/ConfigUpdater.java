@@ -22,7 +22,7 @@ public class ConfigUpdater {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	private final Consumer[] applyConfigVersions = new Consumer[] {
-		this::applyConfigVersion1,
+		this::applyConfigVersion1, // 1.5.4
 		this::applyConfigVersion2,
 		this::applyConfigVersion3,
 		this::applyConfigVersion4,
@@ -30,7 +30,7 @@ public class ConfigUpdater {
 		this::applyConfigVersion6,
 		this::applyConfigVersion7,
 		this::applyConfigVersion8, // v1.7.11
-		this::applyConfigVersion9  // 1.8
+		this::applyConfigVersion9  // 1.7.14 // 1.8 // 2.0
 	};
 
 	@FunctionalInterface
@@ -51,10 +51,10 @@ public class ConfigUpdater {
 		if (version_original == 0)   // Inicializar el plugin por primera vez.
 			config.set("server-uuid", UUID.randomUUID().toString()); // Para evitar crashes.
 
-		Message DC = new Message();
+		Message from = new Message();
 
 		if (version_original == 0) { // Inicializar el plugin por primera vez.
-			applyConfigVersion0(config, DC);
+			applyConfigVersion0(config, from);
 			version = applyConfigVersions.length; // "Actualizar" a la ultima version disponible en el codigo.
 		}
 
@@ -65,10 +65,10 @@ public class ConfigUpdater {
 		}
 
 		if (Config.DEBUG.IF())
-			System.out.println("Debug, config.version: " + version_original);
+			plugin.logger.debug("version.original: " + version_original);
 
 		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) { // Actualizar gradualmente por el historial de versiones.
-			applyConfigVersions[i].accept(config, DC);
+			applyConfigVersions[i].accept(config, from);
 			version = i + 1;
 		}
 
@@ -76,28 +76,24 @@ public class ConfigUpdater {
 		plugin.config.save();
 
 		if (version > version_original) {
-			DC.getMessages().setTexts(String.format(
-				"&eSe ha actualizado la config de la version &b%s &ea la &b%s&f.",
-				version_original, version
+			API.sendMessage(from.format("configUpdater.done", null, s -> s
+				.replace("%original%", "" + version_original)
+				.replace("%new%", "" + version)
 			));
-
-			API.sendMessage(DC);
 	    }
 	}
 
-	public void applyConfigVersion0(FileConfiguration config, Message DC) {
+	public void applyConfigVersion0(FileConfiguration config, Message from) {
 		boolean cancel_event, clear_recipients;
 
 		if (Dependencies.Chatty.exist()) {
-			DC.getMessages().setTexts("&aDetectado Chatty&f.");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("configUpdater.detected.Chatty"));
 
 			cancel_event     = false;
 			clear_recipients = false;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			DC.getMessages().setTexts("&aDetectado ChatManager&f.");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("configUpdater.detected.ChatManager"));
 
 			cancel_event     = false;
 			clear_recipients = false;
@@ -111,7 +107,7 @@ public class ConfigUpdater {
 		config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
 	}
 
-	public void applyConfigVersion1(FileConfiguration config, Message DC) {
+	public void applyConfigVersion1(FileConfiguration config, Message from) {
 		String path, tmp;
 
 		ArrayList<String> formats_from_messages  = new ArrayList<>();
@@ -167,18 +163,16 @@ public class ConfigUpdater {
 		config.set("auto-update-config", true);
 	}
 
-	public void applyConfigVersion2(FileConfiguration config, Message DC) {
+	public void applyConfigVersion2(FileConfiguration config, Message from) {
 		boolean show_native_chat;
 
 		if (Dependencies.Chatty.exist()) {
-			DC.getMessages().setTexts("&aDetectado Chatty&f.");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("configUpdater.detected.Chatty"));
 
 			show_native_chat = true;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			DC.getMessages().setTexts("&aDetectado ChatManager&f.");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("configUpdater.detected.ChatManager"));
 
 			show_native_chat = true;
 
@@ -189,7 +183,7 @@ public class ConfigUpdater {
 		config.set("max-spam-per-tick", 150.0007);
 	}
 
-	public void applyConfigVersion3(FileConfiguration config, Message DC) {
+	public void applyConfigVersion3(FileConfiguration config, Message from) {
 		String path;
 
 		path = "show-native-chat";
@@ -231,11 +225,11 @@ public class ConfigUpdater {
 		}
 	}
 
-	public void applyConfigVersion4(FileConfiguration config, Message DC) {
+	public void applyConfigVersion4(FileConfiguration config, Message from) {
 		config.set("check-updates", true);
 	}
 
-	public void applyConfigVersion5(FileConfiguration config, Message DC) {
+	public void applyConfigVersion5(FileConfiguration config, Message from) {
 		String path;
 
 		path = "chat-color-personalized";
@@ -256,7 +250,7 @@ public class ConfigUpdater {
 			config.set(path, from_exit);
 		}
 	}
-	public void applyConfigVersion6(FileConfiguration config, Message DC) {
+	public void applyConfigVersion6(FileConfiguration config, Message from) {
 		ArrayList<String> from_messages  = new ArrayList<>();
 		from_messages.add("%ct_expand% &7%ct_messages%");
 
@@ -297,7 +291,7 @@ public class ConfigUpdater {
 		config.set("discord.channels", discord_channels);
 	}
 
-	public void applyConfigVersion7(FileConfiguration config, Message DC) {
+	public void applyConfigVersion7(FileConfiguration config, Message from) {
 		ArrayList<String> to_discord_messages  = new ArrayList<>();
 		to_discord_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
 		ArrayList<String> to_discord_tool_tips = new ArrayList<>();
@@ -313,10 +307,7 @@ public class ConfigUpdater {
 		config.set("discord.channels.player-access", new ArrayList<>());
 
 
-		DC.getMessages().setTexts(Texts.getString("plugin.title.text") +
-			" &eADVERTENCIA&f: &6Apartir de ahora&f, &cNO &6se maneja los colores del chat por 1 configuracion&f. &aSino ahora por permisos&f.",
-			"\t&aPor favor mire la &9Wiki&f.");
-		API.sendMessage(DC);
+		API.sendMessage(from.format("configUpdater.version7.unsupportedColorConfig"));
 
 		config.set("chat-custom-colors", null);
 
@@ -342,7 +333,7 @@ public class ConfigUpdater {
 		config.set("formats.to_mention.sounds", to_mention_sounds);
 	}
 
-	public void applyConfigVersion8(FileConfiguration config, Message DC) {
+	public void applyConfigVersion8(FileConfiguration config, Message from) {
 		String path;
 
 		ArrayList<String> death_messages = new ArrayList<>();
@@ -378,7 +369,7 @@ public class ConfigUpdater {
 		config.set(path + ".wrapText", false);
 	}
 
-	public void applyConfigVersion9(FileConfiguration config, Message DC) {
+	public void applyConfigVersion9(FileConfiguration config, Message from) {
 		// FALTA MUDAR LA CONFIG.yml VIEJA A FORMATS.yml!!
 	}
 }
