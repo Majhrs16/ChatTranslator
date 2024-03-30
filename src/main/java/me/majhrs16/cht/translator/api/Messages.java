@@ -112,6 +112,10 @@ public interface Messages {
 		}
 	}
 
+	default void sendMessageAsync(Message original) {
+		new Thread(() -> sendMessage(original)).start();
+	}
+
 	default void broadcast(List<Message> messages, Consumer<Message> broadcastAction) {
 		for (Message from : messages) {
 			if (broadcastAction != null)
