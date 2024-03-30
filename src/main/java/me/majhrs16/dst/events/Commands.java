@@ -18,7 +18,7 @@ public class Commands extends ListenerAdapter {
 
 	@Override
 	public void onMessageContextInteraction(MessageContextInteractionEvent event) {
-		if (event.getName().equals("Traducir")) {
+		if (event.getName().equals("Translate")) {
 			event.deferReply(true).queue();
 
 			Message message = event.getTarget();
