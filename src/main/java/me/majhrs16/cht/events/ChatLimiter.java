@@ -31,17 +31,22 @@ public class ChatLimiter {
 			private SpamTracker getGlobalSpamTracker() {
 				FileConfiguration config  = plugin.config.get();
 				return new SpamTracker(
-					0, // Contador de mensajes.
+//					Contador de mensajes.
+					0,
+
+//					Total de mensajes.
 					config.getInt("spam.max-messages"),
-					0,  // Contador de ticks.
+
+//					Contador de ticks.
+					0,
+
+//					Total de ticks.
 					config.getInt("spam.max-ticks")
 				);
 			}
 
 			public void run() {
-				if (plugin.isDisabled()
-						|| spam.getTotalCount() == 0
-						|| spam.getTotalMax() == 0)
+				if (plugin.isDisabled())
 					return;
 
 				if (spam.getActualMax() >= spam.getTotalMax()) {
@@ -55,10 +60,13 @@ public class ChatLimiter {
 
 				logger.debug("chat.size: %s", chat.size());
 
-				for (int i = 0; !chat.isEmpty() && i < Math.min(spam.getTotalCount(), chat.size()); i++) {
+				for (int i = 0; i < chat.size(); i++) {
 					Message event = chat.get(0);
 
-					if (event.getSender() instanceof Player) {
+					if (spam.getTotalCount() > 0
+							&& spam.getTotalMax() > 0
+							&& event.getSender() instanceof Player) {
+
 						Player player = (Player) event.getSender();
 
 						if (!counts.containsKey(player))
@@ -75,6 +83,15 @@ public class ChatLimiter {
 						if (count.getActualCount() >= spam.getTotalCount() * 1.5) {
 							player.kickPlayer("SPAM!");
 							counts.remove(player);
+
+							for (Message from : new ArrayList<>(chat)) {
+								if (from.getSender() instanceof Player
+										&& player.equals(from.getSender())) {
+
+									try { remove(from); }
+									catch (Exception ignored) {}
+								}
+							}
 						}
 
 						if (count.getActualCount() >= spam.getTotalCount())
@@ -85,6 +102,11 @@ public class ChatLimiter {
 
 					try { remove(event); }
 					catch (Exception ignored) {}
+
+					if (spam.getTotalCount() > 0
+							&& spam.getTotalMax() > 0
+							&& i >= spam.getTotalCount())
+						break;
 				}
 
 				// Aumentamos el contador de los ticks procesados.
@@ -99,6 +121,11 @@ public class ChatLimiter {
 	}
 
 	public static void add(Message from) {
+		if (from.getSender() instanceof Player) {
+			Player player = (Player) from.getSender();
+			if (!player.isOnline()) return;
+		}
+
 		chat.add(from);
 	}
 
