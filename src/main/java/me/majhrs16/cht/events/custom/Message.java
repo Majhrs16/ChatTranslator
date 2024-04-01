@@ -260,8 +260,10 @@ public class Message extends Event implements Cancellable {
 				if (getTo() != null) {
 					to.setSender(getTo().getSender());
 					to.setSenderName(getTo().getSenderName());
-					to.setMessages(getTo().getMessages());
-					to.setToolTips(getTo().getToolTips());
+					to.getMessages().setFormats(getTo().getMessages().getFormats());
+					to.getMessages().setTexts(getTo().getMessages().getTexts());
+					to.getToolTips().setFormats(getTo().getToolTips().getFormats());
+					to.getToolTips().setTexts(getTo().getToolTips().getTexts());
 					to.setSounds(getTo().getSounds());
 					to.setCancelledThis(getTo().isCancelled());
 					to.setLangSource(getTo().getLangSource());
@@ -274,8 +276,10 @@ public class Message extends Event implements Cancellable {
 
 			from.setSender(getSender());
 			from.setSenderName(getSenderName());
-			from.setMessages(getMessages());
-			from.setToolTips(getToolTips());
+			from.getMessages().setFormats(getMessages().getFormats());
+			from.getMessages().setTexts(getMessages().getTexts());
+			from.getToolTips().setFormats(getToolTips().getFormats());
+			from.getToolTips().setTexts(getToolTips().getTexts());
 			from.setSounds(getSounds());
 			from.setCancelledThis(isCancelled());
 			from.setLangSource(getLangSource());
