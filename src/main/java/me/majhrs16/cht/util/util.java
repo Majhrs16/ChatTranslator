@@ -3,19 +3,17 @@ package me.majhrs16.cht.util;
 import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.command.CommandSender;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.translator.api.Core;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 
@@ -30,17 +28,14 @@ public class util {
 	private static final Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
 
 	public static CommandSender getSenderByName(String playerName) {
-		if (playerName == null)
-			return Bukkit.getConsoleSender();
-
-		return Bukkit.getServer().getPlayer(playerName);
+		return BukkitUtils.getSenderByName(playerName);
 	}
 
 	public static String[] stripColor(String... array) {
 		String[] newArray = array.clone();
 
 		for (int i = 0; i < newArray.length; i++)
-			newArray[i] = ChatColor.stripColor(newArray[i].replaceAll(Core.color_hex.pattern(), ""));
+			newArray[i] = BukkitUtils.stripColor(newArray[i]);
 
 		return newArray;
 	}
@@ -65,53 +60,11 @@ public class util {
 	}
 
 	public static UUID getUUID(Object sender) {
-		UUID uuid = null;
-
-		if (sender instanceof Player) {
-			uuid = ((Player) sender).getUniqueId();
-
-		} if (sender instanceof OfflinePlayer) {
-			OfflinePlayer offlinePlayer = (OfflinePlayer) sender;
-
-			if (offlinePlayer.getPlayer() != null)
-				uuid = ((OfflinePlayer) sender).getPlayer().getUniqueId();
-
-			else
-				try {
-					uuid = ((OfflinePlayer) sender).getUniqueId();
-
-				} catch (NoSuchMethodError e) {
-					uuid = null;
-				}
-
-		} else if (sender instanceof CommandSender) {
-			String server_uuid = plugin.config.get().getString("server-uuid");
-
-			if (server_uuid != null)
-				uuid = UUID.fromString(server_uuid);
-		}
-
-		return uuid;
+		return BukkitUtils.getUUID(sender);
 	}
 
 	public static Player[] getOnlinePlayers() {
-		try {
-			Object players = Bukkit.getServer().getClass().getMethod("getOnlinePlayers").invoke(Bukkit.getServer());
-
-			if (players instanceof Player[]) {
-				return (Player[]) players;
-
-			} else if (players instanceof Collection<?>) {
-				return ((Collection<?>) players).toArray(new Player[0]);
-
-			} else {
-				return null;
-			}
-
-		} catch (Exception e) {
-			plugin.logger.error(e.toString());
-			return null;
-		}
+		return BukkitUtils.getOnlinePlayers();
 	}
 
 	public static double getMinecraftVersion() {
@@ -167,7 +120,7 @@ public class util {
 
 	public static void applySoundsFormat(Message original, String path) {
 		FileConfiguration formats = plugin.formats.get();
-		String[] sounds           = new String[] {};
+		String[] sounds           = new String[0];
 
 		if (formats.contains(path + ".sounds")) {
 			List<String> temp_sounds = new ArrayList<>();
