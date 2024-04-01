@@ -113,7 +113,9 @@ public interface Messages {
 	}
 
 	default void sendMessageAsync(Message original) {
-		new Thread(() -> sendMessage(original)).start();
+		Message backup = original.clone();
+
+		new Thread(() -> sendMessage(backup)).start();
 	}
 
 	default void broadcast(List<Message> messages, Consumer<Message> broadcastAction) {

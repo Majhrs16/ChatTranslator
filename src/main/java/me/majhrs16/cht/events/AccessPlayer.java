@@ -73,7 +73,7 @@ public class AccessPlayer implements Listener {
 
 		API.broadcast(model, util.getOnlinePlayers(), froms -> {
 			froms.add(console);
-			API.broadcast(froms, API::sendMessage); // Evitar el ChatLimiter y por ende notificar a todos.
+			API.broadcast(froms, API::sendMessageAsync); // Evitar el ChatLimiter para evitar ciertos bugs con CE.
 		});
 
 		notifyToDiscord(player, MF + "_discord", originalMessage);
@@ -96,11 +96,11 @@ public class AccessPlayer implements Listener {
 		if (to.getMessages().getFormats().length == 0)
 			return;
 
-		DiscordChat.broadcastEmbed(
+		new Thread(() -> DiscordChat.broadcastEmbed(
 			DiscordChat.getChannels("discord.channels.player-access"),
 			to.getMessages().getFormats(),
 			to.getToolTips().getFormats(),
 			Integer.parseInt(Texts.get("to_" + MF + ".color")[0].substring(1), 16)
-		);
+		)).start();
 	}
 }

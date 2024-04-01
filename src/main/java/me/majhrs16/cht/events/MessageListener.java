@@ -44,7 +44,7 @@ public class MessageListener implements Listener {
 		if (event.isEmpty())
 			return;
 
-		API.sendMessage(event);
+		API.sendMessageAsync(event);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -54,8 +54,8 @@ public class MessageListener implements Listener {
 				|| !Config.TranslateOthers.DISCORD.IF()
 				|| event.getLangSource() == null
 				|| event.getLangTarget() == null
-				|| event.getLangSource().equals("disabled")
-				|| event.getLangTarget().equals("disabled")
+				|| event.getLangSource().getCode().equals("DISABLED")
+				|| event.getLangTarget().getCode().equals("DISABLED")
 				|| event.getMessages().getFormats().length == 0
 				|| event.getMessages().getTexts().length == 0
 				|| event.getTo().getMessages().getFormats().length == 0)
