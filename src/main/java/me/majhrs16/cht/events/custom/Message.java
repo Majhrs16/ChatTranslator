@@ -38,7 +38,7 @@ public class Message extends Event implements Cancellable {
 	private enum SenderTypes {
 		UNKNOWN,
 		CONSOLE,
-		PLAYER;
+		PLAYER
 	}
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();

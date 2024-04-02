@@ -30,20 +30,12 @@ import me.majhrs16.lib.storages.YAML;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
-import java.util.List;
 
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
 
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.plugin.SimplePluginManager;
-import org.jetbrains.annotations.NotNull;
-
 import me.majhrs16.cot.CoreTranslator;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.Command;
 import org.bukkit.Bukkit;
 
 

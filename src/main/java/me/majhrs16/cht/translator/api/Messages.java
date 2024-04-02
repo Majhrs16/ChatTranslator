@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 
 import me.majhrs16.lib.logger.Logger;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 import java.util.List;
