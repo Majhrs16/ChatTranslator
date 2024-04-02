@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 public interface Core {
 	Pattern sub_variables = Pattern.compile("\\{([a-zA-Z0-9_]+)}");
 	Pattern variables     = Pattern.compile("[%$][A-Z0-9_]+[%$]"); // CORREGIR el mal procesado de PAPI con la modifiacion de ct_messages,
-	Pattern color_hex     = Pattern.compile("#[a-fA-Z0-9]{6}");
+	Pattern color_hex     = Pattern.compile("#[a-fA-F0-9]{6}");
 	Pattern FORMAT_INDEX  = Pattern.compile("[{%](\\d+?)[}%]");
 	Pattern literal       = Pattern.compile("`(.+?)`");
 	Logger logger         = ChatTranslator.getInstance().logger;
@@ -108,7 +109,7 @@ public interface Core {
 	}
 
 	default String[] replaceArray(String[] array, String target, String[] replacements) {
- 		return replaceArray(array, target, String.join("\n", convertColor(replacements)));
+ 		return replaceArray(array, target, String.join("\n", replacements));
 	}
 
 	default String[] parseSubVariables(Player player, String... formats) {
@@ -356,11 +357,15 @@ public interface Core {
 		to_tool_tips_formats   = processFormatIndex(to_tool_tips_formats, to_tool_tips_texts);
 		to_messages_formats    = processFormatIndex(to_messages_formats, to_messages_texts);
 
-		if (from_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original)))
-			from_messages_texts = convertColor(from_messages_texts);
+		if (from_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original))) {
+			from_tool_tips_texts = convertColor(from_tool_tips_texts);
+			from_messages_texts  = convertColor(from_messages_texts);
+		}
 
-		if (to_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original)))
-			to_messages_texts   = convertColor(to_messages_texts);
+		if (to_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original))) {
+			to_tool_tips_texts = convertColor(to_tool_tips_texts);
+			to_messages_texts  = convertColor(to_messages_texts);
+		}
 
 		from_tool_tips_formats  = convertColor(from_tool_tips_formats);
 		from_messages_formats   = convertColor(from_messages_formats);
@@ -402,11 +407,14 @@ public interface Core {
 		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "\\t", "\t");
 		to_messages_formats    = replaceArray(to_messages_formats, "\\t", "\t");
 
-		// En caso de no haber textos originales, esto es necesario para mostrarse por API.Messages.processMessage.
+
+		// En caso de no haber textos originales, esto es necesario para mostrarse por API.Messages.showMessage.
 		if (from_messages_formats.length > 0
 				&& !(from_messages_formats[0].equals("%ct_messages%") || from_messages_formats[0].equals("{0}"))
-				&& from_messages_texts.length == 0)
+				&& from_messages_texts.length == 0) {
+
 			from_messages_texts = new String[] { "\t" };
+		}
 
 		from.getToolTips().setFormats(from_tool_tips_formats);
 		from.getMessages().setFormats(from_messages_formats);
