@@ -1,5 +1,6 @@
 package me.majhrs16.cht;
 
+import me.majhrs16.cht.commands.CommandInjector;
 import me.majhrs16.cht.commands.utils.TranslateYaml;
 
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
@@ -29,13 +30,22 @@ import me.majhrs16.lib.storages.YAML;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
 
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.plugin.SimplePluginManager;
+import org.jetbrains.annotations.NotNull;
+
 import me.majhrs16.cot.CoreTranslator;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.Command;
 import org.bukkit.Bukkit;
+
 
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
@@ -60,6 +70,9 @@ public class ChatTranslator extends PluginBase {
 		API = ChatTranslatorAPI.getInstance();
 
 		super.onEnable();
+
+		Test test = new Test();
+		CommandInjector.injectCommand("test", test, test);
 
 		Message from = new Message();
 
@@ -215,6 +228,7 @@ public class ChatTranslator extends PluginBase {
 		eventManager.removeExecutors("deathPlayer");
 		eventManager.removeExecutors("signs");
 		eventManager.removeExecutors("chat");
+
 		chatLimiter.stop();
 		metrics.shutdown();
 
