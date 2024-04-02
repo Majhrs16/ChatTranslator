@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 
 public class Texts {
 	private static Map<String, Object> dataMap;
-	private static ChatTranslator plugin = ChatTranslator.getInstance();
+	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%(.+?)%");
 
 	public static void reload() {
@@ -73,6 +73,11 @@ public class Texts {
 
 			while (matcher.find()) {
 				String key = matcher.group(1);
+
+				if (key == null) {
+					plugin.logger.error("Found a null key!");
+					continue;
+				}
 
 				if (dataMap.containsKey(key)) {
 					String[] value = new Message().format(key).getMessages().getFormats();
