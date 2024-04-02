@@ -27,7 +27,7 @@ public interface Core {
 	Pattern color_hex     = Pattern.compile("#[a-fA-Z0-9]{6}");
 	Pattern FORMAT_INDEX  = Pattern.compile("[{%](\\d+?)[}%]");
 	Pattern literal       = Pattern.compile("`(.+?)`");
-	Logger logger = ChatTranslator.getInstance().logger;
+	Logger logger         = ChatTranslator.getInstance().logger;
 
 	default String[] translateMessages(String[] messages, String[] formats, String sourceLang, String targetLang, TranslatorBase translator) {
 		String[] newArray = messages.clone();
