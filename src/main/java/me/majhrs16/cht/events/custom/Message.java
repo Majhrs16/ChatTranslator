@@ -294,17 +294,15 @@ public class Message extends Event implements Cancellable {
 
 	@SuppressWarnings("unchecked")
 	public String toJson() {
-		JSONObject messages, tool_tips;
-
 		JSONObject from = new JSONObject();
 			from.put("senderName", getSenderName());
 
-			messages = new JSONObject();
+			JSONObject messages = new JSONObject();
 				messages.put("formats", Arrays.asList(getMessages().getFormats()));
 				messages.put("texts", Arrays.asList(getMessages().getTexts()));
 			from.put("messages", messages);
 
-			tool_tips = new JSONObject();
+			JSONObject tool_tips = new JSONObject();
 				tool_tips.put("formats", Arrays.asList(getToolTips().getFormats()));
 				tool_tips.put("texts", Arrays.asList(getToolTips().getTexts()));
 			from.put("toolTips", tool_tips);
@@ -320,15 +318,15 @@ public class Message extends Event implements Cancellable {
 			if (getTo() != null) {
 				to.put("senderName", getTo().getSenderName());
 
-				messages = new JSONObject();
-					messages.put("formats", Arrays.asList(getTo().getMessages().getFormats()));
-					messages.put("texts", Arrays.asList(getTo().getMessages().getTexts()));
-				from.put("messages", messages);
+				JSONObject messages2 = new JSONObject();
+					messages2.put("formats", Arrays.asList(getTo().getMessages().getFormats()));
+					messages2.put("texts", Arrays.asList(getTo().getMessages().getTexts()));
+				to.put("messages", messages2);
 
-				tool_tips = new JSONObject();
-					tool_tips.put("formats", Arrays.asList(getTo().getToolTips().getFormats()));
-					tool_tips.put("texts", Arrays.asList(getTo().getToolTips().getTexts()));
-				from.put("toolTips", tool_tips);
+				JSONObject tool_tips2 = new JSONObject();
+					tool_tips2.put("formats", Arrays.asList(getTo().getToolTips().getFormats()));
+					tool_tips2.put("texts", Arrays.asList(getTo().getToolTips().getTexts()));
+				to.put("toolTips", tool_tips2);
 
 				to.put("sounds", Arrays.asList(getTo().getSounds()));
 				to.put("isCancelled", getTo().isCancelled());
