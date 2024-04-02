@@ -1,6 +1,7 @@
 package me.majhrs16.cht.events.custom;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
 import me.majhrs16.lib.logger.Logger;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
@@ -142,7 +143,7 @@ public class Message extends Event implements Cancellable {
 
 	public Message setSender(String sender) {
 		// Support for CoT + CE!.
-		setSender(util.getSenderByName(sender));
+		setSender(BukkitUtils.getSenderByName(sender));
 
 		return this;
 	}
@@ -352,7 +353,7 @@ public class Message extends Event implements Cancellable {
 
 			JSONObject fromJson = (JSONObject) json.get("from");
 				Message from = new Message();
-					from.setSender(util.getSenderByName((String) fromJson.get("senderName")));
+					from.setSender(BukkitUtils.getSenderByName((String) fromJson.get("senderName")));
 
 					messages =  (JSONObject) fromJson.get("messages");
 						formats = (JSONArray) messages.get("formats");
@@ -372,7 +373,7 @@ public class Message extends Event implements Cancellable {
 			JSONObject toJson = (JSONObject) json.get("to");
 				Message to = new Message();
 					if (toJson != null) {
-						to.setSender(util.getSenderByName((String) toJson.get("senderName")));
+						to.setSender(BukkitUtils.getSenderByName((String) toJson.get("senderName")));
 
 						messages =  (JSONObject) fromJson.get("messages");
 							formats = (JSONArray) messages.get("formats");

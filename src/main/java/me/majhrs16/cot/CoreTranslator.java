@@ -3,6 +3,7 @@ package me.majhrs16.cot;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.MessageListener;
@@ -57,7 +58,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case LANG:
-						CommandSender targetPlayer = util.getSenderByName(matcher.group(1));
+						CommandSender targetPlayer = BukkitUtils.getSenderByName(matcher.group(1));
 						if (targetPlayer == null)
 							result = getMessageFormatted(null, "&4Error&f: &cJugador no encontrado&f.");
 
@@ -142,7 +143,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
 
 		MessageListener listener = new MessageListener();
-		API.broadcast(from, util.getOnlinePlayers(), froms -> API.broadcast(froms, _from -> {
+		API.broadcast(from, BukkitUtils.getOnlinePlayers(), froms -> API.broadcast(froms, _from -> {
 			listener.toMinecraft(_from);
 			_from.setCancelled(true);
 		}));

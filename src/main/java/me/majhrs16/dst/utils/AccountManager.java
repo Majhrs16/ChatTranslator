@@ -1,15 +1,16 @@
 package me.majhrs16.dst.utils;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
+
+import me.majhrs16.dst.DiscordTranslator;
 
 import net.dv8tion.jda.api.entities.User;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Random;

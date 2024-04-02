@@ -1,5 +1,8 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.dst.utils.DiscordChat;
@@ -7,7 +10,6 @@ import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
-import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -41,7 +43,7 @@ public class DeathPlayer implements Listener {
 			.setSender(player)
 			.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(model, util.getOnlinePlayers(), (froms) -> {
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), (froms) -> {
 			froms.add(console);
 			API.broadcast(froms, API::sendMessage);
 		});

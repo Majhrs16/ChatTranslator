@@ -6,7 +6,6 @@ import me.majhrs16.lib.network.translator.TranslatorBase;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;

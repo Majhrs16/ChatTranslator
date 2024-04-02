@@ -1,7 +1,6 @@
 package me.majhrs16.cht.translator.api;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
-import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
 
@@ -9,6 +8,7 @@ import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Dependencies;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import me.clip.placeholderapi.PlaceholderAPI;

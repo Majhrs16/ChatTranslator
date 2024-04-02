@@ -8,16 +8,16 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.util.*;
 
-import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.lib.network.utils.InternetAccess;
-import me.majhrs16.dst.utils.TerminalAnsiReader;
+
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.dst.utils.DiscordChat;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
-import org.bukkit.Bukkit;
+import me.majhrs16.dst.utils.TerminalAnsiReader;
+import me.majhrs16.dst.utils.DiscordChat;
 
 public class TerminalLogger {
 	private Timer timer;

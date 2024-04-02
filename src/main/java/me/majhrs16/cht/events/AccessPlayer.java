@@ -18,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
+import me.majhrs16.lib.minecraft.BukkitUtils;
+
 import java.util.function.Consumer;
 
 public class AccessPlayer implements Listener {
@@ -71,7 +73,7 @@ public class AccessPlayer implements Listener {
 			.setSender(player)
 			.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
-		API.broadcast(model, util.getOnlinePlayers(), froms -> {
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
 			froms.add(console);
 			API.broadcast(froms, API::sendMessageAsync); // Evitar el ChatLimiter para evitar ciertos bugs con CE.
 		});

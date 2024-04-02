@@ -1,6 +1,7 @@
 package me.majhrs16.cht.util;
 
 import me.majhrs16.cht.ChatTranslator;
+
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;

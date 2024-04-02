@@ -1,20 +1,19 @@
 package me.majhrs16.cht.commands.utils;
 
-import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
+import me.majhrs16.lib.exceptions.ParseYamlException;
+import me.majhrs16.lib.storages.YAML;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandSender;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.ChatTranslator;
 
-import me.majhrs16.lib.storages.YAML;
-import org.bukkit.command.CommandSender;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TranslateYaml implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();

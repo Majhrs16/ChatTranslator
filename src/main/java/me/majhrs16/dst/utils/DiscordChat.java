@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import me.majhrs16.dst.DiscordTranslator;
+
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 

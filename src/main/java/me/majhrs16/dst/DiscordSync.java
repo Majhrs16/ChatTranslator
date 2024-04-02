@@ -1,6 +1,5 @@
 package me.majhrs16.dst;
 
-import me.majhrs16.cht.util.util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.Permission;
@@ -17,9 +16,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.JDA;
 
 import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.util;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DiscordSync {
 	private Timer timer;

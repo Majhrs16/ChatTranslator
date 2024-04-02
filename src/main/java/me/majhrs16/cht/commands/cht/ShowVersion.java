@@ -1,6 +1,7 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;

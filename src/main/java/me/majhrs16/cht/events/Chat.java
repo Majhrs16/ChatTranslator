@@ -1,6 +1,8 @@
 package me.majhrs16.cht.events;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
+
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
@@ -64,7 +66,7 @@ public class Chat implements Listener {
 			from_lang,
 			players.isEmpty() ? null : "mention"); // null = chat normal por defecto.
 
-		API.broadcast(model, players.isEmpty() ? util.getOnlinePlayers() : players.toArray(new Player[0]), froms -> {
+		API.broadcast(model, players.isEmpty() ? BukkitUtils.getOnlinePlayers() : players.toArray(new Player[0]), froms -> {
 			froms.add(console);
 			API.broadcast(froms);
 		});

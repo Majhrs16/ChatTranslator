@@ -8,7 +8,6 @@ import me.majhrs16.lib.minecraft.BukkitUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
@@ -26,10 +25,6 @@ public class util {
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 	private static final Pattern version       = Pattern.compile("\\d+\\.(\\d+)(\\.(\\d+))?");
-
-	public static CommandSender getSenderByName(String playerName) {
-		return BukkitUtils.getSenderByName(playerName);
-	}
 
 	public static String[] stripColor(String... array) {
 		String[] newArray = array.clone();
@@ -60,11 +55,7 @@ public class util {
 	}
 
 	public static UUID getUUID(Object sender) {
-		return BukkitUtils.getUUID(sender);
-	}
-
-	public static Player[] getOnlinePlayers() {
-		return BukkitUtils.getOnlinePlayers();
+		return BukkitUtils.getUUID(plugin.config, sender);
 	}
 
 	public static double getMinecraftVersion() {

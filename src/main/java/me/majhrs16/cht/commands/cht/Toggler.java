@@ -1,6 +1,7 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
+import me.majhrs16.lib.minecraft.BukkitUtils;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
@@ -45,7 +46,7 @@ public class Toggler implements CommandExecutor {
 		if (player == null)
 			throw new NullPointerException("String player is null");
 
-		Player to_player = (Player) util.getSenderByName(player);
+		Player to_player = (Player) BukkitUtils.getSenderByName(player);
 
 		if (to_player == null) {
 			API.sendMessage(from.format("commands.noFoundPlayer"));

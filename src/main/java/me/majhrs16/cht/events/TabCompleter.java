@@ -1,20 +1,17 @@
 package me.majhrs16.cht.events;
 
-/*
 import org.bukkit.event.EventHandler;
 
 import me.majhrs16.cht.ChatTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
-*/
 
 import org.bukkit.event.Listener;
 
 @Deprecated
 public class TabCompleter implements Listener {
-	/*
-	private ChatTranslator plugin = ChatTranslator.getInstance();
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
 
     @EventHandler
     public void onTabComplete(org.bukkit.event.server.TabCompleteEvent event) {
@@ -40,7 +37,5 @@ public class TabCompleter implements Listener {
         System.out.println(completions.toString());
 
         event.setCompletions(completions);
- 
-    }
-    */
+     }
 }

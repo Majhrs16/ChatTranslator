@@ -9,6 +9,12 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Member;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Config;
@@ -17,11 +23,6 @@ import me.majhrs16.cht.util.util;
 
 import me.majhrs16.dst.utils.AccountManager;
 import me.majhrs16.dst.DiscordTranslator;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 
 import java.util.UUID;
 
@@ -135,7 +136,7 @@ public class Chat extends ListenerAdapter {
 		if (player != null && player.isOnline())
 			message.delete().queue();
 
-		API.broadcast(model, util.getOnlinePlayers(), froms -> {
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
 			froms.add(console);
 			API.broadcast(froms);
 		});

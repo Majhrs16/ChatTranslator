@@ -1,8 +1,11 @@
 package me.majhrs16.cht.translator.api;
 
-import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.cache.Permissions;
+import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.JsonFormatter;
-import me.majhrs16.lib.logger.Logger;
+import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.util;
+
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -11,9 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
-import me.majhrs16.cht.util.cache.Permissions;
-import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.util;
+import me.majhrs16.lib.logger.Logger;
 
 import org.bukkit.entity.Player;
 

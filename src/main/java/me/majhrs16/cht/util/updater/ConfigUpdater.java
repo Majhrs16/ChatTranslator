@@ -3,8 +3,8 @@ package me.majhrs16.cht.util.updater;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.majhrs16.lib.exceptions.ParseYamlException;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.util.cache.Dependencies;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
@@ -48,8 +48,12 @@ public class ConfigUpdater {
 		version = config.getInt(path);
 		int version_original = version;
 
-		if (version_original == 0)   // Inicializar el plugin por primera vez.
-			config.set("server-uuid", UUID.randomUUID().toString()); // Para evitar crashes.
+		// Inicializar el plugin por primera vez.
+		if (version_original == 0) {
+			// Para evitar crashes.
+			config.set("server-uuid", UUID.randomUUID().toString());
+			plugin.config.save();
+		}
 
 		Message from = new Message();
 

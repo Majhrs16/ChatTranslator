@@ -1,7 +1,6 @@
 package me.majhrs16.dst.utils;
 
-import me.majhrs16.cht.util.util;
-
+import me.majhrs16.lib.minecraft.BukkitUtils;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -14,7 +13,7 @@ public class FakePlayer {
 
 	static {
 		try {
-			Class<?> craftPlayerClass = util.getOnlinePlayers()[0].getClass();
+			Class<?> craftPlayerClass = BukkitUtils.getOnlinePlayers()[0].getClass();
 			entityPlayerClass = craftPlayerClass.getMethod("getHandle").getReturnType();
 			playerInteractManegerClass = entityPlayerClass.getDeclaredField("playerInteractManager").getType();
 			gameProfileClass = entityPlayerClass.getDeclaredField("profile").getType();

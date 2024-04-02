@@ -1,7 +1,6 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
-import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.cht.util.RunnableWithTriException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
@@ -15,7 +14,6 @@ import me.majhrs16.lib.exceptions.ParseYamlException;
 import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 
 public class Reloader implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();

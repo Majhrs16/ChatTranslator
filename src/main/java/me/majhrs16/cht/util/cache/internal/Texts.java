@@ -1,13 +1,13 @@
 package me.majhrs16.cht.util.cache.internal;
 
-import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.util.util;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.cot.CoreTranslator;
 import me.majhrs16.cht.ChatTranslator;
+
 import me.majhrs16.lib.Kernel;
 
 import java.util.*;

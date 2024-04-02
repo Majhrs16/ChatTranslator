@@ -3,7 +3,6 @@ package me.majhrs16.cht.translator.api;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;

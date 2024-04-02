@@ -1,6 +1,7 @@
 package me.majhrs16.cht.util.cache;
 
 import me.majhrs16.cht.events.custom.Message;
+
 import org.bukkit.command.CommandSender;
 
 public enum Permissions {

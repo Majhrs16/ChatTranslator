@@ -1,10 +1,11 @@
 package me.majhrs16.cht.translator.api;
 
-import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
+import me.majhrs16.cht.ChatTranslator;
 
 import me.majhrs16.lib.logger.Logger;
+
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
 

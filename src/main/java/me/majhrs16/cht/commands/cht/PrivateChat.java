@@ -1,13 +1,14 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
+import me.majhrs16.lib.network.translator.TranslatorBase;
+import me.majhrs16.lib.minecraft.BukkitUtils;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
-import me.majhrs16.lib.network.translator.TranslatorBase;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -30,7 +31,7 @@ public class PrivateChat implements CommandExecutor {
 		}
 
 		String player_name      = args[0];
-		CommandSender to_player = util.getSenderByName(player_name);
+		CommandSender to_player = BukkitUtils.getSenderByName(player_name);
 
 		if (to_player == null) {
 			DC.format("commands.noFoundPlayer");

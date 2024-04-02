@@ -2,9 +2,11 @@ package me.majhrs16.cht.util.updater;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
 import me.majhrs16.lib.exceptions.ParseYamlException;
+
+import org.yaml.snakeyaml.scanner.ScannerException;
+
 import me.majhrs16.cht.ChatTranslator;
 
 import java.io.IOException;

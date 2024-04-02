@@ -7,10 +7,10 @@ import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.storages.YAML;
+
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.SQLException;
 import java.util.Objects;
