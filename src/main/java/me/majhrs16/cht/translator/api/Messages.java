@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 
 import me.majhrs16.lib.logger.Logger;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ public interface Messages {
 				|| original.getLangTarget() == null
 				|| original.getLangSource().getCode().equals("DISABLED")
 				|| original.getLangTarget().getCode().equals("DISABLED")
-				|| original.getMessages().getFormats().length == 0
-				|| original.getMessages().getFormat(0).isEmpty()
-				|| original.getMessages().getTexts().length == 0) {
+				|| formatted.getMessages().getFormats().length == 0
+				|| formatted.getMessages().getFormat(0).isEmpty()
+				|| formatted.getMessages().getTexts().length == 0) {
 			return;
 		}
 
@@ -98,11 +99,9 @@ public interface Messages {
 
 		try {
 			logger.debug("PRE:  %s", JsonFormatter.format(original.toJson()));
-
 			Message formatted = ChatTranslatorAPI.getInstance().formatMessage(original);
 
 			logger.debug("POST: %s", JsonFormatter.format(formatted.toJson()));
-
 			showMessage(original, formatted);
 			showMessage(original.getTo(), formatted.getTo());
 
