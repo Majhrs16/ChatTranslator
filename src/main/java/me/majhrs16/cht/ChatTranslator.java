@@ -63,9 +63,6 @@ public class ChatTranslator extends PluginBase {
 
 		super.onEnable();
 
-		Test test = new Test();
-		CommandInjector.injectCommand("test", test, test);
-
 		Message from = new Message();
 
 		API.sendMessage(from.format("plugin.separator.horizontal"));
