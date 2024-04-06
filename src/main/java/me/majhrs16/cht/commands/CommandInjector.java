@@ -10,15 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 
+@Deprecated
 public class CommandInjector {
 	public static void injectCommand(String commandName, CommandExecutor executor, TabCompleter completer) {
 		try {
-			// Obtener el gestor de comandos
 			Field commandMapField = SimplePluginManager.class.getDeclaredField("commandMap");
 			commandMapField.setAccessible(true);
 			CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getPluginManager());
 
-			// Crear y registrar el nuevo comando con su CommandExecutor
 			BukkitCommand bukkitCommand = new BukkitCommand(commandName) {
 				public boolean execute(
 						@NotNull CommandSender sender,
@@ -52,12 +51,10 @@ public class CommandInjector {
 
 	public static void unregisterCommand(String commandName) {
 		try {
-			// Obtener el gestor de comandos
 			Field commandMapField = SimplePluginManager.class.getDeclaredField("commandMap");
 			commandMapField.setAccessible(true);
 			CommandMap commandMap = (CommandMap) commandMapField.get(Bukkit.getServer());
 
-			// Obtener el comando y eliminarlo de la lista interna
 			Command command = commandMap.getCommand(commandName);
 			if (command != null)
 				command.unregister(commandMap);
