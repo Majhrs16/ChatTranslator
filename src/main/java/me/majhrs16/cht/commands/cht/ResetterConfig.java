@@ -1,5 +1,6 @@
 package me.majhrs16.cht.commands.cht;
 
+import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.lib.exceptions.ParseYamlException;
 
@@ -16,24 +17,29 @@ public class ResetterConfig implements CommandExecutor {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public boolean apply(CommandSender sender, String path, String[] args) {
-		Message DC = new Message()
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		DC.format("commands.resetterConfig");
-		API.sendMessage(DC);
+		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
+			API.sendMessage(from.format("commands.errors.noPermission"));
+			return true; // Para evitar mostrar el unknown command.
+		}
+
+		from.format("commands.resetterConfig");
+		API.sendMessage(from);
 
 		try {
 			plugin.config.reset();
 			new ConfigUpdater();
-			new Reloader().reloadAll(DC);
-			DC.format("commands.resetterConfig.done");
+			new Reloader().reloadAll(from);
+			from.format("commands.resetterConfig.done");
 
 		} catch (ParseYamlException e) {
-			DC.format("commands.resetterConfig.error");
+			from.format("commands.resetterConfig.error");
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 		return true;
 	}
 }
