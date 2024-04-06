@@ -17,28 +17,26 @@ public class Toggler implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public boolean apply(CommandSender sender, String path, String[] args) {
-		Message DC = new Message()
+	public boolean apply(CommandSender sender, String path, String[] args) {Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			DC.format("commands.noPermission");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("commands.errors.noPermission"));
 			return true; // Para evitar mostrar el unknown command.
 		}
 
 		switch (args.length) {
 			case 0:
-				TogglePlugin(DC);
+				TogglePlugin(from);
 				break;
 
 			case 1:
-				ToggleOffPlayer(DC, args[0]);
+				ToggleOffPlayer(from, args[0]);
 				break;
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 		return true;
 	}
 	

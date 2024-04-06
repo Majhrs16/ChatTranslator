@@ -21,33 +21,32 @@ public class PrivateChat implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message DC = new Message()
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (args.length < 2) {
-//			/tell <PlayerName> <text>
-			return false;
+			API.sendMessage(from.format("commands.errors.unknown"));
+			return true;
 		}
 
 		String player_name      = args[0];
 		CommandSender to_player = BukkitUtils.getSenderByName(player_name);
 
 		if (to_player == null) {
-			DC.format("commands.noFoundPlayer");
-			API.sendMessage(DC);
+			API.sendMessage(from.format("commands.errors.noFoundPlayer"));
 			return true;
 		}
 
 		TranslatorBase.LanguagesBase from_lang = API.getLang(sender);
-		DC.getMessages().setTexts(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-		DC = util.createChat(sender, DC.getMessages().getTexts(), from_lang, from_lang, "private");
+		from.getMessages().setTexts(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+		from = util.createChat(sender, from.getMessages().getTexts(), from_lang, from_lang, "private");
 
-		DC.getTo()
+		from.getTo()
 			.setSender(to_player)
 			.setLangTarget(API.getLang(to_player));
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 		return true;
 	}
 }

@@ -23,128 +23,127 @@ public class Reloader implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message DC = new Message()
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		if (!Permissions.ChatTranslator.ADMIN.IF(DC.getSender())) {
-			API.sendMessage(DC.format("commands.noPermission"));
-			return true; // true para evitar mostrar el Unknown command
+		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
+			API.sendMessage(from.format("commands.errors.noPermission"));
+			return true; // Para evitar mostrar el unknown command.
 		}
 
-		DC.format("commands.reloader");
-		API.sendMessage(DC);
+		from.format("commands.reloader");
+		API.sendMessage(from);
 
 		switch (args.length == 0 ? "all" : args[0].toLowerCase()) {
 			case "all":
-				reloadAll(DC);
+				reloadAll(from);
 				break;
 
 			case "formats":
-				reloadFormats(DC);
+				reloadFormats(from);
 				break;
 
 			case "config":
-				reloadConfig(DC);
+				reloadConfig(from);
 				break;
 
 			case "commands":
-				reloadCommands(DC);
+				reloadCommands(from);
 				break;
 
 			case "signs":
-				reloadSigns(DC);
+				reloadSigns(from);
 				break;
 
 			case "storage":
-				reloadStorage(DC);
+				reloadStorage(from);
 				break;
 
 			default:
-				DC.getMessages().setFormats("&7[ &cFAIL &7] &c" + args[0]);
-				API.sendMessage(DC);
+				API.sendMessage(from.format("commands.errors.unknown"));
 				break;
 		}
 
 		return true;
 	}
 
-	public void reloadAll(Message DC) {
+	public void reloadAll(Message from) {
 		try {
-			reloadFormats(DC);
-			reloadConfig(DC);
-			reloadCommands(DC);
-			reloadSigns(DC);
-			reloadStorage(DC);
+			reloadFormats(from);
+			reloadConfig(from);
+			reloadCommands(from);
+			reloadSigns(from);
+			reloadStorage(from);
 
 		} catch (Exception e) {
-			if (Permissions.ChatTranslator.ADMIN.IF(DC.getSender()))
-				API.sendMessage(DC.format("commands.error.fatal"));
+			if (Permissions.ChatTranslator.ADMIN.IF(from.getSender()))
+				API.sendMessage(from.format("commands.error.fatal"));
 
 			plugin.logger.error(e.toString());
 		}
 	}
 
-	private void reload(Message DC, String text, RunnableWithTriException<SQLException, ParseYamlException, StorageRegisterFailedException> action) {
+	private void reload(Message from, String text, RunnableWithTriException<SQLException, ParseYamlException, StorageRegisterFailedException> action) {
 		try {
 			action.run();
 
-			DC.format("commands.reloader.done", s -> s
+			from.format("commands.reloader.done", s -> s
 				.replace("%file%", text)
 			);
 
 		} catch (SQLException | ParseYamlException | StorageRegisterFailedException e) {
-			DC.format("commands.reloader.error.file", s -> s
+			from.format("commands.reloader.error.file", s -> s
 				.replace("%file%", text)
 				.replace("%reason%", e.toString())
 			);
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 	}
 
-	public void reloadFormats(Message DC) {
-		reload(DC, "&bformats&f.&byml", () -> {
+	public void reloadFormats(Message from) {
+		reload(from, "&bformats&f.&byml", () -> {
 			plugin.formats.reload();
 			Texts.reload();
 		});
 	}
 
-	public void reloadConfig(Message DC) {
-		reload(DC, "&bconfig&f.&byml", () -> {
+	public void reloadConfig(Message from) {
+		reload(from, "&bconfig&f.&byml", () -> {
 			plugin.config.reload();
 			plugin.unregisterDiscordBot();
 			plugin.registerDiscordBot();
 		});
 	}
 
-	public void reloadSigns(Message DC) {
-		reload(DC, "&bsigns&f.&byml", plugin.signs::reload);
+	public void reloadSigns(Message from) {
+		reload(from, "&bsigns&f.&byml", plugin.signs::reload);
 	}
 
-	public void reloadCommands(Message DC) {
-		reload(DC, "&bcommands&f.&byml", plugin.commands::reload);
+	public void reloadCommands(Message from) {
+		reload(from, "&bcommands&f.&byml", plugin.commands::reload);
 	}
 
-	public void reloadStorage(Message DC) {
+	public void reloadStorage(Message from) {
 		switch (plugin.storage.getType()) {
 			case "yaml":
-				DC.getMessages().setFormats("&b" + plugin.config.get().getString("storage.database") + "&f.&byml");
+				from.getMessages().setFormats("&b" + plugin.config.get().getString("storage.database") + "&f.&byml");
 				break;
 
 			case "sqlite":
-				DC.getMessages().setFormats("&bSQLite");
+				from.getMessages().setFormats("&bSQLite");
 				break;
 
 			case "mysql":
-				DC.getMessages().setFormats("&bMySQL");
+				from.getMessages().setFormats("&bMySQL");
 				break;
 
 			default:
-				DC.getMessages().setFormats("&9???"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+				from.getMessages().setFormats("&9???"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
 				break;
 		}
 
-		reload(DC, DC.getMessages().getFormat(0),  plugin.storage::reload);
+		reload(from, from.getMessages().getFormat(0),  plugin.storage::reload);
 	}
 }

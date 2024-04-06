@@ -3,6 +3,7 @@ package me.majhrs16.cht.commands.cht;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 
@@ -16,11 +17,16 @@ public class ShowVersion implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message DC = new Message()
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		API.sendMessage(DC.format("commands.main.version"));
+		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
+			API.sendMessage(from.format("commands.errors.noPermission"));
+			return true; // Para evitar mostrar el unknown command.
+		}
+
+		API.sendMessage(from.format("commands.main.version"));
 		return true;
 	}
 }
