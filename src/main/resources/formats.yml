@@ -483,18 +483,20 @@ storage:
       messages:
         texts:
           - "Error al escribir en"
+          - "Almacenamiento"
 
         formats:
-          - "%plugin.title.min% &c{0} &b%type%&f."
+          - "%plugin.title.min% &c{0} &b{1}.%type%&f."
           - "\t%reason%"
 
     read:
       messages:
         texts:
           - "Error al leer en"
+          - "Almacenamiento"
 
         formats:
-          - "%plugin.title.min% &c{0} &b%type%&f."
+          - "%plugin.title.min% &c{0} &b{1}.%type%&f."
           - "\t%reason%"
 
     invalid-type:
@@ -556,6 +558,14 @@ storage:
 
 commands:
   errors:
+    unknown:
+      messages:
+        texts:
+          - "Sintaxis del comando invalida"
+
+        formats:
+          - "&c{0}&f."
+
     noPermission:
       messages:
         texts:
@@ -567,10 +577,11 @@ commands:
     noFoundPlayer:
       messages:
         texts:
-          - "&7El jugador &f'&b%player%&f'&c no esta disponible&f."
+          - "El jugador"
+          - "no esta disponible"
 
         formats:
-          - "{0}"
+          - "&7{0} &f'&b%player%&f' &c{1}&f."
 
   main:
     version:
@@ -637,16 +648,6 @@ commands:
           - "&a{0}&f."
 
   setterLang:
-    error:
-      messages:
-        texts:
-          - "Sintaxis invalida"
-          - "Por favor use la sintaxis"
-
-        formats:
-          - "&c{0}&f. &a{1}&f:"
-          - "    &e/cht lang &f[&6player&f] &f<&6codigo&f>&f."
-
     getLang:
       messages:
         texts:
@@ -659,10 +660,11 @@ commands:
       done:
         messages:
           texts:
-            - "Su idioma ha sido&a establecido&7 a"
-
+            - Su idioma ha sido
+            - establecido
+            - a
           formats:
-            - "&7{0}&f: '&b%ct_lang_target%&f'&f."
+            - '&7{0} &a{1} &7{2}&f: ''&b%ct_lang_target%&f''&f.'
 
       error:
         messages:
@@ -702,13 +704,17 @@ commands:
     togglePlugin:
       "true":
         messages:
+          texts:
+            - "Habilitado"
           formats:
-            - "true"
+            - "&a{0}&f."
 
       "false":
         messages:
+          texts:
+            - "Deshabilitado"
           formats:
-            - "false"
+            - "&c{0}&f."
 
   discordLinker:
     onlyPlayer:
