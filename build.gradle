@@ -24,6 +24,7 @@ dependencies {
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation fileTree(dir: 'Libs', include: ['*.jar'])
+    implementation 'org.apache.commons:commons-jexl3:3.3'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.22.0'
