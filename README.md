@@ -2,10 +2,10 @@
   <img src="https://github.com/Majhrs16/ChatTranslator/blob/b2.0/icon.png" width="50%" height="50%" alt="Icono de ChatTranslator">
 </p>
 
-# ChatTranslator - Plugin Spigot Potente de Traducción y Formato del Chat Para Minecraft 1.5.2 - 1.20.4
-Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin problemas.
+# ChatTranslator - Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
+Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin mayor problema.
 
-## Características destacadas:
+## Características:
 1. **Colores Personalizados**: Usa colores `#RRGGBB`! Solo para 1.16.5+ y mensajes NO JSON.
 2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes a través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
@@ -19,16 +19,16 @@ Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin proble
 11. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce mensajes entre plataformas.
 12. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: Para local: `YAML`, `SQLite` y, para Bungeecord: `MySQL` / `MariaDB`.
 
-## Características acoplables:
+## Opciones acoplables:
 14. *Compatibilidad Parcial con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
-15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla los chats en base a condiciones específicas, como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
+15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla dinamicamente los chats en base a condiciones específicas, como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
 16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada.
  
 ## Instalación
 
 Para instalar ChatTranslator, sigue los siguientes pasos:
 
-1. Descarga la ultima version de ChatTranslator desde [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
+1. Descarga la ultima version de ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/history) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
 2. Pon el archivo ChatTranslator.jar en la carpeta de plugins de tu servidor.
 3. Reinicia tu servidor.
 

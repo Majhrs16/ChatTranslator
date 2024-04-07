@@ -43,16 +43,9 @@ class Example {
 	private ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	Example() {
-		String lang;
-
-		Player player = null;
-		lang = API.getLang(player);
-
-		CommandSender term = null;
-		lang = API.getLang(term);
-
-		OfflinePlayer offplayer = null;
-		lang = API.getLang(offplayer);
+		String player     = API.getLang(Player);
+		String terminal   = API.getLang(CommandSender);
+		String off_player = API.getLang(OfflinePlayer);
 	}
 }
 ```
@@ -106,7 +99,7 @@ class Example {
 ```
 
 ### Enviar un mensaje traducido a un jugador:
-    Esta funcion te permite enviar un mensaje personalizado con ciertos valores por defecto al remitente y destinario o solamente al remitente(o mejor dicho, tu destinario).
+		Esta funcion te permite enviar un mensaje personalizado con ciertos valores por defecto al remitente y destinario o solamente al remitente(o mejor dicho, tu destinario).
 
 **Sintaxis:**
 ```java
@@ -217,7 +210,7 @@ class Example {
 
 1.1. `Broadcast de medio nivel.`
 
-   Esta variante de la anterior, es la simplificacion del segundo parametro, por defecto se usara ChatLimiter.
+	 Esta variante de la anterior, es la simplificacion del segundo parametro, por defecto se usara ChatLimiter.
 
 **Sintaxis:**
 ```java
@@ -250,7 +243,7 @@ class Example {
 
 2.0. `Broadcast de alto nivel.`
 
-   Esta variante es similar a la primera. Te permite enviar un mensaje a todos los jugadores mas facilmente. El parámetro `model` es un modelo de mensaje que se enviará a todos los jugadores online. La función se encargará de clonar inicialmente el mensaje modelo y luego modificarlo en función de cada jugador antes de enviarlo, ademas de cancelar cada remitente tras su primer uso para evitar duplicaciones inesperadas del mensaje por cada destinario.
+	 Esta variante es similar a la primera. Te permite enviar un mensaje a todos los jugadores mas facilmente. El parámetro `model` es un modelo de mensaje que se enviará a todos los jugadores online. La función se encargará de clonar inicialmente el mensaje modelo y luego modificarlo en función de cada jugador antes de enviarlo, ademas de cancelar cada remitente tras su primer uso para evitar duplicaciones inesperadas del mensaje por cada destinario.
 
 **Sintaxis:**
 ```java
@@ -274,12 +267,12 @@ class Example {
 	Example() {
 //		Crear el mensaje modelo para los destinarios.
 		Message to_model = new Message();
-//		  ...
-		  to_model.getMessages().setFormats("$ct_messages$");
+//			...
+			to_model.getMessages().setFormats("$ct_messages$");
 
 //		Crear el mensaje para el remitente.
 		Message from_model = new Message();
-//		  ...
+//			...
 		from_model.setTo(to_model);
 
 //		Enviar el mensaje de cada objeto Message a todos los jugadores en línea(Incluyendo from) usando el mensaje modelo atravez del ChatLimiter.
@@ -317,7 +310,7 @@ class Example {
 
 2.1. `Broadcast para tambien la consola!`
 
-   Esta variante de la anterior, permite ejecutar demas acciones, permitiendo la oportunidad de agregar por ejemplo el message de la consola u otras acciones.
+	 Esta variante de la anterior, permite ejecutar demas acciones, permitiendo la oportunidad de agregar por ejemplo el message de la consola u otras acciones.
 
 **Ejemplo de uso:**
 ```java
@@ -346,7 +339,7 @@ class Example {
 				"console")
 
 //			Esto es para que sean accesibles las %varaibles% del remitente desde el destinario.
-			.setSender(event.getPlayer());
+			.setSender(event.getPlayer())
 
 //			Evitar duplicacion para el remitente.
 			.setCancelledThis(true);
@@ -363,7 +356,7 @@ En todos los casos, los mensajes se enviarán a los remitentes y destinatarios e
 
 3.0. `Lanzar el evento Message`
 
-   Finalmente, si desea enviar al sendMessage y al mismo tiempo notificar a todos sobre este mensaje, puede hacerlo de la siguiente forma:
+	 Finalmente, si desea enviar al sendMessage y al mismo tiempo notificar a todos sobre este mensaje, puede hacerlo de la siguiente forma:
 
 **Ejemplo de uso:**
 ```java
@@ -406,7 +399,9 @@ public class Message {
 	String setSenderName();
 //	Obtiene el nombre del sender.
 	String getSenderName();
-
+//	Obtiene el tipo del sender.
+	String getSenderType();
+	
 //	Obtiene los formatos de los mensajes/toolTips.
 	Formats getMessages();
 	Formats getToolTips();
@@ -427,14 +422,14 @@ public class Message {
 	Message setCancelled(boolean isCancelled);
 
 //	Establece el idioma origen.
-    Message setLangSource(TranslatorBase.LanguagesBase lang);
-    @Deprecated Message setLangSource(String lang);
+	Message setLangSource(TranslatorBase.LanguagesBase lang);
+	@Deprecated Message setLangSource(String lang);
 //	Obtiene el idioma de origen.
 	String getLangSource();
 
 //	Establece el idioma destino.
-    Message setLangTarget(TranslatorBase.LanguagesBase lang);
-    @Deprecated Message setLangTarget(String lang);
+	Message setLangTarget(TranslatorBase.LanguagesBase lang);
+	@Deprecated Message setLangTarget(String lang);
 //	Obtiene el idioma destino.
 	String getLangTarget();
 
@@ -447,6 +442,12 @@ public class Message {
 	Message setForceColor(boolean color);
 //	Obtiene si se forzara los colores.
 	Boolean isForceColor();
+
+//	Obtener una copia identica del mensaje.
+	Message clone();
+
+//	Obtener el UUID del mensaje.
+	UUID getUUID(); 
 }
 ```
 
@@ -466,16 +467,6 @@ public class Formats {
 	String[] getTexts();
 }
 ```
-
-### Clonación del mensaje
-
-```java
-public class Message {
-	Message clone();
-}
-```
-
-Este método crea una copia exacta del mensaje actual, lo que te permite modificar la copia sin afectar al mensaje original.
 
 ### Método `toJson`
 
@@ -501,25 +492,25 @@ El parámetro `json` debe ser una cadena de datos en formato JSON que contenga l
 
 ```json
 {
-  "from": {
-	"senderName": "Juan",
-	"messages": {
-	  "formats": ["..."],
-	  "texts": ["..."]
+	"from": {
+		"senderName": "Juan",
+		"messages": {
+			"formats": ["..."],
+			"texts": ["..."]
+		},
+		"toolTips": {
+			"formats": ["..."],
+			"texts": ["..."]
+		},
+		"sounds": ["..."],
+		"isCancelled": false,
+		"langSource": "es",
+		"langTarget": "en",
+		"isColor": true,
+		"isPAPI": true
 	},
-	"toolTips": {
-	  "formats": ["..."],
-	  "texts": ["..."]
-	},
-	"sounds": ["..."],
-	"isCancelled": false,
-	"langSource": "es",
-	"langTarget": "en",
-	"isColor": true,
-	"isPAPI": true
-  },
 
-  "to": {}
+	"to": {}
 }
 
 ```
@@ -566,7 +557,7 @@ Este método convierte una cadena a un objeto `LanguagesBase` correspondiente al
 
 ```java
 public class util {
-    UUID getUUID(Object sender);
+		UUID getUUID(Object sender);
 }
 ```
 
@@ -591,7 +582,7 @@ public class util {
 ```
 
 Este devolvera la version como un double pero sin el primer `1.`, por ejemplo 16.5, 8.8, 20.1, etc. TENER CUIDADO CON LA 1."7.10", pues la unica forma de comprobarlo es `if (value > 7.9) {...}`
-  Sorry, pequeña limitacion por ahora...
+	Sorry, pequeña limitacion por ahora...
 
 ### Comprobar si existe y si es verdadera una config booleana(Hoy dia CASI en desuso).
 
@@ -608,8 +599,8 @@ public class util {
 	Message createChat(
 		CommandSender sender,
 		String[] messages,
-        TranslatorBase.LanguagesBase langSource,
-        TranslatorBase.LanguagesBase langTarget,
+		TranslatorBase.LanguagesBase langSource,
+		TranslatorBase.LanguagesBase langTarget,
 		String path
 	);
 }
