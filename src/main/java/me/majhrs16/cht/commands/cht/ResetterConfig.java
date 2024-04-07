@@ -1,6 +1,7 @@
 package me.majhrs16.cht.commands.cht;
 
 import me.majhrs16.cht.util.cache.Permissions;
+import me.majhrs16.cht.util.updater.CommandsUpdater;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.lib.exceptions.ParseYamlException;
 
@@ -31,7 +32,11 @@ public class ResetterConfig implements CommandExecutor {
 
 		try {
 			plugin.config.reset();
+			plugin.formats.reset();
+			plugin.commands.reset();
+
 			new ConfigUpdater();
+			new CommandsUpdater();
 			new Reloader().reloadAll(from);
 			from.format("commands.resetterConfig.done");
 
