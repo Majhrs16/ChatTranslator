@@ -17,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.Arrays;
 import java.util.UUID;
@@ -27,7 +25,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public static final String version = "b1.6";
+	public static final String version = "b1.7";
 
 	@NotNull public String getAuthor()	   { return "Majhrs16"; }
 	@NotNull public String getVersion()	   { return version; }
@@ -96,12 +94,8 @@ public class CoreTranslator extends PlaceholderExpansion {
 		if (from == null)
 			return null;
 
-		Map<String, Object> map = new HashMap<>();
-		map.put("from", from);
-		map.put("to", from.getTo());
-
 		try {
-			result = new ExpressionExecutor().invoke(map, path);
+			result = new ExpressionExecutor().invoke("from", from, path);
 
 		} catch (Exception e) {
 			plugin.logger.error(e.toString());

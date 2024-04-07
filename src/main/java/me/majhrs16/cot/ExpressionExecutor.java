@@ -1,25 +1,16 @@
 package me.majhrs16.cot;
 
-import org.apache.commons.jexl3.JexlExpression;
-import org.apache.commons.jexl3.JexlContext;
-import org.apache.commons.jexl3.JexlBuilder;
-import org.apache.commons.jexl3.JexlEngine;
-import org.apache.commons.jexl3.MapContext; // Import MapContext
-
-import java.util.Map;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.ExpressionParser;
 
 public class ExpressionExecutor {
-	public Object invoke(Map<String, Object> contextMap, String expression) {
-		JexlContext jexlContext = new MapContext();
-		JexlEngine jexlEngine = new JexlBuilder()
-			.strict(true)
-			.create();
+	public Object invoke(String contextName, Object contextObject, String expression) {
+		StandardEvaluationContext context = new StandardEvaluationContext();
+		ExpressionParser parser           = new SpelExpressionParser();
 
-		for (Map.Entry<String, Object> entry : contextMap.entrySet()) {
-			jexlContext.set(entry.getKey(), entry.getValue());
-		}
+		context.setVariable(contextName, contextObject);
 
-		JexlExpression jexlExpression = jexlEngine.createExpression(expression);
-		return jexlExpression.evaluate(jexlContext);
+		return parser.parseExpression(expression).getValue(context);
 	}
 }

@@ -16,6 +16,7 @@ repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+    maven { url 'https://mvnrepository.com/artifact/org.springframework/spring-expression'}
 }
 
 dependencies {
@@ -23,8 +24,8 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.springframework:spring-expression:5.3.33'
     implementation fileTree(dir: 'Libs', include: ['*.jar'])
-    implementation 'org.apache.commons:commons-jexl3:3.3'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'org.apache.logging.log4j:log4j-core:2.22.0'
