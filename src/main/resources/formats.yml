@@ -654,7 +654,7 @@ commands:
           - "Su idioma establecido es"
 
         formats:
-          - "&a{0}&f: &b%ct_lang_target%"
+          - "&a{0}&f: &b%lang%"
 
     setLang:
       done:
@@ -664,7 +664,7 @@ commands:
             - establecido
             - a
           formats:
-            - '&7{0} &a{1} &7{2}&f: ''&b%ct_lang_target%&f''&f.'
+            - '&7{0} &a{1} &7{2}&f: ''&b%lang%&f''&f.'
 
       error:
         messages:

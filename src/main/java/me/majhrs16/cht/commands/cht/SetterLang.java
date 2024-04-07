@@ -28,7 +28,9 @@ public class SetterLang implements CommandExecutor {
 
 		switch (args.length) {
 			case 0: // /cht lang
-				API.sendMessage(from.format("commands.setterLang.getLang"));
+				API.sendMessage(from.format("commands.setterLang.getLang", s -> s
+					.replace("%lang%", from.getLangTarget().getValue())
+				));
 				break;
 
 			case 1: // /cht lang es
@@ -66,7 +68,9 @@ public class SetterLang implements CommandExecutor {
 		API.setLang(from.getSender(), language);
 
 		from.setLangTarget(language);
-		from.format("commands.setterLang.setLang.done");
+		from.format("commands.setterLang.setLang.done", s -> s
+			.replace("%lang%", language.getValue())
+		);
 
 		API.sendMessage(from);
 	}
