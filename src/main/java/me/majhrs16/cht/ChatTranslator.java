@@ -143,10 +143,9 @@ public class ChatTranslator extends PluginBase {
 
 		try {
 			storage = new Storage();
+				Texts.reload();
 				new ConfigUpdater();
 				new CommandsUpdater();
-
-				Texts.reload();
 			storage.register();
 
 		} catch (StorageRegisterFailedException e) {
@@ -228,89 +227,93 @@ public class ChatTranslator extends PluginBase {
 	}
 
 	public void registerDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {
-			Message from = new Message();
+		if (!Config.TranslateOthers.DISCORD.IF())
+			return;
 
-			try {
-				discordTranslator.connect(
-					config.get().getString("discord.bot-token")
+		Message from = new Message();
+
+		try {
+			discordTranslator.connect(
+				config.get().getString("discord.bot-token")
+			);
+
+			discordTranslator.registerEvents();
+			discordTranslator.registerCommands();
+
+			if (isDisabled()) {
+				from.format("discord-translator.load.done.discord");
+
+				Message _from = API.formatMessage(from);
+
+				DiscordChat.broadcastEmbed(
+					DiscordChat.getChannels("discord.channels.server-status"),
+					_from.getMessages().getFormats(),
+					_from.getToolTips().getFormats(),
+					Integer.parseInt(Texts.get("discord-translator.load.done.discord.color")[0].substring(1), 16)
 				);
-
-				discordTranslator.registerEvents();
-				discordTranslator.registerCommands();
-
-				if (isDisabled()) {
-					from.format("discord-translator.load.done.discord");
-
-					Message _from = API.formatMessage(from);
-
-					DiscordChat.broadcastEmbed(
-						DiscordChat.getChannels("discord.channels.server-status"),
-						_from.getMessages().getFormats(),
-						_from.getToolTips().getFormats(),
-						Integer.parseInt(Texts.get("discord-translator.load.done.discord.color")[0].substring(1), 16)
-					);
-				}
-
-				from.format("discord-translator.load.done.console");
-
-			} catch (InvalidTokenException e) {
-				discordTranslator.disconnect();
-
-				from.format("discord-translator.load.error.token",
-					format -> format.replace("%reason%", e.toString())
-				);
-
-			} catch (IllegalStateException e) {
-				discordTranslator.disconnect();
-
-				from.format("discord-translator.load.error.intents",
-					format -> format.replace("%reason%", e.toString())
-				);
-
-			} catch (InterruptedException e) {
-				discordTranslator.disconnect();
-
-				logger.error(e.toString());
 			}
 
-			API.sendMessage(from);
+			from.format("discord-translator.load.done.console");
+
+		} catch (InvalidTokenException e) {
+			discordTranslator.disconnect();
+
+			from.format("discord-translator.load.error.token",
+				format -> format.replace("%reason%", e.toString())
+			);
+
+		} catch (IllegalStateException e) {
+			discordTranslator.disconnect();
+
+			from.format("discord-translator.load.error.intents",
+				format -> format.replace("%reason%", e.toString())
+			);
+
+		} catch (Exception e) {
+			discordTranslator.disconnect();
+
+			from.format("discord-translator.load.error",
+				format -> format.replace("%reason%", e.toString())
+			);
 		}
+
+		API.sendMessage(from);
 	}
 
 	public void unregisterDiscordBot() {
-		if (Config.TranslateOthers.DISCORD.IF()) {
-			Message from = new Message();
+		if (!Config.TranslateOthers.DISCORD.IF())
+			return;
 
-			try {
-				if (isDisabled()) {
-					from.format("discord-translator.unload.done.discord");
+		Message from = new Message();
 
-					Message _from = API.formatMessage(from);
+		try {
+			if (isDisabled()) {
+				from.format("discord-translator.unload.done.discord");
 
-					DiscordChat.broadcastEmbed(
-						DiscordChat.getChannels("discord.channels.server-status"),
-						_from.getMessages().getFormats(),
-						_from.getToolTips().getFormats(),
-						Integer.parseInt(Texts.get("discord-translator.unload.done.discord.color")[0].substring(1), 16)
-					);
-				}
+				Message _from = API.formatMessage(from);
 
-				discordTranslator.unregisterEvents();
-				discordTranslator.unregisterCommands();
-
-				discordTranslator.disconnect();
-
-				from.format("discord-translator.unload.done.console");
-
-			} catch (Exception e) {
-				from.format("discord-translator.unload.error",
-					format -> format.replace("%reason%", e.toString())
+				DiscordChat.broadcastEmbed(
+					DiscordChat.getChannels("discord.channels.server-status"),
+					_from.getMessages().getFormats(),
+					_from.getToolTips().getFormats(),
+					Integer.parseInt(Texts.get("discord-translator.unload.done.discord.color")[0].substring(1), 16)
 				);
 			}
 
-			API.sendMessage(from);
+			discordTranslator.unregisterEvents();
+			discordTranslator.unregisterCommands();
+
+			discordTranslator.disconnect();
+
+			from.format("discord-translator.unload.done.console");
+
+		} catch (Exception e) {
+			from.format("discord-translator.unload.error",
+				format -> format.replace("%reason%", e.toString())
+			);
 		}
+
+		API.sendMessage(from);
 	}
 
 	public static ChatTranslator getInstance() {

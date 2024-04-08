@@ -3,16 +3,17 @@ package me.majhrs16.cht.util.cache.internal;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.dst.DiscordTranslator;
-import me.majhrs16.cot.CoreTranslator;
 import me.majhrs16.cht.ChatTranslator;
+
+import me.majhrs16.dst.DiscordTranslator;
+
+import me.majhrs16.cot.CoreTranslator;
 
 import me.majhrs16.lib.Kernel;
 
-import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.*;
 
 public class Texts {
 	private static Map<String, Object> dataMap;
@@ -47,11 +48,11 @@ public class Texts {
 		Object value = dataMap.get(key);
 
 		if (value instanceof String) {
-			result.add(((String) value).replace("\\t", "\t"));
+			result.add(((String) value));
 
 		} else if (value instanceof List) {
 			for (Object sub_value : (List<?>) value)
-				result.add(((String) sub_value).replace("\\t", "\t"));
+				result.add(((String) sub_value));
 
 		} else if (value instanceof String[]) {
 			result.addAll(Arrays.asList((String[]) value));
@@ -80,10 +81,10 @@ public class Texts {
 				}
 
 				if (dataMap.containsKey(key)) {
-					String[] value = new Message().format(key).getMessages().getFormats();
+					String[] value = get(key);
 
 					if (value.length == 0)
-						value = get(key);
+						continue;
 
 					newInputs = ChatTranslatorAPI.getInstance().replaceArray(newInputs, matcher.group(0), value);
 					matcher   = VARIABLE_PATTERN.matcher(newInputs[i]);
