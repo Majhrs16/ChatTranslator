@@ -175,11 +175,11 @@ Para usar esta configuracion tal cual, debe de tener previamente 3 grupos en Luc
     
     actions:
       from_owner:
-      - 'console_message: %cot_var; {uuid}; format("from_owner")% '
-      - 'console_message: %cot_var; {uuid}; getTo().format("to_owner")%'
+      - 'console_message: %cot_var; {uuid}; #from.format("from_owner")% '
+      - 'console_message: %cot_var; {uuid}; #from.getTo().format("to_owner")%'
 
       to_owner_console:
-      - 'console_message: %cot_var; {uuid}; getTo().format("to_owner_console")%'
+      - 'console_message: %cot_var; {uuid}; #from.getTo().format("to_owner_console")%'
 ```
 
 ---
