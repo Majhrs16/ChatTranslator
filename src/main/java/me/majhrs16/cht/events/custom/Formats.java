@@ -35,4 +35,6 @@ public class Formats {
     public String[] getTexts() {
         return texts;
     }
+
+    public void silent() {}
 }

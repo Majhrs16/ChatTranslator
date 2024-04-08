@@ -255,6 +255,8 @@ public class Message extends Event implements Cancellable {
 	public Boolean isForceColor()     { return is_force_color; }
 	public String getLastFormatPath() { return last_format; }
 
+	public void silent() {}
+
 	public Message clone() {
 		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
 			Message to = new Message(util.getNativeLang(), plugin.storage.getDefaultLang()); // BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
