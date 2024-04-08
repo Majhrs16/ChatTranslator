@@ -358,6 +358,15 @@ discord-translator:
             - "%discord-translator.title.min% &a{0}&f."
 
     error:
+      messages:
+        texts:
+          - "No se pudo iniciar el bot de Discord"
+          - "Razon"
+
+        formats:
+          - "%discord-translator.title.min% &c{0}."
+          - "\t&e{1}&f: &c%reason%&f."
+
       token:
         messages:
           texts:

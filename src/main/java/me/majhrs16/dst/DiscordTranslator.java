@@ -34,6 +34,8 @@ public class DiscordTranslator {
 	}
 
 	public void registerEvents() {
+		if (jda == null) return;
+
 		jda.addEventListener(Events.commands);
 		jda.addEventListener(Events.chat);
 		Events.terminalLogger.start();
@@ -41,6 +43,8 @@ public class DiscordTranslator {
 	}
 
 	public void unregisterEvents() {
+		if (jda == null) return;
+
 		jda.removeEventListener(Events.commands);
 		jda.removeEventListener(Events.chat);
 		Events.terminalLogger.stop();
