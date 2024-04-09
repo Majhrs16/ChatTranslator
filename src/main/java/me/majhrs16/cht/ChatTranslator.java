@@ -1,7 +1,6 @@
 package me.majhrs16.cht;
 
-import me.majhrs16.cht.commands.CommandInjector;
-import me.majhrs16.cht.commands.utils.TranslateYaml;
+import me.majhrs16.cht.commands.utils.TranslateYaml; // Experimental ...
 
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
@@ -50,17 +49,22 @@ public class ChatTranslator extends PluginBase {
 	private CommandHandler commandHandler;
 	private static ChatTranslator instance;
 	private DiscordTranslator discordTranslator;
+	private InternetCheckerAsync internetCheckerAsync;
 
 	private boolean is_disabled = true;
 	private final LoggerListener loggerListener = new LoggerListener();
 
-	public void onEnable() {
+	public void onLoad() {
 		instance       = this;
 		metrics        = new Metrics(instance, 20251);
 		logger.registerLogger(loggerListener);
 
 		API = ChatTranslatorAPI.getInstance();
 
+		super.onLoad();
+	}
+
+	public void onEnable() {
 		super.onEnable();
 
 		Message from = new Message();
@@ -197,6 +201,9 @@ public class ChatTranslator extends PluginBase {
 		eventManager.addExecutor("signs", new Signs());
 		eventManager.addExecutor("chat", new Chat());
 
+		internetCheckerAsync = new InternetCheckerAsync();
+		internetCheckerAsync.start();
+
 		chatLimiter = new ChatLimiter();
 		chatLimiter.start();
 
@@ -217,6 +224,7 @@ public class ChatTranslator extends PluginBase {
 		eventManager.removeExecutors("signs");
 		eventManager.removeExecutors("chat");
 
+		internetCheckerAsync.stop();
 		chatLimiter.stop();
 		metrics.shutdown();
 
