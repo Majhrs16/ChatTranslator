@@ -5,6 +5,7 @@ import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.util.cache.Dependencies;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
@@ -322,11 +323,19 @@ public interface Core {
 		to_tool_tips_texts   = processEscapes(to_tool_tips_texts, to_tool_tips_escapes);
 		to_messages_texts    = processEscapes(to_messages_texts, to_messages_escapes);
 
-		TranslatorBase translator = ChatTranslatorAPI.getInstance().getTranslator();
-		from_tool_tips_texts      = translateMessages(from_tool_tips_texts, from_tool_tips_formats, from_lang_source, from_lang_target, translator);
-		from_messages_texts       = translateMessages(from_messages_texts, from_messages_formats, from_lang_source, from_lang_target, translator);
-		to_tool_tips_texts        = translateMessages(to_tool_tips_texts, to_tool_tips_formats, to_lang_source, to_lang_target, translator);
-		to_messages_texts         = translateMessages(to_messages_texts, to_messages_formats, to_lang_source, to_lang_target, translator);
+		if (InternetCheckerAsync.isInternetAvailable()) {
+			TranslatorBase translator = ChatTranslatorAPI.getInstance().getTranslator();
+			from_tool_tips_texts = translateMessages(from_tool_tips_texts, from_tool_tips_formats, from_lang_source, from_lang_target, translator);
+			from_messages_texts = translateMessages(from_messages_texts, from_messages_formats, from_lang_source, from_lang_target, translator);
+			to_tool_tips_texts = translateMessages(to_tool_tips_texts, to_tool_tips_formats, to_lang_source, to_lang_target, translator);
+			to_messages_texts = translateMessages(to_messages_texts, to_messages_formats, to_lang_source, to_lang_target, translator);
+
+		} else {
+			if (from_tool_tips_texts.length > 0) from_tool_tips_texts[0] = "[!] " + from_tool_tips_texts[0];
+			if (from_messages_texts.length > 0) from_messages_texts[0] = "[!] " + from_messages_texts[0];
+			if (to_tool_tips_texts.length > 0) to_tool_tips_texts[0] = "[!] " + to_tool_tips_texts[0];
+			if (to_messages_texts.length > 0) to_messages_texts[0] = "[!] " + to_messages_texts[0];
+		}
 
 		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[00]", "%ct_messages%");
 		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[01]", "$ct_messages$");
