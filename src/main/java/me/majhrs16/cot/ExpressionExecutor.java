@@ -5,12 +5,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.ExpressionParser;
 
 public class ExpressionExecutor {
-	public Object invoke(String contextName, Object contextObject, String expression) {
-		StandardEvaluationContext context = new StandardEvaluationContext();
-		ExpressionParser parser           = new SpelExpressionParser();
-
-		context.setVariable(contextName, contextObject);
-
+	public Object invoke(StandardEvaluationContext context, String expression) {
+		ExpressionParser parser = new SpelExpressionParser();
 		return parser.parseExpression(expression).getValue(context);
 	}
 }

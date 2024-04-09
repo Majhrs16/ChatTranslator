@@ -12,6 +12,8 @@ import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
 import org.jetbrains.annotations.NotNull;
 
 import org.bukkit.command.CommandSender;
@@ -48,7 +50,11 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case TRANSLATE:
-						result = API.getTranslator().translate(matcher.group(1), matcher.group(2), matcher.group(3));
+						Message from = new Message();
+							from.setLangSource(matcher.group(1));
+							from.setLangTarget(matcher.group(2));
+							from.getMessages().setTexts(matcher.group(3));
+						result = API.formatMessage(from).getMessages().getFormat(0);
 						break;
 
 					case BROADCAST:
@@ -76,9 +82,9 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case NEW:
-						Message from = new Message();
-						ChatLimiter.add(from);
-						result = from.getUUID().toString();
+						Message from_new = new Message();
+						ChatLimiter.add(from_new);
+						result = from_new.getUUID().toString();
 						break;
 				}
 			}
@@ -95,7 +101,10 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return null;
 
 		try {
-			result = new ExpressionExecutor().invoke("from", from, path);
+			StandardEvaluationContext context = new StandardEvaluationContext();
+				context.setVariable("from", from);
+				context.setVariable("to", from.getTo());
+			result = new ExpressionExecutor().invoke(context, path);
 
 		} catch (Exception e) {
 			plugin.logger.error(e.toString());
