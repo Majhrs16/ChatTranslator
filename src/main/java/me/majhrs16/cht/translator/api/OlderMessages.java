@@ -1,13 +1,14 @@
 package me.majhrs16.cht.translator.api;
 
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.cache.Config;
+import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.cht.ChatTranslator;
 
 import me.majhrs16.lib.logger.Logger;
 
 import org.json.simple.parser.JSONParser;
 import org.json.simple.JSONObject;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 
@@ -33,15 +34,14 @@ class OlderMessages {
 					json.put("text", format);
 				}
 
-				if (formatted.getToolTips() != null) {
+				if (formatted.getToolTips().getFormats().length > 0) {
 					JSONObject hoverEvent = new JSONObject();
 						hoverEvent.put("action", "show_text");
-						hoverEvent.put("value", formatted.getToolTips());
+						hoverEvent.put("value", String.join("\n", formatted.getToolTips().getFormats()));
 					json.put("hoverEvent", hoverEvent);
 				}
 
-				if (Config.DEBUG.IF())
-					System.out.println(json.toString());
+				logger.debug(JsonFormatter.format(json.toString()));
 
 				Object chatComponentText = chatSerializerClass.getMethod("a", String.class).invoke(null, json.toString());
 
@@ -56,10 +56,13 @@ class OlderMessages {
 
 	static void J52(Message formatted) {
 		formatted.getSender().sendMessage(formatted.getMessages().getFormats());
-		if (formatted.getToolTips().getFormats().length > 0)
-			formatted.getSender().sendMessage(
-				"\t" + String.join("\n\t", formatted.getToolTips().getFormats())
-			);
+		if (formatted.getToolTips().getFormats().length > 0) {
+			String tool_tips;
+				if (formatted.getSender() instanceof Player)
+					 tool_tips = "    " + String.join("\n    ", formatted.getToolTips().getFormats());
+				else tool_tips = "\t"   + String.join("\n\t",   formatted.getToolTips().getFormats());
+			formatted.getSender().sendMessage(tool_tips);
+		}
 	}
 
 	static void J72(Message formatted) throws ClassNotFoundException {
