@@ -1,5 +1,6 @@
 package me.majhrs16.cht.util.updater;
 
+import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
@@ -24,6 +25,9 @@ public class UpdateChecker {
 			.setLangTarget(API.getLang(to_sender));
 
 		try {
+			if (!InternetCheckerAsync.isInternetAvailable())
+				throw new RuntimeException("NO INTERNET");
+
 			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=106604").openConnection();
 			conn.setConnectTimeout(timed_out);
 			conn.setReadTimeout(timed_out);

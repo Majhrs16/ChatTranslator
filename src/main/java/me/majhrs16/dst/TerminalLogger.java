@@ -8,9 +8,8 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.util.*;
 
-import me.majhrs16.lib.network.utils.InternetAccess;
-
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
@@ -54,6 +53,8 @@ public class TerminalLogger {
 	}
 
 	public void start() {
+		stop();
+
 		timer = new Timer(true);
 		timer.scheduleAtFixedRate(new LogReaderTask(), 0, MESSAGE_BLOCK_CLOCK);
 
@@ -87,7 +88,7 @@ public class TerminalLogger {
 
 					linesStream.skip(lastFileLine).forEachOrdered(line -> {
 						if ((block.get().length() + line.length()) > MAX_LENGTH_MESSAGE) {
-							if (InternetAccess.isInternetAvailable()) {
+							if (InternetCheckerAsync.isInternetAvailable()) {
 								if (block.get().length() > 0) {
 									sendToDiscord(block.get().toString());
 									block.set(new StringBuilder());
