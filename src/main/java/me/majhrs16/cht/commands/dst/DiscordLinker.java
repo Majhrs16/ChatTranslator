@@ -1,5 +1,6 @@
 package me.majhrs16.cht.commands.dst;
 
+import me.majhrs16.cht.util.util;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
@@ -21,31 +22,31 @@ public class DiscordLinker implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message DC = new Message()
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		if (Config.TranslateOthers.DISCORD.IF()) {
-			if (DC.getSender() instanceof Player) {
-				int code = AccountManager.preLink(((Player) DC.getSender()).getUniqueId(), () -> {
-					DC.format("commands.discordLinker.timeout");
-					API.sendMessage(DC);
+		if (Config.TranslateOthers.DISCORD.IF() && DiscordTranslator.getJDA() != null) {
+			if (from.getSender() instanceof Player) {
+				int code = AccountManager.preLink(util.getUUID(from.getSender()), () -> {
+					from.format("commands.discordLinker.timeout");
+					API.sendMessage(from);
 				});
 
-				DC.format("commands.discordLinker.done", s -> s
+				from.format("commands.discordLinker.done", s -> s
 					.replace("%code%", "" + code)
 					.replace("%discord_bot_name%", DiscordTranslator.getJDA().getSelfUser().getName())
 				);
 
 			} else {
-				DC.format("commands.discordLinker.onlyPlayer");
+				from.format("commands.discordLinker.onlyPlayer");
 			}
 
 		} else {
-			DC.format("commands.discordLinker.activateBot");
+			from.format("commands.discordLinker.activateBot");
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(from);
 		return true;
 	}
 }

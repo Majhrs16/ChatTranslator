@@ -739,9 +739,13 @@ commands:
         texts:
           - "Debe activar"
           - "para usar este comando"
+          - "Por favor"
+          - "Configure su"
+          - "correctamente"
 
         formats:
           - "&c{0} &bconfig&f.&btranslate-others&f.&bdiscord &c{1}&f."
+          - "&e{2}&f, &e{3} &bconfig&f.&bdiscord&f.&bbot-token&a {4}&f."
 
     timeout:
       messages:
