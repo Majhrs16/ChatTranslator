@@ -2,8 +2,8 @@ package me.majhrs16.cht.events;
 
 import me.majhrs16.lib.network.utils.InternetAccess;
 
-import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Timer;
 
 public class InternetCheckerAsync {
 	private Timer timer;
