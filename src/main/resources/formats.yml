@@ -82,7 +82,7 @@ to_exit:
       - '&c- &e%player_name% {0}&f, &c:('
 
 to_exit_discord:
-  color: "#00FF00"
+  color: "#FF0000"
   messages:
     texts:
       - "ha abandonado el juego"
