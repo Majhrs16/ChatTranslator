@@ -26,8 +26,8 @@ public class Commands extends ListenerAdapter {
 			Message message = event.getTarget();
 			Member member = event.getMember();
 
-			me.majhrs16.cht.events.custom.Message DC = new me.majhrs16.cht.events.custom.Message();
-			DC.setForceColor(false);
+			me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
+			from.setForceColor(false);
 
 			if (member != null) {
 				UUID authorUuid = AccountManager.getMinecraft(message.getAuthor().getId());
@@ -42,17 +42,17 @@ public class Commands extends ListenerAdapter {
 					if (Objects.equals(from_lang, to_lang))
 						from_lang = util.convertStringToLang("auto");
 
-					DC.getMessages().setTexts(message.getContentDisplay());
-					DC.setLangSource(from_lang);
-					DC.setLangTarget(to_lang);
+					from.getMessages().setTexts(message.getContentDisplay());
+					from.setLangSource(from_lang);
+					from.setLangTarget(to_lang);
 
-					event.getHook().sendMessage(String.join("\n", API.formatMessage(DC).getMessages().getFormats())).queue();
+					event.getHook().sendMessage(String.join("\n", API.formatMessage(from).getMessages().getFormats())).queue();
 					return;
 				}
 			}
 
-			DC.format("discord-translator.unlinked");
-			event.getHook().sendMessage(String.join("\n", API.formatMessage(DC).getMessages().getFormats())).queue();
+			from.format("discord-translator.unlinked");
+			event.getHook().sendMessage(String.join("\n", API.formatMessage(from).getMessages().getFormats())).queue();
 		}
 	}
 }
