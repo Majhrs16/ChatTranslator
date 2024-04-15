@@ -27,7 +27,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public static final String version = "b1.7";
+	public static final String version = "${cot_version}";
 
 	@NotNull public String getAuthor()	   { return "Majhrs16"; }
 	@NotNull public String getVersion()	   { return version; }

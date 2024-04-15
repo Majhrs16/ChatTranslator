@@ -39,7 +39,9 @@ tasks.register('replaceTokens', Copy) {
     filter { String line -> line
         .replace('${name}', project.name)
         .replace('${description}', project.description)
-        .replace('${version}', project.version as String)
+        .replace('${cht_version}', project.cht_version as String)
+        .replace('${cot_version}', project.cot_version as String)
+        .replace('${dst_version}', project.dst_version as String)
         .replace('${author}', project.author as String)
     }
 }
@@ -53,7 +55,9 @@ processResources {
     filesMatching('plugin.yml') {
         expand name: project.name,
                description: project.description,
-               version: project.version,
+               cht_version: project.cht_version,
+               cot_version: project.cot_version,
+               dst_version: project.dst_version,
                author: project.author
     }
 }

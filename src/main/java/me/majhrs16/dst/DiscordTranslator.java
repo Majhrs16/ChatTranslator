@@ -12,7 +12,7 @@ import me.majhrs16.dst.events.Chat;
 public class DiscordTranslator {
 	private static JDA jda;
 
-	public final static String version  = "b3.6";
+	public final static String version  = "${dst_version}";
 
 	private static class Events {
 		private static final me.majhrs16.dst.events.Commands commands = new me.majhrs16.dst.events.Commands();
