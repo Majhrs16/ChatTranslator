@@ -3,8 +3,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group = 'majhrs16.cht'
-version = 'v2.0'
+group   = project.name
+version = project.version
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -20,8 +20,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testCompileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework:spring-expression:5.3.33'
@@ -33,6 +32,32 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.4'
 }
 
-test {
-    useJUnitPlatform()
+tasks.register('replaceTokens', Copy) {
+    from 'src/main/java'
+    into 'build/processed-sources/java'
+    include '**/*.java'
+    filter { String line -> line
+        .replace('${name}', project.name)
+        .replace('${description}', project.description)
+        .replace('${version}', project.version as String)
+        .replace('${author}', project.author as String)
+    }
+}
+
+compileJava {
+    dependsOn replaceTokens
+    source = 'build/processed-sources/java'
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand name: project.name,
+               description: project.description,
+               version: project.version,
+               author: project.author
+    }
+}
+
+shadowJar {
+    archiveFileName = "${project.name} - ${project.version}.jar"
 }

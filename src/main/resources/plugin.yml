@@ -1,9 +1,9 @@
 main: me.majhrs16.cht.ChatTranslator
-description: Translator and powerful chat formatter.
-name: ChatTranslator
-author: Majhrs16
+description: ${description}
+name: ${name}
+author: ${author}
 load: STARTUP
-version: 2.0
+version: ${version.substring(1)}
 prefix: ChT
 
 softdepend:

@@ -27,7 +27,8 @@ public class Texts {
 		for (String key : config.getKeys(true))
 			dataMap.put(key, config.get(key));
 
-		dataMap.put("versions.plugin", "b" + ChatTranslator.getInstance().getDescription().getVersion());
+//		dataMap.put("versions.plugin", "v" + ChatTranslator.getInstance().getDescription().getVersion());
+		dataMap.put("versions.plugin", "${version}");
 		dataMap.put("versions.dst", DiscordTranslator.version);
 		dataMap.put("versions.cot", CoreTranslator.version);
 		dataMap.put("versions.kernel", Kernel.version);
@@ -39,7 +40,7 @@ public class Texts {
 
 	@Deprecated
 	public static String getString(String key) {
-		return String.join("\n", get(key));
+		return String.join("\\n", get(key));
 	}
 
 	public static String[] get(String key) {
