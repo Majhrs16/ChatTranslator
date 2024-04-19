@@ -3,18 +3,18 @@ package me.majhrs16.cht.events;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.minecraft.BukkitUtils;
 
+import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.util.cache.Config;
+import me.majhrs16.cht.ChatTranslator;
+import me.majhrs16.cht.util.util;
+
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
-
-import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.cache.Config;
-import me.majhrs16.cht.ChatTranslator;
-import me.majhrs16.cht.util.util;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -44,10 +44,24 @@ public class Chat implements Listener {
 			.setSender(event.getPlayer())
 			.setCancelledThis(true); // Evitar duplicacion para el remitente.
 
+		Message model = util.createChat(
+			event.getPlayer(),
+			new String[] { event.getMessage() },
+			from_lang,
+			from_lang,
+			null // null = chat normal por defecto.
+		);
 
+		Message mention_model = util.createChat(
+			event.getPlayer(),
+			new String[] { event.getMessage() },
+			from_lang,
+			from_lang,
+			"mention"
+		);
 
 		List<Player> players = new ArrayList<>();
-		Matcher matcher      = Chat.mentions.matcher(event.getMessage());
+		Matcher matcher      = mentions.matcher(event.getMessage());
 		while (matcher.find()) {
 			String nick_mention = matcher.group(1);
 
@@ -59,17 +73,18 @@ public class Chat implements Listener {
 			players.add(to_player);
 		}
 
-		Message model = util.createChat(
-			event.getPlayer(),
-			new String[] { event.getMessage() },
-			from_lang,
-			from_lang,
-			players.isEmpty() ? null : "mention"); // null = chat normal por defecto.
-
-		API.broadcast(model, players.isEmpty() ? BukkitUtils.getOnlinePlayers() : players.toArray(new Player[0]), froms -> {
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
 			froms.add(console);
-			API.broadcast(froms);
+
+			API.broadcast(froms, from -> {
+				if (from.getTo().getSender() instanceof Player && players.contains((Player) from.getTo().getSender()))
+					return;
+
+				ChatLimiter.add(from);
+			});
 		});
+
+		API.broadcast(mention_model, players.toArray(new Player[0]), API::broadcast);
 
 		if (Config.NativeChat.CLEAR.IF())
 			event.getRecipients().clear();
