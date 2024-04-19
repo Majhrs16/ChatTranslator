@@ -31,42 +31,11 @@ import java.util.UUID;
 import java.lang.reflect.Method;
 
 public class Message extends Event implements Cancellable {
-	private interface Converter {
-		Object convert(String arg) throws Exception;
-	}
-
-	private enum SenderTypes {
-		UNKNOWN,
-		CONSOLE,
-		PLAYER
-	}
-
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final UUID uuid             = UUID.randomUUID();
 	private final Logger logger         = plugin.logger;
 
 	private static final HandlerList HANDLERS = new HandlerList();
-	private static final List<Converter> converters = Arrays.asList(
-			(arg) -> {
-				arg = arg.toLowerCase();
-				if (arg.equals("true") || arg.equals("false"))
-					return Boolean.parseBoolean(arg);
-
-				else
-					throw new IllegalArgumentException();
-			},
-			(arg) -> {
-				arg = arg.toLowerCase();
-				if (arg.equals("null"))
-					return null;
-
-				else
-					throw new IllegalArgumentException();
-			},
-			Integer::parseInt,
-			Float::parseFloat,
-			Double::parseDouble
-	);
 
 	private Message to;
 	private CommandSender sender;
@@ -81,6 +50,12 @@ public class Message extends Event implements Cancellable {
 	private Boolean is_force_color = true;
 	private Boolean is_format_papi = true;
 	private String last_format     = "UNKNOWN";
+
+	private enum SenderTypes {
+		UNKNOWN,
+		CONSOLE,
+		PLAYER
+	}
 
 	public Message(TranslatorBase.LanguagesBase langSource, TranslatorBase.LanguagesBase langTarget) {
 		CommandSender term = Bukkit.getConsoleSender();
