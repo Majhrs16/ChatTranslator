@@ -29,7 +29,7 @@ public class Signs implements Listener {
 
 	@EventHandler
 	public void updateSign(PlayerInteractEvent event) {
-		if (plugin.isDisabled() && !Config.TranslateOthers.Signs.ENABLE.IF())
+		if (plugin.isDisabled() || !Config.TranslateOthers.Signs.ENABLE.IF())
 			return;
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
