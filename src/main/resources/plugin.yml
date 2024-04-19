@@ -3,7 +3,7 @@ description: ${description}
 name: ${name}
 author: ${author}
 load: STARTUP
-version: ${version.substring(1)}
+version: ${cht_version.substring(1)}
 prefix: ChT
 
 softdepend:
