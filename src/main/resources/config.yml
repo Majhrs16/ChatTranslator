@@ -1,5 +1,4 @@
 auto-translate-others:
-  discord-reply: true
   discord: false
   access: true
   signs:
@@ -24,6 +23,8 @@ discord:
     chat:
       - "<Public channel ID>"
     deaths:
+      - "<Public channel ID>"
+    replies:
       - "<Public channel ID>"
     console:
       - "<PRIVATE channel ID>"

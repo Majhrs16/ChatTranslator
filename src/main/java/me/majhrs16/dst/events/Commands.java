@@ -1,5 +1,6 @@
 package me.majhrs16.dst.events;
 
+import me.majhrs16.cht.util.cache.Config;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.Message;
@@ -8,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import me.majhrs16.dst.utils.AccountManager;
@@ -16,10 +18,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Commands extends ListenerAdapter {
+	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@Override
 	public void onMessageContextInteraction(MessageContextInteractionEvent event) {
+		if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF())
+			return;
+
 		if (event.getName().equals("Translate")) {
 			event.deferReply(true).queue();
 

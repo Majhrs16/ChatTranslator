@@ -3,6 +3,7 @@ package me.majhrs16.dst.events;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.MessageReference;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.Message;
@@ -23,7 +24,10 @@ import me.majhrs16.cht.util.util;
 
 import me.majhrs16.dst.utils.AccountManager;
 import me.majhrs16.dst.DiscordTranslator;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Chat extends ListenerAdapter {
@@ -31,7 +35,10 @@ public class Chat extends ListenerAdapter {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@Override
-	public void onMessageReceived(MessageReceivedEvent event) {
+	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+		if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF())
+			return;
+
 		Message message = event.getMessage();
 
 		if (message.getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
@@ -39,7 +46,8 @@ public class Chat extends ListenerAdapter {
 
 		FileConfiguration config = plugin.config.get();
 
-		if (event.getMessage().getMessageReference() != null) {
+		if (event.getMessage().getMessageReference() != null
+				&& config.getStringList("discord.channels.replies").contains(event.getChannel().getId())) {
 			handleRefMessage(event);
 
 		} else if (message.getContentRaw().startsWith("!cht")) {
@@ -57,9 +65,6 @@ public class Chat extends ListenerAdapter {
 	}
 
 	private void handleRefMessage(MessageReceivedEvent event) {
-		if (!Config.TranslateOthers.DISCORD_REPLY.IF())
-			return;
-
 		MessageReference ref = event.getMessage().getMessageReference();
 
 		if (ref == null)
@@ -69,7 +74,6 @@ public class Chat extends ListenerAdapter {
 
 		if (message == null)
 			return;
-
 
 		me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
 		from.setSenderName(message.getAuthor().getName());
@@ -98,16 +102,29 @@ public class Chat extends ListenerAdapter {
 	private void handleChatMessage(MessageReceivedEvent event) {
 		Message message = event.getMessage();
 
+		List<String> texts = new ArrayList<>();
+		List<String> tool_tips = new ArrayList<>();
+		texts.add(message.getContentDisplay());
+
+		if (message.isWebhookMessage())
+			for (MessageEmbed embed : message.getEmbeds()) {
+				texts.add(embed.getTitle());
+				tool_tips.add(embed.getDescription());
+			}
+
+		String[] message_texts = texts.toArray(new String[0]);
+		String[] tool_tip_texts = tool_tips.toArray(new String[0]);
+
 		UUID authorUuid      = AccountManager.getMinecraft(message.getAuthor().getId());
 		OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
 		TranslatorBase.LanguagesBase from_lang = player == null ? util.convertStringToLang("auto") : API.getLang(player);
 
 		me.majhrs16.cht.events.custom.Message model = util.createChat(
-				player == null ? null : player.getPlayer(),
-				new String[] { message.getContentDisplay() },
-				from_lang,
-				from_lang,
-				null
+			player == null ? null : player.getPlayer(),
+			message_texts,
+			from_lang,
+			from_lang,
+			null
 		);
 		if (player == null)
 			model.setSenderName(message.getAuthor().getName());
@@ -115,14 +132,16 @@ public class Chat extends ListenerAdapter {
 		else
 			model.setSenderName(player.getName());
 
+		model.getToolTips().setTexts(tool_tip_texts);
+		model.getTo().getToolTips().setTexts(tool_tip_texts);
 		model.setCancelledThis(player == null || !player.isOnline());
 
 		me.majhrs16.cht.events.custom.Message console = util.createChat(
-				Bukkit.getConsoleSender(),
-				new String[] { message.getContentDisplay() },
-				from_lang,
-				API.getLang(Bukkit.getConsoleSender()),
-				"console"
+			Bukkit.getConsoleSender(),
+			message_texts,
+			from_lang,
+			API.getLang(Bukkit.getConsoleSender()),
+			"console"
 		);
 
 		console.setSender(model.getSender());
@@ -143,6 +162,9 @@ public class Chat extends ListenerAdapter {
 	}
 
 	private void handleConsoleCommand(MessageReceivedEvent event) {
+		if (event.getMessage().getAuthor().isBot())
+			return;
+
 		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), event.getMessage().getContentRaw()));
 	}
 
