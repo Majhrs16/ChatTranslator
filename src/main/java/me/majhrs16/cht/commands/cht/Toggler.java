@@ -28,19 +28,22 @@ public class Toggler implements CommandExecutor {
 
 		switch (args.length) {
 			case 0:
-				TogglePlugin(from);
+				togglePlugin(from);
 				break;
 
 			case 1:
-				ToggleOffPlayer(from, args[0]);
+				toggleOffPlayer(from, args[0]);
 				break;
+
+			default:
+				from.format("commands.errors.unknown");
 		}
 
 		API.sendMessage(from);
 		return true;
 	}
 	
-	public void ToggleOffPlayer(Message from, String player) {
+	public void toggleOffPlayer(Message from, String player) {
 		if (player == null)
 			throw new NullPointerException("String player is null");
 
@@ -58,7 +61,7 @@ public class Toggler implements CommandExecutor {
 		);
 	}
 	
-	public void TogglePlugin(Message from) {
+	public void togglePlugin(Message from) {
 		ChatLimiter.clear();
 		plugin.setDisabled(!plugin.isDisabled());
 		from.format("commands.toggler.togglePlugin." + !plugin.isDisabled());
