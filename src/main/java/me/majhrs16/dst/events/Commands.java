@@ -13,6 +13,7 @@ import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import me.majhrs16.dst.utils.AccountManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -22,7 +23,7 @@ public class Commands extends ListenerAdapter {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@Override
-	public void onMessageContextInteraction(MessageContextInteractionEvent event) {
+	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
 		if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF())
 			return;
 

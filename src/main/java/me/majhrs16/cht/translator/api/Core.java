@@ -1,6 +1,5 @@
 package me.majhrs16.cht.translator.api;
 
-import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
