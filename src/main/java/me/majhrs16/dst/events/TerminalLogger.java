@@ -1,12 +1,4 @@
-package me.majhrs16.dst;
-
-import java.util.concurrent.atomic.AtomicReference;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.io.File;
-import java.util.*;
+package me.majhrs16.dst.events;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.InternetCheckerAsync;
@@ -15,18 +7,29 @@ import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
+import java.util.*;
+
 import me.majhrs16.dst.utils.TerminalAnsiReader;
+import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import java.io.File;
 
 public class TerminalLogger {
 	private Timer timer;
-	private static String LOG_FILE_PATH = "logs/latest.log";
+	private static String LOG_FILE_PATH;
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public static final Map<String, String> ANSI_TO_DISCORD_MAP = createAnsiMap();
 	public final int MESSAGE_BLOCK_CLOCK = 6000; // 6s
-	public final int MAX_LENGTH_MESSAGE = 1900; // Dejare un espacio libre por si acaso...
+	public final int MAX_LENGTH_MESSAGE = 1900;  // Dejare un espacio libre por si acaso...
 
 	public TerminalLogger() {
 		Message from = new Message();
@@ -39,13 +42,16 @@ public class TerminalLogger {
 
 			LOG_FILE_PATH = "logs/DST.log";
 
-			from.format("discord-translator.log4j.done",
-				format -> format.replace("%logger%", LOG_FILE_PATH)
+			from.format("discord-translator.log4j.done", format -> format
+				.replace("%logger%", LOG_FILE_PATH)
 			);
 
-		} catch (Exception | Error e) {
-			from.format("discord-translator.log4j.error",
-				format -> format.replace("%logger%", LOG_FILE_PATH).replace("%reason%", e.toString())
+		} catch (Throwable e) {
+			LOG_FILE_PATH = "logs/latest.log";
+
+			from.format("discord-translator.log4j.error", format -> format
+				.replace("%logger%", LOG_FILE_PATH)
+				.replace("%reason%", e.toString())
 			);
 		}
 
