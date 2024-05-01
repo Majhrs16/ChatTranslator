@@ -7,11 +7,16 @@ import java.util.Timer;
 
 public class InternetCheckerAsync {
 	private Timer timer;
-	private static boolean is_internet_available = false;
+	private static boolean is_internet_available = true;
 
 	private static class CheckerTask extends TimerTask {
 		public void run() {
-			is_internet_available = InternetAccess.isInternetAvailable();
+			try {
+				is_internet_available = InternetAccess.isInternetAvailable();
+
+			} catch (Exception e) {
+				is_internet_available = false;
+			}
 		}
 	}
 
