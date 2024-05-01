@@ -21,6 +21,9 @@ public class DiscordChat {
 	public static int broadcast(List<String> channels, Consumer<TextChannel> action) {
 		int oks = 0;
 
+		if (DiscordTranslator.getJDA() == null)
+			return oks;
+
 		for (String channelID : channels) {
 			TextChannel channel = DiscordTranslator.getJDA().getTextChannelById(channelID);
 
