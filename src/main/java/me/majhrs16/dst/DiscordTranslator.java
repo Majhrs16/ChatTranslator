@@ -7,19 +7,20 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 
+import me.majhrs16.dst.events.TerminalLogger;
+import me.majhrs16.dst.events.DiscordSync;
 import me.majhrs16.dst.events.Chat;
 
 public class DiscordTranslator {
 	private static JDA jda;
 
-	public final static String version  = "${dst_version}";
+	private final Chat chat = new Chat();
+	final DiscordSync discordSync = new DiscordSync();
+	private final TerminalLogger terminalLogger = new TerminalLogger();
+	private final me.majhrs16.dst.events.Commands commands = new me.majhrs16.dst.events.Commands();
 
-	private static class Events {
-		private static final me.majhrs16.dst.events.Commands commands = new me.majhrs16.dst.events.Commands();
-		private static final TerminalLogger terminalLogger = new TerminalLogger();
-		private static final DiscordSync discordSync = new DiscordSync();
-		private static final Chat chat = new Chat();
-	}
+
+	public final static String version  = "${dst_version}";
 
 	public JDA connect(String bot_token) throws InvalidTokenException, InterruptedException {
 		if (bot_token == null || bot_token.isEmpty())
@@ -36,19 +37,19 @@ public class DiscordTranslator {
 	public void registerEvents() {
 		if (jda == null) return;
 
-		jda.addEventListener(Events.commands);
-		jda.addEventListener(Events.chat);
-		Events.terminalLogger.start();
-		Events.discordSync.start();
+		jda.addEventListener(commands);
+		jda.addEventListener(chat);
+		terminalLogger.start();
+		discordSync.start();
 	}
 
 	public void unregisterEvents() {
 		if (jda == null) return;
 
-		jda.removeEventListener(Events.commands);
-		jda.removeEventListener(Events.chat);
-		Events.terminalLogger.stop();
-		Events.discordSync.stop();
+		jda.removeEventListener(commands);
+		jda.removeEventListener(chat);
+		terminalLogger.stop();
+		discordSync.stop();
 	}
 
 	public void registerCommands() {
