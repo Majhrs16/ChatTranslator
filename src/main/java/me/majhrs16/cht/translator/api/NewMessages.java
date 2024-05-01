@@ -34,12 +34,15 @@ class NewMessages {
 			if (format.startsWith("{") && format.endsWith("}")) {
 				json = (JSONObject) new JSONParser().parse(format);
 
+			} else if (format.startsWith("[!] {") && format.endsWith("}")) {
+				json = (JSONObject) new JSONParser().parse(format.substring(4));
+
 			} else {
 				json = new JSONObject();
 
 				if (version >= 16.0) {
 					JSONArray extras = new JSONArray();
-					Matcher matcher = Core.color_hex.matcher(format);
+					Matcher matcher = Core.COLOR_HEX.matcher(format);
 
 					boolean start = true;
 					while (matcher.find()) {
@@ -80,7 +83,7 @@ class NewMessages {
 					JSONArray extras = new JSONArray();
 
 					for (String tool_tip : formatted.getToolTips().getFormats()) {
-						Matcher matcher = Core.color_hex.matcher(tool_tip);
+						Matcher matcher = Core.COLOR_HEX.matcher(tool_tip);
 						boolean start = true;
 						while (matcher.find()) {
 							if (start && tool_tip.indexOf("#") > 0)  {

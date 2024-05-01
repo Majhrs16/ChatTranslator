@@ -29,6 +29,9 @@ class OlderMessages {
 				if (format.startsWith("{") && format.endsWith("}")) {
 					json = (JSONObject) new JSONParser().parse(format);
 
+				} else if (format.startsWith("[!] {") && format.endsWith("}")) {
+					json = (JSONObject) new JSONParser().parse(format.substring(4));
+
 				} else {
 					json = new JSONObject();
 					json.put("text", format);
