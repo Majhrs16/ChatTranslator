@@ -86,7 +86,7 @@ public class util {
 			DC.getToolTips().setTexts(messages);
 			DC.setLangSource(langSource);
 			DC.setLangTarget(langTarget);
-			DC.setForceColor(false);
+			DC.setColor(0);
 			DC.setFormatPAPI(Config.FORMAT_PAPI.IF());
 			DC.format(path);
 
@@ -153,8 +153,11 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
-		original.getToolTips().setFormats(formats);
-		original.getToolTips().setTexts(texts);
+		if (formats.length > 0)
+			original.getToolTips().setFormats(formats);
+
+		if (texts.length > 0)
+			original.getToolTips().setTexts(texts);
 	}
 
 	public static void applyMessagesFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
@@ -163,11 +166,11 @@ public class util {
 		String[] source  = Texts.get(path + ".sourceLang");
 		String[] target  = Texts.get(path + ".targetLang");
 
-		// En caso contrario: Variable literal.
+//		En caso contrario: Variable literal.
 		if (formats.length == 0)
 			formats = Texts.get(path);
 
-		// En caso contrario: Textos compartidos.
+//		En caso contrario: Textos compartidos.
 		if (texts.length == 0)
 			texts = Texts.get(path + ".texts");
 
@@ -198,7 +201,7 @@ public class util {
 	@Deprecated
 	public static String convertColorHex(String text) {
 		Matcher matcher;
-		while ((matcher = API.color_hex.matcher(text)).find()) {
+		while ((matcher = API.COLOR_HEX.matcher(text)).find()) {
 			text = text.replace(matcher.group(0), net.md_5.bungee.api.ChatColor.of(matcher.group(0)).toString());
 		}
 
