@@ -6,7 +6,7 @@ public enum CommandsPAPI {
     SEND_DISCORD("^sendDiscord;\\s*(.+?);\\s*(.+?)$"),
     TRANSLATE("^translate;\\s*(.+?);\\s*(.+?);\\s*(.+?)$"),
     BROADCAST("^broadcast;\\s*(.+?)$"),
-    VAR("^var;\\s*(.+?)(;\\s*(.+?))?$"),
+    VAR("^var;\\s*(.+?);\\s*(.+?)$"),
     SEND("^send;\\s*(.+?)$"),
     LANG("^lang;\\s*(.+?)$"),
     NEW("new");
