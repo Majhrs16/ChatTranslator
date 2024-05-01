@@ -29,11 +29,11 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	public static final String version = "${cot_version}";
 
-	@NotNull public String getAuthor()	   { return "Majhrs16"; }
-	@NotNull public String getVersion()	   { return version; }
+	@NotNull public String getAuthor()     { return "Majhrs16"; }
+	@NotNull public String getVersion()    { return version; }
 	@NotNull public String getIdentifier() { return "cot"; }
 	public boolean canRegister()           { return true; }
-	public boolean persist()	           { return true; }
+	public boolean persist()               { return true; }
 
 	@Override
 	public String onPlaceholderRequest(Player player, @NotNull String identifier) {
@@ -51,6 +51,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 					case TRANSLATE:
 						Message from = new Message();
+							from.setSender(player);
 							from.setLangSource(matcher.group(1));
 							from.setLangTarget(matcher.group(2));
 							from.getMessages().setTexts(matcher.group(3));
@@ -77,7 +78,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 					case VAR:
 						result = property(
 							matcher.group(1), // UUID
-							matcher.group(3)  // Path
+							matcher.group(2)  // Path
 						);
 						break;
 
@@ -89,7 +90,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 				}
 			}
 		}
-	
+
 		return result;
 	}
 
@@ -183,8 +184,9 @@ public class CoreTranslator extends PlaceholderExpansion {
 			from.setLangSource(lang_source);
 			from.setLangTarget(lang_target);
 			from.getMessages().setTexts(text);
+			from.setColor(1);
 
-		return API.formatMessage(from).getMessages().getTexts()[0];
+		return API.formatMessage(from).getMessages().getFormat(0);
 	}
 
 	public String getMessageFormatted(Player player, String text) {
