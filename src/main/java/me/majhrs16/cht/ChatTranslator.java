@@ -27,16 +27,15 @@ import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.minecraft.plugin.PluginBase;
 import me.majhrs16.lib.storages.YAML;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.Charset;
-
 import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.dst.utils.DiscordChat;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 import me.majhrs16.cot.CoreTranslator;
 
 import org.bukkit.Bukkit;
-
 
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
@@ -171,7 +170,7 @@ public class ChatTranslator extends PluginBase {
 //      DST
 		commandManager.addExecutor("discordLinker", new DiscordLinker());
 
-//		UTILS
+//		UTILS EXPERIMENTAL!
 		commandManager.addExecutor("translateYaml", new TranslateYaml());
 	}
 
