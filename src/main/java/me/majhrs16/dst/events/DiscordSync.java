@@ -1,4 +1,4 @@
-package me.majhrs16.dst;
+package me.majhrs16.dst.events;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.permissions.PermissionAttachment;
@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.JDA;
 
+import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
@@ -25,7 +26,7 @@ public class DiscordSync {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final Map<Player, Map<String, PermissionAttachment>> map_permissions = new HashMap<>();
 
-	public class Clock extends TimerTask {
+	private class Clock extends TimerTask {
 		boolean is_one = true;
 
 		@Override
@@ -68,63 +69,49 @@ public class DiscordSync {
 
 				Player player = (Player) off_player;
 
-				for (Role role : member.getRoles()) {
-					String path = "discord.sync.roles." + role.getId();
+				ConfigurationSection section = plugin.config.get().getConfigurationSection("discord.sync.roles");
+				if (section == null) continue;
 
+				for (String role_id : section.getKeys(false)) {
+					Role role = guild.getRoleById(role_id);
+					if (role == null)
+						continue;
+
+					String path = "discord.sync.roles." + role_id;
 					if (!plugin.config.get().contains(path))
 						continue;
 
 					String permission_id = plugin.getConfig().getString(path);
-					assert permission_id != null;
+					if (permission_id == null)
+						continue;
 
-					if (member.getRoles().contains(role) && !player.hasPermission(permission_id))
+					Map<String, PermissionAttachment> map = map_permissions.getOrDefault(player, new HashMap<>());
 
-						if (map_permissions.containsKey(player)) {
-							map_permissions.get(player).put(
-								permission_id,
-								addPermission(player, new Permission(permission_id))
-							);
+					if (member.getRoles().contains(role) && !player.hasPermission(permission_id)) {
+						map.put(permission_id, addPermission(player, new Permission(permission_id)));
 
-						} else {
-							Map<String, PermissionAttachment> map = new HashMap<>();
-								map.put(permission_id, addPermission(player, new Permission(permission_id)));
-							map_permissions.put(player, map);
-						}
-				}
-
-				ConfigurationSection section = plugin.config.get().getConfigurationSection("discord.sync");
-				if (section == null) continue;
-
-				for (Role role : member.getRoles()) {
-					String path = "discord.sync.roles." + role.getId();
-
-					String permission_id = plugin.getConfig().getString(path);
-					assert permission_id != null;
-
-					if (!member.getRoles().contains(role)
-							&& player.hasPermission(permission_id)
-							&& map_permissions.containsKey(player)) {
-
-						Map<String, PermissionAttachment> map = map_permissions.get(player);
-						PermissionAttachment pa = map.get(permission_id);
-						removePermission(player, pa);
-
-						if (map.isEmpty())
-							map_permissions.remove(player);
+					} else if (!member.getRoles().contains(role) && player.hasPermission(permission_id)) {
+						removePermission(player, map.remove(permission_id));
 					}
+
+					if (map.isEmpty()) map_permissions.remove(player);
+					else map_permissions.put(player, map);
 				}
+
 			}
 		}
+
+		clearPlayers();
 	}
 
-	private PermissionAttachment addPermission(Player player, Permission permission) {
+	public PermissionAttachment addPermission(Player player, Permission permission) {
 		PermissionAttachment attachment = player.addAttachment(plugin);
 		attachment.setPermission(permission, true);
 		player.recalculatePermissions();
 		return attachment;
 	}
 
-	private void removePermission(Player player, PermissionAttachment attachment) {
+	public void removePermission(Player player, PermissionAttachment attachment) {
 		player.removeAttachment(attachment);
 		player.recalculatePermissions();
 	}
@@ -141,45 +128,51 @@ public class DiscordSync {
 				Member member = guild.getMemberById(user.getId());
 				if (member == null) continue;
 
-				for (Role role : member.getRoles()) {
-					String path = "discord.sync.permissions." + role.getId();
+				ConfigurationSection section = plugin.config.get().getConfigurationSection("discord.sync.permissions");
+				if (section == null) continue;
 
+				for (String role_id : section.getKeys(false)) {
+					Role role = guild.getRoleById(role_id);
+					if (role == null)
+						continue;
+
+					String path = "discord.sync.permissions." + role_id;
 					if (!plugin.config.get().contains(path))
 						continue;
 
 					String permission_id = plugin.getConfig().getString(path);
-					assert permission_id != null;
-
-					if (player.hasPermission(permission_id) && !member.getRoles().contains(role))
-						addRole(guild, member, role);
-				}
-
-				ConfigurationSection section = plugin.config.get().getConfigurationSection("discord.sync");
-				if (section == null) continue;
-
-				for (Role role : member.getRoles()) {
-					String path = "discord.sync.permissions." + role.getId();
-					if (!plugin.config.get().contains(path))
+					if (permission_id == null)
 						continue;
 
-					String permission_id = plugin.config.get().getString(path);
-					assert permission_id != null;
-
-					plugin.logger.warn(permission_id);
-					if (!player.hasPermission(permission_id) && member.getRoles().contains(role)) {
+					if (player.hasPermission(permission_id) && !member.getRoles().contains(role)) {
 						plugin.logger.warn("CORONAU!");
+						addRole(guild, member, role);
+
+					} else if (!player.hasPermission(permission_id) && member.getRoles().contains(role)) {
+						plugin.logger.warn("CORONAU!!!");
 						removeRole(guild, member, role);
 					}
 				}
 			}
 		}
+
+		clearPlayers();
 	}
 
-	private void addRole(Guild guild, Member member, Role role) {
+	public void addRole(Guild guild, Member member, Role role) {
 		guild.addRoleToMember(member, role).queue();
 	}
 
-	private void removeRole(Guild guild, Member member, Role role) {
+	public void removeRole(Guild guild, Member member, Role role) {
 		guild.removeRoleFromMember(member, role).queue();
+	}
+
+	////////////////
+	// Utils!
+
+	public void clearPlayers() {
+		for (Player player : map_permissions.keySet())
+			if (!player.isOnline())
+				map_permissions.remove(player);
 	}
 }
