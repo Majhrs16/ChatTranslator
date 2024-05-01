@@ -1,5 +1,6 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
@@ -23,14 +24,18 @@ import java.util.regex.Pattern;
 import java.util.ArrayList;
 
 public interface Core {
-	Pattern sub_variables = Pattern.compile("\\{([a-zA-Z0-9_]+)}");
-	Pattern variables     = Pattern.compile("[%$][A-Z0-9_]+[%$]"); // CORREGIR el mal procesado de PAPI con la modifiacion de ct_messages,
-	Pattern color_hex     = Pattern.compile("#[a-fA-F0-9]{6}");
+	Pattern SUB_VARIABLES = Pattern.compile("\\{([a-zA-Z0-9_]+)}");
+	Pattern VARIABLES     = Pattern.compile("[%$][A-Z0-9_]+[%$]");
+	Pattern COLOR_HEX     = Pattern.compile("#[a-fA-F0-9]{6}");
 	Pattern FORMAT_INDEX  = Pattern.compile("[{%](\\d+?)[}%]");
-	Pattern literal       = Pattern.compile("`(.+?)`");
+	Pattern LITERAL       = Pattern.compile("`(.+?)`");
+
 	Logger logger         = ChatTranslator.getInstance().logger;
 
-	default String[] translateMessages(String[] messages, String[] formats, String sourceLang, String targetLang, TranslatorBase translator) {
+	default String[] translateMessages(
+			String[] messages, String[] formats,
+			String sourceLang, String targetLang,
+			TranslatorBase translator) {
 		String[] newArray = messages.clone();
 
 		if (formats.length > 0
@@ -72,34 +77,37 @@ public interface Core {
 
 		int escapeCounter = 10;
 		for (int i = 0; i < newArray.length; i++) {
-			Matcher matcher = literal.matcher(newArray[i]);
+			Matcher matcher = LITERAL.matcher(newArray[i]);
 			while (matcher.find()) {
-//				if (!escapesList.contains(escape)) {
+				if (!escapesList.contains(matcher.group(1))) {
 					escapesList.add(matcher.group(1));
-					newArray[i] = newArray[i].replace(matcher.group(0), "[" + Str.rjust(Integer.toHexString(escapeCounter), 2, "0") + "]");
+					newArray[i] = newArray[i].replace(matcher.group(0),
+						"\\[" + Str.rjust(Integer.toHexString(escapeCounter), 2, "0") + "\\]");
 					escapeCounter++;
-//				}
+				}
 			}
 		}
 
 		return newArray;
 	}
 
-	default String[] replaceEscapes(String[] messages, ArrayList<String> escapes) {
+	default String[] revertEscapes(String[] messages, ArrayList<String> escapes) {
+		String[] newArray = messages.clone();
+
 		int i = 10;
 		for (String escape : escapes) {
-			messages = replaceArray(messages, "[" + Str.rjust(Integer.toHexString(i), 2, "0") + "]", escape); 
+			newArray = replaceArray(newArray, "\\[" + Str.rjust(Integer.toHexString(i), 2, "0") + "\\]", escape);
 			i++;
 		}
 
-		return messages;
+		return newArray;
 	}
 
 	default String[] replaceArray(String[] array, String target, String replacement, int max) {
 		String[] newArray = array.clone();
 
 		for (int i = 0; i < max; i++)
-			newArray[i] = newArray[i].replace(target, replacement);
+			newArray[i] = newArray[i].replaceAll(target, replacement);
 
 		return newArray;
 	}
@@ -118,7 +126,7 @@ public interface Core {
 		for (int i = 0; i < newArray.length; i++) {
 			String input = newArray[i];
 
-			Matcher matcher = sub_variables.matcher(input);
+			Matcher matcher = SUB_VARIABLES.matcher(input);
 			while (matcher.find())
 				input = input.replace(matcher.group(0), PlaceholderAPI.setPlaceholders(player, "%" + matcher.group(1) + "%"));
 
@@ -133,7 +141,7 @@ public interface Core {
 
 		for (int i = 0; i < newArray.length; i++) {
 			Matcher matcher;
-			while ((matcher = variables.matcher(newArray[i])).find())
+			while ((matcher = VARIABLES.matcher(newArray[i])).find())
 				newArray[i] = newArray[i].replace(matcher.group(0), matcher.group(0).toLowerCase());
 		}
 
@@ -141,12 +149,6 @@ public interface Core {
 	}
 
 	default String[] convertColor(String... inputs) {
-/*
-		if (util.getMinecraftVersion() >= 16.0) { // 1.16.0
-			text = Utils.convertColorToJ16(text);
-		}
-*/
-
 		String[] newArray = inputs.clone();
 
 		for (int i = 0; i < newArray.length; i++)
@@ -161,6 +163,7 @@ public interface Core {
 		for (int i = 0; i < newArray.length; i++) {
 			String input = newArray[i];
 
+
 			Matcher matcher = FORMAT_INDEX.matcher(input);
 			while (matcher.find()) {
 				try {
@@ -170,7 +173,7 @@ public interface Core {
 					);
 
 				} catch (IndexOutOfBoundsException e) {
-					logger.debug(e.toString());
+					logger.debug("IndexOutOfBoundsException: %s", e.toString());
 				}
 			}
 
@@ -181,22 +184,44 @@ public interface Core {
 	}
 
 	default String[] preFormatIndexes(String... formats) {
-		String[] newArray = formats.clone();
+		return replaceArray(formats, FORMAT_INDEX.pattern(), "%$1%");
+	}
 
-		for (int i = 0; i < newArray.length; i++) {
-			Matcher matcher = FORMAT_INDEX.matcher(newArray[i]);
-			while (matcher.find())
-				newArray[i] = newArray[i].replace(
-					matcher.group(0),
-					"%" + matcher.group(1) + "%"
-				);
+	default String[] escapePapiVariables(String... formats) {
+		return replaceArray(formats, "[%$].+[%$]", "`$0`");
+	}
+
+	default void replaceFormats(String oldStr, String newStr, String[]... formats) {
+		if (newStr == null)
+			return;
+
+		for (String[] format : formats) {
+			String[] newFormat = replaceArray(format, oldStr, newStr);
+			System.arraycopy(
+				newFormat, 0,
+				format, 0,
+				format.length
+			);
 		}
+	}
 
-		return newArray;
+	default void replaceFormats(String oldStr, String[] newStr, String[]... formats) {
+		if (newStr == null)
+			return;
+
+		for (String[] format : formats) {
+			String[] newFormat = replaceArray(format, oldStr, newStr);
+			System.arraycopy(
+				newFormat, 0,
+				format, 0,
+				format.length
+			);
+		}
 	}
 
 	default Message formatMessage(Message original) {
-		Message from              = original.clone(); // se clona para evitar sobreescrituras en el evento.
+//		Se clona para evitar sobre-escrituras en el evento.
+		Message from              = original.clone();
 		CommandSender from_player = from.getSender();
 
 		String[] from_tool_tips_formats = from.getToolTips().getFormats();
@@ -222,8 +247,9 @@ public interface Core {
 		String to_lang_target = to.getLangTarget().getCode();
 
 
-		Boolean color = from.isForceColor();
-		Boolean papi  = from.getFormatPAPI();
+		byte is_color          = from.isColor();
+		boolean is_papi        = from.getFormatPAPI();
+
 
 		ArrayList<String> from_tool_tips_escapes = new ArrayList<>();
 		ArrayList<String> from_messages_escapes  = new ArrayList<>();
@@ -235,81 +261,155 @@ public interface Core {
 		to_tool_tips_formats   = convertVariablesToLowercase(to_tool_tips_formats);
 		to_messages_formats    = convertVariablesToLowercase(to_messages_formats);
 
-        if (from_lang_source != null) {
-	        from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_lang_source%", from_lang_source);
-	        from_messages_formats  = replaceArray(from_messages_formats, "%ct_lang_source%", from_lang_source);
-	        to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_lang_source%", from_lang_source);
-	        to_messages_formats    = replaceArray(to_messages_formats, "%ct_lang_source%", from_lang_source);
-        }
+		from_tool_tips_texts = escapePapiVariables(from_tool_tips_texts);
+		from_messages_texts  = escapePapiVariables(from_messages_texts);
+		to_tool_tips_texts   = escapePapiVariables(to_tool_tips_texts);
+		to_messages_texts    = escapePapiVariables(to_messages_texts);
 
-        if (from_lang_target != null) {
-	        from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_lang_target%", from_lang_target);
-	        from_messages_formats  = replaceArray(from_messages_formats, "%ct_lang_target%", from_lang_target);
-            to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_lang_target%", from_lang_target);
-	        to_messages_formats    = replaceArray(to_messages_formats, "%ct_lang_target%", from_lang_target);
-        }
+		from_tool_tips_texts = processEscapes(from_tool_tips_texts, from_tool_tips_escapes);
+		from_messages_texts  = processEscapes(from_messages_texts, from_messages_escapes);
+		to_tool_tips_texts   = processEscapes(to_tool_tips_texts, to_tool_tips_escapes);
+		to_messages_texts    = processEscapes(to_messages_texts, to_messages_escapes);
 
-        if (to_lang_source != null) {
-	        from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_lang_source4", to_lang_source);
-	        from_messages_formats  = replaceArray(from_messages_formats, "$ct_lang_source$", to_lang_source);
-	        to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_lang_source$", to_lang_source);
-	        to_messages_formats    = replaceArray(to_messages_formats, "$ct_lang_source$", to_lang_source);
-        }
+		replaceFormats(
+			"\\%ct_lang_source\\%", from_lang_source,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
 
-        if (to_lang_target != null) {
-	        from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_lang_target$", to_lang_target);
-	        from_messages_formats  = replaceArray(from_messages_formats, "$ct_lang_target$", to_lang_target);
-	        to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_lang_target$", to_lang_target);
-	        to_messages_formats    = replaceArray(to_messages_formats, "$ct_lang_target$", to_lang_target);
-        }
+		replaceFormats(
+			"\\$ct_lang_source\\$", to_lang_source,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
 
-		if (from.getSenderName() != null) {
-			from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%player_name%", from.getSenderName());
-			from_messages_formats  = replaceArray(from_messages_formats, "%player_name%", from.getSenderName());
-			to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%player_name%", from.getSenderName());
-			to_messages_formats    = replaceArray(to_messages_formats, "%player_name%", from.getSenderName());
+		replaceFormats(
+			"\\%ct_lang_target\\%", from_lang_target,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\$ct_lang_target\\$", to_lang_target,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\%player_name\\%", from.getSenderName(),
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\$player_name\\$", to.getSenderName(),
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		if (InternetCheckerAsync.isInternetAvailable()) {
+			TranslatorBase translator = ChatTranslatorAPI.getInstance().getTranslator();
+			from_tool_tips_texts = translateMessages(from_tool_tips_texts, from_tool_tips_formats, from_lang_source, from_lang_target, translator);
+			from_messages_texts  = translateMessages(from_messages_texts, from_messages_formats, from_lang_source, from_lang_target, translator);
+			to_tool_tips_texts   = translateMessages(to_tool_tips_texts, to_tool_tips_formats, to_lang_source, to_lang_target, translator);
+			to_messages_texts    = translateMessages(to_messages_texts, to_messages_formats, to_lang_source, to_lang_target, translator);
+
+		} else {
+			from_tool_tips_formats = replaceArray(from_tool_tips_formats, "(.+)", "[!] $1");
+			from_messages_formats  = replaceArray(from_messages_formats, "(.+)", "[!] $1");
+			to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "(.+)", "[!] $1");
+			to_messages_formats    = replaceArray(to_messages_formats, "(.+)", "[!] $1");
 		}
 
-		if (to.getSenderName() != null) {
-			from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$player_name$", to.getSenderName());
-			from_messages_formats  = replaceArray(from_messages_formats, "$player_name$", to.getSenderName());
-			to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$player_name$", to.getSenderName());
-			to_messages_formats    = replaceArray(to_messages_formats, "$player_name$", to.getSenderName());
+		if (from_player != null) {
+			if (is_color == 1) {
+				from_tool_tips_texts = convertColor(from_tool_tips_texts);
+				from_messages_texts  = convertColor(from_messages_texts);
+
+			} else if (is_color == 0 && Permissions.ChatTranslator.Chat.COLOR.IF(original)) {
+				from_tool_tips_texts = convertColor(from_tool_tips_texts);
+				from_messages_texts  = convertColor(from_messages_texts);
+
+			} else if (is_color == -1) {
+				from_tool_tips_texts = util.stripColor(from_tool_tips_texts);
+				from_messages_texts  = util.stripColor(from_messages_texts);
+			}
 		}
 
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_messages%", "[00]");
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_messages$", "[01]");
-		from_messages_formats  = replaceArray(from_messages_formats, "%ct_messages%", "[00]");
-		from_messages_formats  = replaceArray(from_messages_formats, "$ct_messages$", "[01]");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_messages%", "[00]");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_messages$", "[01]");
-		to_messages_formats    = replaceArray(to_messages_formats, "%ct_messages%", "[00]");
-		to_messages_formats    = replaceArray(to_messages_formats, "$ct_messages$", "[01]");
+		if (to_player != null) {
+			if (is_color == 1) {
+				to_tool_tips_texts = convertColor(to_tool_tips_texts);
+				to_messages_texts  = convertColor(to_messages_texts);
 
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_toolTips%", "[02]");
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_toolTips$", "[03]");
-		from_messages_formats  = replaceArray(from_messages_formats, "%ct_toolTips%", "[02]");
-		from_messages_formats  = replaceArray(from_messages_formats, "$ct_toolTips$", "[03]");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_toolTips%", "[02]");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_toolTips$", "[03]");
-		to_messages_formats    = replaceArray(to_messages_formats, "%ct_toolTips%", "[02]");
-		to_messages_formats    = replaceArray(to_messages_formats, "$ct_toolTips$", "[03]");
+			} else if (is_color == 0 && Permissions.ChatTranslator.Chat.COLOR.IF(original)) {
+				to_tool_tips_texts = convertColor(to_tool_tips_texts);
+				to_messages_texts  = convertColor(to_messages_texts);
 
-		if (papi && Dependencies.PAPI.exist()) {
+			} else if (is_color == -1) {
+				to_tool_tips_texts = util.stripColor(from_tool_tips_texts);
+				to_messages_texts  = util.stripColor(from_messages_texts);
+			}
+		}
+
+		replaceFormats(
+			"\\%ct_messages\\%", from_messages_texts,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\$ct_messages\\$", to_messages_texts,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\%ct_toolTips\\%", from_tool_tips_texts,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		replaceFormats(
+			"\\$ct_toolTips\\$", to_tool_tips_texts,
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
+
+		if (is_papi && Dependencies.PAPI.exist()) {
 			Player _from_player    = (from_player instanceof Player) ? (Player) from_player : null;
-			Player _to_player      = (to_player instanceof Player)   ? (Player) to_player   : null;
+			Player _to_player      = (to_player   instanceof Player) ? (Player) to_player   : null;
 
 			from_messages_formats  = parseSubVariables(_from_player, from_messages_formats);
-			from_messages_formats  = parseSubVariables(_to_player, replaceArray(from_messages_formats, "$", "%"));
+			from_messages_formats  = parseSubVariables(_to_player, replaceArray(from_messages_formats, "\\$", "%"));
 
 			to_messages_formats    = parseSubVariables(_from_player, to_messages_formats);
-			to_messages_formats    = parseSubVariables(_to_player, replaceArray(to_messages_formats, "$", "%"));
+			to_messages_formats    = parseSubVariables(_to_player, replaceArray(to_messages_formats, "\\$", "%"));
 
 			from_tool_tips_formats = parseSubVariables(_from_player, from_tool_tips_formats);
-			from_tool_tips_formats = parseSubVariables(_to_player, replaceArray(from_tool_tips_formats, "$", "%"));
+			from_tool_tips_formats = parseSubVariables(_to_player, replaceArray(from_tool_tips_formats, "\\$", "%"));
 
 			to_tool_tips_formats   = parseSubVariables(_from_player, to_tool_tips_formats);
-			to_tool_tips_formats   = parseSubVariables(_to_player, replaceArray(to_tool_tips_formats, "$", "%"));
+			to_tool_tips_formats   = parseSubVariables(_to_player, replaceArray(to_tool_tips_formats, "\\$", "%"));
 
 		} else {
 			from_tool_tips_formats = preFormatIndexes(from_tool_tips_formats);
@@ -318,111 +418,39 @@ public interface Core {
 			to_messages_formats    = preFormatIndexes(to_messages_formats);
 		}
 
-		from_tool_tips_texts = processEscapes(from_tool_tips_texts, from_tool_tips_escapes);
-		from_messages_texts  = processEscapes(from_messages_texts, from_messages_escapes);
-		to_tool_tips_texts   = processEscapes(to_tool_tips_texts, to_tool_tips_escapes);
-		to_messages_texts    = processEscapes(to_messages_texts, to_messages_escapes);
-
-		if (InternetCheckerAsync.isInternetAvailable()) {
-			TranslatorBase translator = ChatTranslatorAPI.getInstance().getTranslator();
-			from_tool_tips_texts = translateMessages(from_tool_tips_texts, from_tool_tips_formats, from_lang_source, from_lang_target, translator);
-			from_messages_texts = translateMessages(from_messages_texts, from_messages_formats, from_lang_source, from_lang_target, translator);
-			to_tool_tips_texts = translateMessages(to_tool_tips_texts, to_tool_tips_formats, to_lang_source, to_lang_target, translator);
-			to_messages_texts = translateMessages(to_messages_texts, to_messages_formats, to_lang_source, to_lang_target, translator);
-
-		} else {
-			if (from_tool_tips_texts.length > 0) from_tool_tips_texts[0] = "[!] " + from_tool_tips_texts[0];
-			if (from_messages_texts.length > 0) from_messages_texts[0] = "[!] " + from_messages_texts[0];
-			if (to_tool_tips_texts.length > 0) to_tool_tips_texts[0] = "[!] " + to_tool_tips_texts[0];
-			if (to_messages_texts.length > 0) to_messages_texts[0] = "[!] " + to_messages_texts[0];
-		}
-
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[00]", "%ct_messages%");
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[01]", "$ct_messages$");
-		from_messages_formats  = replaceArray(from_messages_formats, "[00]", "%ct_messages%");
-		from_messages_formats  = replaceArray(from_messages_formats, "[01]", "$ct_messages$");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[00]", "%ct_messages%");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[01]", "$ct_messages$");
-		to_messages_formats    = replaceArray(to_messages_formats, "[00]", "%ct_messages%");
-		to_messages_formats    = replaceArray(to_messages_formats, "[01]", "$ct_messages$");
-
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[02]", "%ct_toolTips%");
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "[03]", "$ct_toolTips$");
-		from_messages_formats  = replaceArray(from_messages_formats, "[02]", "%ct_toolTips%");
-		from_messages_formats  = replaceArray(from_messages_formats, "[03]", "$ct_toolTips$");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[02]", "%ct_toolTips%");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "[03]", "$ct_toolTips$");
-		to_messages_formats    = replaceArray(to_messages_formats, "[02]", "%ct_toolTips%");
-		to_messages_formats    = replaceArray(to_messages_formats, "[03]", "$ct_toolTips$");
-
-		from_tool_tips_texts = replaceEscapes(from_tool_tips_texts, from_tool_tips_escapes);
-		from_messages_texts  = replaceEscapes(from_messages_texts, from_messages_escapes);
-		to_tool_tips_texts   = replaceEscapes(to_tool_tips_texts, to_tool_tips_escapes);
-		to_messages_texts    = replaceEscapes(to_messages_texts, to_messages_escapes);
-
 		from_tool_tips_formats = processFormatIndex(from_tool_tips_formats, from_tool_tips_texts);
 		from_messages_formats  = processFormatIndex(from_messages_formats, from_messages_texts);
 		to_tool_tips_formats   = processFormatIndex(to_tool_tips_formats, to_tool_tips_texts);
 		to_messages_formats    = processFormatIndex(to_messages_formats, to_messages_texts);
-
-		if (from_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original))) {
-			from_tool_tips_texts = convertColor(from_tool_tips_texts);
-			from_messages_texts  = convertColor(from_messages_texts);
-		}
-
-		if (to_player != null && (color || Permissions.ChatTranslator.Chat.COLOR.IF(original))) {
-			to_tool_tips_texts = convertColor(to_tool_tips_texts);
-			to_messages_texts  = convertColor(to_messages_texts);
-		}
 
 		from_tool_tips_formats  = convertColor(from_tool_tips_formats);
 		from_messages_formats   = convertColor(from_messages_formats);
 		to_tool_tips_formats    = convertColor(to_tool_tips_formats);
 		to_messages_formats     = convertColor(to_messages_formats);
 
-
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_messages%", from_messages_texts);
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_messages$", to_messages_texts);
-
-		from_messages_formats  = replaceArray(from_messages_formats, "%ct_messages%", from_messages_texts);
-		from_messages_formats  = replaceArray(from_messages_formats, "$ct_messages$", to_messages_texts);
-
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_messages%", from_messages_texts);
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_messages$", to_messages_texts);
-
-		to_messages_formats    = replaceArray(to_messages_formats, "%ct_messages%", from_messages_texts);
-		to_messages_formats    = replaceArray(to_messages_formats, "$ct_messages$", to_messages_texts);
-
-
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "%ct_toolTips%", from_tool_tips_texts);
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "$ct_toolTips$", to_tool_tips_texts);
-
-		from_messages_formats  = replaceArray(from_messages_formats, "%ct_toolTips%", from_tool_tips_texts);
-		from_messages_formats  = replaceArray(from_messages_formats, "$ct_toolTips$", to_tool_tips_texts);
-
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "%ct_toolTips%", from_tool_tips_texts);
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "$ct_toolTips$", to_tool_tips_texts);
-
-		to_messages_formats    = replaceArray(to_messages_formats, "%ct_toolTips%", from_tool_tips_texts);
-		to_messages_formats    = replaceArray(to_messages_formats, "$ct_toolTips$", to_tool_tips_texts);
-
-
-		from_messages_formats = processExpand(from_messages_formats);
-		to_messages_formats   = processExpand(to_messages_formats);
-
-		from_tool_tips_formats = replaceArray(from_tool_tips_formats, "\\t", "\t");
-		from_messages_formats  = replaceArray(from_messages_formats, "\\t", "\t");
-		to_tool_tips_formats   = replaceArray(to_tool_tips_formats, "\\t", "\t");
-		to_messages_formats    = replaceArray(to_messages_formats, "\\t", "\t");
-
+		replaceFormats(
+			"\\\\t", "\t",
+			from_tool_tips_formats,
+			from_messages_formats,
+			to_tool_tips_formats,
+			to_messages_formats
+		);
 
 		// En caso de no haber textos originales, esto es necesario para mostrarse por API.Messages.showMessage.
 		if (from_messages_formats.length > 0
-				&& !(from_messages_formats[0].equals("%ct_messages%") || from_messages_formats[0].equals("{0}"))
+				&& !(from_messages_formats[0].endsWith("%ct_messages%") || from_messages_formats[0].endsWith("%0%"))
 				&& from_messages_texts.length == 0) {
 
 			from_messages_texts = new String[] { "\t" };
 		}
+
+		from_tool_tips_formats = revertEscapes(from_tool_tips_formats, from_tool_tips_escapes);
+		from_messages_formats  = revertEscapes(from_messages_formats, from_messages_escapes);
+		to_tool_tips_formats   = revertEscapes(to_tool_tips_formats, to_tool_tips_escapes);
+		to_messages_formats    = revertEscapes(to_messages_formats, to_messages_escapes);
+
+		from_messages_formats = processExpand(from_messages_formats);
+		to_messages_formats   = processExpand(to_messages_formats);
 
 		from.getToolTips().setFormats(from_tool_tips_formats);
 		from.getMessages().setFormats(from_messages_formats);
