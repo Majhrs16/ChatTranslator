@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
@@ -23,12 +24,8 @@ import org.bukkit.event.Event;
 import org.bukkit.Bukkit;
 
 import java.util.function.UnaryOperator;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-
-import java.lang.reflect.Method;
 
 public class Message extends Event implements Cancellable {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -38,20 +35,21 @@ public class Message extends Event implements Cancellable {
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	private Message to;
-	private CommandSender sender;
 	private String name;
-	private SenderTypes sender_type;
+	private CommandSender sender;
+	private SenderType sender_type;
+	private TranslatorBase.LanguagesBase lang_source;
+	private TranslatorBase.LanguagesBase lang_target;
+
+	private byte is_color          = 1; // -1 = Disable color, 0 color by permission, 1 force color;
+	private boolean is_format_papi = true;
+	private boolean is_cancelled   = false;
+	private String last_format     = "UNKNOWN";
 	private Formats messages       = new Formats();
 	private Formats tool_tips      = new Formats();
 	private String[] sounds        = new String[0];
-	private boolean is_cancelled   = false;
-	private TranslatorBase.LanguagesBase lang_source;
-	private TranslatorBase.LanguagesBase lang_target;
-	private Boolean is_force_color = true;
-	private Boolean is_format_papi = true;
-	private String last_format     = "UNKNOWN";
 
-	private enum SenderTypes {
+	private enum SenderType {
 		UNKNOWN,
 		CONSOLE,
 		PLAYER
@@ -62,7 +60,7 @@ public class Message extends Event implements Cancellable {
 		setSender(term);
 		if (term == null) { // 1.5.2 bug!
 			setSenderName("CONSOLE");
-			setSenderType(SenderTypes.CONSOLE);
+			setSenderType(SenderType.CONSOLE);
 		}
 
 		getMessages().setFormats("%ct_messages%");
@@ -108,10 +106,10 @@ public class Message extends Event implements Cancellable {
 		setSenderName(sender == null ? "UNKNOWN" : sender.getName());
 
 		if (sender == null)
-			setSenderType(SenderTypes.UNKNOWN);
+			setSenderType(SenderType.UNKNOWN);
 
 		else
-			setSenderType(sender instanceof Player ? SenderTypes.PLAYER : SenderTypes.CONSOLE);
+			setSenderType(sender instanceof Player ? SenderType.PLAYER : SenderType.CONSOLE);
 
 		return this;
 	}
@@ -123,7 +121,7 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
-	private Message setSenderType(SenderTypes type) {
+	private Message setSenderType(SenderType type) {
 		this.sender_type = type;
 		return this;
 	}
@@ -174,13 +172,18 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
-	public Message setFormatPAPI(Boolean formatPAPI) {
+	public Message setFormatPAPI(boolean formatPAPI) {
 		this.is_format_papi = formatPAPI;
 		return this;
 	}
 
-	public Message setForceColor(Boolean color) {
-		this.is_force_color = color;
+	public Message setColor(byte color) {
+		this.is_color = color;
+		return this;
+	}
+
+	public Message setColor(@Range(from = -1, to = 1) int color) {
+		this.is_color = (byte) color;
 		return this;
 	}
 
@@ -226,15 +229,16 @@ public class Message extends Event implements Cancellable {
 	public TranslatorBase.LanguagesBase getLangSource() { return lang_source; }
 	public TranslatorBase.LanguagesBase getLangTarget() { return lang_target; }
 
-	public Boolean getFormatPAPI()    { return is_format_papi; }
-	public Boolean isForceColor()     { return is_force_color; }
+	public boolean getFormatPAPI()    { return is_format_papi; }
+	public byte isColor()     { return is_color; }
 	public String getLastFormatPath() { return last_format; }
 
 	public void silent() {}
 
 	public Message clone() {
 		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
-			Message to = new Message(util.getNativeLang(), plugin.storage.getDefaultLang()); // BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
+//			BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
+			Message to = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
 				if (getTo() != null) {
 					to.setSender(getTo().getSender());
 					to.setSenderName(getTo().getSenderName());
@@ -246,9 +250,9 @@ public class Message extends Event implements Cancellable {
 					to.setCancelledThis(getTo().isCancelled());
 					to.setLangSource(getTo().getLangSource());
 					to.setLangTarget(getTo().getLangTarget());
-					to.setForceColor(getTo().isForceColor());
+					to.setColor(getTo().isColor());
 					to.setFormatPAPI(getTo().getFormatPAPI());
-					to.last_format = getTo().last_format;
+					to.last_format = getTo().getLastFormatPath();
 				}
 			from.setTo(to);
 
@@ -262,9 +266,9 @@ public class Message extends Event implements Cancellable {
 			from.setCancelledThis(isCancelled());
 			from.setLangSource(getLangSource());
 			from.setLangTarget(getLangTarget());
-			from.setForceColor(isForceColor());
+			from.setColor(isColor());
 			from.setFormatPAPI(getFormatPAPI());
-			from.last_format = last_format;
+			from.last_format = getLastFormatPath();
 
 		return from;
 	}
@@ -288,7 +292,7 @@ public class Message extends Event implements Cancellable {
 			from.put("isCancelled", isCancelled());
 			from.put("langSource", getLangSource());
 			from.put("langTarget", getLangTarget());
-			from.put("isColor", isForceColor());
+			from.put("isColor", isColor());
 			from.put("isPAPI", getFormatPAPI());
 
 		JSONObject to = new JSONObject();
@@ -309,7 +313,7 @@ public class Message extends Event implements Cancellable {
 				to.put("isCancelled", getTo().isCancelled());
 				to.put("langSource", getTo().getLangSource());
 				to.put("langTarget", getTo().getLangTarget());
-				to.put("isColor", getTo().isForceColor());
+				to.put("isColor", getTo().isColor());
 				to.put("isPAPI", getTo().getFormatPAPI());
 			}
 
@@ -339,11 +343,11 @@ public class Message extends Event implements Cancellable {
 					from.getToolTips().setFormats((String[]) formats.toArray());
 
 					from.setSounds((String[]) fromJson.get("sounds"));
-					from.setCancelledThis((Boolean) fromJson.get("isCancelled"));
+					from.setCancelledThis((boolean) fromJson.get("isCancelled"));
 					from.setLangSource((String) fromJson.get("langSource"));
 					from.setLangTarget((String) fromJson.get("langTarget"));
-					from.setForceColor((Boolean) fromJson.get("isColor"));
-					from.setFormatPAPI((Boolean) fromJson.get("isPAPI"));
+					from.setColor((byte) fromJson.get("isColor"));
+					from.setFormatPAPI((boolean) fromJson.get("isPAPI"));
 
 			JSONObject toJson = (JSONObject) json.get("to");
 				Message to = new Message();
@@ -359,11 +363,11 @@ public class Message extends Event implements Cancellable {
 						from.getToolTips().setFormats((String[]) formats.toArray());
 
 						to.setSounds((String[]) toJson.get("sounds"));
-						to.setCancelledThis((Boolean) toJson.get("isCancelled"));
+						to.setCancelledThis((boolean) toJson.get("isCancelled"));
 						to.setLangSource((String) toJson.get("langSource"));
 						to.setLangTarget((String) toJson.get("langTarget"));
-						to.setForceColor((Boolean) toJson.get("isColor"));
-						to.setFormatPAPI((Boolean) toJson.get("isPAPI"));
+						to.setColor((byte) toJson.get("isColor"));
+						to.setFormatPAPI((boolean) toJson.get("isPAPI"));
 					}
 				from.setTo(to);
 

@@ -208,7 +208,7 @@ public class Chat extends ListenerAdapter {
 			if (memberUuid != null)
 				DC.setLangTarget(API.getLang(AccountManager.getOfflinePlayer(memberUuid)));
 		}
-		DC.setForceColor(false);
+		DC.setColor(-1);
 
 		if (args.length > 1) {
 			if (args[1].equals("lang")) { // !cht lang CODE

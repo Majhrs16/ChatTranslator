@@ -33,7 +33,7 @@ public class Commands extends ListenerAdapter {
 			Member member = event.getMember();
 
 			me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
-			from.setForceColor(false);
+			from.setColor(-1);
 
 			if (member != null) {
 				UUID authorUuid = AccountManager.getMinecraft(message.getAuthor().getId());
