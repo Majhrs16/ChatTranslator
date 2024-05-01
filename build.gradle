@@ -63,5 +63,5 @@ processResources {
 }
 
 shadowJar {
-    archiveFileName = "${project.name} - ${project.cht_version}.jar"
+    archiveFileName = "${project.name}-${project.cht_version}.jar"
 }
