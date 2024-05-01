@@ -30,6 +30,7 @@ public interface Messages {
 				|| original.getLangTarget().getCode().equals("DISABLED")
 				|| formatted.getMessages().getFormats().length == 0
 				|| formatted.getMessages().getFormat(0).isEmpty()
+				|| formatted.getMessages().getFormat(0).equals("[!] ")
 				|| formatted.getMessages().getTexts().length == 0) {
 			return;
 		}
