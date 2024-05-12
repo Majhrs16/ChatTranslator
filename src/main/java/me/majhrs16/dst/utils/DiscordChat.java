@@ -35,7 +35,7 @@ public class DiscordChat {
 					action.accept(channel);
 					oks++;
 
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					plugin.logger.error(e.toString());
 				}
 			}
