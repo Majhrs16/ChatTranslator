@@ -263,21 +263,21 @@ public class ChatTranslator extends PluginBase {
 			from.format("discord-translator.load.done.console");
 
 		} catch (InvalidTokenException e) {
-			discordTranslator.disconnect();
+			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
 			from.format("discord-translator.load.error.token",
 				format -> format.replace("%reason%", e.toString())
 			);
 
 		} catch (IllegalStateException e) {
-			discordTranslator.disconnect();
+			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
 			from.format("discord-translator.load.error.intents",
 				format -> format.replace("%reason%", e.toString())
 			);
 
-		} catch (Exception e) {
-			discordTranslator.disconnect();
+		} catch (Throwable e) {
+			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
 			from.format("discord-translator.load.error",
 				format -> format.replace("%reason%", e.toString())
@@ -314,7 +314,7 @@ public class ChatTranslator extends PluginBase {
 
 			from.format("discord-translator.unload.done.console");
 
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			from.format("discord-translator.unload.error",
 				format -> format.replace("%reason%", e.toString())
 			);
