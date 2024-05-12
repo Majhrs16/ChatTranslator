@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.minecraft.BukkitUtils;
@@ -18,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
-import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
@@ -36,13 +36,10 @@ public class Chat extends ListenerAdapter {
 
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-		if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF())
+		if (DiscordTranslator.isDisabled())
 			return;
 
 		Message message = event.getMessage();
-
-		if (message.getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
-			return;
 
 		FileConfiguration config = plugin.config.get();
 
@@ -76,12 +73,24 @@ public class Chat extends ListenerAdapter {
 			return;
 
 		me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
-		from.setSenderName(message.getAuthor().getName());
+		from.setSenderName(event.getMessage().getAuthor().getName());
 		from.getMessages().setFormats("%player_name%: %ct_messages%");
 		from.getMessages().setTexts(event.getMessage().getContentDisplay());
 
-		UUID from_uuid = AccountManager.getMinecraft(message.getAuthor().getId());
-		UUID to_uuid   = AccountManager.getMinecraft(event.getMessage().getAuthor().getId());
+		UUID from_uuid = AccountManager.getMinecraft(event.getMessage().getAuthor().getId());
+		UUID to_uuid   = AccountManager.getMinecraft(message.getAuthor().getId());
+
+		if (to_uuid == null) {
+			List<User> users = DiscordTranslator.getJDA().getUsersByName(
+				message.getContentRaw().split(":")[0],
+				true
+			);
+
+			if (users.isEmpty())
+				return;
+
+			to_uuid = AccountManager.getMinecraft(users.get(0).getId());
+		}
 
 		if (from_uuid == null || to_uuid == null)
 			return;
@@ -92,27 +101,39 @@ public class Chat extends ListenerAdapter {
 		if (from_player == null || to_player == null)
 			return;
 
-		from.setLangSource(API.getLang(from_player));
-		from.setLangTarget(API.getLang(to_player));
+		TranslatorBase.LanguagesBase from_lang = API.getLang(from_player);
+		TranslatorBase.LanguagesBase to_lang   = API.getLang(to_player);
+
+		from.setLangSource(from_lang);
+		from.setLangTarget(to_lang);
 
 		message.reply(API.formatMessage(from).getMessages().getFormat(0)).queue();
 		event.getMessage().delete().queue();
 	}
 
 	private void handleChatMessage(MessageReceivedEvent event) {
+		if (event.getMessage().getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
+			return;
+
 		Message message = event.getMessage();
 
 		List<String> texts = new ArrayList<>();
 		List<String> tool_tips = new ArrayList<>();
-		texts.add(message.getContentDisplay());
 
-		if (message.isWebhookMessage())
+		if (message.getContentRaw().isEmpty()) {
 			for (MessageEmbed embed : message.getEmbeds()) {
-				texts.add(embed.getTitle());
-				tool_tips.add(embed.getDescription());
+				if (embed.getTitle() != null)
+					texts.add(embed.getTitle());
+
+				if (embed.getDescription() != null)
+					tool_tips.add(embed.getDescription());
 			}
 
-		String[] message_texts = texts.toArray(new String[0]);
+		} else {
+			texts.add(message.getContentDisplay());
+		}
+
+		String[] message_texts  = texts.toArray(new String[0]);
 		String[] tool_tip_texts = tool_tips.toArray(new String[0]);
 
 		UUID authorUuid      = AccountManager.getMinecraft(message.getAuthor().getId());
@@ -165,10 +186,16 @@ public class Chat extends ListenerAdapter {
 		if (event.getMessage().getAuthor().isBot())
 			return;
 
-		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), event.getMessage().getContentRaw()));
+		Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(
+			Bukkit.getConsoleSender(),
+			event.getMessage().getContentRaw()
+		));
 	}
 
 	private void handlePrivateMessage(MessageReceivedEvent event) {
+		if (event.getMessage().getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
+			return;
+
 		Message message = event.getMessage();
 
 		String key = message.getContentRaw();
@@ -197,6 +224,9 @@ public class Chat extends ListenerAdapter {
 	}
 
 	private void handleChtCommand(MessageReceivedEvent event) {
+		if (event.getMessage().getAuthor().equals(DiscordTranslator.getJDA().getSelfUser()))
+			return;
+
 		Message message = event.getMessage();
 
 		String[] args = message.getContentRaw().split(" ");
