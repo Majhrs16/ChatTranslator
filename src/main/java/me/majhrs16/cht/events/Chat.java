@@ -52,14 +52,6 @@ public class Chat implements Listener {
 			null // null = chat normal por defecto.
 		);
 
-		Message mention_model = util.createChat(
-			event.getPlayer(),
-			new String[] { event.getMessage() },
-			from_lang,
-			from_lang,
-			"mention"
-		);
-
 		List<Player> players = new ArrayList<>();
 		Matcher matcher      = mentions.matcher(event.getMessage());
 		while (matcher.find()) {
@@ -77,14 +69,14 @@ public class Chat implements Listener {
 			froms.add(console);
 
 			API.broadcast(froms, from -> {
-				if (from.getTo().getSender() instanceof Player && players.contains((Player) from.getTo().getSender()))
-					return;
+				if (from.getTo().getSender() instanceof Player && players.contains((Player) from.getTo().getSender())) {
+					from.format("from_mention");
+					from.getTo().format("to_mention");
+				}
 
 				ChatLimiter.add(from);
 			});
 		});
-
-		API.broadcast(mention_model, players.toArray(new Player[0]), API::broadcast);
 
 		if (Config.NativeChat.CLEAR.IF())
 			event.getRecipients().clear();
