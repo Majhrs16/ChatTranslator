@@ -1,6 +1,5 @@
 package me.majhrs16.dst.events;
 
-import me.majhrs16.cht.util.cache.Config;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,6 +14,8 @@ import me.majhrs16.cht.util.util;
 import me.majhrs16.dst.utils.AccountManager;
 import org.jetbrains.annotations.NotNull;
 
+import me.majhrs16.dst.DiscordTranslator;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class Commands extends ListenerAdapter {
 
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-		if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF())
+		if (DiscordTranslator.isDisabled())
 			return;
 
 		if (event.getName().equals("Translate")) {
