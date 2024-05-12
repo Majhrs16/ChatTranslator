@@ -81,7 +81,7 @@ public interface Core {
 				if (!escapesList.contains(matcher.group(1))) {
 					escapesList.add(matcher.group(1));
 					newArray[i] = newArray[i].replace(matcher.group(0),
-						"\\[" + Str.rjust(Integer.toHexString(escapeCounter), 2, "0") + "\\]");
+						"[" + Str.rjust(Integer.toHexString(escapeCounter), 2, "0") + "]");
 					escapeCounter++;
 				}
 			}
@@ -95,7 +95,7 @@ public interface Core {
 
 		int i = 10;
 		for (String escape : escapes) {
-			newArray = replaceArray(newArray, "\\[" + Str.rjust(Integer.toHexString(i), 2, "0") + "\\]", escape);
+			newArray = replaceArray(newArray, "\\[" + Str.rjust(Integer.toHexString(i), 2, "0") + "]", escape);
 			i++;
 		}
 
