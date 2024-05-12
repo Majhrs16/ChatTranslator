@@ -3,7 +3,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group   = project.name
+group   = "me.majhrs16"
 version = project.version
 
 compileJava.options.encoding = 'UTF-8'
