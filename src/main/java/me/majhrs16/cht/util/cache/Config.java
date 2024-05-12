@@ -43,8 +43,9 @@ public enum Config {
     }
 
     public enum TranslateOthers {
-        DISCORD	("auto-translate-others.discord"),
-        ACCESS	("auto-translate-others.access");
+        DISCORD_SYNC	("auto-translate-others.discord-sync"),
+        DISCORD			("auto-translate-others.discord"),
+        ACCESS			("auto-translate-others.access");
 
         private final String path;
 
@@ -62,7 +63,7 @@ public enum Config {
 
         public enum Signs {
             ENABLE  ("auto-translate-others.signs.enable"),
-            WRAP  ("auto-translate-others.signs.enable");
+            WRAP  ("auto-translate-others.signs.wrap-text");
 
             private final String path;
 
