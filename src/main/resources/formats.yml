@@ -486,6 +486,16 @@ discord-translator:
         formats:
           - "{0} %lang%"
 
+  sync:
+    error:
+      messages:
+        texts:
+          - "Detectado sintaxis invalida en"
+          - "Linea"
+
+        formats:
+          - "&c{0} &bconfig&f.&bdiscord&f.&bsync&f, &e{1}&f: &b%line%&f."
+
 storage:
   error:
     write:
@@ -688,18 +698,19 @@ commands:
         from:
           messages:
             texts:
-              - "&f'&b%from_player%&f' &7ha cambiado el idioma de &f'&b`%to_player%`&f'&7 a &b%lang%&f."
+              - "ha cambiado el idioma de"
+              - "a"
 
             formats:
-              - "{0}"
+              - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
 
         to:
-          messages:
-            texts:
-              - "&f'&b%from_player%&f' &7ha cambiado el idioma de &f'&b`%to_player%`&f'&7 a &b%lang%&f."
+          texts:
+            - "ha cambiado el idioma de"
+            - "a"
 
-            formats:
-              - "{0}"
+          formats:
+            - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
 
   toggler:
     toggleOffPlayer:
