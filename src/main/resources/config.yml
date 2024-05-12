@@ -1,9 +1,10 @@
 auto-translate-others:
+  discord-sync: true
   discord: false
   access: true
   signs:
     enable: true
-    wrapText: false
+    wrap-text: false
 
 show-native-chat:
   cancel-event: true
@@ -18,7 +19,7 @@ storage:
   password: password
 
 discord:
-  bot-token: ''
+  bot-token: '<Your Bot Token>'
   channels:
     chat:
       - "<Public channel ID>"
@@ -34,11 +35,9 @@ discord:
       - "<Public channel ID>"
 
   sync:
-    permissions:
-      "<RoleID>": "DiscordTranslator.sync.test1"
-
-    roles:
-      "<RoleID>": "DiscordTranslator.sync.test2"
+    - "<RoleID>   <-  <PermissionID>"
+    - "<RoleID>    -> DiscordTranslator.sync.new"
+    - "0123456789 <-> DiscordTranslator.sync.bidirectional"
 
 spam:
   max-ticks: 60
