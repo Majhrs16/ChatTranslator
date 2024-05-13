@@ -8,12 +8,13 @@ import me.majhrs16.dst.DiscordTranslator;
 
 import net.dv8tion.jda.api.entities.User;
 
+import java.security.SecureRandom;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 import java.util.Map;
 
@@ -44,10 +45,10 @@ public class AccountManager {
 		if (util.getMinecraftVersion() >= 7.2)
 			return Bukkit.getOfflinePlayer(uuid);
 
-		for (OfflinePlayer offplayer : Bukkit.getOfflinePlayers()) {
-			Player player = offplayer.getPlayer();
+		for (OfflinePlayer off_player : Bukkit.getOfflinePlayers()) {
+			Player player = off_player.getPlayer();
 			if (player != null && player.getUniqueId().equals(uuid))
-				return offplayer;
+				return off_player;
 		}
 
 		return null;
@@ -74,7 +75,7 @@ public class AccountManager {
 		Integer key = null;
 
 		while (key == null || linking.containsKey(key.toString()))
-			key = new Random().nextInt(100_000); // 99_999
+			key = new SecureRandom().nextInt(100_000); // 99_999
 		
 		return key;
 	}
