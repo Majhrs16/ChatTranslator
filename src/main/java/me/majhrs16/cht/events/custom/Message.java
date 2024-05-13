@@ -379,8 +379,16 @@ public class Message extends Event implements Cancellable {
 		}
 	}
 
+	public boolean isEmpty(Message compareWith) {
+		return getMessages().getFormats().length     == 0
+				&& getMessages().getTexts().length   == 0
+				&& getToolTips().getFormats().length == 0
+				&& getToolTips().getTexts().length   == 0
+				|| this.equals(compareWith);
+	}
+
 	public boolean isEmpty() {
-		return this.equals(new Message());
+		return isEmpty(new Message());
 	}
 
 	public UUID getUUID() {
