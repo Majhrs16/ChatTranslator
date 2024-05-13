@@ -42,7 +42,7 @@ public interface Messages {
 			double version = util.getMinecraftVersion();
 
 			try {
-				if (version > 7.9) {
+				if (version > 7.9) { // 1.7.10+
 					NewMessages.J7_J20(original, formatted);
 
 				} else if (version >= 7.5) { // 1.7.5 - 1.7.8 / 1.7.9
