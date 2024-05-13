@@ -105,7 +105,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 			StandardEvaluationContext context = new StandardEvaluationContext();
 				context.setVariable("from", from);
 				context.setVariable("to", from.getTo());
-			result = new ExpressionExecutor().invoke(context, path);
+			result = ExpressionExecutor.invoke(context, path);
 
 		} catch (Exception e) {
 			plugin.logger.error(e.toString());
