@@ -73,6 +73,7 @@ from:
 ```
 
 ### Chat al estilo clasico!
+
 ```yaml
 from:
   messages:
@@ -90,17 +91,14 @@ to:
 ```
 
 ### Soporte parcial para otros plugins de chat.
+Para este ejemplo se requiere PlaceholderAPI.
 
 ```yaml
 # FORMATS.yml
 to:
-  sourceLang: es
   messages:
-    texts:
-    - Traduccion
-
     formats:
-    - '&e[&6{0}&e]'
+    - '&e[&6%cot_translate; es; %ct_lang_target%; Traduccion%&e]'
     - ''
 
   toolTips:
