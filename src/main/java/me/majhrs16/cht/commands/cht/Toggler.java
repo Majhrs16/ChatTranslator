@@ -17,7 +17,8 @@ public class Toggler implements CommandExecutor {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-	public boolean apply(CommandSender sender, String path, String[] args) {Message from = new Message()
+	public boolean apply(CommandSender sender, String path, String[] args) {
+		Message from = new Message()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
