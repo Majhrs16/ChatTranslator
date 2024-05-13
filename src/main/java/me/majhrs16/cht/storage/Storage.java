@@ -38,7 +38,9 @@ public class Storage {
 	}
 
 	public void register() throws StorageRegisterFailedException {
-		yaml   = new YAML(plugin.config.get().getString("storage.database") + ".yml", "storage.yml");
+		String database = plugin.config.get().getString("storage.database");
+
+		yaml   = new YAML(database + ".yml", "storage.yml");
 		sqlite = new SQLite();
 		mysql  = new MySQL();
 
@@ -52,7 +54,7 @@ public class Storage {
 					break;
 
 				case "sqlite":
-					sqlite.set(null, 0, plugin.config.get().getString("storage.database"), null, null);
+					sqlite.set(null, 0, database, null, null);
 
 					sqlite.connect();
 					sqlite.createTable();
@@ -65,7 +67,7 @@ public class Storage {
 					mysql.set(
 						config.getString("storage.host"),
 						config.getInt("storage.port"),
-						config.getString("storage.database"),
+						database,
 						config.getString("storage.user"),
 						config.getString("storage.password")
 					);
@@ -92,9 +94,11 @@ public class Storage {
 			throw new StorageRegisterFailedException(String.join("\n", from.getMessages().getFormats()));
 		}
 
-		from = new Message();
-		from.format("storage.done.open", formats -> formats.replace("%type%", storage_type));
-		API.sendMessage(from);
+		API.sendMessage(new Message().format(
+			"storage.done.open",
+			formats -> formats
+				.replace("%type%", storage_type)
+		));
 	}
 
 	public void unregister() {
@@ -117,7 +121,9 @@ public class Storage {
 					break;
 			}
 
-			from.format("storage.done.close",  format -> format.replace("%type%", storage_type));
+			from.format("storage.done.close", format -> format
+				.replace("%type%", storage_type)
+			);
 
 		} catch (Exception e) {
 			from.format("storage.error.close", format -> format
@@ -178,7 +184,7 @@ public class Storage {
 		String[] result = null;
 
 		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
-		from.setTo(new Message(util.getNativeLang(), plugin.storage.getDefaultLang())); // Yes, simply void Message xD.
+		from.setTo(from.clone()); // Yes, simply void Message xD.
 		String storage_type = getType();
 
 		try {
@@ -214,7 +220,10 @@ public class Storage {
 
 		} catch (NullPointerException ignored) {}
 
-		API.showMessage(from, API.formatMessage(from)); // INSECURE!!
+		if (from.isEmpty(from.getTo()))
+			return result;
+
+		API.showMessage(from, API.formatMessage(from));
 
 		return result;
 	}
