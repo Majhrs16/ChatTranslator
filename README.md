@@ -1,7 +1,5 @@
-<div align="left">
-  <img src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="Icono de ChatTranslator"></img>
-  <h1 style="display:inline-block; vertical-align:middle; margin-left:20px;">ChatTranslator</h1>
-</div>
+<img align="left" src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="Icono de ChatTranslator"></img>
+<h1>ChatTranslator</h1>
 
 # Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin mayor problema.
