@@ -92,9 +92,9 @@ Siga estos pasos para importar ChatTranslator en IntelliJ IDEA:
 
 8. Una vez importado y configurado, puedes comenzar a trabajar en el proyecto.
 
-<p align="center">
-  <img src="https://bstats.org/signatures/bukkit/ChT.svg" alt="Historial de uso de ChatTranslator">
-</p>
+## [Estadisticas de uso](https://bstats.org/plugin/bukkit/ChT/20251):
+
+<img align="center" src="https://bstats.org/signatures/bukkit/ChT.svg" alt="Historial de uso de ChatTranslator">
 
 ## Lista de idiomas soportados:
 
