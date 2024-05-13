@@ -1,13 +1,14 @@
-<p align="center">
-  <img src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="50%" height="50%" alt="Icono de ChatTranslator">
-</p>
+<div align="left">
+  <img src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="Icono de ChatTranslator"></img>
+  <h1 style="display:inline-block; vertical-align:middle; margin-left:20px;">ChatTranslator</h1>
+</div>
 
-# ChatTranslator - Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
+# Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin mayor problema.
 
 ## Características:
 1. **Colores Personalizados**: Usa colores `#RRGGBB`! Solo para 1.16.5+ y mensajes NO JSON.
-2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes a través del JSON! (1.7.2+)
+2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes aClosing tag matches nothing través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
 4. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!
 5. **Traducción de Carteles**: Simplemente haz `Click Derecho` o `Shift + Click derecho` en un letrero para traducirlo al instante.
