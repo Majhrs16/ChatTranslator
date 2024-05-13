@@ -101,14 +101,14 @@ public class SetterLang implements CommandExecutor {
 		API.setLang(to_player, util.convertStringToLang(lang));
 
 		Message model = new Message();
-			model.format("commands.setterLang.setLangAnother.done.from", null, s -> s
+			model.format("commands.setterLang.setLangAnother.done.from", s -> s
 				.replace("%lang%", util.convertStringToLang(lang).getValue())
 				.replace("%from_player%", from.getSenderName())
 				.replace("%to_player%", to_player.getName())
 			);
 
 		Message to_model = model.clone();
-			to_model.format("commands.setterLang.setLangAnother.done.to", null, s -> s
+			to_model.format("commands.setterLang.setLangAnother.done.to", s -> s
 				.replace("%lang%", util.convertStringToLang(lang).getValue())
 				.replace("%from_player%", from.getSenderName())
 				.replace("%to_player%", to_player.getName())
