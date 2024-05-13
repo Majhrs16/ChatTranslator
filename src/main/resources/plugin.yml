@@ -1,9 +1,9 @@
 main: me.majhrs16.cht.ChatTranslator
-description: ${description}
 name: ${name}
+description: ${description}
+version: ${cht_version.substring(1)}
 author: ${author}
 load: STARTUP
-version: ${cht_version.substring(1)}
 prefix: ChT
 
 softdepend:
