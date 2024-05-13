@@ -139,7 +139,7 @@ public class util {
 		String[] formats = Texts.get(path + ".toolTips.formats");
 		String[] texts   = Texts.get(path + ".toolTips.texts");
 
-		// En caso contrario: Textos compartidos.
+//		En caso contrario: Textos compartidos.
 		if (texts.length == 0)
 			texts = Texts.get(path + ".texts");
 
@@ -153,8 +153,7 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
-		if (formats.length > 0)
-			original.getToolTips().setFormats(formats);
+		original.getToolTips().setFormats(formats);
 
 		if (texts.length > 0)
 			original.getToolTips().setTexts(texts);
@@ -184,9 +183,9 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
-		// En caso de no existir el grupo de formato, usar los datos en memoria,
-		if (formats.length > 0)
-			original.getMessages().setFormats(formats);
+//		En caso de no existir el grupo de formato, usar los datos en memoria,
+//		if (formats.length > 0)
+		original.getMessages().setFormats(formats);
 
 		if (texts.length > 0)
 			original.getMessages().setTexts(texts);
