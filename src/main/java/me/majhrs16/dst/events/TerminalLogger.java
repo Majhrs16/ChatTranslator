@@ -24,12 +24,13 @@ import java.io.File;
 public class TerminalLogger {
 	private Timer timer;
 	private static String LOG_FILE_PATH;
+
+	private long lastFileLine = 0;
+	private long lastFileByte = 0;
+	private final int MAX_LENGTH_MESSAGE  = 1900;
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-
 	public static final Map<String, String> ANSI_TO_DISCORD_MAP = createAnsiMap();
-	public final int MESSAGE_BLOCK_CLOCK = 6000; // 6s
-	public final int MAX_LENGTH_MESSAGE = 1900;  // Dejare un espacio libre por si acaso...
 
 	public TerminalLogger() {
 		Message from = new Message();
@@ -59,32 +60,25 @@ public class TerminalLogger {
 	}
 
 	public void start() {
-		stop();
-
 		timer = new Timer(true);
-		timer.scheduleAtFixedRate(new LogReaderTask(), 0, MESSAGE_BLOCK_CLOCK);
-
-//		API.sendMessage(new Message().setMessages("&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff"));
+		timer.scheduleAtFixedRate(new LogReaderTask(), 0, 6000);
 	}
 
 	public void stop() {
-		if (timer != null)
-			timer.cancel();
+		if (timer != null) timer.cancel();
 	}
 
 	private class LogReaderTask extends TimerTask {
-		private long lastFileLine = 0;
-		private long lastFileByte = 0;
-
 		@Override
 		public void run() {
-			if (plugin.isDisabled() || !Config.TranslateOthers.DISCORD.IF() || DiscordTranslator.getJDA() == null)
+			if (DiscordTranslator.isDisabled())
 				return;
 
 			try {
 				File logFile = new File(LOG_FILE_PATH);
 
-				if (lastFileByte > logFile.length()) { // Restablecer contadores en caso de una posible rotacion de log.
+//				Restablecer contadores en caso de una posible rotacion de log.
+				if (lastFileByte > logFile.length()) {
 					lastFileByte = 0;
 					lastFileLine = 0;
 				}
