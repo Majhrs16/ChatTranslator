@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Majhrs16/ChatTranslator/blob/b2.0/icon.png" width="50%" height="50%" alt="Icono de ChatTranslator">
+  <img src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="50%" height="50%" alt="Icono de ChatTranslator">
 </p>
 
 # ChatTranslator - Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
