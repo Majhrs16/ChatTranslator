@@ -58,7 +58,7 @@ Si deseas volver a la deteccion automatica tras establecer un idioma estatico, p
 
 4. Descarga las dependencias requeridas y colócalas en la carpeta `Libs` dentro del proyecto:
 
-   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
+   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.24-withDependencies-min.jar)
 
 5. Y ya por ultimo, ejecuta el `gradlew` con el parametro `shadowJar`:
 
