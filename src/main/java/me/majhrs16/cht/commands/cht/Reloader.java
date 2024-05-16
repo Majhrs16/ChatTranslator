@@ -10,6 +10,7 @@ import me.majhrs16.cht.ChatTranslator;
 
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.lib.exceptions.ParseYamlException;
+import me.majhrs16.lib.storages.YAML;
 
 import org.bukkit.command.CommandSender;
 
@@ -34,6 +35,8 @@ public class Reloader implements CommandExecutor {
 
 		from.format("commands.reloader");
 		API.sendMessage(from);
+
+		plugin.setDisabled(true);
 
 		switch (args.length == 0 ? "all" : args[0].toLowerCase()) {
 			case "all":
@@ -65,6 +68,8 @@ public class Reloader implements CommandExecutor {
 				break;
 		}
 
+		plugin.setDisabled(false);
+
 		return true;
 	}
 
@@ -78,7 +83,7 @@ public class Reloader implements CommandExecutor {
 
 		} catch (Exception e) {
 			if (Permissions.ChatTranslator.ADMIN.IF(from.getSender()))
-				API.sendMessage(from.format("commands.error.fatal"));
+				API.sendMessage(from.format("commands.reloader.error.fatal"));
 
 			plugin.logger.error(e.toString());
 		}
@@ -103,47 +108,88 @@ public class Reloader implements CommandExecutor {
 	}
 
 	public void reloadFormats(Message from) {
-		reload(from, "&bformats&f.&byml", () -> {
-			plugin.formats.reload();
+		reload(from, "&bformats.yml", () -> {
+			YAML yaml = plugin.formats;
+
+			if (yaml.isReadonly()) {
+				String folder  = plugin.getDataFolder().getPath();
+				yaml = new YAML(folder, "formats.yml");
+			}
+
+			yaml.reload();
+			plugin.formats = yaml;
+
 			Texts.reload();
 		});
 	}
 
 	public void reloadConfig(Message from) {
-		reload(from, "&bconfig&f.&byml", () -> {
-			plugin.config.reload();
+		reload(from, "&bconfig.yml", () -> {
+			YAML yaml = plugin.config;
+
+			if (yaml.isReadonly()) {
+				String folder  = plugin.getDataFolder().getPath();
+				yaml = new YAML(folder, "config.yml");
+			}
+
+			yaml.reload();
+			plugin.config = yaml;
+
 			plugin.unregisterDiscordBot();
 			plugin.registerDiscordBot();
 		});
 	}
 
 	public void reloadSigns(Message from) {
-		reload(from, "&bsigns&f.&byml", plugin.signs::reload);
+		reload(from, "&bsigns.yml", () -> {
+			YAML yaml = plugin.signs;
+
+			if (yaml.isReadonly()) {
+				String folder  = plugin.getDataFolder().getPath();
+				yaml = new YAML(folder, "signs.yml");
+			}
+
+			yaml.reload();
+			plugin.signs = yaml;
+		});
 	}
 
 	public void reloadCommands(Message from) {
-		reload(from, "&bcommands&f.&byml", plugin.commands::reload);
+		reload(from, "&bcommands.yml", () -> {
+			YAML yaml = plugin.commands;
+
+			if (yaml.isReadonly()) {
+				String folder  = plugin.getDataFolder().getPath();
+				yaml = new YAML(folder, "commands.yml");
+			}
+
+			yaml.reload();
+			plugin.commands = yaml;
+		});
 	}
 
 	public void reloadStorage(Message from) {
+		String text;
+
 		switch (plugin.storage.getType()) {
 			case "yaml":
-				from.getMessages().setFormats("&b" + plugin.config.get().getString("storage.database") + "&f.&byml");
+				text ="&b" + plugin.config.get().getString("storage.database") + ".yml";
 				break;
 
 			case "sqlite":
-				from.getMessages().setFormats("&bSQLite");
+				text = "&bSQLite";
 				break;
 
 			case "mysql":
-				from.getMessages().setFormats("&bMySQL");
+				text = "&bMySQL";
 				break;
 
 			default:
-				from.getMessages().setFormats("&9???"); // En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+//				En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+				text = "&9???";
 				break;
 		}
 
-		reload(from, from.getMessages().getFormat(0),  plugin.storage::reload);
+		reload(from, text,  plugin.storage::reload);
 	}
 }

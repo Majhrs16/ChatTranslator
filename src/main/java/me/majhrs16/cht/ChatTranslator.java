@@ -5,6 +5,7 @@ import me.majhrs16.cht.commands.utils.TranslateYaml; // Experimental ...
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.updater.CommandsUpdater;
+import me.majhrs16.cht.util.updater.FormatsUpdater;
 import me.majhrs16.cht.commands.dst.DiscordLinker;
 import me.majhrs16.cht.util.updater.UpdateChecker;
 import me.majhrs16.cht.util.updater.ConfigUpdater;
@@ -32,6 +33,8 @@ import me.majhrs16.dst.utils.DiscordChat;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.majhrs16.cot.CoreTranslator;
 
@@ -40,6 +43,7 @@ import org.bukkit.Bukkit;
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
 	public YAML formats;
+	public YAML messages; // Deprecated
 	public Storage storage;
 	private Metrics metrics;
 	private ChatTranslatorAPI API;
@@ -134,25 +138,57 @@ public class ChatTranslator extends PluginBase {
 		this.is_disabled = isDisabled;
 	}
 
+	private YAML registerInternalYAML(YAML yaml, String filenameInternal) throws ParseYamlException {
+		try {
+			yaml.register();
+
+		} catch (ParseYamlException e) {
+			yaml = new YAML(filenameInternal);
+			yaml.register();
+		}
+
+		return yaml;
+	}
+
 	protected void registerStorage() throws ParseYamlException {
-		super.registerStorage();
-
 		String folder = getDataFolder().getPath();
-		formats = new YAML(folder, "formats.yml");
-		signs   = new YAML(folder, "signs.yml");
+		config   = new YAML(folder, "config.yml");
+		commands = new YAML(folder, "commands.yml");
+		messages = new YAML(folder, "messages.yml");
+		formats  = new YAML(folder, "formats.yml");
+		signs    = new YAML(folder, "signs.yml");
 
-		formats.register();
-		signs.register();
+		messages.register();
+
+		List<String> rescueFiles = new ArrayList<>();
+		if ((config = registerInternalYAML(config, "config.yml")).isReadonly())
+			rescueFiles.add("config.yml");
+
+		if ((commands = registerInternalYAML(commands, "commands.yml")).isReadonly())
+			rescueFiles.add("commands.yml");
+
+		if ((formats = registerInternalYAML(formats, "formats.yml")).isReadonly())
+			rescueFiles.add("formats.yml");
+
+		if ((signs = registerInternalYAML(signs, "signs.yml")).isReadonly())
+			rescueFiles.add("signs.yml");
 
 		try {
 			storage = new Storage();
 				Texts.reload();
 				new ConfigUpdater();
+				new FormatsUpdater();
 				new CommandsUpdater();
 			storage.register();
 
 		} catch (StorageRegisterFailedException e) {
 			throw new ParseYamlException(e);
+		}
+
+		if (!rescueFiles.isEmpty()) {
+			API.sendMessage(new Message().format("plugin.rescue-mode.enable", format -> format
+				.replace("%files%", String.join(", ", rescueFiles))
+			));
 		}
 
 		commandHandler = new CommandHandler(commandManager, commands);
