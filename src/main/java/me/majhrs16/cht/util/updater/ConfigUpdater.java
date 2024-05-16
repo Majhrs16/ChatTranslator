@@ -1,6 +1,7 @@
 package me.majhrs16.cht.util.updater;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 import me.majhrs16.lib.exceptions.ParseYamlException;
 
@@ -11,6 +12,8 @@ import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
@@ -20,7 +23,7 @@ public class ConfigUpdater {
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-
+	private final Pattern texts_words = Pattern.compile("(?<!(&[a-z0-9]|[.,%${]))(\\b\\w+\\b)(?!(&[a-z0-9]|[}$%,.]))");
 	private final Consumer[] applyConfigVersions = new Consumer[] {
 		this::applyConfigVersion1, // 1.5.4
 		this::applyConfigVersion2,
@@ -28,9 +31,9 @@ public class ConfigUpdater {
 		this::applyConfigVersion4,
 		this::applyConfigVersion5,
 		this::applyConfigVersion6,
-		this::applyConfigVersion7,
-		this::applyConfigVersion8, // v1.7.11
-		this::applyConfigVersion9  // 1.7.14 // 1.8 // 2.0
+		this::applyConfigVersion7, // v1.7.11
+		this::applyConfigVersion8, // b1.7.14 - b1.8
+		this::applyConfigVersion9  // v2.0
 	};
 
 	@FunctionalInterface
@@ -71,7 +74,8 @@ public class ConfigUpdater {
 		if (Config.DEBUG.IF())
 			plugin.logger.debug("version.original: " + version_original);
 
-		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) { // Actualizar gradualmente por el historial de versiones.
+		// Actualizar gradualmente por el historial de versiones.
+		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) {
 			applyConfigVersions[i].accept(config, from);
 			version = i + 1;
 		}
@@ -87,7 +91,7 @@ public class ConfigUpdater {
 	    }
 	}
 
-	public void applyConfigVersion0(FileConfiguration config, Message from) {
+	private void applyConfigVersion0(FileConfiguration config, Message from) {
 		boolean cancel_event, clear_recipients;
 
 		if (Dependencies.Chatty.exist()) {
@@ -111,7 +115,7 @@ public class ConfigUpdater {
 		config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
 	}
 
-	public void applyConfigVersion1(FileConfiguration config, Message from) {
+	private void applyConfigVersion1(FileConfiguration config, Message from) {
 		String path, tmp;
 
 		ArrayList<String> formats_from_messages  = new ArrayList<>();
@@ -167,7 +171,7 @@ public class ConfigUpdater {
 		config.set("auto-update-config", true);
 	}
 
-	public void applyConfigVersion2(FileConfiguration config, Message from) {
+	private void applyConfigVersion2(FileConfiguration config, Message from) {
 		boolean show_native_chat;
 
 		if (Dependencies.Chatty.exist()) {
@@ -187,7 +191,7 @@ public class ConfigUpdater {
 		config.set("max-spam-per-tick", 150.0007);
 	}
 
-	public void applyConfigVersion3(FileConfiguration config, Message from) {
+	private void applyConfigVersion3(FileConfiguration config, Message from) {
 		String path;
 
 		path = "show-native-chat";
@@ -229,11 +233,11 @@ public class ConfigUpdater {
 		}
 	}
 
-	public void applyConfigVersion4(FileConfiguration config, Message from) {
+	private void applyConfigVersion4(FileConfiguration config, Message from) {
 		config.set("check-updates", true);
 	}
 
-	public void applyConfigVersion5(FileConfiguration config, Message from) {
+	private void applyConfigVersion5(FileConfiguration config, Message from) {
 		String path;
 
 		path = "chat-color-personalized";
@@ -254,7 +258,7 @@ public class ConfigUpdater {
 			config.set(path, from_exit);
 		}
 	}
-	public void applyConfigVersion6(FileConfiguration config, Message from) {
+	private void applyConfigVersion6(FileConfiguration config, Message from) {
 		ArrayList<String> from_messages  = new ArrayList<>();
 		from_messages.add("%ct_expand% &7%ct_messages%");
 
@@ -295,7 +299,7 @@ public class ConfigUpdater {
 		config.set("discord.channels", discord_channels);
 	}
 
-	public void applyConfigVersion7(FileConfiguration config, Message from) {
+	private void applyConfigVersion7(FileConfiguration config, Message from) {
 		ArrayList<String> to_discord_messages  = new ArrayList<>();
 		to_discord_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
 		ArrayList<String> to_discord_tool_tips = new ArrayList<>();
@@ -337,7 +341,7 @@ public class ConfigUpdater {
 		config.set("formats.to_mention.sounds", to_mention_sounds);
 	}
 
-	public void applyConfigVersion8(FileConfiguration config, Message from) {
+	private void applyConfigVersion8(FileConfiguration config, Message from) {
 		String path;
 
 		ArrayList<String> death_messages = new ArrayList<>();
@@ -371,9 +375,33 @@ public class ConfigUpdater {
 
 		config.set(path + ".enable", signs_enabled);
 		config.set(path + ".wrapText", false);
+
+		plugin.config.save();
 	}
 
-	public void applyConfigVersion9(FileConfiguration config, Message from) {
-		// FALTA MUDAR LA CONFIG.yml VIEJA A FORMATS.yml!!
+
+	private void applyConfigVersion9(FileConfiguration config, Message from) {
+		String path;
+
+		List<String> discord_sync = new ArrayList<>();
+			discord_sync.add("<RoleID>   <-  <PermissionID>");
+			discord_sync.add("<RoleID>    -> DiscordTranslator.sync.new");
+			discord_sync.add("0123456789 <-> DiscordTranslator.sync.bidirectional");
+		config.set("discord.sync", discord_sync);
+
+		config.set("discord.channels.replies", new ArrayList<>());
+
+		path = "auto-translate-others.signs";
+		config.set(path + ".wrap-text", config.getBoolean(path + ".wrapText"));
+		config.set(path + ".wrapText", null);
+
+		config.set("auto-translate-others.discord-sync", false);
+
+		path = "max-spam-per-tick";
+		String _spam = config.getString(path, "60.0007");
+		String[] spam = (_spam.equals("90.0009") ? "60.0007" : _spam).split("\\.");
+		config.set("spam.max-ticks", Integer.parseInt(spam[0]));
+		config.set("spam.max-messages", Integer.parseInt(spam[1]));
+		config.set(path, null);
 	}
 }
