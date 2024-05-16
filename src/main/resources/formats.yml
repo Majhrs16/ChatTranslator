@@ -193,6 +193,19 @@ plugin:
   name: "&aChat&9Translator"
   version: "&b%versions.plugin%"
 
+  rescue-mode:
+    messages:
+      texts:
+        - "Modo de rescate activado"
+        - "Configuraciones afectadas"
+        - "Para desactivar el modo de rescate"
+        - "Recarge las configuraciones tras corregir los fallos"
+
+      formats:
+        - "%plugin.title.min% &e{0}&f."
+        - "\t&a{2}&f, &a{3}&f."
+        - "\t&c{1}&f: &b%files%&f."
+
   enable:
     messages:
       texts:
@@ -631,7 +644,7 @@ commands:
       fatal:
         messages:
           texts:
-            - "ERROR DESCONOCIDO INTERNO"
+            - "ERROR INTERNO DESCONOCIDO"
 
           formats:
             - "&4{0}&f."
@@ -784,24 +797,24 @@ configUpdater:
         - "&eSe ha actualizado la config de la version &b%original%&e a la &b%new%&f."
 
       formats:
-        - "{0}"
+        - "%plugin.title.min% {0}"
 
   detected:
     Chatty:
       messages:
         texts:
-          - "Detectado: Chatty"
+          - "Detectado"
 
         formats:
-          - "&a{0}&f."
+          - "&a{0}: Chatty&f."
 
     ChatManager:
       messages:
         texts:
-          - "Detectado: ChatManager"
+          - "Detectado"
 
         formats:
-          - "&a{0}&f."
+          - "&a{0}: ChatManager&f."
 
   version7:
     unsupportedColorConfig:
@@ -816,5 +829,16 @@ configUpdater:
           - "%plugin.title.min% &e{0}&f: &6{1}&f, &a{2}&f."
           - "\t&a{3}&f."
 
+  version9:
+    unsupportedMessagesConfig:
+      messages:
+        texts:
+          - "ADVERTENCIA"
+          - "Ya no hay soporte para el archivo de configuracion"
+          - "Tendra que actualizarlo manualmente"
+
+        formats:
+          - "%plugin.title.min% &e{0}&f: &c{1} &bmessages.yml&f."
+          - "\t&a{2}&f."
 
 config-version: 8
