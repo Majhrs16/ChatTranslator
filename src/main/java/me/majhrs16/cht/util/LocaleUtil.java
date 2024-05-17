@@ -37,6 +37,9 @@ public class LocaleUtil {
 
 				} else if (util.getMinecraftVersion() == 20.4) { // 1.20.4
 					playerLocale = (String) entityPlayer.getClass().getField("cO").get(entityPlayer);
+
+				} else if (util.getMinecraftVersion() == 20.6) { // 1.20.6
+					playerLocale = (String) entityPlayer.getClass().getField("dd").get(entityPlayer);
 				}
 			}
 
