@@ -186,7 +186,7 @@ public class ChatTranslator extends PluginBase {
 		}
 
 		if (!rescueFiles.isEmpty()) {
-			API.sendMessage(new Message().format("plugin.rescue-mode.enable", format -> format
+			API.sendMessage(new Message().format("plugin.rescue-mode", format -> format
 				.replace("%files%", String.join(", ", rescueFiles))
 			));
 		}
