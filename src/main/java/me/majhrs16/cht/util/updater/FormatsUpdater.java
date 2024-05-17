@@ -96,7 +96,7 @@ public class FormatsUpdater {
 		return new List[] {texts, formats};
 	}
 
-	private void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
+	void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
 		FileConfiguration config = plugin.config.get();
 		ConfigurationSection old_formats = config.getConfigurationSection("formats");
 

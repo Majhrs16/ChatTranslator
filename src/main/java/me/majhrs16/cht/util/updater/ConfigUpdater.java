@@ -406,5 +406,9 @@ public class ConfigUpdater {
 		config.set("spam.max-ticks", Integer.parseInt(spam[0]));
 		config.set("spam.max-messages", Integer.parseInt(spam[1]));
 		config.set(path, null);
+
+		FileConfiguration formats = plugin.formats.get();
+		new FormatsUpdater().applyFormatsVersion1(formats, from);
+		plugin.formats.save();
 	}
 }
