@@ -46,8 +46,7 @@ public class FormatsUpdater {
 			return;
 		}
 
-		if (Config.DEBUG.IF())
-			plugin.logger.debug("version.original: " + version_original);
+		plugin.logger.debug("version.original: " + version_original);
 
 		// Actualizar gradualmente por el historial de versiones.
 		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) {
@@ -119,6 +118,8 @@ public class FormatsUpdater {
 		}
 
 		config.set("formats", null);
+
+		plugin.config.save();
 
 		API.sendMessage(from.format(
 			"configUpdater.version9.unsupportedMessagesConfig"
