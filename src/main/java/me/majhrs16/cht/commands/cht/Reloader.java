@@ -3,6 +3,9 @@ package me.majhrs16.cht.commands.cht;
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.util.RunnableWithTriException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.util.updater.CommandsUpdater;
+import me.majhrs16.cht.util.updater.FormatsUpdater;
+import me.majhrs16.cht.util.updater.ConfigUpdater;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
@@ -110,14 +113,17 @@ public class Reloader implements CommandExecutor {
 	public void reloadFormats(Message from) {
 		reload(from, "&bformats.yml", () -> {
 			YAML yaml = plugin.formats;
+			boolean rescue = yaml.isReadonly();
 
-			if (yaml.isReadonly()) {
+			if (rescue) {
 				String folder  = plugin.getDataFolder().getPath();
 				yaml = new YAML(folder, "formats.yml");
 			}
 
 			yaml.reload();
 			plugin.formats = yaml;
+
+			if (rescue) new FormatsUpdater();
 
 			Texts.reload();
 		});
@@ -126,8 +132,9 @@ public class Reloader implements CommandExecutor {
 	public void reloadConfig(Message from) {
 		reload(from, "&bconfig.yml", () -> {
 			YAML yaml = plugin.config;
+			boolean rescue = yaml.isReadonly();
 
-			if (yaml.isReadonly()) {
+			if (rescue) {
 				String folder  = plugin.getDataFolder().getPath();
 				yaml = new YAML(folder, "config.yml");
 			}
@@ -135,36 +142,42 @@ public class Reloader implements CommandExecutor {
 			yaml.reload();
 			plugin.config = yaml;
 
+			if (rescue) new ConfigUpdater();
+
 			plugin.unregisterDiscordBot();
 			plugin.registerDiscordBot();
-		});
-	}
-
-	public void reloadSigns(Message from) {
-		reload(from, "&bsigns.yml", () -> {
-			YAML yaml = plugin.signs;
-
-			if (yaml.isReadonly()) {
-				String folder  = plugin.getDataFolder().getPath();
-				yaml = new YAML(folder, "signs.yml");
-			}
-
-			yaml.reload();
-			plugin.signs = yaml;
 		});
 	}
 
 	public void reloadCommands(Message from) {
 		reload(from, "&bcommands.yml", () -> {
 			YAML yaml = plugin.commands;
+			boolean rescue = yaml.isReadonly();
 
-			if (yaml.isReadonly()) {
+			if (rescue) {
 				String folder  = plugin.getDataFolder().getPath();
 				yaml = new YAML(folder, "commands.yml");
 			}
 
 			yaml.reload();
 			plugin.commands = yaml;
+
+			if (rescue) new CommandsUpdater();
+		});
+	}
+
+	public void reloadSigns(Message from) {
+		reload(from, "&bsigns.yml", () -> {
+			YAML yaml = plugin.signs;
+			boolean rescue = yaml.isReadonly();
+
+			if (rescue) {
+				String folder  = plugin.getDataFolder().getPath();
+				yaml = new YAML(folder, "signs.yml");
+			}
+
+			yaml.reload();
+			plugin.signs = yaml;
 		});
 	}
 
