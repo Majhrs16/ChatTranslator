@@ -19,8 +19,9 @@ public class FormatsUpdater {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 	private final Pattern texts_words = Pattern.compile("(?<!(&[a-z0-9]|[.,%${]))(\\b\\w+\\b)(?!(&[a-z0-9]|[}$%,.]))");
-	private final Consumer[] applyConfigVersions = new Consumer[] {
-			this::applyConfigVersion8  // v2.0
+	private final Consumer[] applyFormatsVersions = new Consumer[] {
+			this::applyFormatsVersion0, // v2.0
+			this::applyFormatsVersion1  // v2.0
 	};
 
 	@FunctionalInterface
@@ -49,8 +50,8 @@ public class FormatsUpdater {
 		plugin.logger.debug("version.original: " + version_original);
 
 		// Actualizar gradualmente por el historial de versiones.
-		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) {
-			applyConfigVersions[i].accept(formats, from);
+		for (int i = Math.max(0, version); i < applyFormatsVersions.length; i++) {
+			applyFormatsVersions[i].accept(formats, from);
 			version = i + 1;
 		}
 
@@ -90,7 +91,11 @@ public class FormatsUpdater {
 		return new List[] {texts, formats};
 	}
 
-	private void applyConfigVersion8(FileConfiguration new_formats, Message from) {
+	private void applyFormatsVersion0(FileConfiguration new_formats, Message from) {
+//		No necessary initialize the formats.yml.
+	}
+
+	private void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
 		FileConfiguration config = plugin.config.get();
 		ConfigurationSection old_formats = config.getConfigurationSection("formats");
 
