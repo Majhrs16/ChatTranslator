@@ -829,6 +829,15 @@ configUpdater:
           - "%plugin.title.min% &e{0}&f: &6{1}&f, &a{2}&f."
           - "\t&a{3}&f."
 
+formatsUpdater:
+  done:
+    messages:
+      texts:
+        - "&eSe han actualizado los formatos de la version &b%original%&e a la &b%new%&f."
+
+      formats:
+        - "%plugin.title.min% {0}"
+
   version9:
     unsupportedMessagesConfig:
       messages:
@@ -841,4 +850,4 @@ configUpdater:
           - "%plugin.title.min% &e{0}&f: &c{1} &bmessages.yml&f."
           - "\t&a{2}&f."
 
-config-version: 8
+formats-version: 1
