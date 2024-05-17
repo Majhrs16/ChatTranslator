@@ -15,6 +15,7 @@ import java.io.File;
 public class StorageYamlUpdater {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 
+	@Deprecated
 	public void initYaml() throws ParseYamlException {
 		String filename = "players.yml";
 		File file       = new File(plugin.getDataFolder(), filename);
