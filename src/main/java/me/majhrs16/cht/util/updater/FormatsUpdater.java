@@ -20,7 +20,6 @@ public class FormatsUpdater {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 	private final Pattern texts_words = Pattern.compile("(?<!(&[a-z0-9]|[.,%${]))(\\b\\w+\\b)(?!(&[a-z0-9]|[}$%,.]))");
 	private final Consumer[] applyFormatsVersions = new Consumer[] {
-			this::applyFormatsVersion0, // v2.0
 			this::applyFormatsVersion1  // v2.0
 	};
 
@@ -40,6 +39,12 @@ public class FormatsUpdater {
 		int version_original = version;
 
 		Message from = new Message();
+
+//		Inicializar el plugin por primera vez.
+		if (version_original == 0) {
+//			"Actualizar" a la ultima version disponible en el codigo.
+			version = applyFormatsVersions.length;
+		}
 
 		if (!Config.UPDATE_CONFIG.IF()) {
 			formats.set(path, version);
@@ -89,10 +94,6 @@ public class FormatsUpdater {
 		}
 
 		return new List[] {texts, formats};
-	}
-
-	private void applyFormatsVersion0(FileConfiguration new_formats, Message from) {
-//		No necessary initialize the formats.yml.
 	}
 
 	private void applyFormatsVersion1(FileConfiguration new_formats, Message from) {

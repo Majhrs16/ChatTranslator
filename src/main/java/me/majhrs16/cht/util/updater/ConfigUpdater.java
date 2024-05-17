@@ -60,9 +60,12 @@ public class ConfigUpdater {
 
 		Message from = new Message();
 
-		if (version_original == 0) { // Inicializar el plugin por primera vez.
+//		Inicializar el plugin por primera vez.
+		if (version_original == 0) {
 			applyConfigVersion0(config, from);
-			version = applyConfigVersions.length; // "Actualizar" a la ultima version disponible en el codigo.
+
+//			"Actualizar" a la ultima version disponible en el codigo.
+			version = applyConfigVersions.length;
 		}
 
 		if (!Config.UPDATE_CONFIG.IF()) {
