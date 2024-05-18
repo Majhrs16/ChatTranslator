@@ -85,7 +85,7 @@ public class ConfigUpdater {
 		plugin.config.save();
 
 		if (version > version_original) {
-			API.sendMessage(from.format("configUpdater.done", null, s -> s
+			API.sendMessage(from.format("updaters.config.done", null, s -> s
 				.replace("%original%", "" + version_original)
 				.replace("%new%", "" + version)
 			));
@@ -96,13 +96,13 @@ public class ConfigUpdater {
 		boolean cancel_event, clear_recipients;
 
 		if (Dependencies.Chatty.exist()) {
-			API.sendMessage(from.format("configUpdater.detected.Chatty"));
+			API.sendMessage(from.format("updaters.config.detected.Chatty"));
 
 			cancel_event     = false;
 			clear_recipients = false;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			API.sendMessage(from.format("configUpdater.detected.ChatManager"));
+			API.sendMessage(from.format("updaters.config.detected.ChatManager"));
 
 			cancel_event     = false;
 			clear_recipients = false;
@@ -176,12 +176,12 @@ public class ConfigUpdater {
 		boolean show_native_chat;
 
 		if (Dependencies.Chatty.exist()) {
-			API.sendMessage(from.format("configUpdater.detected.Chatty"));
+			API.sendMessage(from.format("updaters.config.detected.Chatty"));
 
 			show_native_chat = true;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			API.sendMessage(from.format("configUpdater.detected.ChatManager"));
+			API.sendMessage(from.format("updaters.config.detected.ChatManager"));
 
 			show_native_chat = true;
 
@@ -316,7 +316,7 @@ public class ConfigUpdater {
 		config.set("discord.channels.player-access", new ArrayList<>());
 
 
-		API.sendMessage(from.format("configUpdater.version7.unsupportedColorConfig"));
+		API.sendMessage(from.format("updaters.config.version7.unsupportedColorConfig"));
 
 		config.set("chat-custom-colors", null);
 
