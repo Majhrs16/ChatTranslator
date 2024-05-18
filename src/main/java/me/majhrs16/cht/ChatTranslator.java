@@ -43,7 +43,6 @@ import org.bukkit.Bukkit;
 public class ChatTranslator extends PluginBase {
 	public YAML signs;
 	public YAML formats;
-	public YAML messages; // Deprecated
 	public Storage storage;
 	private Metrics metrics;
 	private ChatTranslatorAPI API;
@@ -154,11 +153,8 @@ public class ChatTranslator extends PluginBase {
 		String folder = getDataFolder().getPath();
 		config   = new YAML(folder, "config.yml");
 		commands = new YAML(folder, "commands.yml");
-		messages = new YAML(folder, "messages.yml");
 		formats  = new YAML(folder, "formats.yml");
 		signs    = new YAML(folder, "signs.yml");
-
-		messages.register();
 
 		List<String> rescueFiles = new ArrayList<>();
 		if ((config = registerInternalYAML(config, "config.yml")).isReadonly())
