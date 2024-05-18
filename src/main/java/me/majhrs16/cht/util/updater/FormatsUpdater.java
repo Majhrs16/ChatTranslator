@@ -18,7 +18,7 @@ public class FormatsUpdater {
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-	private final Pattern texts_words = Pattern.compile("(?<!(&[a-z0-9]|[.,%${]))(\\b\\w+\\b)(?!(&[a-z0-9]|[}$%,.]))");
+	private final Pattern phrase_texts = Pattern.compile("\\b[\\w\\s]+\\b");
 	private final Consumer[] applyFormatsVersions = new Consumer[] {
 			this::applyFormatsVersion1  // v2.0
 	};
@@ -64,7 +64,7 @@ public class FormatsUpdater {
 		plugin.formats.save();
 
 		if (version > version_original) {
-			API.sendMessage(from.format("formatsUpdater.done", null, s -> s
+			API.sendMessage(from.format("updaters.formats.done", null, s -> s
 				.replace("%original%", "" + version_original)
 				.replace("%new%", "" + version)
 			));
@@ -77,23 +77,35 @@ public class FormatsUpdater {
 		int i = 0;
 
 		for (String format : section.getStringList(path)) {
-			Matcher matcher = texts_words.matcher(format);
-			if (matcher.find()) {
-				String text = matcher.group(1);
+			String preformat = format;
 
-				if (text != null) {
-					texts.add(text);
-					formats.add(format.replace(text, String.format("{%s}", i)));
-				}
+//			Eliminar secuencias &x
+			preformat = preformat.replaceAll("&[a-f0-9]", "");
 
-			} else {
-				formats.add(format);
+//			Eliminar variables %var%
+			preformat = preformat.replaceAll("%[^%]*%", "");
+
+//			Eliminar variables $var$
+			preformat = preformat.replaceAll("\\$[^$]*\\$", "");
+
+//			Eliminar cualquier cosa entre llaves
+			preformat = preformat.replaceAll("\\{[^}]*}", "");
+
+			Matcher matcher = phrase_texts.matcher(preformat);
+			while (matcher.find()) {
+				String text = matcher.group(0);
+
+				texts.add(text);
+
+//				Reemplazar texto en el formato con índice
+				format = format.replace(text, String.format("{%s}", i));
+				i++;
 			}
 
-			i++;
+			formats.add(format);
 		}
 
-		return new List[] {texts, formats};
+		return new List[] {formats, texts};
 	}
 
 	void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
@@ -104,13 +116,13 @@ public class FormatsUpdater {
 			return;
 
 		for (String key : old_formats.getKeys(false)) {
-			List<String>[] messages = upgradeGroupFormat(old_formats, key + ".messages");
+			List<String>[] messages  = upgradeGroupFormat(old_formats, key + ".messages");
 			List<String>[] tool_tips = upgradeGroupFormat(old_formats, key + ".toolTips");
 
-			new_formats.set(key + ".messages.texts", messages[0]);
-			new_formats.set(key + ".toolTips.texts", tool_tips[0]);
-			new_formats.set(key + ".messages.formats", messages[1]);
-			new_formats.set(key + ".toolTips.formats", tool_tips[1]);
+			new_formats.set(key + ".messages.texts", messages[1]);
+			new_formats.set(key + ".toolTips.texts", tool_tips[1]);
+			new_formats.set(key + ".messages.formats", messages[0]);
+			new_formats.set(key + ".toolTips.formats", tool_tips[0]);
 
 			for (String sound : old_formats.getStringList(key + ".sounds")) {
 				String[] parts = sound.replace(" ", "").split(":");
