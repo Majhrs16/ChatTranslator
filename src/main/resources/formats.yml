@@ -790,64 +790,74 @@ commands:
           - "&e{0}&f: '&b%code%&f', &6{1}&f."
           - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
 
-configUpdater:
-  done:
-    messages:
-      texts:
-        - "&eSe ha actualizado la config de la version &b%original%&e a la &b%new%&f."
-
-      formats:
-        - "%plugin.title.min% {0}"
-
-  detected:
-    Chatty:
+updaters:
+  config:
+    done:
       messages:
         texts:
-          - "Detectado"
+          - "&eSe ha actualizado la config de la version &b%original%&e a la &b%new%&f."
 
         formats:
-          - "&a{0}: Chatty&f."
+          - "%plugin.title.min% {0}"
 
-    ChatManager:
+    detected:
+      Chatty:
+        messages:
+          texts:
+            - "Detectado"
+
+          formats:
+            - "&a{0}: Chatty&f."
+
+      ChatManager:
+        messages:
+          texts:
+            - "Detectado"
+
+          formats:
+            - "&a{0}: ChatManager&f."
+
+    version7:
+      unsupportedColorConfig:
+        messages:
+          texts:
+            - "ADVERTENCIA"
+            - "Apartir de ahora NO se maneja los colores del chat por 1 configuracion"
+            - "Sino ahora por permisos"
+            - "Por favor mire la &9Wiki"
+
+          formats:
+            - "%plugin.title.min% &e{0}&f: &6{1}&f, &a{2}&f."
+            - "\t&a{3}&f."
+
+  formats:
+    done:
       messages:
         texts:
-          - "Detectado"
+          - "&eSe han actualizado los formatos de la version &b%original%&e a la &b%new%&f."
 
         formats:
-          - "&a{0}: ChatManager&f."
+          - "%plugin.title.min% {0}"
 
-  version7:
-    unsupportedColorConfig:
+    version9:
+      unsupportedMessagesConfig:
+        messages:
+          texts:
+            - "ADVERTENCIA"
+            - "Ya no hay soporte para el archivo de configuracion"
+            - "Tendra que actualizarlo manualmente"
+
+          formats:
+            - "%plugin.title.min% &e{0}&f: &c{1} &bmessages.yml&f."
+            - "\t&a{2}&f."
+
+  commands:
+    done:
       messages:
         texts:
-          - "ADVERTENCIA"
-          - "Apartir de ahora NO se maneja los colores del chat por 1 configuracion"
-          - "Sino ahora por permisos"
-          - "Por favor mire la &9Wiki"
+          - "&eSe han actualizado los comandos de la version &b%original%&e a la &b%new%&f."
 
         formats:
-          - "%plugin.title.min% &e{0}&f: &6{1}&f, &a{2}&f."
-          - "\t&a{3}&f."
-
-formatsUpdater:
-  done:
-    messages:
-      texts:
-        - "&eSe han actualizado los formatos de la version &b%original%&e a la &b%new%&f."
-
-      formats:
-        - "%plugin.title.min% {0}"
-
-  version9:
-    unsupportedMessagesConfig:
-      messages:
-        texts:
-          - "ADVERTENCIA"
-          - "Ya no hay soporte para el archivo de configuracion"
-          - "Tendra que actualizarlo manualmente"
-
-        formats:
-          - "%plugin.title.min% &e{0}&f: &c{1} &bmessages.yml&f."
-          - "\t&a{2}&f."
+          - "%plugin.title.min% {0}"
 
 formats-version: 0
