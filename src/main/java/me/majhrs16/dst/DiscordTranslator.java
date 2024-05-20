@@ -2,10 +2,7 @@ package me.majhrs16.dst;
 
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
@@ -29,7 +26,7 @@ public class DiscordTranslator {
 
 	public final static String version  = "${dst_version}";
 
-	public JDA connect(String bot_token) throws InvalidTokenException, InterruptedException {
+	public JDA connect(String bot_token) throws InvalidTokenException {
 		if (bot_token == null
 				|| bot_token.isEmpty()
 				|| bot_token.equalsIgnoreCase("<Your Bot Token>"))

@@ -3,7 +3,6 @@ package me.majhrs16.dst.events;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
