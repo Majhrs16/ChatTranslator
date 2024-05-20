@@ -5,22 +5,24 @@
 With ChatTranslator, you can communicate with players from all over the world effortlessly.
 
 ## Features:
-1. **Custom Colors**: Use `#RRGGBB` colors! Only for 1.16.5+ and non-JSON messages.
-2. **Advanced Messages**: Further customize message formats through JSON! (1.7.2+)
-3. **Sign Translation**: Simply `Shift` + `Left Click` on a sign to translate it instantly.
-4. **Configurable Anti-Spam Protection**: Prevent chat spam with adjustable message limits per tick.
-5. **Custom Formats and Commands**: Fully customize the plugin’s formats and commands to your liking.
-6. **Language Selection**: Change your language using the default command `/cht lang [Player] <Language Code>`.
-7. **Plugin Self-Translation**: ChatTranslator even translates the plugin's internal formats and console communications.
-8. **Automatic Language Detection**: ChatTranslator automatically detects the language in which you have your Minecraft set!
+1. **Reply for translate**: Replying for translating each others. By DiscordTranslator.
+2. **Custom Colors**: Use `#RRGGBB` colors! Only for 1.16.5+ and non-JSON messages.
+3. **Advanced Messages**: Further customize message formats through JSON! (1.7.2+)
+4. **Sign Translation**: Simply `Shift` + `Left Click` on a sign to translate it instantly.
+5. **Configurable Anti-Spam Protection**: Prevent chat spam with adjustable message limits per tick.
+6. **Custom Formats and Commands**: Fully customize the plugin’s formats and commands to your liking.
+7. **Free Google Translation API**: Use the [Google Translator](https://translate.google.com/) API at no additional cost for easy access translations.
+8. **Plugin Self-Translation**: ChatTranslator even translates the plugin's internal formats and console communications.
 9. **Connection Loss Indicator**: If you lose your internet connection, the formats will carry the prefix `[!]` to indicate it.
-10. **Free Google Translation API**: Use the [Google Translator](https://translate.google.com/) API at no additional cost for easy access translations.
-11. **Bungeecord Support**: Compatible with Bungeecord and its derivatives with storage options: For local: `YAML`, `SQLite` and, for Bungeecord: `MySQL` / `MariaDB`.
-12. **Minecraft to Discord Synchronization**: Connect your Minecraft account to Discord with the command `/cht link` and translate and sync messages or permissions between platforms.
+10. **Language Selection**: Change your language using the default command `/cht lang [Player] <Language Code>`.
+11. **Formats and texts**: ChT v2.0 introduces TEXTS! Translate this to any language and get it via `{index}` from any format.
+12. **Automatic Language Detection**: ChatTranslator automatically detects the language in which you have your Minecraft set!
+13. **Bungeecord Support**: Compatible with Bungeecord and its derivatives with storage options: For local: `YAML`, `SQLite` and, for Bungeecord: `MySQL` / `MariaDB`.
+14. **Minecraft to Discord Synchronization**: Connect your Minecraft to Discord with the default command `/dst link` and translate and sync messages or permissions between platforms.
 
-## Optional Integrations:
-13. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Dynamically control chats based on specific conditions, such as: Formatting groups by rank using [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
-14. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Enjoy all PAPI variables plus the ChatTranslator expansion already integrated: CoreTranslator.
+## Optional integrations, boost ChT!:
+15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Dynamically control chats based on specific conditions, such as: Formatting groups by rank using [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
+16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Enjoy all PAPI variables plus the ChatTranslator expansion already integrated: CoreTranslator with SpEL syntax to control the ChT API.
 
 ## Installation
 
