@@ -32,7 +32,7 @@ public class Signs implements Listener {
 		if (plugin.isDisabled() || !Config.TranslateOthers.Signs.ENABLE.IF())
 			return;
 
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			Block block = event.getClickedBlock();
 
 			if (block == null || !(block.getState() instanceof Sign))
