@@ -1,47 +1,38 @@
 package me.majhrs16.cht.util.cache;
 
-public class SpamTracker {
-	private final int[] counts = new int[2];
-	private final int[] max = new int[2];
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.List;
 
-	public SpamTracker(int actualCount, int totalCount, int actualMax, int totalMax) {
-		setActualCount(actualCount);
-		setTotalCount(totalCount);
-		setActualMax(actualMax);
-		setTotalMax(totalMax);
+public class SpamTracker<T> {
+	private int count;
+	private final ConcurrentLinkedQueue<T> chat;
+
+	public SpamTracker() {
+		this.chat = new ConcurrentLinkedQueue<>();
+		this.count = 0;
 	}
 
-	// Setters
-	public void setActualCount(int actualCount) {
-		this.counts[0] = actualCount;
+/////////////
+// SETTERS
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 
-	public void setTotalCount(int totalCount) {
-		this.counts[1] = totalCount;
+/////////////
+// GETTERS
+
+	public int getCount() {
+		return count;
 	}
 
-	public void setActualMax(int actualMax) {
-		this.max[0] = actualMax;
+	public ConcurrentLinkedQueue<T> getChat() {
+		return chat;
 	}
 
-	public void setTotalMax(int totalMax) {
-		this.max[1] = totalMax;
-	}
-
-	// Getters
-	public int getActualCount() {
-		return counts[0];
-	}
-
-	public int getTotalCount() {
-		return counts[1];
-	}
-
-	public int getActualMax() {
-		return max[0];
-	}
-
-	public int getTotalMax() {
-		return max[1];
+	public List<T> getChat(Predicate<T> filter) {
+		return chat.stream().parallel().filter(filter).collect(Collectors.toList());
 	}
 }
