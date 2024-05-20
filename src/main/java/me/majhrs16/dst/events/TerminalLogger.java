@@ -100,7 +100,7 @@ public class TerminalLogger {
 								}
 
 							} else {
-								API.sendMessage(new Message().format("discord-translator."));
+								API.sendMessage(new Message().format("discord-translator.terminalLogger.LogReaderTask"));
 								return;
 							}
 						}
@@ -134,10 +134,32 @@ public class TerminalLogger {
 
 	private static Map<String, String> createAnsiMap() {
 //		Codigos de color ANSI originales:
-//			[30m0[34m1[32m2[36m3[31m4[35m5[33m6[37m7[90m8[94m9[92ma[96mb[91mc[95md[93me[97mf[mr
+//			SPIGOT: [30m0[34m1[32m2[36m3[31m4[35m5[33m6[37m7[90m8[94m9[92ma[96mb[91mc[95md[93me[97mf[mr
+//			PAPER:  [38;5;0m0[38;5;4m1[38;5;2m2[38;5;6m3[38;5;1m4[38;5;5m5[38;5;3m6[38;5;7m7[38;5;8m8[38;5;12m9[38;5;10ma[38;5;14mb[38;5;9mc[38;5;13md[38;5;11me[38;5;15mf[0m
 
 //		Codigos de color ANSI re-mapeados:
 		Map<String, String> map = new HashMap<>();
+//			PAPER - Total mapping!!
+			map.put("\u001B[38;5;0m",  "\u001B[30m"); // 0
+			map.put("\u001B[38;5;4m",  "\u001B[34m"); // 1
+			map.put("\u001B[38;5;2m",  "\u001B[32m"); // 2
+			map.put("\u001B[38;5;6m",  "\u001B[36m"); // 3
+			map.put("\u001B[38;5;1m",  "\u001B[31m"); // 4
+			map.put("\u001B[38;5;5m",  "\u001B[35m"); // 5
+			map.put("\u001B[38;5;3m",  "\u001B[33m"); // 6
+			map.put("\u001B[38;5;7m",  "\u001B[37m"); // 7
+
+			map.put("\u001B[38;5;8m",  "\u001B[0m");  // 8 > RESET
+			map.put("\u001B[38;5;12m", "\u001B[34m"); // 9 > 1
+			map.put("\u001B[38;5;10m", "\u001B[32m"); // A > 2
+			map.put("\u001B[38;5;14m", "\u001B[36m"); // B > 3
+			map.put("\u001B[38;5;9m",  "\u001B[31m"); // C > 4
+			map.put("\u001B[38;5;13m", "\u001B[35m"); // D > 5
+			map.put("\u001B[38;5;11m", "\u001B[33m"); // E > 6
+			map.put("\u001B[38;5;15m", "\u001B[37m"); // F > 7
+
+//			SPIGOT - Partial mapping!
+			map.put("\u001B[90m", "\u001B[m");   // 8 > RESET
 			map.put("\u001B[94m", "\u001B[34m"); // 9 > 1
 			map.put("\u001B[92m", "\u001B[32m"); // A > 2
 			map.put("\u001B[96m", "\u001B[36m"); // B > 3
@@ -145,6 +167,8 @@ public class TerminalLogger {
 			map.put("\u001B[95m", "\u001B[35m"); // D > 5
 			map.put("\u001B[93m", "\u001B[33m"); // E > 6
 			map.put("\u001B[97m", "\u001B[37m"); // F > 7
+
+//			GLOBAL
 			map.put("\u001B[m",   "\u001B[0m");  // RESET
 		return map;
 	}
