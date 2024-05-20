@@ -1,100 +1,91 @@
-<img align="left" src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="Icono de ChatTranslator"></img>
+<img align="left" src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="ChatTranslator Icon"></img>
 <h1>ChatTranslator</h1>
 
-# Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.6
-Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin mayor problema.
+# Spigot Plugin Translator and Powerful Chat Formatter for Minecraft 1.5.2 - 1.20.6
+With ChatTranslator, you can communicate with players from all over the world effortlessly.
 
-## Características:
-1. **Colores Personalizados**: Usa colores `#RRGGBB`! Solo para 1.16.5+ y mensajes NO JSON.
-2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes través del JSON! (1.7.2+)
-3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
-4. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!
-5. **Traducción de Carteles**: Simplemente haz `Shift` + `Click izquierdo` en un letrero para traducirlo al instante.
-7. **Formatos y Comandos Personalizados**: Personaliza completamente los formatos y comandos del plugin según tus preferencias.
-10. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, los formatos llevarán el prefijo `[!]` para indicarlo.
-6. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
-8. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los formatos internos del plugin y las comunicaciones a la consola.
-9. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
-11. **Sincronizacion entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce y sincroniza mensajes o permisos entre plataformas.
-12. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: Para local: `YAML`, `SQLite` y, para Bungeecord: `MySQL` / `MariaDB`.
+## Features:
+1. **Custom Colors**: Use `#RRGGBB` colors! Only for 1.16.5+ and non-JSON messages.
+2. **Advanced Messages**: Further customize message formats through JSON! (1.7.2+)
+3. **Sign Translation**: Simply `Shift` + `Left Click` on a sign to translate it instantly.
+4. **Configurable Anti-Spam Protection**: Prevent chat spam with adjustable message limits per tick.
+5. **Custom Formats and Commands**: Fully customize the plugin’s formats and commands to your liking.
+6. **Language Selection**: Change your language using the default command `/cht lang [Player] <Language Code>`.
+7. **Plugin Self-Translation**: ChatTranslator even translates the plugin's internal formats and console communications.
+8. **Automatic Language Detection**: ChatTranslator automatically detects the language in which you have your Minecraft set!
+9. **Connection Loss Indicator**: If you lose your internet connection, the formats will carry the prefix `[!]` to indicate it.
+10. **Free Google Translation API**: Use the [Google Translator](https://translate.google.com/) API at no additional cost for easy access translations.
+11. **Bungeecord Support**: Compatible with Bungeecord and its derivatives with storage options: For local: `YAML`, `SQLite` and, for Bungeecord: `MySQL` / `MariaDB`.
+12. **Minecraft to Discord Synchronization**: Connect your Minecraft account to Discord with the command `/cht link` and translate and sync messages or permissions between platforms.
 
-## Opciones acoplables:
-15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla dinamicamente los chats en base a condiciones específicas,
-    Como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/)
-16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada: CoreTranslator.
+## Optional Integrations:
+13. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Dynamically control chats based on specific conditions, such as: Formatting groups by rank using [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
+14. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Enjoy all PAPI variables plus the ChatTranslator expansion already integrated: CoreTranslator.
 
-## Instalación
+## Installation
 
-Para instalar ChatTranslator, sigue los siguientes pasos:
+To install ChatTranslator, follow these steps:
 
-1. Descarga la ultima version de ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases/latest).
-2. Pon el archivo ChatTranslator.jar en la carpeta de plugins de tu servidor.
-3. Reinicia tu servidor.
+1. Download the latest version of ChatTranslator from [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) or [GitHub](https://github.com/CreativeMD/ChatTranslator/releases/latest).
+2. Place the ChatTranslator.jar file in your server’s plugins folder.
+3. Restart your server.
 
-## Uso
+## Usage
 
-Una vez instalado, puedes personalizar la configuración y/o formatos de ChatTranslator modificando los archivos `config.yml`, y `formats.yml` en la carpeta del plugin.
+Once installed, you can customize ChatTranslator’s settings and/or formats by modifying the `config.yml` and `formats.yml` files in the plugin’s folder.
 
-ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y una vez empiezas a chatear, se traduciran entre si automaticamente(Por defecto, dependiendo del idioma de su Minecraft).
+ChatTranslator activates automatically on your server upon installation. Once you start chatting, messages will be translated automatically (by default, depending on the language of your Minecraft).
 
-Si deseas volver a la deteccion automatica tras establecer un idioma estatico, puedes hacerlo usando el comando por defecto: `/cht lang [jugador] auto`.
+If you wish to return to automatic detection after setting a static language, you can do so using the default command: `/cht lang [player] auto`.
 
-## Compilación(Para desarrolladores)
+## Building (For Developers)
 
-### Sin IDE.
+### Without IDE.
 
-1. Asegúrate de tener instalado preferiblemente Java Development Kit (JDK) 8 en tu sistema.
-2. Clona el repositorio ChatTranslator desde GitHub a tu máquina local. Puedes hacerlo descargando el código fuente como un archivo ZIP y extrayéndolo o usando git:
+1. Ensure you have preferably Java Development Kit (JDK) 8 installed on your system.
+2. Clone the ChatTranslator repository from GitHub to your local machine. You can do this by downloading the source code as a ZIP file and extracting it or using git:
 
-   ```
-   git clone https://github.com/Majhrs16/ChatTranslator/
-   ```
+   `git clone https://github.com/Majhrs16/ChatTranslator/`
 
-3. Navega al directorio del proyecto:
+3. Navigate to the project directory:
 
-   ```
-   cd ChatTranslator
-   ```
+4. Download the required dependencies and place them in the `Libs` folder within the project:
 
-4. Descarga las dependencias requeridas y colócalas en la carpeta `Libs` dentro del proyecto:
+   - [Java Discord API (JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.24-withDependencies-min.jar)
 
-   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.24-withDependencies-min.jar)
+5. Finally, run `gradlew` with the `shadowJar` parameter:
 
-5. Y ya por ultimo, ejecuta el `gradlew` con el parametro `shadowJar`:
+This will compile all source files and generate a usable final file: `./build/libs/ChatTranslator-v2.0.jar`.
 
-   Esto compilará todos los archivos fuente y generará un archivo final usable: `./build/libs/ChatTranslator-v2.0.jar`.
+And that's it! `:D`
 
-Y eso es todo! :D
+### With IntelliJ IDEA.
 
-### Con IntelliJ IDEA.
+Follow these steps to import ChatTranslator into IntelliJ IDEA:
 
-Siga estos pasos para importar ChatTranslator en IntelliJ IDEA:
+1. Clone the ChatTranslator repository from GitHub to your local machine. You can do this by downloading the source code as a ZIP file and extracting it or using git:
 
-1. Clona el repositorio ChatTranslator desde GitHub a tu máquina local. Puedes hacerlo descargando el código fuente como un archivo ZIP y extrayéndolo o usando git:
+   - `git clone https://github.com/Majhrs16/ChatTranslator/`
 
-   ```
-   git clone https://github.com/Majhrs16/ChatTranslator/
-   ```
+2. Download the required dependencies and place them in the `Libs` folder within the project:
 
-2. Descarga las dependencias requeridas y colócalas en la carpeta `Libs` dentro del proyecto:
+   - [Java Discord API (JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
 
-   - [Java Discord API(JDA)](https://ci.dv8tion.net/job/JDA5/lastSuccessfulBuild/artifact/build/libs/JDA-5.0.0-beta.13_c75c04e-withDependencies-min.jar)
+3. Open IntelliJ IDEA and select "Open Project" from the main menu.
 
-3. Abre IntelliJ IDEA y selecciona "Abrir proyecto" desde el menú principal.
+4. Navigate to the folder where you cloned or unzipped the project and select it.
 
-4. Navega hasta la carpeta donde clonaste o descomprimiste el proyecto y selecciónala.
+5. IntelliJ IDEA will automatically detect that you are working on a Java project with Gradle.
 
-5. IntelliJ IDEA detectará automáticamente que estás trabajando en un proyecto de Java con gradle.
+6. Ensure you have preferably JDK 8 installed.
 
-6. Asegurate de tener instalado preferiblemente el JDK 8.
+7. Once imported and configured, you can start working on the project.
 
-7. Una vez importado y configurado, puedes comenzar a trabajar en el proyecto.
+## [Usage Statistics](https://bstats.org/plugin/bukkit/ChT/20251):
 
-## [Estadisticas de uso](https://bstats.org/plugin/bukkit/ChT/20251):
+<img align="center" src="https://bstats.org/signatures/bukkit/ChT.svg" alt="ChatTranslator Usage Statistics">
 
-<img align="center" src="https://bstats.org/signatures/bukkit/ChT.svg" alt="Historial de uso de ChatTranslator">
-
-## Lista de idiomas soportados:
+## Supported Languages List:
 
 ```
 AF    = Afrikaans,
@@ -157,7 +148,7 @@ JV    = basa jawa,
 JW    = basa jawa,
 KN    = ಕ್ಯಾನರ್ಸ್,
 KK    = қазақ,
-KM    = ខ្មែរ,
+KM    =  ខ្មែរ,
 RW    = Kiñarwanda,
 GOM   = कोंकणी,
 KO    = 한국인,
@@ -182,7 +173,7 @@ MI    = Maori,
 MR    = मराठी,
 LUS   = Mizo tawng,
 MN    = Монгол,
-MY    = မြန်မာ,
+MY    =  မြန်မာ,
 NE    = नेपाली,
 NO    = norsk,
 NY    = Nyanja Chichewa,
@@ -235,23 +226,23 @@ YO    = Yoruba,
 ZU    = Zulu.
 ```
 
-## Solución de problemas
+## Troubleshooting
 
-Si tienes problemas con ChatTranslator, revisa la documentación del plugin y los recursos de soporte en los siguientes enlaces:
+If you encounter issues with ChatTranslator, check the plugin documentation and support resources at the following links:
 
 - [ChatTranslator wiki](https://github.com/Majhrs16/ChatTranslator/wiki)
 - [Discord](https://discord.gg/kZxHnSVPTg)
 
-## Contribución
+## Contribution
 
-Si deseas contribuir al desarrollo de ChatTranslator, puedes enviar solicitudes de extracción o informes de problemas al [repositorio de GitHub](https://github.com/Majhrs16/ChatTranslator) o atravez del [Discord](https://discord.gg/kZxHnSVPTg). Tu contribución es muy apreciada.
+If you would like to contribute to the development of ChatTranslator, you can submit pull requests or issue reports to the [GitHub repository](https://github.com/Majhrs16/ChatTranslator) or through [Discord](https://discord.gg/kZxHnSVPTg). Your contribution is greatly appreciated.
 
-## Licencia
+## License
 
-ChatTranslator está licenciado bajo la Licencia GPL v3.0. Consulta el archivo [LICENSE](resources/LICENSE) para más detalles.
+ChatTranslator is licensed under the GPL v3.0 License. See the [LICENSE](resources/LICENSE) file for more details.
 
-## Soporte
+## Support
 
-Para soporte o ayuda, únete a nuestro servidor de [Discord](https://discord.gg/kZxHnSVPTg).
+For support or help, join our [Discord server](https://discord.gg/kZxHnSVPTg).
 
-¡Gracias por usar ChatTranslator! Si tienes alguna pregunta o necesitas ayuda, no dudes en preguntar.
+Thank you for using ChatTranslator! If you have any questions or need assistance, feel free to ask.
