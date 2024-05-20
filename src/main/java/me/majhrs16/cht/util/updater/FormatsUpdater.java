@@ -79,6 +79,9 @@ public class FormatsUpdater {
 		for (String format : section.getStringList(path)) {
 			String preformat = format;
 
+//			Eliminar secuencias de escape
+			preformat = preformat.replace("\\t", "");
+
 //			Eliminar secuencias &x
 			preformat = preformat.replaceAll("&[a-f0-9]", "");
 
@@ -108,12 +111,36 @@ public class FormatsUpdater {
 		return new List[] {formats, texts};
 	}
 
+	private void fixAccess(ConfigurationSection old_formats, String key, String replacement) {
+		List<String> messages = old_formats.getStringList(key);
+		messages.replaceAll(s -> s.replaceAll("[%$]ct_messages[$%]", replacement));
+		old_formats.set(key, messages);
+	}
+
+	private void fixGroupFormatAccess(ConfigurationSection old_formats, String key, String replacement) {
+		fixAccess(old_formats, key + ".messages", replacement);
+		fixAccess(old_formats, key + ".toolTips", replacement);
+	}
+
 	void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
 		FileConfiguration config = plugin.config.get();
 		ConfigurationSection old_formats = config.getConfigurationSection("formats");
 
 		if (old_formats == null)
 			return;
+
+		String exit = "ha abandonado el juego";
+		String entry = "se ha unido al juego";
+
+		fixGroupFormatAccess(old_formats, "to_exit", exit);
+		fixGroupFormatAccess(old_formats, "to_entry", entry);
+		fixGroupFormatAccess(old_formats, "from_exit", exit);
+		fixGroupFormatAccess(old_formats, "from_entry", entry);
+
+//		NO FUNCIONAN????
+		fixGroupFormatAccess(old_formats, "to_exit_console", exit);
+		fixGroupFormatAccess(old_formats, "to_exit_discord", exit);
+		fixGroupFormatAccess(old_formats, "to_entry_discord", entry);
 
 		for (String key : old_formats.getKeys(false)) {
 			List<String>[] messages  = upgradeGroupFormat(old_formats, key + ".messages");
