@@ -36,21 +36,6 @@ public class DiscordTranslator {
 			throw new InvalidTokenException();
 
 		JDABuilder builder = JDABuilder.createDefault(bot_token);
-/*
-		builder.setMemberCachePolicy(MemberCachePolicy.ALL);
-		builder.setChunkingFilter(ChunkingFilter.ALL);
-		builder.enableCache(CacheFlag.ROLE_TAGS);
-		builder.disableCache(
-			CacheFlag.MEMBER_OVERRIDES,
-			CacheFlag.CLIENT_STATUS,
-			CacheFlag.ONLINE_STATUS,
-			CacheFlag.VOICE_STATE,
-			CacheFlag.FORUM_TAGS,
-			CacheFlag.ACTIVITY,
-			CacheFlag.STICKER,
-			CacheFlag.EMOJI
-		);
-*/
 		builder.enableIntents(
 			GatewayIntent.MESSAGE_CONTENT,
 			GatewayIntent.GUILD_PRESENCES,
