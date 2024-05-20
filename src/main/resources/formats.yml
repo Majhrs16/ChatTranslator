@@ -718,12 +718,13 @@ commands:
               - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
 
         to:
-          texts:
-            - "ha cambiado el idioma de"
-            - "a"
+          messages:
+            texts:
+              - "ha cambiado el idioma de"
+              - "a"
 
-          formats:
-            - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
+            formats:
+              - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
 
   toggler:
     toggleOffPlayer:
