@@ -115,7 +115,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		if (result instanceof String[])
 			result = Arrays.asList((String[]) result); // List.asArray....
 
-		return result.toString();
+		return result == null ? "" : result.toString();
 	}
 
 	public String sendDiscord(Player player, String uuid, String channels) {
