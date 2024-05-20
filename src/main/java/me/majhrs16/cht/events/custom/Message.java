@@ -43,6 +43,7 @@ public class Message extends Event implements Cancellable {
 
 	private byte is_color          = 1; // -1 = Disable color, 0 color by permission, 1 force color;
 	private boolean is_format_papi = true;
+	private boolean _is_processed  = false;
 	private boolean is_cancelled   = false;
 	private String last_format     = "UNKNOWN";
 	private Formats messages       = new Formats();
@@ -393,5 +394,14 @@ public class Message extends Event implements Cancellable {
 
 	public UUID getUUID() {
 		return uuid;
+	}
+
+//	INTERNAL USE, DO NOT USE;
+	public boolean _isProcessed() {
+		return _is_processed;
+	}
+
+	public void _setProcessed(boolean processed) {
+		_is_processed = processed;
 	}
 }
