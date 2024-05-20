@@ -1,39 +1,39 @@
 <img align="left" src="https://github.com/Majhrs16/ChatTranslator/blob/main/icon.png" width="25%" height="25%" alt="Icono de ChatTranslator"></img>
 <h1>ChatTranslator</h1>
 
-# Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.4
+# Plugin Spigot Traductor y Potente Formateador De Chat Para Minecraft 1.5.2 - 1.20.6
 Con ChatTranslator podrás comunicarte con jugadores de todo el mundo sin mayor problema.
 
 ## Características:
 1. **Colores Personalizados**: Usa colores `#RRGGBB`! Solo para 1.16.5+ y mensajes NO JSON.
-2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes aClosing tag matches nothing través del JSON! (1.7.2+)
+2. **Mensajes Avanzados**: Personaliza aun mas los formatos de mensajes través del JSON! (1.7.2+)
 3. **Selección de Idioma**: Cambia tu idioma usando el comando por defecto `/cht lang [Jugador] <Código de Idioma>`.
 4. **Detección Automática del Idioma**: ChatTranslator detecta automáticamente el idioma en el que tienes tu Minecraft!
-5. **Traducción de Carteles**: Simplemente haz `Click Derecho` o `Shift + Click derecho` en un letrero para traducirlo al instante.
+5. **Traducción de Carteles**: Simplemente haz `Shift` + `Click izquierdo` en un letrero para traducirlo al instante.
+7. **Formatos y Comandos Personalizados**: Personaliza completamente los formatos y comandos del plugin según tus preferencias.
+10. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, los formatos llevarán el prefijo `[!]` para indicarlo.
 6. **Protección Antispam Configurable**: Evita el spam en el chat con límites de mensajes por ticks que puedes ajustar a tu medida.
-7. **Mensajes y Comandos Personalizados**: Personaliza completamente los mensajes y comandos del plugin según tus preferencias.
-8. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los mensajes internos del plugin y las comunicaciones a la consola.
+8. **Traducción del Propio Plugin**: ChatTranslator traduce incluso los formatos internos del plugin y las comunicaciones a la consola.
 9. **API de Traducción de Google Gratuita**: Utiliza la API del [Traductor de Google](https://translate.google.com/) sin costo adicional para lograr traducciones de facil acceso.
-10. **Indicador de Pérdida de Conexión**: Si pierdes la conexión a Internet, las variables locales `ct_messages` llevarán el prefijo `[!]` para indicarlo.
-11. **Traducción entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce mensajes entre plataformas.
+11. **Sincronizacion entre Minecraft y Discord**: Conecta tu cuenta de Minecraft a Discord con el comando `/cht link` y traduce y sincroniza mensajes o permisos entre plataformas.
 12. **Soporte Bungeecord**: Compatible con Bungeecord y derivados gracias a las opciones de almacenamiento: Para local: `YAML`, `SQLite` y, para Bungeecord: `MySQL` / `MariaDB`.
 
 ## Opciones acoplables:
-14. *Compatibilidad Parcial con Otros Plugins de Chat**: Funciona con otros plugins populares de chat como [Chatty](https://www.spigotmc.org/resources/chatty-lightweight-universal-bukkit-chat-system-solution-1-7-10-1-19.59411/), y [ChatManager](https://www.spigotmc.org/resources/chat-manager-1-8-1-19-30-features-and-40-commands.52245/) a través del [ejemplo de configuración #3](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#soporte-parcial-para-otros-plugins-de-chat).
-15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla dinamicamente los chats en base a condiciones específicas, como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/).
-16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada.
- 
+15. **[ConditionalEvents](https://www.spigotmc.org/resources/conditionalevents-custom-actions-for-certain-events-1-8-1-19-4.82271/)**: Controla dinamicamente los chats en base a condiciones específicas,
+    Como por ejemplo: Grupos de formato por rango usando [LuckPerms](https://www.spigotmc.org/resources/luckperms.28140/)
+16. **[PlaceholderAPI (PAPI)](https://www.spigotmc.org/resources/placeholderapi.6245/)**: Disfruta de todas las variables de PAPI + la expansión de ChatTranslator ya integrada: CoreTranslator.
+
 ## Instalación
 
 Para instalar ChatTranslator, sigue los siguientes pasos:
 
-1. Descarga la ultima version de ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/history) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases).
+1. Descarga la ultima version de ChatTranslator desde [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) o [GitHub](https://github.com/CreativeMD/ChatTranslator/releases/latest).
 2. Pon el archivo ChatTranslator.jar en la carpeta de plugins de tu servidor.
 3. Reinicia tu servidor.
 
-Una vez instalado, puedes personalizar la configuración y/o formatos de ChatTranslator modificando los archivo `config.yml`, y `formats.yml` en la carpeta del plugin.
-
 ## Uso
+
+Una vez instalado, puedes personalizar la configuración y/o formatos de ChatTranslator modificando los archivos `config.yml`, y `formats.yml` en la carpeta del plugin.
 
 ChatTranslator se activa automáticamente en tu servidor cuando lo instalas. Y una vez empiezas a chatear, se traduciran entre si automaticamente(Por defecto, dependiendo del idioma de su Minecraft).
 
@@ -62,7 +62,7 @@ Si deseas volver a la deteccion automatica tras establecer un idioma estatico, p
 
 5. Y ya por ultimo, ejecuta el `gradlew` con el parametro `shadowJar`:
 
-   Esto compilará todos los archivos fuente y generará un archivo final usable: `./build/libs/ChatTranslator-v2.0-all.jar`.
+   Esto compilará todos los archivos fuente y generará un archivo final usable: `./build/libs/ChatTranslator-v2.0.jar`.
 
 Y eso es todo! :D
 
@@ -88,9 +88,7 @@ Siga estos pasos para importar ChatTranslator en IntelliJ IDEA:
 
 6. Asegurate de tener instalado preferiblemente el JDK 8.
 
-8. Recuerda marcar la carpeta `resources` como `Resources root`
-
-8. Una vez importado y configurado, puedes comenzar a trabajar en el proyecto.
+7. Una vez importado y configurado, puedes comenzar a trabajar en el proyecto.
 
 ## [Estadisticas de uso](https://bstats.org/plugin/bukkit/ChT/20251):
 
