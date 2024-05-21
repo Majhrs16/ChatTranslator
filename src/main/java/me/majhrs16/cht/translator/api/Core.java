@@ -61,6 +61,9 @@ public interface Core {
 			for (int i2 = count; i2 > 0; i2--) {
 				int padding = (70 - util.stripColor(newArray[i].replace("%ct_expand%", ""))[0].length()) / i2;
 
+				if (padding <= 0)
+					padding = 1;
+
 				logger.debug("padding: %s", padding);
 				logger.debug("i2:      %s", i2);
 
