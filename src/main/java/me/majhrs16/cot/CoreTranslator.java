@@ -1,5 +1,9 @@
 package me.majhrs16.cot;
 
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.ExpressionParser;
+
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import me.majhrs16.lib.network.translator.TranslatorBase;
@@ -11,8 +15,6 @@ import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
-
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +78,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case VAR:
-						result = property(
+						result = expressionExecutor(
 							matcher.group(1), // UUID
 							matcher.group(2)  // Path
 						);
@@ -94,7 +96,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		return result;
 	}
 
-	public String property(String uuid, String path) {
+	public String expressionExecutor(String uuid, String expression) {
 		Object result;
 		Message from = ChatLimiter.get(UUID.fromString(uuid));
 
@@ -102,10 +104,13 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return null;
 
 		try {
+			ExpressionParser parser = new SpelExpressionParser();
+
 			StandardEvaluationContext context = new StandardEvaluationContext();
 				context.setVariable("from", from);
 				context.setVariable("to", from.getTo());
-			result = ExpressionExecutor.invoke(context, path);
+
+			result = parser.parseExpression(expression).getValue(context);
 
 		} catch (Exception e) {
 			plugin.logger.error(e.toString());
