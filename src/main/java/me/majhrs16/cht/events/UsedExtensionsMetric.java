@@ -5,12 +5,12 @@ import me.majhrs16.dst.DiscordTranslator;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cot.CoreTranslator;
 
-import org.bukkit.plugin.Plugin;
-import org.bukkit.Bukkit;
-
 import java.util.concurrent.Callable;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.bukkit.plugin.Plugin;
+import org.bukkit.Bukkit;
 
 public class UsedExtensionsMetric implements Callable<Map<String, Map<String, Integer>>> {
 
