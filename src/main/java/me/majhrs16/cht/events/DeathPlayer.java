@@ -22,13 +22,18 @@ public class DeathPlayer implements Listener {
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity().getPlayer();
-
 		TranslatorBase.LanguagesBase from_lang = util.convertStringToLang("en");
+		Player player                          = event.getEntity().getPlayer();
+		String message                         = event.getDeathMessage();
+
+		if (message == null) return;
+
+		for (Player to_player : BukkitUtils.getOnlinePlayers())
+			message = message.replace(to_player.getName(), "`" + to_player.getName() + "`");
 
 		Message model = util.createChat(
 			player,
-			new String[] { event.getDeathMessage() },
+			new String[] { message },
 			from_lang,
 			API.getLang(player),
 			"death"
@@ -36,7 +41,7 @@ public class DeathPlayer implements Listener {
 
 		Message console = util.createChat(
 				Bukkit.getConsoleSender(),
-				new String[] { event.getDeathMessage() },
+				new String[] { message },
 				from_lang,
 				API.getLang(Bukkit.getConsoleSender()),
 				"death_console")
@@ -51,7 +56,7 @@ public class DeathPlayer implements Listener {
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			Message model_discord = util.createChat(
 				player,
-				new String[] { event.getDeathMessage() },
+				new String[] { message },
 				util.convertStringToLang("en"),
 				plugin.storage.getDefaultLang(),
 				"death_discord"
