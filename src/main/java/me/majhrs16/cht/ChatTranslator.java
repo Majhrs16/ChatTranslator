@@ -21,6 +21,7 @@ import me.majhrs16.cht.events.Metrics;
 import me.majhrs16.cht.commands.cht.*;
 import me.majhrs16.cht.events.*;
 
+import me.majhrs16.cht.util.util;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
 import me.majhrs16.lib.minecraft.events.CommandListener;
@@ -238,6 +239,13 @@ public class ChatTranslator extends PluginBase {
 		chatLimiter = new ChatLimiter();
 		chatLimiter.start();
 
+		double version = util.getMinecraftVersion();
+		if (version > 7.2 && version < 12.0)
+			eventManager.addExecutor("achievements", new Achievements());
+
+		else if (version > 12.2)
+			eventManager.addExecutor("advancements", new Advancements());
+
 		if (Dependencies.PAPI.exist()) {
 			coreTranslator = new CoreTranslator();
 			coreTranslator.register();
@@ -251,6 +259,8 @@ public class ChatTranslator extends PluginBase {
 		eventManager.removeExecutors("messageListener");
 		eventManager.removeExecutors("commandListener");
 		eventManager.removeExecutors("accessPlayer");
+		eventManager.removeExecutors("advancements");
+		eventManager.removeExecutors("achievements");
 		eventManager.removeExecutors("deathPlayer");
 		eventManager.removeExecutors("signs");
 		eventManager.removeExecutors("chat");
