@@ -1,23 +1,23 @@
-## Grupo de formato de chats.
-Los "Grupos de formatos de chats" son increiblemente utiles y poderosos incluso sin la total modularidad como en las versiones anteriores.
+## Chat Format Group.
+Chat Format Groups are incredibly useful and powerful even without full modularity as in previous versions.
 
 ```yaml
-NombreDelGrupoDeFormato:
+FormatGroupName:
   messages:
     texts:
-      - "Esto se traducira!"
+      - "This will be translated!"
 
     formats:
-      - '{"text": "Aqui van los formatos de mensajes JSON que se enviaran", "color": "#FF0000"}'
-      - "#00FF00 Aqui van los formatos de mensajes que se enviaran"
-      - "&9Esto no se traducira, {0}"
+      - '{"text": "Here are the JSON message formats that will be sent", "color": "#FF0000"}'
+      - "#00FF00 Here are the message formats that will be sent"
+      - "&9This will not be translated, {0}"
 
   toolTips:
     formats:
-      - "#00FF7F Aqui van los tooltips que se enviaran"
+      - "#00FF7F Here are the tooltips that will be sent"
 
   sounds:
-    <Aqui va el nombre del sonido>:
+    <Here goes the sound name>:
       volume: 1
       pitch: 1
 
@@ -27,40 +27,40 @@ NombreDelGrupoDeFormato:
 ```
 
 ### ToolTips
-Este se traducira siempre y cuando sea diferente el idioma entre el remitente y destinario. Pero al mismo tiempo tendras igualmente acceso a las variables.
-
---- 
-
-## Variables locales y externas.
-Hay que tener en cuenta unas cosas importantes:
-- Estos 2 tipos de variable se pueden acceder desde los formatos de mensajes y tooltips entre remitente y destinario.
-  - Las modernas `$variables$` seran del destinario tanto para PlaceholderAPI como para las locales.
-  - Las `%variables%` clasicas seran del remitente tanto para PlaceholderAPI como para las locales.
-- No importa las mAyUsCuLaS, siempre se procesaran(A peticion de DracoHero).
-- ChT admite %sub {variables}%.
-
-
-Variables locales: Sin necesidad de PlaceholderAPI...
-- `%ct_expand%` Expande horizontalmente hasta el maximo del ancho del chat(Se puede usar varias veces).
-- `%player_name%` Se remplazara por el nombre del remitente.
-- `$player_name$` Se remplazara por el nombre del destinario.
-- `%ct_messages%` Se remplazara normalmente por los mensajes originales sin traducir.
-- `$ct_messages$` Se remplazara normalmente por los mensajes ya traducidos.
-- `%ct_tooLTips%` Se remplazara normalmente por los mensajes originales sin traducir de lps toolTips.
-- `$ct_tooLTips$` Se remplazara normalmente por los mensajes ya traducidos de los toolTips. 
-- `%ct_lang_source%` Se remplazara por el idioma inicial del remitente.
-- `$ct_lang_source$` Se remplazara por el idioma inicial del destinario.
-- `%ct_lang_target%` Se remplazara por el idioma destino del remitente.
-- `$ct_lang_target$` Se remplazara por el idioma destino del destinario.
-
-Variables externas:
-- Consulta la sección de [CoreTranslator](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#coretranslator) para más detalles sobre las variables externas.
-- Basicamente cualquier variable de PlaceholderAPI esta disponible en los formatos de mensajes y toolTips.
+This will be translated as long as the language between the sender and recipient is different. But at the same time, you will still have access to the variables.
 
 ---
 
-## Ejemplos de uso:
-### Sin chat, ideal para lobbys de login ;D
+## Local and External Variables.
+Important things to note:
+- These 2 types of variables can be accessed from message formats and tooltips between sender and recipient.
+  - Modern `$variables$` will be for the recipient for both PlaceholderAPI and local ones.
+  - Classic `%variables%` will be for the sender for both PlaceholderAPI and local ones.
+- Case doesn't matter, they will always be processed (At the request of DracoHero).
+- ChT supports %sub {variables}%.
+
+
+Local variables: Without the need for PlaceholderAPI...
+- `%ct_expand%` Expands horizontally to the maximum width of the chat (Can be used multiple times).
+- `%player_name%` Will be replaced by the sender's name.
+- `$player_name$` Will be replaced by the recipient's name.
+- `%ct_messages%` Will normally be replaced by the original untranslated messages.
+- `$ct_messages$` Will normally be replaced by the already translated messages.
+- `%ct_toolTips%` Will normally be replaced by the original untranslated tooltips.
+- `$ct_toolTips$` Will normally be replaced by the already translated tooltips.
+- `%ct_lang_source%` Will be replaced by the sender's initial language.
+- `$ct_lang_source$` Will be replaced by the recipient's initial language.
+- `%ct_lang_target%` Will be replaced by the sender's target language.
+- `$ct_lang_target$` Will be replaced by the recipient's target language.
+
+External variables:
+- Consult the [CoreTranslator](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-Wiki#coretranslator) section for more details on external variables.
+- Basically any PlaceholderAPI variable is available in message formats and tooltips.
+
+---
+
+## Usage Examples:
+### No chat, ideal for login lobbies ;D
 ```yaml
 from:
   sourceLang: es
@@ -72,7 +72,7 @@ from:
       - "&c{0}&f."
 ```
 
-### Chat al estilo clasico!
+### Classic style chat!
 
 ```yaml
 from:
@@ -90,15 +90,15 @@ to:
       - "&f[&6%ct_lang_source%&f] &a%ct_messages%"
 ```
 
-### Soporte parcial para otros plugins de chat.
-Para este ejemplo se requiere PlaceholderAPI.
+### Partial support for other chat plugins.
+PlaceholderAPI is required for this example.
 
 ```yaml
 # FORMATS.yml
 to:
   messages:
     formats:
-    - '&e[&6%cot_translate; es; %ct_lang_target%; Traduccion%&e]'
+    - '&e[&6%cot_translate; en; %ct_lang_target%; Translated%&e]'
     - ''
 
   toolTips:
@@ -120,7 +120,7 @@ show-native-chat:
   clear-recipients: false
 ```
 
-### Personalizacion al maximo con JSON!!
+### Maximum customization with JSON!!
 
 ```yaml
 to:
@@ -142,18 +142,17 @@ to:
       pitch: 1
 ```
 
-### Chat condicionado con ConditionalEvents(Avanzado)
-Para este ejemplo en concreto, se necesita unas cuantas dependencias:
+### Conditional chat with ConditionalEvents (Advanced)
+For this particular example, a few dependencies are needed:
 - ConditionalEvents
 - ChatTranslator
 - PlaceholderAPI
   - Luckperms
 - Luckperms
 
-Para usar esta configuracion tal cual, debe de tener previamente 3 grupos en Luckperms:
-- default) Contiene el prefijo user
-- vip) Hereda de default, y contiene el prefijo vip
-- owner) Hereda de vip, y contiene el prefijo owner
+To use this configuration as is, you must have 2 groups in Luckperms beforehand:
+- default
+- owner
 
 ```yaml
   ChT_Enhancer:
@@ -162,76 +161,73 @@ Para usar esta configuracion tal cual, debe de tener previamente 3 grupos en Luc
       event: me.majhrs16.cht.events.custom.Message
       player_variable: getSender()
       variables_to_capture:
-      - '%uuid%;getUUID()'
-      - '%type%;getSenderType()'
+        - '%uuid%;getUUID()'
+        - '%last_path%;getLastFormatPath()'
 
     conditions:
-    - "'%luckperms_prefix%' != ''"
-    - "%luckperms_prefix% != user"
-    - '%type% == CONSOLE execute to_owner_console'
-    - "%luckperms_prefix% == owner execute from_owner"
+      - "%last_path% !contains mention"
+      - "%luckperms_in_group_default% equals no"
+      - "%luckperms_in_group_owner% equals yes execute owner"
     
     actions:
-      from_owner:
-      - 'console_message: %cot_var; {uuid}; #from.format("from_owner")% '
-      - 'console_message: %cot_var; {uuid}; #from.getTo().format("to_owner")%'
-
-      to_owner_console:
-      - 'console_message: %cot_var; {uuid}; #from.getTo().format("to_owner_console")%'
+      owner:
+        - 'console_message: %cot_var; {uuid}; #from.format("from_owner")%'
+        - 'console_message: %cot_var; {uuid}; #to.format("to_owner")%'
 ```
 
 ---
 
 ## CoreTranslator
-Es una expansion para PlaceholderAPI integrada en ChatTranslator, a continuacion se explicara a detalle como usarlo:
+This is an expansion for PlaceholderAPI integrated into ChatTranslator, explained in detail below how to use it:
 
-Tener en cuenta:
-- CoreTranslator soporta %sub {variables}%
-- Todo lo que está {encerrado} entre llaves son variables externas proporcionadas por ConditionalEvents(capturadas) o PlaceholderAPI.
+Keep in mind:
+- CoreTranslator supports %sub {variables}%
+- Everything {enclosed} in braces are external variables provided by ConditionalEvents (captured) or PlaceholderAPI.
 
-### Modificar un mensaje al vuelo.
-cot_var permite no solo re formatear un mensaje al vuelo, sino tambien acceder a **cada funcion** del evento. Esto significa que ahora hay rienda suelta para tu imagincion.
+### Modify a message on the fly.
+`cot_var` allows not only reformatting a message on the fly, but also accessing **every function** of the event. This means there is now free rein for your imagination.
 
-Sintaxis:
+Syntax:
 `%cot_var; <uuid>; <method>%`
 
-Ejemplos:
-`%cot_var; <uuid>; format("from_My_group_format")%`
-`%cot_var; <uuid>; getTo().format("to_My_group_format")%`
-`%cot_var; <uuid>; getTo().setLangTarget(null)%`
-`%cot_var; <uuid>; getTo().setSender(null)%`
+Examples:
+`%cot_var; <uuid>; #from.format("from_My_group_format")%`
+`%cot_var; <uuid>; #to.format("to_My_group_format")%`
+`%cot_var; <uuid>; #to.getMessages().getText(0)%`
+`%cot_var; <uuid>; #to.getSenderName()%`
 
-### Enviar un mensaje a Discord usando DST.
-sendMessage permite enviar un mensaje a Discord(Si no se cancela ninguno antes) en formato JSON.
+### Send a message to Discord using DST.
+sendMessage allows sending a message to Discord (if none are canceled before) in JSON format.
 
 `%cot_sendDiscord; <uuid>%`
 
-Cabe mencionar que:
-- El remitente a pesar de no estar cancelado, nunca se enviara. Solo se usara para acceder a sus variables.
-- El destinario seria el mensaje que le llegara a config.discord.channels.chat. Y **NO** A CADA USUARIO.
+It should be mentioned that:
+- The sender, despite not being canceled, will never be sent. It will only be used to access its variables.
+- The recipient would be the message that reaches config.discord.channels.chat. And **NOT** TO EACH USER.
 
-### Enviar un mensaje al remitente y destinario.
-sendMessage permite enviar un mensaje nuevo al remitente y al destinario a la vez(Si no se cancela ninguno antes).
+### Send a message to the sender and recipient.
+sendMessage allows sending a new message to both the sender and the recipient at the same time (if none are canceled before).
 
 `%cot_send; <uuid>%`
 
-### Función placeholder para broadcast personalizado
-Esta función permite transmitir un model personalizado a múltiples jugadores de una manera muy configurable.
+### Placeholder function for custom broadcast
+This function allows broadcasting a custom model to multiple players in a very configurable way.
 
 `%cot_broadcast; <uuid>%`
 
-Recuerda que el modelo debe de estar construido asi:
-- from: Un formato normal.
-- to: El sender y targetLang deben ser `null`, ya que seran remplazados por el de cada destinario.
+Remember that the model must be built like this:
+- from: A normal format.
+- to: The sender and targetLang should be `null`, as they will be replaced by each recipient's.
 
-### Traducir un texto.
-translate permite unicamente traducir un mensaje de un idioma a otro.
+### Translate a text.
+Translate allows only translating a message from one language to another.
 
 `%cot_translate; <sourceLang>; <targetLang>; <mensaje>%`
 
-### Obtener el idioma de un jugador.
-Para obtener el idioma de un jugador, puedes utilizar: `%cot_lang; <player_name>%`.
+### Get a player's language.
+To get a player's language, you can use: `%cot_lang; <player_name>%`.
 
 ---
 
-Estos enfoques brindan una forma flexible de transmitir mensajes con diferentes formatos y destinatarios, mientras aprovecha las capacidades de traducción y personalización proporcionadas por ChT. Para mas detalles acerca de los metodos disponibles, puedes consultar la [Wiki API](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-API#clase-message) seccion `Clase Message`.
+These approaches provide a flexible way to convey messages with different formats and recipients while leveraging the translation and customization capabilities provided by ChT. For more details on the available methods, you can consult the [Wiki API](https://github.com/Majhrs16/ChatTranslator/wiki/ChatTranslator-API#clase-message) section `Message Class`.
+```
