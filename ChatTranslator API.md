@@ -1,5 +1,7 @@
 ChatTranslatorAPI es una herramienta muy poderosa tambien para desarrolladores, permite utilizar la funcionalidad del plugin en otros plugins de Spigot/Paper. Con esta API, podrás traducir mensajes de chat en tiempo real y personalizar el formato de los mensajes para adaptarlos a las necesidades de tu servidor.
 
+<h1>FALTA ACTUALIZAR</h1>
+
 ---
 
 ## Uso de la API
