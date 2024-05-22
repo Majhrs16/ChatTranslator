@@ -14,6 +14,7 @@ import me.majhrs16.dst.events.Chat;
 
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
 public class DiscordTranslator {
 	private static JDA jda;
@@ -26,12 +27,13 @@ public class DiscordTranslator {
 
 	public final static String version  = "${dst_version}";
 
-	public JDA connect(String bot_token) throws InvalidTokenException {
+	public JDA connect(String bot_token) throws InvalidTokenException, InterruptedException {
 		if (bot_token == null
 				|| bot_token.isEmpty()
 				|| bot_token.equalsIgnoreCase("<Your Bot Token>"))
 			throw new InvalidTokenException();
 
+		JDALogger.setFallbackLoggerEnabled(false);
 		JDABuilder builder = JDABuilder.createDefault(bot_token);
 		builder.enableIntents(
 			GatewayIntent.MESSAGE_CONTENT,
@@ -39,7 +41,8 @@ public class DiscordTranslator {
 			GatewayIntent.GUILD_MEMBERS
 		);
 
-		return jda = builder.build();
+		jda = builder.build();
+		return jda.awaitReady();
 	}
 
 	public void registerEvents() {
