@@ -11,39 +11,40 @@ import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Field;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 
 import me.majhrs16.lib.minecraft.BukkitUtils;
 
+// ONLY FUNCTIONAL FOR BUKKIT 1.16
 public class Advancements implements Listener {
 	private final ChatTranslator plugin  = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API  = ChatTranslatorAPI.getInstance();
 	private static final Map<Advancement, String[]> CACHE = new ConcurrentHashMap<>();
+
 	@EventHandler
 	public void onAdvancement(PlayerAdvancementDoneEvent event) {
+		if (plugin.isDisabled()) return;
+
 		Advancement advancement = event.getAdvancement();
 
 		String[] data = CACHE.computeIfAbsent(advancement, k -> {
-			Object advancementDisplay;
-			try {
-				Object handle = advancement.getClass().getMethod("getHandle").invoke(advancement);
-				advancementDisplay = handle.getClass().getMethod("c").invoke(handle);
+			Object advancementDisplay = getAdvancementDisplay(advancement);
 
-			} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-				plugin.logger.error("Error while getting advancement: %s", e);
-				return null;
-			}
+			if (advancementDisplay == null) return new String[] { null, null };
 
 			String title       = getAdvancementString(advancementDisplay, "a");
 			String description = getAdvancementString(advancementDisplay, "b");
 
+			plugin.logger.warn("Title: %s, Description: %s", title, description);
+
 			return new String[] { title, description };
 		});
 
-		if (data == null || data[0] == null || data[1] == null) return;
+		if (data[0] == null || data[1] == null) return;
+
+		CACHE.put(advancement, data);
 
 		Message model = util.createChat(
 			event.getPlayer(),
@@ -57,12 +58,23 @@ public class Advancements implements Listener {
 		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::broadcast);
 	}
 
+	private Object getAdvancementDisplay(Advancement advancement) {
+		try {
+			Object handle = advancement.getClass().getMethod("getHandle").invoke(advancement);
+			return handle.getClass().getDeclaredMethod("c").invoke(handle);
+
+		} catch (NoSuchMethodException
+				 | IllegalAccessException
+				 | InvocationTargetException e) {
+			plugin.logger.error("Error while getting advancement: %s", e);
+			return null;
+		}
+	}
+
 	private String getAdvancementString(Object advancementDisplay, String methodName) {
 		try {
-			Field advancementMessageField = advancementDisplay.getClass().getDeclaredField(methodName);
-			advancementMessageField.setAccessible(true);
-			Object advancementMessage = advancementMessageField.get(advancementDisplay);
-			return (String) advancementMessage.getClass().getMethod("getString").invoke(advancementMessage);
+			Object IChatBaseComponent = advancementDisplay.getClass().getMethod(methodName).invoke(advancementDisplay);
+			return (String) IChatBaseComponent.getClass().getMethod("getString").invoke(IChatBaseComponent);
 
 		} catch (Exception e) {
 			plugin.logger.error("Error while getting advancement string: %s", e);

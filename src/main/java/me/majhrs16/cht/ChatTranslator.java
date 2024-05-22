@@ -239,12 +239,14 @@ public class ChatTranslator extends PluginBase {
 		chatLimiter = new ChatLimiter();
 		chatLimiter.start();
 
+/*
 		double version = util.getMinecraftVersion();
 		if (version > 7.2 && version < 12.0)
 			eventManager.addExecutor("achievements", new Achievements());
 
 		else if (version > 12.2)
 			eventManager.addExecutor("advancements", new Advancements());
+*/
 
 		if (Dependencies.PAPI.exist()) {
 			coreTranslator = new CoreTranslator();

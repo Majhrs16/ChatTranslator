@@ -9,13 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 
 import me.majhrs16.lib.minecraft.BukkitUtils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.event.*;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 
 public class Achievements implements Listener {
 	private HandlerList handlerList;
@@ -36,9 +34,6 @@ public class Achievements implements Listener {
 		try {
 			Class<?> achievementAwardedEventClass = Class.forName("org.bukkit.event.player.PlayerAchievementAwardedEvent");
 
-			if (achievementAwardedEventClass.isAnnotationPresent(Deprecated.class))
-				return;
-
 			handlerList = (HandlerList) achievementAwardedEventClass.getMethod("getHandlerList").invoke(null);
 			handlerList.register(registeredListener);
 
@@ -52,32 +47,57 @@ public class Achievements implements Listener {
 	}
 
 	private void onPlayerAchievementAwarded(Event event) {
-		if (plugin.isDisabled())
+		if (plugin.isDisabled()) return;
+
+		String name = getAchievementName(event);
+		if (name == null) {
+			plugin.logger.warn("Detected null achievement name!");
 			return;
+		}
+
+		name = toTitleCase(name.split("_"));
 
 		Player player = ((PlayerEvent) event).getPlayer();
+		((Cancellable) event).setCancelled(true);
 
-		String name;
+		Message model = util.createChat(
+			player,
+			new String[] { name },
+			util.convertStringToLang("en"),
+			API.getLang(player),
+			"advancement"
+		);
+
+		Message console = util.createChat(
+				Bukkit.getConsoleSender(),
+				new String[] { name },
+				util.convertStringToLang("en"),
+				API.getLang(Bukkit.getConsoleSender()),
+				"advancement_console")
+			.setSender(player)
+			.setCancelledThis(true);
+
+		console.getToolTips().setTexts();
+		model.getToolTips().setTexts();
+
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
+			froms.add(console);
+			API.broadcast(froms, API::sendMessageAsync);
+		});
+	}
+
+	public String getAchievementName(Event event) {
 		try {
 			Enum<?> achievement = (Enum<?>) event.getClass().getMethod("getAchievement").invoke(event);
-			if (achievement == null) return;
+			if (achievement == null) return null;
 
-			name = (String) achievement.getClass().getMethod("getName").invoke(achievement);
+			return achievement.name();
 
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			plugin.logger.error("Failed to get achievement name from %s: %s", event.getEventName(), e.getMessage());
 			handlerList.unregister(registeredListener);
-			return;
+			return null;
 		}
-
-		Message model = util.createChat(
-				player,
-				new String[] { toTitleCase(name.split("_")) },
-				util.convertStringToLang("en"),
-				API.getLang(player),
-				"advancement");
-
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::broadcast);
 	}
 
 	public static String toTitleCase(String[] words) {
