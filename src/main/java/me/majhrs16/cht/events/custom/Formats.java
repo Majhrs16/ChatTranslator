@@ -4,20 +4,24 @@ public class Formats {
     private String[] formats = new String[0];
     private String[] texts   = new String[0];
 
-    public void setFormats(String... formats) {
+    public Formats setFormats(String... formats) {
         this.formats = formats;
+        return this;
     }
 
-    public void setTexts(String... texts) {
+    public Formats setTexts(String... texts) {
         this.texts = texts;
+        return this;
     }
 
-    public void setFormat(int index, String format) {
+    public Formats setFormat(int index, String format) {
         this.formats[index] = format;
+        return this;
     }
 
-    public void setText(int index, String text) {
+    public Formats setText(int index, String text) {
         this.texts[index] = text;
+        return this;
     }
 
     public String getFormat(int index) {
