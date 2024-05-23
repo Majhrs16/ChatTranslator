@@ -29,21 +29,21 @@ public class DiscordLinker implements CommandExecutor {
 		if (Config.TranslateOthers.DISCORD.IF() && DiscordTranslator.getJDA() != null) {
 			if (from.getSender() instanceof Player) {
 				int code = AccountManager.preLink(util.getUUID(from.getSender()), () -> {
-					from.format("commands.discordLinker.timeout");
+					from.format("commands.cht.discordLinker.timeout");
 					API.sendMessage(from);
 				});
 
-				from.format("commands.discordLinker.done", s -> s
+				from.format("commands.cht.discordLinker.done", s -> s
 					.replace("%code%", "" + code)
 					.replace("%discord_bot_name%", DiscordTranslator.getJDA().getSelfUser().getName())
 				);
 
 			} else {
-				from.format("commands.discordLinker.onlyPlayer");
+				from.format("commands.cht.discordLinker.onlyPlayer");
 			}
 
 		} else {
-			from.format("commands.discordLinker.activateBot");
+			from.format("commands.cht.discordLinker.activateBot");
 		}
 
 		API.sendMessage(from);
