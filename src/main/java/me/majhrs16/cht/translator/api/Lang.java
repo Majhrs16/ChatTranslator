@@ -46,8 +46,12 @@ public interface Lang {
 		if (uuid != null) {
 			String[] values = plugin.storage.get(uuid);
 
-			if (values != null)
+			if (values != null) {
 				lang = values[2];
+
+				if (lang.startsWith("off-"))
+					lang = "disabled";
+			}
 		}
 
 		if (lang == null || lang.equals("auto")) {
