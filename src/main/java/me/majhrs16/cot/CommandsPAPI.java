@@ -5,11 +5,14 @@ import java.util.regex.Pattern;
 public enum CommandsPAPI {
     SEND_DISCORD("^sendDiscord;\\s*(.+?);\\s*(.+?)$"),
     TRANSLATE("^translate;\\s*(.+?);\\s*(.+?);\\s*(.+?)$"),
+    EXPRESSION("^var;\\s*(.+?);\\s*(.+?)$"),
+    CLONE("^clone;\\s*(.+?);\\s*(.+?)$"),
     BROADCAST("^broadcast;\\s*(.+?)$"),
-    VAR("^var;\\s*(.+?);\\s*(.+?)$"),
+    SET("^set;\\s*(.+?);\\s*(.+?)$"),
     SEND("^send;\\s*(.+?)$"),
     LANG("^lang;\\s*(.+?)$"),
-    NEW("new");
+    GET("^get;\\s*(.+?)$"),
+    NEW("^new$");
 
     private final Pattern pattern;
 
