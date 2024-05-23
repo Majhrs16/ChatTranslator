@@ -23,11 +23,13 @@ public class ResetterConfig implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.errors.noPermission"));
-			return true; // Para evitar mostrar el unknown command.
+			API.sendMessage(from.format("commands.cht.errors.noPermission"));
+
+//			Evitar mostrar el clasico unknown command.
+			return true;
 		}
 
-		from.format("commands.resetterConfig");
+		from.format("commands.cht.resetterConfig");
 		API.sendMessage(from);
 
 		try {
@@ -38,10 +40,10 @@ public class ResetterConfig implements CommandExecutor {
 			new ConfigUpdater();
 			new CommandsUpdater();
 			new Reloader().reloadAll(from);
-			from.format("commands.resetterConfig.done");
+			from.format("commands.cht.resetterConfig.done");
 
 		} catch (ParseYamlException e) {
-			from.format("commands.resetterConfig.error");
+			from.format("commands.cht.resetterConfig.error");
 		}
 
 		API.sendMessage(from);
