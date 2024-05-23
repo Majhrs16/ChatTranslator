@@ -32,11 +32,11 @@ public class Reloader implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.errors.noPermission"));
+			API.sendMessage(from.format("commands.cht.errors.noPermission"));
 			return true; // Para evitar mostrar el unknown command.
 		}
 
-		from.format("commands.reloader");
+		from.format("commands.cht.reloader");
 		API.sendMessage(from);
 
 		plugin.setDisabled(true);
@@ -67,7 +67,7 @@ public class Reloader implements CommandExecutor {
 				break;
 
 			default:
-				API.sendMessage(from.format("commands.errors.unknown"));
+				API.sendMessage(from.format("commands.cht.errors.unknown"));
 				break;
 		}
 
@@ -85,10 +85,9 @@ public class Reloader implements CommandExecutor {
 			reloadStorage(from);
 
 		} catch (Exception e) {
-			if (Permissions.ChatTranslator.ADMIN.IF(from.getSender()))
-				API.sendMessage(from.format("commands.reloader.error.fatal"));
-
 			plugin.logger.error(e.toString());
+			if (Permissions.ChatTranslator.ADMIN.IF(from.getSender()))
+				API.sendMessage(from.format("commands.cht.reloader.error.fatal"));
 		}
 	}
 
@@ -96,12 +95,12 @@ public class Reloader implements CommandExecutor {
 		try {
 			action.run();
 
-			from.format("commands.reloader.done", s -> s
+			from.format("commands.cht.reloader.done", s -> s
 				.replace("%file%", text)
 			);
 
 		} catch (SQLException | ParseYamlException | StorageRegisterFailedException e) {
-			from.format("commands.reloader.error.file", s -> s
+			from.format("commands.cht.reloader.error.file", s -> s
 				.replace("%file%", text)
 				.replace("%reason%", e.toString())
 			);
@@ -198,7 +197,7 @@ public class Reloader implements CommandExecutor {
 				break;
 
 			default:
-//				En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o...
+//				En el dado caso que se haya establecido un almacenamiento desconocido y haya pasado el arranque O_o.
 				text = "&9???";
 				break;
 		}
