@@ -22,11 +22,11 @@ public class ShowVersion implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.errors.noPermission"));
-			return true; // Para evitar mostrar el unknown command.
+			API.sendMessage(from.format("commands.cht.errors.noPermission"));
+			return true;
 		}
 
-		API.sendMessage(from.format("commands.main.version"));
+		API.sendMessage(from.format("commands.cht.version"));
 		return true;
 	}
 }
