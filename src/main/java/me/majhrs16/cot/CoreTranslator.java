@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.Arrays;
 import java.util.UUID;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public class CoreTranslator extends PlaceholderExpansion {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private final Map<Player, Map<String, String>> map_variables = new HashMap<>();
 
 	public static final String version = "${cot_version}";
 
@@ -39,6 +42,8 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	@Override
 	public String onPlaceholderRequest(Player player, @NotNull String identifier) {
+		Message from;
+
 		identifier = API.parseSubVariables(player, identifier)[0];
 
 		String result = null;
@@ -51,11 +56,19 @@ public class CoreTranslator extends PlaceholderExpansion {
 						result = sendDiscord(player, matcher.group(1), matcher.group(2));
 						break;
 
+					case EXPRESSION:
+						result = expressionExecutor(
+							player,
+							matcher.group(1), // UUID
+							matcher.group(2)  // Expression
+						);
+						break;
+
 					case TRANSLATE:
-						Message from = new Message();
-							from.setSender(player);
-							from.setLangSource(matcher.group(1));
-							from.setLangTarget(matcher.group(2));
+						from = new Message()
+							.setSender(player)
+							.setLangSource(matcher.group(1))
+							.setLangTarget(matcher.group(2));
 							from.getMessages().setTexts(matcher.group(3));
 						result = API.formatMessage(from).getMessages().getFormat(0);
 						break;
@@ -64,30 +77,60 @@ public class CoreTranslator extends PlaceholderExpansion {
 						result = broadcast(player, matcher.group(1));
 						break;
 
+					case CLONE:
+						from = ChatLimiter.get(UUID.fromString(matcher.group(1)));
+						if (from == null)
+							return getMessageFormatted(player, "&cUUID &b" + matcher.group(1) + "&c no encontrado en el historial reciente&f.");;
+
+						from = from.clone();
+
+						setVariable(
+							player,
+							matcher.group(2),                  // Key
+							result = from.getUUID().toString() // Value / UUID
+						);
+
+//						Evitar el procesado por ChatLimiter.
+						from._setProcessed(true);
+						ChatLimiter.add(from);
+						break;
+
 					case SEND:
 						result = send(player, matcher.group(1));
 						break;
 
 					case LANG:
 						CommandSender targetPlayer = BukkitUtils.getSenderByName(matcher.group(1));
-						if (targetPlayer == null)
+						if (targetPlayer == null) {
 							result = getMessageFormatted(null, "&4Error&f: &cJugador no encontrado&f.");
 
-						else
+						} else {
 							result = API.getLang(targetPlayer).getCode();
-						break;
+						}
 
-					case VAR:
-						result = expressionExecutor(
-							matcher.group(1), // UUID
-							matcher.group(2)  // Path
-						);
 						break;
 
 					case NEW:
-						Message from_new = new Message();
-						ChatLimiter.add(from_new);
-						result = from_new.getUUID().toString();
+						from = new Message().setTo(new Message());
+
+//						Evitar el procesado por ChatLimiter.
+						from._setProcessed(true);
+
+						ChatLimiter.add(from);
+						result = from.getUUID().toString();
+						break;
+
+					case SET:
+						setVariable(
+							player,
+							matcher.group(1),         // Key
+							result = matcher.group(2) // Value
+						);
+
+						break;
+
+					case GET:
+						result = map_variables.getOrDefault(player, new HashMap<>()).get(matcher.group(1));
 						break;
 				}
 			}
@@ -96,12 +139,30 @@ public class CoreTranslator extends PlaceholderExpansion {
 		return result;
 	}
 
-	public String expressionExecutor(String uuid, String expression) {
+	public void setVariable(Player player, String key, String value) {
+		Map<String, String> variables = map_variables.computeIfAbsent(player, k -> new HashMap<>());
+
+		if (value == null || value.isEmpty() || value.equals("null")) {
+			variables.remove(key);
+
+		} else {
+			variables.put(key, value);
+		}
+
+		if (variables.isEmpty()) {
+			map_variables.remove(player);
+
+		} else {
+			map_variables.put(player, variables);
+		}
+	}
+
+	public String expressionExecutor(Player player, String uuid, String expression) {
 		Object result;
 		Message from = ChatLimiter.get(UUID.fromString(uuid));
 
 		if (from == null)
-			return null;
+			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
 		try {
 			ExpressionParser parser = new SpelExpressionParser();
@@ -127,7 +188,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		Message from = ChatLimiter.get(UUID.fromString(uuid));
 
 		if (from == null)
-			return "null";
+			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
@@ -136,7 +197,6 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return getMessageFormatted(player, "&cJugador to no encontrado&f.");
 
 		new MessageListener().toDiscord(from, Arrays.asList(channels.split("\\s*,\\s*")));
-		from.setCancelled(true);
 
 		return "ok";
 	}
@@ -145,7 +205,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		Message from = ChatLimiter.get(UUID.fromString(uuid));
 
 		if (from == null)
-			return "null";
+			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
@@ -161,7 +221,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		Message from = ChatLimiter.get(UUID.fromString(uuid));
 
 		if (from == null)
-			return "null";
+			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
