@@ -87,13 +87,33 @@ public class DiscordSync {
 
 				List<String> rules = plugin.config.get().getStringList("discord.sync");
 
-				int i = 0;
+				int line = 1;
 				for (String rule : rules) {
+					String path;
+
 					String[] parts = rule.split("(<-|<->|->)");
-					if (parts.length != 2) continue;
+					if (parts.length != 2) {
+						final int fLine = line;
+						plugin.logger.debug("rules.#%s.split.length: %s", fLine, parts.length);
+						API.sendMessage(new Message().format("discord-translator.sync.error",
+							format -> format.replace("%line%", String.valueOf(fLine))
+						));
+
+						continue;
+					};
 
 					String roleID       = parts[0].trim();
 					String permissionID = parts[1].trim();
+
+					path = "discord.sync.rule.#%s.type: ";
+					if (rule.contains("<->"))
+						plugin.logger.debug(path + "<->", line);
+
+					if (rule.contains("->"))
+						plugin.logger.debug(path + " ->", line);
+
+					if (rule.contains("<-"))
+						plugin.logger.debug(path + "<- ", line);
 
 					Role role = null;
 
@@ -101,36 +121,42 @@ public class DiscordSync {
 						role = guild.getRoleById(roleID);
 
 					} catch (Exception e) {
-						int _i = i;
+						final int fLine = line;
+						plugin.logger.debug("JDA.guild.getRoleById: %s", e);
 						API.sendMessage(new Message().format("discord-translator.sync.error",
-							format -> format.replace("%line%", String.valueOf(_i + 1))
+							format -> format.replace("%line%", String.valueOf(fLine))
 						));
-						plugin.logger.debug("Error: %s", e);
 					}
 
 					if (role == null) continue;
 
 					Permission permission = new Permission(permissionID);
 
+					path = "discord.sync.rule.#%s: Role: %s, Permission: %s, status = ";
+
 					if (rule.contains("->") || rule.contains("<->")) {
 						if (member.getRoles().contains(role) && !player.hasPermission(permission)) {
+							plugin.logger.debug(path + "added permission", line, roleID, permissionID);
 							setPermission(player, permission, true);
 
 						} else if (!member.getRoles().contains(role) && player.hasPermission(permission)) {
+							plugin.logger.debug(path + "removed permission", line, roleID, permissionID);
 							setPermission(player, permission, false);
 						}
 					}
 
 					if (rule.contains("<-") || rule.contains("<->")) {
 						if (player.hasPermission(permission) && !member.getRoles().contains(role)) {
+							plugin.logger.debug(path + "added role", line, roleID, permissionID);
 							addRole(guild, member, role);
 
 						} else if (!player.hasPermission(permission) && member.getRoles().contains(role)) {
+							plugin.logger.debug(path + "removed role", line, roleID, permissionID);
 							removeRole(guild, member, role);
 						}
 					}
 
-					i ++;
+					line ++;
 				}
 			}
 		}
