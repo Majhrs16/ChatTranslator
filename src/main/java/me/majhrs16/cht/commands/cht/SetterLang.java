@@ -28,7 +28,7 @@ public class SetterLang implements CommandExecutor {
 
 		switch (args.length) {
 			case 0: // /cht lang
-				API.sendMessage(from.format("commands.setterLang.getLang", s -> s
+				API.sendMessage(from.format("commands.cht.setterLang.getLang", s -> s
 					.replace("%lang%", from.getLangTarget().getValue())
 				));
 				break;
@@ -41,7 +41,7 @@ public class SetterLang implements CommandExecutor {
 
 			case 2:  // /cht lang Majhrs16 es
 				if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-					API.sendMessage(from.format("commands.errors.noPermission"));
+					API.sendMessage(from.format("commands.cht.errors.noPermission"));
 					return true; // Para evitar mostrar el unknown command.
 				}
 
@@ -49,7 +49,7 @@ public class SetterLang implements CommandExecutor {
 				break;
 
 			default:
-				API.sendMessage(from.format("commands.errors.unknown"));
+				API.sendMessage(from.format("commands.cht.errors.unknown"));
 		}
 
 		return true;
@@ -57,9 +57,14 @@ public class SetterLang implements CommandExecutor {
 
 	public void setLang(Message from, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			API.sendMessage(from.format("commands.setterLang.setLang.error", s -> s
+			API.sendMessage(from.format("commands.cht.setterLang.error.unsupported", s -> s
 				.replace("%lang%", lang)
 			));
+			return;
+		}
+
+		if (from.getLangTarget().equals(util.convertStringToLang("disabled"))) {
+			API.sendMessage(from.format("commands.cht.setterLang.error.silenced"));
 			return;
 		}
 
@@ -68,7 +73,7 @@ public class SetterLang implements CommandExecutor {
 		API.setLang(from.getSender(), language);
 
 		from.setLangTarget(language);
-		from.format("commands.setterLang.setLang.done", s -> s
+		from.format("commands.cht.setterLang.setLang", s -> s
 			.replace("%lang%", language.getValue())
 		);
 
@@ -78,7 +83,7 @@ public class SetterLang implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void setLangAnother(Message from, String player, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			API.sendMessage(from.format("commands.setterLang.setLang.error", s -> s
+			API.sendMessage(from.format("commands.cht.setterLang.error", s -> s
 				.replace("%lang%", lang)
 			));
 			return;
@@ -92,7 +97,7 @@ public class SetterLang implements CommandExecutor {
 				throw new NullPointerException();
 
 		} catch (NullPointerException e) {
-			API.sendMessage(from.format("commands.errors.noFoundPlayer", s -> s
+			API.sendMessage(from.format("commands.cht.errors.noFoundPlayer", s -> s
 				.replace("%player%", player)
 			));
 			return;
@@ -101,14 +106,14 @@ public class SetterLang implements CommandExecutor {
 		API.setLang(to_player, util.convertStringToLang(lang));
 
 		Message model = new Message();
-			model.format("commands.setterLang.setLangAnother.done.from", s -> s
+			model.format("commands.cht.setterLang.setLangAnother.from", s -> s
 				.replace("%lang%", util.convertStringToLang(lang).getValue())
 				.replace("%from_player%", from.getSenderName())
 				.replace("%to_player%", to_player.getName())
 			);
 
 		Message to_model = model.clone();
-			to_model.format("commands.setterLang.setLangAnother.done.to", s -> s
+			to_model.format("commands.cht.setterLang.setLangAnother.to", s -> s
 				.replace("%lang%", util.convertStringToLang(lang).getValue())
 				.replace("%from_player%", from.getSenderName())
 				.replace("%to_player%", to_player.getName())
