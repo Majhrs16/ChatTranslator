@@ -47,7 +47,7 @@ public class Chat extends ListenerAdapter {
 				&& config.getStringList("discord.channels.replies").contains(event.getChannel().getId())) {
 			handleRefMessage(event);
 
-		} else if (message.getContentRaw().startsWith("!cht")) {
+		} else if (message.getContentRaw().startsWith("!dst")) {
 			handleChtCommand(event);
 
 		} else if (event.isFromType(ChannelType.PRIVATE)) {
@@ -213,7 +213,7 @@ public class Chat extends ListenerAdapter {
 
 				me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
 					from.setSender(player);
-					from.format("discord-translator.discordLink");
+					from.format("commands.dst.discordLink");
 					from.setLangTarget(API.getLang(player));
 				API.sendMessage(from);
 			}, 5L);
@@ -248,7 +248,7 @@ public class Chat extends ListenerAdapter {
 					UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
 
 					if (uuid == null) {
-						DC.format("discord-translator.unlinked");
+						DC.format("commands.dst.unlinked");
 
 					} else {
 						plugin.storage.set(uuid, null, lang);
@@ -256,17 +256,19 @@ public class Chat extends ListenerAdapter {
 						TranslatorBase.LanguagesBase language = util.convertStringToLang(lang);
 
 						DC.setLangTarget(language);
-						DC.format("discord-translator.setLang.done", s -> s
+						DC.format("commands.dst.setLang.done", s -> s
 							.replace("%lang%", language.getValue())
 						);
 					}
 
 				} else {
-					DC.format("discord-translator.setLang.error.unsupported");
+					DC.format("commands.dst.setLang.error.unsupported", s -> s
+						.replace("%lang%", lang)
+					);
 				}
 
 			} else {
-				DC.format("discord-translator.setLang.error.syntax");
+				DC.format("commands.dst.setLang.error.syntax");
 			}
 		}
 
