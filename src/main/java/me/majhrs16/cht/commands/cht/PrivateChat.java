@@ -26,7 +26,7 @@ public class PrivateChat implements CommandExecutor {
 			.setLangTarget(API.getLang(sender));
 
 		if (args.length < 2) {
-			API.sendMessage(from.format("commands.errors.unknown"));
+			API.sendMessage(from.format("commands.cht.errors.unknown"));
 			return true;
 		}
 
@@ -34,7 +34,7 @@ public class PrivateChat implements CommandExecutor {
 		CommandSender to_player = BukkitUtils.getSenderByName(player_name);
 
 		if (to_player == null) {
-			API.sendMessage(from.format("commands.errors.noFoundPlayer"));
+			API.sendMessage(from.format("commands.cht.errors.noFoundPlayer"));
 			return true;
 		}
 
