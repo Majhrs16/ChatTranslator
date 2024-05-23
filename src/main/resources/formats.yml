@@ -351,6 +351,8 @@ discord-translator:
   load:
     done:
       discord:
+        color: "#00FF7F"
+
         messages:
           texts:
             - "Servidor encendido"
@@ -360,7 +362,6 @@ discord-translator:
 
         toolTips:
           formats: []
-        color: "#00FF7F"
 
       console:
         messages:
@@ -394,7 +395,7 @@ discord-translator:
         messages:
           texts:
             - "No se pudo iniciar el bot de Discord"
-            - "Por favor habilite el PRESENCE INTENT y MESSAGE CONTENT INTENT en su &9Discord developer portal"
+            - "Por favor habilite PRESENCE INTENT y MESSAGE CONTENT INTENT en su &9`Discord developer portal`"
 
           formats:
             - "%discord-translator.title.min% &c{0}."
@@ -403,6 +404,8 @@ discord-translator:
   unload:
     done:
       discord:
+        color: "#FF0000"
+
         messages:
           texts:
             - "Servidor apagado"
@@ -412,8 +415,6 @@ discord-translator:
 
         toolTips:
           formats: []
-
-        color: "#FF0000"
 
       console:
         messages:
@@ -447,67 +448,7 @@ discord-translator:
 
     LogReaderTask:
       messages:
-        texts:
-          - "NO INTERNET"
-
-        formats:
-          - "&e[&6!&e] %discord-translator.title.min% &c{0}&f!"
-
-  discordLink:
-    messages:
-      texts:
-        - "Su cuenta ha sido vinculada exitosamente"
-
-      formats:
-      - "&a{0}&f!"
-
-  unlinked:
-    messages:
-      texts:
-        - "Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft."
-        - "    Por favor, use el comando `/cht link` en el servidor de Minecraft."
-
-      formats:
-        - "{0}"
-        - "{1}"
-
-  setLang:
-    error:
-      unsupported:
-        messages:
-          texts:
-            - "El idioma '%lang%' no esta soportado!."
-
-          formats:
-            - "{0}"
-
-      syntax:
-        messages:
-          texts:
-            - "Sintaxis invalida. Por favor use la sintaxis:"
-            - "codigo"
-
-          formats:
-            - "{0}"
-            - "    `!cht lang <{1}>"
-
-    done:
-      messages:
-        texts:
-          - "Su idioma ha sido establecido a"
-
-        formats:
-          - "{0} %lang%"
-
-  sync:
-    error:
-      messages:
-        texts:
-          - "Detectado sintaxis invalida en"
-          - "Linea"
-
-        formats:
-          - "&c{0} &bconfig&f.&bdiscord&f.&bsync&f, &e{1}&f: &b%line%&f."
+        formats: []
 
 storage:
   error:
@@ -589,33 +530,80 @@ storage:
           - "%plugin.title.min% &a{0} &b{1}&f.&b%type%&f."
 
 commands:
-  errors:
-    unknown:
+  dst:
+    errors:
+      unknown:
+        messages:
+          texts:
+            - "Sintaxis del comando invalida"
+
+          formats:
+            - "&c{0}&f."
+
+    discordLink:
       messages:
         texts:
-          - "Sintaxis del comando invalida"
+          - "Su cuenta ha sido vinculada exitosamente"
 
         formats:
-          - "&c{0}&f."
+          - "&a{0}&f!"
 
-    noPermission:
+    unlinked:
       messages:
         texts:
-          - "Usted no tiene permisos para ejecutar este comando"
+          - "Para usar este comando, antes debe vincular su cuenta de Discord con su Minecraft."
+          - "    Por favor, use el comando `/cht link` en el servidor de Minecraft."
 
         formats:
-          - "&c{0}&f."
+          - "{0}"
+          - "{1}"
 
-    noFoundPlayer:
-      messages:
-        texts:
-          - "El jugador"
-          - "no esta disponible"
+    setLang:
+      error:
+        unsupported:
+          messages:
+            texts:
+              - "El idioma"
+              - "no esta soportado"
 
-        formats:
-          - "&7{0} &f'&b%player%&f' &c{1}&f."
+            formats:
+              - "{0} %lang% {1}!."
 
-  main:
+      done:
+        messages:
+          texts:
+            - "Su idioma ha sido establecido a"
+
+          formats:
+            - "{0} %lang%"
+
+  cht:
+    errors:
+      unknown:
+        messages:
+          texts:
+            - "Sintaxis del comando invalida"
+
+          formats:
+            - "&c{0}&f."
+
+      noPermission:
+        messages:
+          texts:
+            - "Usted no tiene permisos para ejecutar este comando"
+
+          formats:
+            - "&c{0}&f."
+
+      noFoundPlayer:
+        messages:
+          texts:
+            - "El jugador"
+            - "no esta disponible"
+
+          formats:
+            - "&7{0} &f'&b%player%&f' &c{1}&f."
+
     version:
       messages:
         formats:
@@ -627,87 +615,96 @@ commands:
           - "&9DST&f: &b%versions.dst%"
           - "&bCo&9T&f: &b%versions.cot%"
 
-  reloader:
-    messages:
-      texts:
-        - "Recargando almacenamiento"
-
-      formats:
-        - "&7{0} &f..."
-
-    done:
+    reloader:
       messages:
-        formats:
-          - "&7[  &aOK  &7] %file%"
+        texts:
+          - "Recargando almacenamiento"
 
-    error:
-      fatal:
+        formats:
+          - "&7{0} &f..."
+
+      done:
+        messages:
+          formats:
+            - "&7[  &aOK  &7] %file%"
+
+      error:
+        fatal:
+          messages:
+            texts:
+              - "ERROR INTERNO DESCONOCIDO"
+
+            formats:
+              - "&4{0}&f."
+
+        file:
+          messages:
+            formats:
+              - "&7[ &cFAIL &7] %file%"
+              - "    %reason%"
+
+    resetterConfig:
+      messages:
+        texts:
+          - "Restableciendo la config"
+
+        formats:
+          - "&a{0}&f..."
+
+      done:
         messages:
           texts:
-            - "ERROR INTERNO DESCONOCIDO"
+            - "Se ha restablecido las configs exitosamente"
 
           formats:
-            - "&4{0}&f."
+            - "&a{0}&f."
 
-      file:
+      error:
         messages:
+          texts:
+            - "NO se ha podido restablecer la config"
+
           formats:
-            - "&7[ &cFAIL &7] %file%"
-            - "    %reason%"
+            - "&a{0}&f."
 
-  resetterConfig:
-    messages:
-      texts:
-        - "Restableciendo la config"
+    setterLang:
+      error:
+        unsupported:
+          messages:
+            texts:
+              - "El idioma"
+              - "no esta soportado"
 
-      formats:
-        - "&a{0}&f..."
+            formats:
+              - "&c{0} &b%lang% &c{1}&f!."
 
-    done:
-      messages:
-        texts:
-          - "Se ha restablecido las configs exitosamente"
+        silenced:
+          messages:
+            texts:
+              - "Usted ha sido silenciado"
 
-        formats:
-          - "&a{0}&f."
+            formats:
+              - "&c{0}&f!."
 
-    error:
-      messages:
-        texts:
-          - "NO se ha podido restablecer la config"
+      getLang:
+        messages:
+          texts:
+            - "Su idioma establecido es"
 
-        formats:
-          - "&a{0}&f."
+          formats:
+            - "&a{0}&f: &b%lang%"
 
-  setterLang:
-    getLang:
-      messages:
-        texts:
-          - "Su idioma establecido es"
-
-        formats:
-          - "&a{0}&f: &b%lang%"
-
-    setLang:
-      done:
+      setLang:
         messages:
           texts:
             - Su idioma ha sido
             - establecido
             - a
-          formats:
-            - '&7{0} &a{1} &7{2}&f: ''&b%lang%&f''&f.'
-
-      error:
-        messages:
-          texts:
-            - "&7El idioma &f'&b%lang%&f' &cno &7esta soportado&f!."
 
           formats:
-            - "{0}"
+            - "&7{0} &a{1} &7{2}&f: %lang%."
 
-    setLangAnother:
-      done:
+      setLangAnother:
         from:
           messages:
             texts:
@@ -726,70 +723,79 @@ commands:
             formats:
               - "&f'&b%from_player%&f' &7{0} &f'&b%to_player%&f' &7{1} &b%lang%&f."
 
-  toggler:
-    toggleOffPlayer:
-      messages:
-        texts:
-          - "Se ha desactivado el chat para"
+    toggler:
+      togglePlayer:
+        "true":
+          messages:
+            texts:
+              - "Se ha activado el chat para"
 
-        formats:
-          - "&c{0} &f'&b%to_player%&f'."
+            formats:
+              - "&a{0} &f'&b%to_player%&f'."
 
-    togglePlugin:
-      "true":
+        "false":
+          messages:
+            texts:
+              - "Se ha desactivado el chat para"
+
+            formats:
+              - "&c{0} &f'&b%to_player%&f'."
+
+      togglePlugin:
+        "true":
+          messages:
+            texts:
+              - "Habilitado"
+            formats:
+              - "&a{0}&f."
+
+        "false":
+          messages:
+            texts:
+              - "Deshabilitado"
+            formats:
+              - "&c{0}&f."
+
+    discordLinker:
+      onlyPlayer:
         messages:
           texts:
-            - "Habilitado"
-          formats:
-            - "&a{0}&f."
+            - "Solo se puede ejecutar este comando desde un jugador"
 
-      "false":
-        messages:
-          texts:
-            - "Deshabilitado"
           formats:
             - "&c{0}&f."
 
-  discordLinker:
-    onlyPlayer:
-      messages:
-        texts:
-          - "Solo se puede ejecutar este comando desde un jugador"
+      activateBot:
+        messages:
+          texts:
+            - "Debe activar"
+            - "para usar este comando"
+            - "Por favor"
+            - "Configure su"
+            - "correctamente"
 
-        formats:
-          - "&c{0}&f."
+          formats:
+            - "&c{0} &bconfig&f.&btranslate-others&f.&bdiscord &c{1}&f."
+            - "&e{2}&f, &e{3} &bconfig&f.&bdiscord&f.&bbot-token&a {4}&f."
 
-    activateBot:
-      messages:
-        texts:
-          - "Debe activar"
-          - "para usar este comando"
-          - "Por favor"
-          - "Configure su"
-          - "correctamente"
+      timeout:
+        messages:
+          texts:
+            - "Tiempo de espera agotado para su vinculacion de cuenta"
 
-        formats:
-          - "&c{0} &bconfig&f.&btranslate-others&f.&bdiscord &c{1}&f."
-          - "&e{2}&f, &e{3} &bconfig&f.&bdiscord&f.&bbot-token&a {4}&f."
+          formats:
+            - "&c{0}&f."
 
-    timeout:
-      messages:
-        texts:
-          - "Tiempo de espera agotado para su vinculacion de cuenta"
+      done:
+        messages:
+          texts:
+            - "Su codigo de verificacion es"
+            - "Y expira en 1 minuto"
+            - "Por favor escribalo por privado al bot del servidor de"
 
-        formats:
-          - "&c{0}&f."
-
-    done:
-      messages:
-        texts:
-          - "Su codigo de verificacion es"
-          - "Y expira en 1 minuto"
-          - "Por favor escribalo por privado al bot del servidor de"
-
-        formats:
-          - "&e{0}&f: '&b%code%&f', &6{1}&f."
-          - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
+          formats:
+            - "&e{0}&f: '&b%code%&f', &6{1}&f."
+            - "    &6{0} &9Discord&f: (&b%discord_bot_name%&f)"
 
 updaters:
   config:
