@@ -11,7 +11,6 @@ import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
-import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
