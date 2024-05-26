@@ -21,15 +21,14 @@ public class ConfigUpdater {
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-	private final Pattern texts_words = Pattern.compile("(?<!(&[a-z0-9]|[.,%${]))(\\b\\w+\\b)(?!(&[a-z0-9]|[}$%,.]))");
 	private final Consumer[] applyConfigVersions = new Consumer[] {
-		this::applyConfigVersion1, // 1.5.4
+		this::applyConfigVersion1, // v1.5.4
 		this::applyConfigVersion2,
 		this::applyConfigVersion3,
 		this::applyConfigVersion4,
 		this::applyConfigVersion5,
 		this::applyConfigVersion6,
-		this::applyConfigVersion7, // v1.7.11
+		this::applyConfigVersion7, // v1.7.11 - v1.7.13
 		this::applyConfigVersion8, // b1.7.14 - b1.8
 		this::applyConfigVersion9  // v2.0
 	};
@@ -345,6 +344,11 @@ public class ConfigUpdater {
 	private void applyConfigVersion8(FileConfiguration config, Message from) {
 		String path;
 
+/*
+///////////////////////////////////////////////////////////////
+//                      obsoleted code                       //
+///////////////////////////////////////////////////////////////
+
 		ArrayList<String> death_messages = new ArrayList<>();
 			death_messages.add("&c$ct_messages$");
 
@@ -353,10 +357,11 @@ public class ConfigUpdater {
 		config.set("formats.to_death.messages", new ArrayList<>(death_messages));
 		config.set("formats.to_death_discord.messages", new ArrayList<>(death_messages));
 		config.set("formats.to_death_console.messages", new ArrayList<>(death_messages));
+*/
 
 		config.set("discord.channels.deaths", new ArrayList<>());
 
-
+/*
 		ArrayList<String> entry_messages = new ArrayList<>();
 			entry_messages.add("&a+ &e%player_name% $ct_messages$");
 
@@ -364,22 +369,21 @@ public class ConfigUpdater {
 			exit_messages.add("&c- &e%player_name% $ct_messages$");
 
 		config.set("formats.to_entry_discord.messages", new ArrayList<>(entry_messages));
-		config.set("formats.to_entry_cosnole.messages", new ArrayList<>(entry_messages));
+		config.set("formats.to_entry_console.messages", new ArrayList<>(entry_messages));
 
 		config.set("formats.to_exit_discord.messages", new ArrayList<>(exit_messages));
 		config.set("formats.to_exit_console.messages", new ArrayList<>(exit_messages));
-
+*/
 
 		path = "auto-translate-others.signs";
 		boolean signs_enabled = config.getBoolean(path);
 		config.set(path, null);
 
 		config.set(path + ".enable", signs_enabled);
-		config.set(path + ".wrapText", false);
+		config.set(path + ".wrapText", true);
 
 		plugin.config.save();
 	}
-
 
 	private void applyConfigVersion9(FileConfiguration config, Message from) {
 		String path;
