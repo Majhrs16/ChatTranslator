@@ -71,30 +71,34 @@ public class FormatsUpdater {
 		}
 	}
 
-	private List<String>[] upgradeGroupFormat(ConfigurationSection section, String path) {
+	private Matcher getMatcher(String format) {
+		String preformat = format;
+
+//		Eliminar secuencias de escape
+		preformat = preformat.replace("\\t", "");
+
+//		Eliminar secuencias &x
+		preformat = preformat.replaceAll("&[a-f0-9]", "");
+
+//		Eliminar variables %var%
+		preformat = preformat.replaceAll("%[^%]*%", "");
+
+//		Eliminar variables $var$
+		preformat = preformat.replaceAll("\\$[^$]*\\$", "");
+
+//		Eliminar cualquier cosa entre llaves
+		preformat = preformat.replaceAll("\\{[^}]*}", "");
+
+		return phrase_texts.matcher(preformat);
+	}
+
+	private List<List<String>> upgradeGroupFormat(ConfigurationSection section, String path) {
+		int i = 0;
 		List<String> texts   = new ArrayList<>();
 		List<String> formats = new ArrayList<>();
-		int i = 0;
 
 		for (String format : section.getStringList(path)) {
-			String preformat = format;
-
-//			Eliminar secuencias de escape
-			preformat = preformat.replace("\\t", "");
-
-//			Eliminar secuencias &x
-			preformat = preformat.replaceAll("&[a-f0-9]", "");
-
-//			Eliminar variables %var%
-			preformat = preformat.replaceAll("%[^%]*%", "");
-
-//			Eliminar variables $var$
-			preformat = preformat.replaceAll("\\$[^$]*\\$", "");
-
-//			Eliminar cualquier cosa entre llaves
-			preformat = preformat.replaceAll("\\{[^}]*}", "");
-
-			Matcher matcher = phrase_texts.matcher(preformat);
+			Matcher matcher = getMatcher(format);
 			while (matcher.find()) {
 				String text = matcher.group(0);
 
@@ -108,7 +112,10 @@ public class FormatsUpdater {
 			formats.add(format);
 		}
 
-		return new List[] {formats, texts};
+		List<List<String>> result = new ArrayList<>();
+			result.add(formats);
+			result.add(texts);
+		return result;
 	}
 
 	private void fixAccess(ConfigurationSection old_formats, String key, String replacement) {
@@ -137,19 +144,14 @@ public class FormatsUpdater {
 		fixGroupFormatAccess(old_formats, "from_exit", exit);
 		fixGroupFormatAccess(old_formats, "from_entry", entry);
 
-//		NO FUNCIONAN????
-		fixGroupFormatAccess(old_formats, "to_exit_console", exit);
-		fixGroupFormatAccess(old_formats, "to_exit_discord", exit);
-		fixGroupFormatAccess(old_formats, "to_entry_discord", entry);
-
 		for (String key : old_formats.getKeys(false)) {
-			List<String>[] messages  = upgradeGroupFormat(old_formats, key + ".messages");
-			List<String>[] tool_tips = upgradeGroupFormat(old_formats, key + ".toolTips");
+			List<List<String>> messages  = upgradeGroupFormat(old_formats, key + ".messages");
+			List<List<String>> tool_tips = upgradeGroupFormat(old_formats, key + ".toolTips");
 
-			new_formats.set(key + ".messages.texts", messages[1]);
-			new_formats.set(key + ".toolTips.texts", tool_tips[1]);
-			new_formats.set(key + ".messages.formats", messages[0]);
-			new_formats.set(key + ".toolTips.formats", tool_tips[0]);
+			new_formats.set(key + ".toolTips.formats", tool_tips.get(0));
+			new_formats.set(key + ".messages.formats", messages.get(0));
+			new_formats.set(key + ".toolTips.texts", tool_tips.get(1));
+			new_formats.set(key + ".messages.texts", messages.get(1));
 
 			for (String sound : old_formats.getStringList(key + ".sounds")) {
 				String[] parts = sound.replace(" ", "").split(":");
@@ -167,7 +169,7 @@ public class FormatsUpdater {
 		plugin.config.save();
 
 		API.sendMessage(from.format(
-			"configUpdater.version9.unsupportedMessagesConfig"
+			"updaters.formats.version9.unsupportedMessagesConfig"
 		));
 	}
 }
