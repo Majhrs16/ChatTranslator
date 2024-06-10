@@ -21,7 +21,6 @@ import me.majhrs16.cht.events.Metrics;
 import me.majhrs16.cht.commands.cht.*;
 import me.majhrs16.cht.events.*;
 
-import me.majhrs16.cht.util.util;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
 import me.majhrs16.lib.minecraft.events.CommandListener;
