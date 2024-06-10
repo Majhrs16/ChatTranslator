@@ -28,7 +28,7 @@ With ChatTranslator, you can communicate with players from all over the world ef
 
 To install ChatTranslator, follow these steps:
 
-1. Download the latest version of ChatTranslator from [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) or [GitHub](https://github.com/CreativeMD/ChatTranslator/releases/latest).
+1. Download the latest version of ChatTranslator from [Spigot](https://www.spigotmc.org/resources/chattranslator.106604/) or [GitHub](https://github.com/Majhrs16/ChatTranslator/releases/latest).
 2. Place the ChatTranslator.jar file in your server’s plugins folder.
 3. Restart your server.
 
@@ -241,7 +241,7 @@ If you would like to contribute to the development of ChatTranslator, you can su
 
 ## License
 
-ChatTranslator is licensed under the GPL v3.0 License. See the [LICENSE](resources/LICENSE) file for more details.
+ChatTranslator is licensed under the GPL v3.0 License. See the [LICENSE](src/main/resources/LICENSE) file for more details.
 
 ## Support
 
