@@ -697,12 +697,10 @@ commands:
       setLang:
         messages:
           texts:
-            - Su idioma ha sido
-            - establecido
-            - a
+            - Su idioma ha sido establecido
 
           formats:
-            - "&7{0} &a{1} &7{2}&f: %lang%."
+            - "&a{0}&f: &b%lang%."
 
       setLangAnother:
         from:
