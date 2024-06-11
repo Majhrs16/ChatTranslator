@@ -1,10 +1,10 @@
-package me.majhrs16.cht.util;
+package me.majhrs16.cht.events;
 
 import me.majhrs16.cht.util.cache.Config;
 
 import org.bukkit.Bukkit;
 
-public class LoggerListener implements me.majhrs16.lib.logger.LoggerListener<String> {
+public class LoggerListenerImpl implements me.majhrs16.lib.logger.LoggerListener<String> {
 	private String format(String format, Object... args) {
 		StackTraceElement[] stackTrace = new Throwable().getStackTrace();
 		return stackTrace[6].getClassName() + "." + stackTrace[6].getMethodName() + ": " + String.format(format, args);

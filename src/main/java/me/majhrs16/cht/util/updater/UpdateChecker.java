@@ -5,6 +5,8 @@ import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
 
+import java.nio.charset.StandardCharsets;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
@@ -31,8 +33,13 @@ public class UpdateChecker {
 			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=106604").openConnection();
 			conn.setConnectTimeout(timed_out);
 			conn.setReadTimeout(timed_out);
-			String latestVersion = new BufferedReader(new InputStreamReader(conn.getInputStream())).readLine();
-			if (latestVersion.length() <= 8) {
+
+			String latestVersion;
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+				latestVersion = reader.readLine();
+			}
+
+			if (latestVersion != null && latestVersion.length() <= 8) {
 				if (to_sender instanceof Player) {
 					if (ChatColor.stripColor(Texts.get("versions.plugin")[0]).equals(latestVersion)) {
 						DC.format("plugin.updates.latest.player");

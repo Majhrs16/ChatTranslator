@@ -10,6 +10,7 @@ import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.storages.YAML;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ public class Storage {
 	public YAML yaml;
 	public MySQL mysql;
 	public SQLite sqlite;
+	private TranslatorBase.LanguagesBase termLang;
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -44,7 +46,12 @@ public class Storage {
 		sqlite = new SQLite();
 		mysql  = new MySQL();
 
-		Message from;
+//		posiblemente no tan explosivo...
+//		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
+
+//		posiblemente explosivo...
+		Message from = new Message();
+
 		String storage_type = getType();
 
 		try {
@@ -77,24 +84,22 @@ public class Storage {
 					break;
 
 				default:
-					from = new Message();
-					from.format("storage.errors.invalid-type");
+					from = API.formatMessage(from.format("storage.errors.invalid-type"));
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 		} catch (ParseYamlException  | SQLException | RuntimeException e) {
-			from = new Message();
-			from.format("storage.error.open", formats -> formats
+			from.format("storage.error.open", format -> format
 				.replace("%type%", storage_type)
 				.replace("%reason%", e.toString())
 			);
 
 			API.sendMessage(from);
 
-			throw new StorageRegisterFailedException(String.join("\n", from.getMessages().getFormats()));
+			throw new StorageRegisterFailedException();
 		}
 
-		API.sendMessage(new Message().format(
+		API.sendMessage(from.format(
 			"storage.done.open",
 			formats -> formats
 				.replace("%type%", storage_type)
@@ -119,13 +124,17 @@ public class Storage {
 				case "mariadb":
 					mysql.disconnect();
 					break;
+
+				default:
+					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 			from.format("storage.done.close", format -> format
 				.replace("%type%", storage_type)
 			);
 
-		} catch (Exception e) {
+		} catch (SQLException | RuntimeException e) {
 			from.format("storage.error.close", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type)
@@ -166,11 +175,15 @@ public class Storage {
 						mysql.update(uuid, discordID, lang);
 
 					break;
+
+				default:
+					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 			from.format("storage.done.write", format -> format.replace("%type%", storage_type));
 
-		} catch (SQLException e) {
+		} catch (SQLException | RuntimeException e) {
 			from.format("storage.error.write", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type)
@@ -183,7 +196,7 @@ public class Storage {
 	public String[] get(UUID uuid) {
 		String[] result = null;
 
-		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
+		Message from = new Message(util.getNativeLang(), termLang);
 		from.setTo(from.clone()); // Yes, simply void Message xD.
 		String storage_type = getType();
 
@@ -209,20 +222,24 @@ public class Storage {
 				case "mariadb":
 					result = mysql.get(uuid);
 					break;
+
+				default:
+					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 			from.format("storage.done.read", format -> format.replace("%type%", storage_type));
 
-		} catch (SQLException e) {
+		} catch (SQLException | RuntimeException e) {
 			from.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
-
-		} catch (NullPointerException ignored) {}
+		}
 
 		if (from.isEmpty(from.getTo()))
 			return result;
 
+//		Manually show because, API.sendMessage cause recursively calls in this case.
 		API.showMessage(from, API.formatMessage(from));
 
 		return result;
@@ -259,17 +276,20 @@ public class Storage {
 				case "mariadb":
 					result = mysql.get(discordID);
 					break;
+
+				default:
+					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 			from.format("storage.done.read", format -> format
 				.replace("%type%", storage_type));
 
-		} catch (SQLException e) {
+		} catch (SQLException | RuntimeException e) {
 			from.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
-
-		} catch (NullPointerException ignored) {}
+		}
 
 		API.sendMessage(from);
 
@@ -281,6 +301,7 @@ public class Storage {
 
 		unregister();
 		register();
+		termLang = API.getLang(Bukkit.getConsoleSender());
 
 		plugin.setDisabled(false);
 	}

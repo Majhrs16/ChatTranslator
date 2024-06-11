@@ -33,11 +33,11 @@ public class Formats {
     }
 
     public String[] getFormats() {
-        return formats;
+        return formats.clone();
     }
 
     public String[] getTexts() {
-        return texts;
+        return texts.clone();
     }
 
     public void silent() {}

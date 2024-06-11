@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events.custom;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.minecraft.BukkitUtils;
 import me.majhrs16.lib.logger.Logger;
@@ -26,8 +27,9 @@ import org.bukkit.Bukkit;
 import java.util.function.UnaryOperator;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
-public class Message extends Event implements Cancellable {
+public class Message extends Event implements Cancellable, Cloneable {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final UUID uuid             = UUID.randomUUID();
 	private final Logger logger         = plugin.logger;
@@ -87,11 +89,9 @@ public class Message extends Event implements Cancellable {
 	}
 
 	public void setCancelled(boolean isCancelled) {
-		try {
-			getTo().setCancelledThis(isCancelled); // Soporte con CE.
-
-		} catch (NullPointerException e) {
-			logger.error(e.toString());
+		if (getTo() != null) {
+//			Soporte con CE.
+			getTo().setCancelledThis(isCancelled);
 		}
 
 		setCancelledThis(isCancelled);
@@ -115,6 +115,7 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
+//	Esto dara muchos problemas a futuro…
 	public Message setSender(String sender) {
 		// Support for CoT + CE!.
 		setSender(BukkitUtils.getSenderByName(sender));
@@ -151,11 +152,13 @@ public class Message extends Event implements Cancellable {
 		return this;
 	}
 
+//	Esto dara muchos problemas a futuro…
 	public Message setLangSource(TranslatorBase.LanguagesBase lang) {
 		this.lang_source = lang;
 		return this;
 	}
 
+//	Esto dara muchos problemas a futuro…
 	public Message setLangTarget(TranslatorBase.LanguagesBase lang) {
 		this.lang_target = lang;
 		return this;
@@ -215,6 +218,7 @@ public class Message extends Event implements Cancellable {
 	}
 
 
+	@SuppressFBWarnings("EI_EXPOSE_REP")
 	public Message getTo()		      { return to; }
 
 	public CommandSender getSender()  { return sender; }
@@ -225,7 +229,7 @@ public class Message extends Event implements Cancellable {
 
 	public Formats getMessages()      { return messages; }
 	public Formats getToolTips()      { return tool_tips; }
-	public String[] getSounds()       { return sounds; }
+	public String[] getSounds()       { return sounds.clone(); }
 
 	public TranslatorBase.LanguagesBase getLangSource() { return lang_source; }
 	public TranslatorBase.LanguagesBase getLangTarget() { return lang_target; }
@@ -237,39 +241,31 @@ public class Message extends Event implements Cancellable {
 	public void silent() {}
 
 	public Message clone() {
-		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
-//			BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
-			Message to = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
-				if (getTo() != null) {
-					to.setSender(getTo().getSender());
-					to.setSenderName(getTo().getSenderName());
-					to.getMessages().setFormats(getTo().getMessages().getFormats());
-					to.getMessages().setTexts(getTo().getMessages().getTexts());
-					to.getToolTips().setFormats(getTo().getToolTips().getFormats());
-					to.getToolTips().setTexts(getTo().getToolTips().getTexts());
-					to.setSounds(getTo().getSounds());
-					to.setCancelledThis(getTo().isCancelled());
-					to.setLangSource(getTo().getLangSource());
-					to.setLangTarget(getTo().getLangTarget());
-					to.setColor(getTo().isColor());
-					to.setFormatPAPI(getTo().getFormatPAPI());
-					to.last_format = getTo().getLastFormatPath();
-				}
-			from.setTo(to);
+		Message from;
 
-			from.setSender(getSender());
-			from.setSenderName(getSenderName());
-			from.getMessages().setFormats(getMessages().getFormats());
-			from.getMessages().setTexts(getMessages().getTexts());
-			from.getToolTips().setFormats(getToolTips().getFormats());
-			from.getToolTips().setTexts(getToolTips().getTexts());
-			from.setSounds(getSounds());
-			from.setCancelledThis(isCancelled());
-			from.setLangSource(getLangSource());
-			from.setLangTarget(getLangTarget());
-			from.setColor(isColor());
-			from.setFormatPAPI(getFormatPAPI());
-			from.last_format = getLastFormatPath();
+		try {
+			from = (Message) super.clone();
+
+		} catch (CloneNotSupportedException ignore) {
+			from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
+		}
+
+//		BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
+		if (getTo() != null) from.setTo(getTo().clone());
+
+		from.setSender(getSender());
+		from.setSenderName(getSenderName());
+		from.getMessages().setFormats(getMessages().getFormats());
+		from.getMessages().setTexts(getMessages().getTexts());
+		from.getToolTips().setFormats(getToolTips().getFormats());
+		from.getToolTips().setTexts(getToolTips().getTexts());
+		from.setSounds(getSounds());
+		from.setCancelledThis(isCancelled());
+		from.setLangSource(getLangSource());
+		from.setLangTarget(getLangTarget());
+		from.setColor(isColor());
+		from.setFormatPAPI(getFormatPAPI());
+		from.last_format = getLastFormatPath();
 
 		return from;
 	}
@@ -337,11 +333,15 @@ public class Message extends Event implements Cancellable {
 
 					messages =  (JSONObject) fromJson.get("messages");
 						formats = (JSONArray) messages.get("formats");
-					from.getMessages().setFormats((String[]) formats.toArray());
+						from.getMessages().setFormats(new String[formats.size()]);
+						for (int i = 0; i < formats.size(); i++)
+							from.getMessages().setFormat(i, formats.get(i).toString());
 
 					tool_tips =  (JSONObject) fromJson.get("toolTips");
 						formats = (JSONArray) tool_tips.get("formats");
-					from.getToolTips().setFormats((String[]) formats.toArray());
+						from.getToolTips().setFormats(new String[formats.size()]);
+						for (int i = 0; i < formats.size(); i++)
+							from.getToolTips().setFormat(i, formats.get(i).toString());
 
 					from.setSounds((String[]) fromJson.get("sounds"));
 					from.setCancelledThis((boolean) fromJson.get("isCancelled"));

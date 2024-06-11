@@ -87,7 +87,7 @@ public interface Lang {
 			}
 		}
 
-		return util.convertStringToLang(lang);
+		return lang == null ? null : util.convertStringToLang(lang);
 	}
 
 	default TranslatorBase getTranslator() {

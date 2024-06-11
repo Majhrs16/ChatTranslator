@@ -5,15 +5,14 @@ import me.majhrs16.cht.commands.utils.TranslateYaml; // Experimental ...
 import me.majhrs16.cht.exceptions.StorageRegisterFailedException;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.updater.CommandsUpdater;
+import me.majhrs16.cht.commands.CommandHandlerImpl;
 import me.majhrs16.cht.util.updater.FormatsUpdater;
 import me.majhrs16.cht.commands.dst.DiscordLinker;
 import me.majhrs16.cht.util.updater.UpdateChecker;
 import me.majhrs16.cht.util.updater.ConfigUpdater;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.util.cache.Dependencies;
-import me.majhrs16.cht.commands.CommandHandler;
 import me.majhrs16.cht.events.custom.Message;
-import me.majhrs16.cht.util.LoggerListener;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.storage.Storage;
@@ -22,6 +21,8 @@ import me.majhrs16.cht.commands.cht.*;
 import me.majhrs16.cht.events.*;
 
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import me.majhrs16.lib.minecraft.events.CommandListener;
 import me.majhrs16.lib.exceptions.ParseYamlException;
@@ -33,10 +34,11 @@ import me.majhrs16.dst.utils.DiscordChat;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 import me.majhrs16.cot.CoreTranslator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 
@@ -48,14 +50,15 @@ public class ChatTranslator extends PluginBase {
 	private ChatTranslatorAPI API;
 	private ChatLimiter chatLimiter;
 	private CoreTranslator coreTranslator;
-	private CommandHandler commandHandler;
 	private static ChatTranslator instance;
+	private CommandHandlerImpl commandHandler;
 	private DiscordTranslator discordTranslator;
 	private InternetCheckerAsync internetCheckerAsync;
 
 	private boolean is_disabled = true;
-	private final LoggerListener loggerListener = new LoggerListener();
+	private final LoggerListenerImpl loggerListener = new LoggerListenerImpl();
 
+	@SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public void onLoad() {
 		instance       = this;
 		metrics        = new Metrics(instance, 20251);
@@ -187,7 +190,7 @@ public class ChatTranslator extends PluginBase {
 			));
 		}
 
-		commandHandler = new CommandHandler(commandManager, commands);
+		commandHandler = new CommandHandlerImpl(commandManager, commands);
 	}
 
 	public void registerCommands() {
@@ -366,6 +369,7 @@ public class ChatTranslator extends PluginBase {
 		API.sendMessage(from);
 	}
 
+	@SuppressFBWarnings("MS_EXPOSE_REP")
 	public static ChatTranslator getInstance() {
 		return instance;
 	}

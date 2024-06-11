@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 
 import org.json.simple.JSONObject;
 
-public class CommandHandler extends me.majhrs16.lib.minecraft.commands.CommandHandler {
-	public CommandHandler(CommandManager manager, YAML commands) {
+public class CommandHandlerImpl extends me.majhrs16.lib.minecraft.commands.CommandHandler {
+	public CommandHandlerImpl(CommandManager manager, YAML commands) {
 		super(manager, commands);
 	}
 

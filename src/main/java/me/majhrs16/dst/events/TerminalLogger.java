@@ -22,13 +22,13 @@ import java.io.File;
 
 public class TerminalLogger {
 	private Timer timer;
-	private static String LOG_FILE_PATH;
+	private String LOG_FILE_PATH;
 
 	private long lastFileLine = 0;
 	private long lastFileByte = 0;
-	private final int MAX_LENGTH_MESSAGE  = 1900;
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+	private static final int MAX_LENGTH_MESSAGE = 1900;
 	public static final Map<String, String> ANSI_TO_DISCORD_MAP = createAnsiMap();
 
 	public TerminalLogger() {
@@ -105,7 +105,7 @@ public class TerminalLogger {
 						}
 
 						block.get().append(line).append("\n");
-						lastFileByte += line.getBytes().length;
+						lastFileByte += line.getBytes(StandardCharsets.UTF_8).length;
 						lastFileLine ++;
 					});
 

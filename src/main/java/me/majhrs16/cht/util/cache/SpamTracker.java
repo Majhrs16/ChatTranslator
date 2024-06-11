@@ -1,5 +1,7 @@
 package me.majhrs16.cht.util.cache;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class SpamTracker<T> {
 		return count;
 	}
 
+	@SuppressFBWarnings("EI_EXPOSE_REP")
 	public ConcurrentLinkedQueue<T> getChat() {
 		return chat;
 	}

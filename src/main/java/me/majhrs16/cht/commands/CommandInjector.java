@@ -6,6 +6,7 @@ import org.bukkit.command.*;
 import org.bukkit.Bukkit;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -27,7 +28,7 @@ public class CommandInjector {
 					return executor.onCommand(sender, this, alias, args);
 				}
 
-				@NotNull
+				@Nullable
 				public List<String> tabComplete(
 						@NotNull CommandSender sender,
 						@NotNull String alias,

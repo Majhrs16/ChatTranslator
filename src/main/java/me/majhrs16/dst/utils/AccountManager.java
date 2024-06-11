@@ -19,9 +19,10 @@ import java.util.UUID;
 import java.util.Map;
 
 public class AccountManager {
+	private static final SecureRandom random = new SecureRandom();
+	private static final Map<String, String> linking = new HashMap<>();
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 	private static final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
-	private static final Map<String, String> linking = new HashMap<>();
 
 	public static UUID getMinecraft(String discordID) {
 		String[] result = plugin.storage.get(discordID);
@@ -72,11 +73,12 @@ public class AccountManager {
 	}
 
 	private static int getUniqueKey() {
-		Integer key = null;
+		int key = -1;
 
-		while (key == null || linking.containsKey(key.toString()))
-			key = new SecureRandom().nextInt(100_000); // 99_999
-		
+		while (key == -1 || linking.containsKey(String.valueOf(key))) {
+			key = random.nextInt(100_000);
+		}
+
 		return key;
 	}
 

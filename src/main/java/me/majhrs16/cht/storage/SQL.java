@@ -6,10 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
+import java.sql.Statement;
 import java.util.UUID;
 
 public abstract class SQL extends Database {
-	private final String table = "Storage";
+	private static final String table = "Storage";
 
 	public SQL(String driver, String type) {
 		super(driver, type);
@@ -19,7 +20,9 @@ public abstract class SQL extends Database {
 
 	public void createTable() throws SQLException {
 		String sql = "CREATE TABLE IF NOT EXISTS " + table + " (uuid TEXT, discordID TEXT, lang TEXT)";
-		conn.createStatement().execute(sql);
+		try (Statement stmt = conn.createStatement()) {
+			stmt.execute(sql);
+		}
 	}
 
 	public String[] get(UUID uuid) throws SQLException {
@@ -31,31 +34,31 @@ public abstract class SQL extends Database {
 	}
 
 	private String[] getData(String sql, String param) throws SQLException {
-		PreparedStatement statement = conn.prepareStatement(sql);
-		statement.setString(1, param);
-		ResultSet result = statement.executeQuery();
+		try (PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, param);
+			ResultSet result = statement.executeQuery();
 
-		if (result.next()) {
-			return new String[] {
-				result.getString(1),
-				result.getString(2),
-				result.getString(3)
-			};
-
-		} else {
-			return null;
+			if (result.next()) {
+				return new String[] {
+						result.getString(1),
+						result.getString(2),
+						result.getString(3)
+				};
+			} else {
+				return null;
+			}
 		}
 	}
 
 	public void insert(UUID uuid, String discordID, String lang) throws SQLException {
 		String sql = "INSERT INTO " + table + " (uuid, discordID, lang) VALUES (?, ?, ?)";
 
-		PreparedStatement statement = conn.prepareStatement(sql);
-		statement.setString(1, uuid.toString());
-		statement.setString(2, discordID);
-		statement.setString(3, lang);
-
-		statement.executeUpdate();
+		try (PreparedStatement statement = conn.prepareStatement(sql)) {
+			statement.setString(1, uuid.toString());
+			statement.setString(2, discordID);
+			statement.setString(3, lang);
+			statement.executeUpdate();
+		}
 	}
 
 	public void update(UUID uuid, String discordID, String lang) throws SQLException {
@@ -67,18 +70,19 @@ public abstract class SQL extends Database {
 		else
 			sql = String.format(sql, ", discordID = ?");
 
-		PreparedStatement statement = conn.prepareStatement(sql);
+		try (PreparedStatement statement = conn.prepareStatement(sql)) {
 
-		statement.setString(1, lang);
+			statement.setString(1, lang);
 
-		if (discordID == null) {
-			statement.setString(2, uuid.toString());
+			if (discordID == null) {
+				statement.setString(2, uuid.toString());
 
-		} else {
-			statement.setString(2, discordID);
-			statement.setString(3, uuid.toString());
+			} else {
+				statement.setString(2, discordID);
+				statement.setString(3, uuid.toString());
+			}
+
+			statement.executeUpdate();
 		}
-
-		statement.executeUpdate();
 	}
 }

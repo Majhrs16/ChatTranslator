@@ -89,16 +89,11 @@ public class SetterLang implements CommandExecutor {
 			return;
 		}
 
-		OfflinePlayer to_player;
-		try {
-			to_player = Bukkit.getOfflinePlayer(player);
+		OfflinePlayer to_player = Bukkit.getOfflinePlayer(player);
 
-			if (!to_player.isOnline() && !to_player.hasPlayedBefore())
-				throw new NullPointerException();
-
-		} catch (NullPointerException e) {
+		if (!to_player.isOnline() && !to_player.hasPlayedBefore()) {
 			API.sendMessage(from.format("commands.cht.errors.noFoundPlayer", s -> s
-				.replace("%player%", player)
+					.replace("%player%", player)
 			));
 			return;
 		}
