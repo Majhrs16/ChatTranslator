@@ -63,6 +63,9 @@ public class CommandsUpdater {
 						case "version":
 							config.set(path, "showVersion");
 							break;
+
+						default:
+							break;
 					}
 				}
 			}

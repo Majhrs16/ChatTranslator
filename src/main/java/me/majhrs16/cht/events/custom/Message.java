@@ -76,7 +76,9 @@ public class Message extends Event implements Cancellable, Cloneable {
 		this(util.getNativeLang(), ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
 	}
 
+	@SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
 	@NotNull public static HandlerList getHandlerList() { return HANDLERS; }
+	@SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
 	@NotNull public HandlerList getHandlers()           { return HANDLERS; }
 
 	public boolean isCancelled() {
@@ -216,7 +218,6 @@ public class Message extends Event implements Cancellable, Cloneable {
 	public Message format(String path) {
 		return format(path, null, null);
 	}
-
 
 	@SuppressFBWarnings("EI_EXPOSE_REP")
 	public Message getTo()		      { return to; }
