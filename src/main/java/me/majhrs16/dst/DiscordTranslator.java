@@ -3,9 +3,12 @@ package me.majhrs16.dst;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import me.majhrs16.dst.events.ReloadInternetLoss;
 import me.majhrs16.dst.events.TerminalLogger;
@@ -14,7 +17,6 @@ import me.majhrs16.dst.events.Chat;
 
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
-import net.dv8tion.jda.internal.utils.JDALogger;
 
 public class DiscordTranslator {
 	private static JDA jda;
@@ -27,6 +29,7 @@ public class DiscordTranslator {
 
 	public final static String version  = "${dst_version}";
 
+	@SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public JDA connect(String bot_token) throws InvalidTokenException, InterruptedException {
 		if (bot_token == null
 				|| bot_token.isEmpty()
