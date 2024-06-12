@@ -95,9 +95,9 @@ public class DiscordSync {
 					if (parts.length != 2) {
 						final int fLine = line;
 						plugin.logger.debug("rules.#%s.split.length: %s", fLine, parts.length);
-						API.sendMessage(new Message().format("discord-translator.sync.error",
+						API.sendMessage(new Message.Builder().format("discord-translator.sync.error",
 							format -> format.replace("%line%", String.valueOf(fLine))
-						));
+						).build());
 
 						continue;
 					};
@@ -123,9 +123,9 @@ public class DiscordSync {
 					} catch (Exception e) {
 						final int fLine = line;
 						plugin.logger.debug("JDA.guild.getRoleById: %s", e);
-						API.sendMessage(new Message().format("discord-translator.sync.error",
+						API.sendMessage(new Message.Builder().format("discord-translator.sync.error",
 							format -> format.replace("%line%", String.valueOf(fLine))
-						));
+						).build());
 					}
 
 					if (role == null) continue;

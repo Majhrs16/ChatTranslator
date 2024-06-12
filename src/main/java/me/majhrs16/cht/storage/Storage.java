@@ -10,7 +10,6 @@ import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.exceptions.ParseYamlException;
 import me.majhrs16.lib.storages.YAML;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.sql.SQLException;
@@ -21,7 +20,6 @@ public class Storage {
 	public YAML yaml;
 	public MySQL mysql;
 	public SQLite sqlite;
-	private TranslatorBase.LanguagesBase termLang;
 
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
@@ -46,12 +44,7 @@ public class Storage {
 		sqlite = new SQLite();
 		mysql  = new MySQL();
 
-//		posiblemente no tan explosivo...
-//		Message from = new Message(util.getNativeLang(), plugin.storage.getDefaultLang());
-
-//		posiblemente explosivo...
-		Message from = new Message();
-
+		Message.Builder builder = new Message.Builder();
 		String storage_type = getType();
 
 		try {
@@ -84,31 +77,31 @@ public class Storage {
 					break;
 
 				default:
-					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					Message from = API.formatMessage(builder.format("storage.errors.invalid-type").build());
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
 		} catch (ParseYamlException  | SQLException | RuntimeException e) {
-			from.format("storage.error.open", format -> format
+			builder.format("storage.error.open", format -> format
 				.replace("%type%", storage_type)
 				.replace("%reason%", e.toString())
 			);
 
-			API.sendMessage(from);
+			API.sendMessage(builder.build());
 
 			throw new StorageRegisterFailedException();
 		}
 
-		API.sendMessage(from.format(
+		API.sendMessage(builder.format(
 			"storage.done.open",
 			formats -> formats
 				.replace("%type%", storage_type)
-		));
+		).build());
 	}
 
 	public void unregister() {
-		Message from        = new Message();
-		String storage_type = getType();
+		Message.Builder builder = new Message.Builder();
+		String storage_type     = getType();
 
 		try {
 			switch (storage_type) {
@@ -126,26 +119,26 @@ public class Storage {
 					break;
 
 				default:
-					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					Message from = API.formatMessage(builder.format("storage.errors.invalid-type").build());
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
-			from.format("storage.done.close", format -> format
+			builder.format("storage.done.close", format -> format
 				.replace("%type%", storage_type)
 			);
 
 		} catch (SQLException | RuntimeException e) {
-			from.format("storage.error.close", format -> format
+			builder.format("storage.error.close", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type)
 			);
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 	}
 
 	public void set(UUID uuid, String discordID, String lang) {
-		Message from        = new Message();
+		Message.Builder builder        = new Message.Builder();
 		String storage_type = getType();
 
 		try {
@@ -177,27 +170,28 @@ public class Storage {
 					break;
 
 				default:
-					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					Message from = API.formatMessage(builder.format("storage.errors.invalid-type").build());
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
-			from.format("storage.done.write", format -> format.replace("%type%", storage_type));
+			builder.format("storage.done.write", format -> format
+				.replace("%type%", storage_type)
+			);
 
 		} catch (SQLException | RuntimeException e) {
-			from.format("storage.error.write", format -> format
+			builder.format("storage.error.write", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type)
 			);
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 	}
 
 	public String[] get(UUID uuid) {
 		String[] result = null;
 
-		Message from = new Message(util.getNativeLang(), termLang);
-		from.setTo(from.clone()); // Yes, simply void Message xD.
+		Message.Builder builder = new Message.Builder();
 		String storage_type = getType();
 
 		try {
@@ -224,31 +218,29 @@ public class Storage {
 					break;
 
 				default:
-					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					Message from = API.formatMessage(builder.format("storage.errors.invalid-type").build());
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
-			from.format("storage.done.read", format -> format.replace("%type%", storage_type));
+			builder.format("storage.done.read", format -> format
+				.replace("%type%", storage_type)
+			);
 
 		} catch (SQLException | RuntimeException e) {
-			from.format("storage.error.read", format -> format
+			builder.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
 		}
 
-		if (from.isEmpty(from.getTo()))
-			return result;
-
-//		Manually show because, API.sendMessage cause recursively calls in this case.
-		API.showMessage(from, API.formatMessage(from));
+		API.sendMessage(builder.build());
 
 		return result;
 	}
 
 	public String[] get(String discordID) {
-		String[] result     = null;
-		Message from        = new Message();
-		String storage_type = getType();
+		String[] result         = null;
+		String storage_type     = getType();
+		Message.Builder builder = new Message.Builder();
 
 		try {
 			switch (storage_type) {
@@ -260,7 +252,7 @@ public class Storage {
 						if (storage.contains(path) && Objects.equals(storage.getString(path), discordID)) {
 							path = uuid + ".lang";
 							if (storage.contains(path)) {
-								result = new String[] {uuid, discordID, storage.getString(path)};
+								result = new String[]{uuid, discordID, storage.getString(path)};
 								break;
 							}
 						}
@@ -278,20 +270,20 @@ public class Storage {
 					break;
 
 				default:
-					from = API.formatMessage(from.format("storage.errors.invalid-type"));
+					Message from = API.formatMessage(builder.format("storage.errors.invalid-type").build());
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
-			from.format("storage.done.read", format -> format
+			builder.format("storage.done.read", format -> format
 				.replace("%type%", storage_type));
 
 		} catch (SQLException | RuntimeException e) {
-			from.format("storage.error.read", format -> format
+			builder.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 
 		return result;
 	}
@@ -301,7 +293,6 @@ public class Storage {
 
 		unregister();
 		register();
-		termLang = API.getLang(Bukkit.getConsoleSender());
 
 		plugin.setDisabled(false);
 	}

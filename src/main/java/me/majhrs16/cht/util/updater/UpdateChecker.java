@@ -1,6 +1,7 @@
 package me.majhrs16.cht.util.updater;
 
 import me.majhrs16.cht.events.InternetCheckerAsync;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
@@ -22,7 +23,7 @@ public class UpdateChecker {
 	private static final int timed_out   = 1500;
 
 	public UpdateChecker(CommandSender to_sender) {
-		Message DC = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(to_sender)
 			.setLangTarget(API.getLang(to_sender));
 
@@ -42,27 +43,33 @@ public class UpdateChecker {
 			if (latestVersion != null && latestVersion.length() <= 8) {
 				if (to_sender instanceof Player) {
 					if (ChatColor.stripColor(Texts.get("versions.plugin")[0]).equals(latestVersion)) {
-						DC.format("plugin.updates.latest.player");
+						builder.format("plugin.updates.latest.player");
 
 					} else {
 						////////////////////////////////////////////////////
 						// Toda esta update v1.8 nacio apartir de aqui:
-						// DC.setMessages(Texts.get("plugin.updates.new.player.messages"));
-						// DC.setMessagesFormats(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("$s", "%s").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(DC).getMessages().split("\n")));
+						// builder.setMessages(Texts.get("plugin.updates.new.player.messages"));
+						// builder.setMessagesFormats(String.format(Texts.getString("plugin.updates.new.player.message_format").replace("$s", "%s").replace("%latestVersion%", latestVersion), (Object[]) API.formatMessage(builder).getMessages().split("\n")));
 
-						DC.format("plugin.updates.new.player");
+						builder.format("plugin.updates.new.player");
 					}
 
 				} else {
 					if (ChatColor.stripColor(Texts.get("versions.plugin")[0]).equals(latestVersion)) {
-						DC.format("plugin.updates.latest.console");
+						builder.format("plugin.updates.latest.console");
 
 					} else {
-						DC.format("plugin.updates.new.console");
+						builder.format("plugin.updates.new.console");
 					}
 				}
 
-				DC.getMessages().setFormats(API.replaceArray(DC.getMessages().getFormats(), "%latestVersion%", latestVersion));
+				builder.setMessages(new Formats.Builder()
+					.setFormats(API.replaceArray(
+						builder.build().getMessages().getFormats(),
+						"%latestVersion%",
+						latestVersion
+					))
+				);
 
 			} else {
 				throw new RuntimeException();
@@ -70,13 +77,13 @@ public class UpdateChecker {
 
 		} catch (IOException | RuntimeException e) {
 			if (to_sender instanceof Player) {
-				DC.format("plugin.updates.error.player");
+				builder.format("plugin.updates.error.player");
 
 			} else {
-				DC.format("plugin.updates.error.console");
+				builder.format("plugin.updates.error.console");
 			}
 		}
 
-		API.sendMessage(DC);
+		API.sendMessage(builder.build());
 	}
 }

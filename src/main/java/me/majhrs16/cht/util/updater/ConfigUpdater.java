@@ -34,7 +34,7 @@ public class ConfigUpdater {
 
 	@FunctionalInterface
 	private interface Consumer {
-		void accept(FileConfiguration cfg, Message msg);
+		void accept(FileConfiguration cfg, Message.Builder msg);
 	}
 
 	public ConfigUpdater() {
@@ -47,20 +47,20 @@ public class ConfigUpdater {
 		version = config.getInt(path);
 		int version_original = version;
 
-		// Inicializar el plugin por primera vez.
+//		Inicializar el plugin por primera vez.
 		if (version_original == 0) {
-			// Para evitar crashes.
+//			Para evitar crashes.
 			config.set("server-uuid", UUID.randomUUID().toString());
 			plugin.config.save();
 		}
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
 //		Inicializar el plugin por primera vez.
 		if (version_original == 0) {
-			applyConfigVersion0(config, from);
+			applyConfigVersion0(config, builder);
 
-//			"Actualizar" a la ultima version disponible en el codigo.
+//			"Actualizar" a la última version disponible en el codigo.
 			version = applyConfigVersions.length;
 		}
 
@@ -75,7 +75,7 @@ public class ConfigUpdater {
 
 		// Actualizar gradualmente por el historial de versiones.
 		for (int i = Math.max(0, version); i < applyConfigVersions.length; i++) {
-			applyConfigVersions[i].accept(config, from);
+			applyConfigVersions[i].accept(config, builder);
 			version = i + 1;
 		}
 
@@ -83,24 +83,24 @@ public class ConfigUpdater {
 		plugin.config.save();
 
 		if (version > version_original) {
-			API.sendMessage(from.format("updaters.config.done", null, s -> s
+			API.sendMessage(builder.format("updaters.config.done", null, s -> s
 				.replace("%original%", "" + version_original)
 				.replace("%new%", "" + version)
-			));
+			).build());
 	    }
 	}
 
-	private void applyConfigVersion0(FileConfiguration config, Message from) {
+	private void applyConfigVersion0(FileConfiguration config, Message.Builder builder) {
 		boolean cancel_event, clear_recipients;
 
 		if (Dependencies.Chatty.exist()) {
-			API.sendMessage(from.format("updaters.config.detected.Chatty"));
+			API.sendMessage(builder.format("updaters.config.detected.Chatty").build());
 
 			cancel_event     = false;
 			clear_recipients = false;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			API.sendMessage(from.format("updaters.config.detected.ChatManager"));
+			API.sendMessage(builder.format("updaters.config.detected.ChatManager").build());
 
 			cancel_event     = false;
 			clear_recipients = false;
@@ -114,7 +114,7 @@ public class ConfigUpdater {
 		config.set(Config.NativeChat.CLEAR.getPath(), clear_recipients);
 	}
 
-	private void applyConfigVersion1(FileConfiguration config, Message from) {
+	private void applyConfigVersion1(FileConfiguration config, Message.Builder builder) {
 		String path, tmp;
 
 		ArrayList<String> formats_from_messages  = new ArrayList<>();
@@ -170,16 +170,16 @@ public class ConfigUpdater {
 		config.set("auto-update-config", true);
 	}
 
-	private void applyConfigVersion2(FileConfiguration config, Message from) {
+	private void applyConfigVersion2(FileConfiguration config, Message.Builder builder) {
 		boolean show_native_chat;
 
 		if (Dependencies.Chatty.exist()) {
-			API.sendMessage(from.format("updaters.config.detected.Chatty"));
+			API.sendMessage(builder.format("updaters.config.detected.Chatty").build());
 
 			show_native_chat = true;
 
 		} else if (Dependencies.ChatManager.exist()) {
-			API.sendMessage(from.format("updaters.config.detected.ChatManager"));
+			API.sendMessage(builder.format("updaters.config.detected.ChatManager").build());
 
 			show_native_chat = true;
 
@@ -190,7 +190,7 @@ public class ConfigUpdater {
 		config.set("max-spam-per-tick", 150.0007);
 	}
 
-	private void applyConfigVersion3(FileConfiguration config, Message from) {
+	private void applyConfigVersion3(FileConfiguration config, Message.Builder builder) {
 		String path;
 
 		path = "show-native-chat";
@@ -232,11 +232,11 @@ public class ConfigUpdater {
 		}
 	}
 
-	private void applyConfigVersion4(FileConfiguration config, Message from) {
+	private void applyConfigVersion4(FileConfiguration config, Message.Builder builder) {
 		config.set("check-updates", true);
 	}
 
-	private void applyConfigVersion5(FileConfiguration config, Message from) {
+	private void applyConfigVersion5(FileConfiguration config, Message.Builder builder) {
 		String path;
 
 		path = "chat-color-personalized";
@@ -257,7 +257,7 @@ public class ConfigUpdater {
 			config.set(path, from_exit);
 		}
 	}
-	private void applyConfigVersion6(FileConfiguration config, Message from) {
+	private void applyConfigVersion6(FileConfiguration config, Message.Builder builder) {
 		ArrayList<String> from_messages  = new ArrayList<>();
 		from_messages.add("%ct_expand% &7%ct_messages%");
 
@@ -298,7 +298,7 @@ public class ConfigUpdater {
 		config.set("discord.channels", discord_channels);
 	}
 
-	private void applyConfigVersion7(FileConfiguration config, Message from) {
+	private void applyConfigVersion7(FileConfiguration config, Message.Builder builder) {
 		ArrayList<String> to_discord_messages  = new ArrayList<>();
 		to_discord_messages.add("&f<&b%player_name%&f> &f[&6%ct_lang_source%&f] &a$ct_messages$");
 		ArrayList<String> to_discord_tool_tips = new ArrayList<>();
@@ -314,7 +314,7 @@ public class ConfigUpdater {
 		config.set("discord.channels.player-access", new ArrayList<>());
 
 
-		API.sendMessage(from.format("updaters.config.version7.unsupportedColorConfig"));
+		API.sendMessage(builder.format("updaters.config.version7.unsupportedColorConfig").build());
 
 		config.set("chat-custom-colors", null);
 
@@ -340,7 +340,7 @@ public class ConfigUpdater {
 		config.set("formats.to_mention.sounds", to_mention_sounds);
 	}
 
-	private void applyConfigVersion8(FileConfiguration config, Message from) {
+	private void applyConfigVersion8(FileConfiguration config, Message.Builder builder) {
 		String path;
 
 /*
@@ -384,7 +384,7 @@ public class ConfigUpdater {
 		plugin.config.save();
 	}
 
-	private void applyConfigVersion9(FileConfiguration config, Message from) {
+	private void applyConfigVersion9(FileConfiguration config, Message.Builder builder) {
 		String path;
 
 		List<String> discord_sync = new ArrayList<>();
@@ -409,7 +409,7 @@ public class ConfigUpdater {
 		config.set(path, null);
 
 		FileConfiguration formats = plugin.formats.get();
-		new FormatsUpdater().applyFormatsVersion1(formats, from);
+		new FormatsUpdater().applyFormatsVersion1(formats, builder);
 		plugin.formats.save();
 	}
 }

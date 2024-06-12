@@ -28,11 +28,12 @@ public class TerminalLogger {
 	private long lastFileByte = 0;
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
+
 	private static final int MAX_LENGTH_MESSAGE = 1900;
 	public static final Map<String, String> ANSI_TO_DISCORD_MAP = createAnsiMap();
 
 	public TerminalLogger() {
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
 		try {
 			if (util.getMinecraftVersion() <= 8.0)
@@ -42,20 +43,20 @@ public class TerminalLogger {
 
 			LOG_FILE_PATH = "logs/DST.log";
 
-			from.format("discord-translator.log4j.done", format -> format
+			builder.format("discord-translator.log4j.done", format -> format
 				.replace("%logger%", LOG_FILE_PATH)
 			);
 
 		} catch (Throwable e) {
 			LOG_FILE_PATH = "logs/latest.log";
 
-			from.format("discord-translator.log4j.error", format -> format
+			builder.format("discord-translator.log4j.error", format -> format
 				.replace("%logger%", LOG_FILE_PATH)
 				.replace("%reason%", e.toString())
 			);
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 	}
 
 	public void start() {
@@ -99,7 +100,10 @@ public class TerminalLogger {
 								}
 
 							} else {
-								API.sendMessage(new Message().format("discord-translator.terminalLogger.LogReaderTask"));
+								API.sendMessage(new Message.Builder()
+									.format("discord-translator.terminalLogger.LogReaderTask")
+									.build()
+								);
 								return;
 							}
 						}
@@ -176,6 +180,9 @@ public class TerminalLogger {
 		List<String> channels = DiscordChat.getChannels("discord.channels.console");
 
 		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size())
-			API.sendMessage(new Message().format("discord-translator.terminalLogger.sendDiscord"));
+			API.sendMessage(new Message.Builder()
+				.format("discord-translator.terminalLogger.sendDiscord")
+				.build()
+			);
 	}
 }

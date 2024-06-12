@@ -31,7 +31,7 @@ public class DeathPlayer implements Listener {
 		for (Player to_player : BukkitUtils.getOnlinePlayers())
 			message = message.replace(to_player.getName(), "`" + to_player.getName() + "`");
 
-		Message model = util.createChat(
+		Message.Builder model = util.createChat(
 			player,
 			new String[] { message },
 			from_lang,
@@ -46,12 +46,11 @@ public class DeathPlayer implements Listener {
 				API.getLang(Bukkit.getConsoleSender()),
 				"death_console")
 			.setSender(player)
-			.setCancelledThis(true); // Evitar duplicacion para el remitente.
+			.setShow(false) // Evitar duplicacion para el remitente.
+			.build();
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), (froms) -> {
-			froms.add(console);
-			API.broadcast(froms, API::sendMessage);
-		});
+		API.sendMessageAsync(console);
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
 
 		if (Config.TranslateOthers.DISCORD.IF()) {
 			Message model_discord = util.createChat(
@@ -60,7 +59,7 @@ public class DeathPlayer implements Listener {
 				util.convertStringToLang("en"),
 				plugin.storage.getDefaultLang(),
 				"death_discord"
-			);
+			).build();
 
 			Message to = API.formatMessage(model_discord).getTo();
 

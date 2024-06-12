@@ -1,5 +1,10 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.lib.network.translator.TranslatorBase;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
@@ -7,10 +12,6 @@ import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.JsonFormatter;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 
 import me.majhrs16.lib.logger.Logger;
 
@@ -23,9 +24,7 @@ public interface Messages {
 
 	default void showMessage(Message original, Message formatted) {
 		if (original == null
-				|| original.isCancelled()
-				|| original.getLangSource() == null
-				|| original.getLangTarget() == null
+				|| !original.isShow()
 				|| original.getLangSource().getCode().equals("DISABLED")
 				|| original.getLangTarget().getCode().equals("DISABLED")
 				|| formatted.getMessages().getFormats().length == 0
@@ -113,54 +112,54 @@ public interface Messages {
 	}
 
 	default void sendMessageAsync(Message original) {
-		Message backup = original.clone();
+		Message backup = original.clone().build();
 
 		new Thread(() -> sendMessage(backup)).start();
 	}
 
-	default void broadcast(List<Message> messages, Consumer<Message> broadcastAction) {
-		for (Message from : messages) {
-			if (broadcastAction != null)
-				broadcastAction.accept(from);
-		}
-	}
-
-	default void broadcast(List<Message> messages) {
-		broadcast(messages, ChatLimiter::add);
-	}
-
-	default void broadcast(Message model, Player[] players, Consumer<List<Message>> broadcastAction) {
-		if (model == null || model.isEmpty())
+	default void broadcast(Message.Builder model, Player[] players, Consumer<Message> broadcastAction) {
+		if (model == null
+				|| model.build().isEmpty()
+				|| players == null
+				|| players.length == 0)
 			return;
 
-		if (model.getTo() == null || model.getTo().isEmpty())
-			model.setTo(model.clone());
+		if (model.build().getTo() == null || model.build().getTo().isEmpty())
+			throw new IllegalArgumentException("The models from and to must be not empty.");
 
-		Message to_model    = model.getTo();
+		Message.Builder to_model = model.build().getTo().clone();
 		List<Message> froms = new ArrayList<>();
-//		String original_lang_target = to_model.getLangTarget(); // Limitacion necesaria por ahora...
+		TranslatorBase.LanguagesBase to_lang_target_original = to_model.build().getLangTarget();
 
 		for (Player to_player : players) {
 			to_model.setSender(to_player);
 
-			if (to_player.equals(model.getSender())) {
-				if (players.length > 1)
-					continue;
+			if (to_player.equals(model.build().getSender()) && players.length > 1)
+				continue;
 
-				to_model.setCancelledThis(true);
+			to_model.setShow(!to_player.equals(model.build().getSender()));
 
-			} else {
-				to_model.setCancelledThis(false);
-			}
+			if (to_lang_target_original == null)
+				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 
-//			if (original_lang_target == null) // Limitacion necesaria por ahora...
-			to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
-
-			froms.add(model.clone());
-			model.setCancelledThis(true);
+			model.setTo(to_model);
+			froms.add(model.build());
+			model.setShow(false);
 		}
 
-		if (broadcastAction != null)
-			broadcastAction.accept(froms);
+		if (broadcastAction == null) {
+			for (Message from : froms) {
+				ChatLimiter.add(from);
+			}
+
+		} else {
+			for (Message from : froms) {
+				broadcastAction.accept(from);
+			}
+		}
+	}
+
+	default void broadcast(Message.Builder model, Player[] players) {
+		broadcast(model, players, null);
 	}
 }

@@ -1,5 +1,6 @@
 package me.majhrs16.dst.events;
 
+import me.majhrs16.cht.events.custom.Formats;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.MessageReference;
@@ -72,10 +73,12 @@ public class Chat extends ListenerAdapter {
 		if (message == null)
 			return;
 
-		me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
-		from.setSenderName(event.getMessage().getAuthor().getName());
-		from.getMessages().setFormats("%player_name%: %ct_messages%");
-		from.getMessages().setTexts(event.getMessage().getContentDisplay());
+		me.majhrs16.cht.events.custom.Message.Builder builder = new me.majhrs16.cht.events.custom.Message.Builder();
+		builder.setSenderName(event.getMessage().getAuthor().getName());
+		builder.setMessages(new Formats.Builder()
+			.setFormats("%player_name%: %ct_messages%")
+			.setTexts(event.getMessage().getContentDisplay())
+		);
 
 		UUID from_uuid = AccountManager.getMinecraft(event.getMessage().getAuthor().getId());
 		UUID to_uuid   = AccountManager.getMinecraft(message.getAuthor().getId());
@@ -104,10 +107,10 @@ public class Chat extends ListenerAdapter {
 		TranslatorBase.LanguagesBase from_lang = API.getLang(from_player);
 		TranslatorBase.LanguagesBase to_lang   = API.getLang(to_player);
 
-		from.setLangSource(from_lang);
-		from.setLangTarget(to_lang);
+		builder.setLangSource(from_lang);
+		builder.setLangTarget(to_lang);
 
-		message.reply(API.formatMessage(from).getMessages().getFormat(0)).queue();
+		message.reply(API.formatMessage(builder.build()).getMessages().getFormat(0)).queue();
 		event.getMessage().delete().queue();
 	}
 
@@ -140,7 +143,7 @@ public class Chat extends ListenerAdapter {
 		OfflinePlayer player = authorUuid == null ? null : AccountManager.getOfflinePlayer(authorUuid);
 		TranslatorBase.LanguagesBase from_lang = player == null ? util.convertStringToLang("auto") : API.getLang(player);
 
-		me.majhrs16.cht.events.custom.Message model = util.createChat(
+		me.majhrs16.cht.events.custom.Message.Builder model = util.createChat(
 			player == null ? null : player.getPlayer(),
 			message_texts,
 			from_lang,
@@ -153,11 +156,17 @@ public class Chat extends ListenerAdapter {
 		else
 			model.setSenderName(player.getName());
 
-		model.getToolTips().setTexts(tool_tip_texts);
-		model.getTo().getToolTips().setTexts(tool_tip_texts);
-		model.setCancelledThis(player == null || !player.isOnline());
+		model.setToolTips(model.build().getToolTips().clone()
+				.setTexts(tool_tip_texts)
 
-		me.majhrs16.cht.events.custom.Message console = util.createChat(
+			).setTo(model.build().getTo().clone()
+				.setToolTips(model.build().getTo().getToolTips().clone()
+					.setTexts(tool_tip_texts)
+				)
+
+			).setShow(player != null && player.isOnline());
+
+		me.majhrs16.cht.events.custom.Message.Builder console = util.createChat(
 			Bukkit.getConsoleSender(),
 			message_texts,
 			from_lang,
@@ -165,21 +174,19 @@ public class Chat extends ListenerAdapter {
 			"console"
 		);
 
-		console.setSender(model.getSender());
+		console.setSender(model.build().getSender());
 		if (player == null)
 			console.setSenderName(message.getAuthor().getName());
 
 		else
 			console.setSenderName(player.getName());
-		console.setCancelledThis(true);
+		console.setShow(false);
 
 		if (player != null && player.isOnline())
 			message.delete().queue();
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
-			froms.add(console);
-			API.broadcast(froms);
-		});
+		API.sendMessageAsync(console.build());
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
 	}
 
 	private void handleConsoleCommand(MessageReceivedEvent event) {
@@ -211,11 +218,12 @@ public class Chat extends ListenerAdapter {
 
 				Player player    = (Player) AccountManager.getOfflinePlayer(authorUuid);
 
-				me.majhrs16.cht.events.custom.Message from = new me.majhrs16.cht.events.custom.Message();
-					from.setSender(player);
-					from.format("commands.dst.discordLink");
-					from.setLangTarget(API.getLang(player));
-				API.sendMessage(from);
+				API.sendMessage(new me.majhrs16.cht.events.custom.Message.Builder()
+					.setSender(player)
+					.setLangTarget(API.getLang(player))
+					.format("commands.dst.discordLink")
+					.build()
+				);
 			}, 5L);
 
 		} else {
@@ -232,13 +240,13 @@ public class Chat extends ListenerAdapter {
 		String[] args = message.getContentRaw().split(" ");
 		Member member = event.getMember();
 
-		me.majhrs16.cht.events.custom.Message DC = new me.majhrs16.cht.events.custom.Message();
+		me.majhrs16.cht.events.custom.Message.Builder builder = new me.majhrs16.cht.events.custom.Message.Builder();
 		if (member != null) {
 			UUID memberUuid = AccountManager.getMinecraft(member.getId());
 			if (memberUuid != null)
-				DC.setLangTarget(API.getLang(AccountManager.getOfflinePlayer(memberUuid)));
+				builder.setLangTarget(API.getLang(AccountManager.getOfflinePlayer(memberUuid)));
 		}
-		DC.setColor(-1);
+		builder.setColor(-1);
 
 		if (args.length > 1) {
 			if (args[1].equals("lang")) { // !cht lang CODE
@@ -248,30 +256,32 @@ public class Chat extends ListenerAdapter {
 					UUID uuid = AccountManager.getMinecraft(message.getAuthor().getId());
 
 					if (uuid == null) {
-						DC.format("commands.dst.unlinked");
+						builder.format("commands.dst.unlinked");
 
 					} else {
 						plugin.storage.set(uuid, null, lang);
 
 						TranslatorBase.LanguagesBase language = util.convertStringToLang(lang);
 
-						DC.setLangTarget(language);
-						DC.format("commands.dst.setLang.done", s -> s
+						builder.setLangTarget(language);
+						builder.format("commands.dst.setLang.done", s -> s
 							.replace("%lang%", language.getValue())
 						);
 					}
 
 				} else {
-					DC.format("commands.dst.setLang.error.unsupported", s -> s
+					builder.format("commands.dst.setLang.error.unsupported", s -> s
 						.replace("%lang%", lang)
 					);
 				}
 
 			} else {
-				DC.format("commands.dst.setLang.error.syntax");
+				builder.format("commands.dst.setLang.error.syntax");
 			}
 		}
 
-		message.reply(String.join("\n", API.formatMessage(DC).getMessages().getFormats())).queue();
+		message.reply(String.join("\n",
+			API.formatMessage(builder.build()).getMessages().getFormats()
+		)).queue();
 	}
 }

@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
@@ -60,13 +61,13 @@ public class Achievements implements Listener {
 		Player player = ((PlayerEvent) event).getPlayer();
 		((Cancellable) event).setCancelled(true);
 
-		Message model = util.createChat(
+		Message.Builder model = util.createChat(
 			player,
 			new String[] { name },
 			util.convertStringToLang("en"),
 			API.getLang(player),
 			"advancement"
-		);
+		).setToolTips(new Formats.Builder());
 
 		Message console = util.createChat(
 				Bukkit.getConsoleSender(),
@@ -75,15 +76,12 @@ public class Achievements implements Listener {
 				API.getLang(Bukkit.getConsoleSender()),
 				"advancement_console")
 			.setSender(player)
-			.setCancelledThis(true);
+			.setShow(false)
+			.setToolTips(new Formats.Builder())
+			.build();
 
-		console.getToolTips().setTexts();
-		model.getToolTips().setTexts();
-
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
-			froms.add(console);
-			API.broadcast(froms, API::sendMessageAsync);
-		});
+		API.sendMessageAsync(console);
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
 	}
 
 	public String getAchievementName(Event event) {

@@ -17,40 +17,40 @@ public class Toggler implements CommandExecutor {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public boolean apply(CommandSender sender, String path, String[] args) {
-		Message from = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.cht.errors.noPermission"));
+			API.sendMessage(builder.format("commands.cht.errors.noPermission").build());
 			return true;
 		}
 
 		switch (args.length) {
 			case 0:
-				togglePlugin(from);
+				togglePlugin(builder);
 				break;
 
 			case 1:
-				togglePlayer(from, args[0]);
+				togglePlayer(builder, args[0]);
 				break;
 
 			default:
-				from.format("commands.cht.errors.unknown");
+				builder.format("commands.cht.errors.unknown");
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 		return true;
 	}
 
-	public void togglePlayer(Message from, String player) {
+	public void togglePlayer(Message.Builder from, String player) {
 		if (player == null)
 			throw new NullPointerException("String player is null");
 
 		Player to_player = (Player) BukkitUtils.getSenderByName(player);
 
 		if (to_player == null) {
-			API.sendMessage(from.format("commands.cht.noFoundPlayer"));
+			API.sendMessage(from.format("commands.cht.noFoundPlayer").build());
 			return;
 		}
 
@@ -72,7 +72,7 @@ public class Toggler implements CommandExecutor {
 		);
 	}
 	
-	public void togglePlugin(Message from) {
+	public void togglePlugin(Message.Builder from) {
 		ChatLimiter.clear();
 		plugin.setDisabled(!plugin.isDisabled());
 		from.format("commands.cht.toggler.togglePlugin." + !plugin.isDisabled());

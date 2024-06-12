@@ -1,5 +1,7 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.cht.events.custom.Formats;
+import me.majhrs16.cht.events.custom.MessageEvent;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.util.cache.Config;
@@ -28,42 +30,50 @@ public class MessageListener implements Listener {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	@EventHandler (priority = EventPriority.LOWEST)
-	public void onMessage(Message event) {
+	public void onMessage(MessageEvent event) {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
-			toMinecraft(event);
+			Message chat = event.getChat();
+			toMinecraft(chat);
 
-			event.getTo().setLangTarget(plugin.storage.getDefaultLang());
-
-			event.getTo().format("to_discord");
-			toDiscord(event, DiscordChat.getChannels("discord.channels.chat"));
+			if (!event.isCancelled())
+				toDiscord(
+					chat.clone().setTo(chat.getTo().clone()
+						.setLangTarget(plugin.storage.getDefaultLang())
+						.format("to_discord")
+					).build(),
+					DiscordChat.getChannels("discord.channels.chat")
+				);
 
 			event.setCancelled(true);
 		}, 1L);
 	}
 
-	public void toMinecraft(Message event) {
-		if (event.isEmpty())
+	public void toMinecraft(Message chat) {
+		if (chat.isEmpty())
 			return;
 
-		API.sendMessageAsync(event);
+		API.sendMessageAsync(chat);
 	}
 
 	@SuppressWarnings("deprecation")
-	public void toDiscord(Message event, List<String> channels) {
-		if (event.isEmpty()
-				|| event.isCancelled()
+	public void toDiscord(Message chat, List<String> channels) {
+		if (chat.isEmpty()
 				|| !Config.TranslateOthers.DISCORD.IF()
-				|| event.getLangSource() == null
-				|| event.getLangTarget() == null
-				|| event.getLangSource().getCode().equals("DISABLED")
-				|| event.getLangTarget().getCode().equals("DISABLED")
-				|| event.getMessages().getFormats().length == 0
-				|| event.getMessages().getTexts().length == 0
-				|| event.getTo().getMessages().getFormats().length == 0)
+				|| chat.getLangSource() == null
+				|| chat.getLangTarget() == null
+				|| chat.getLangSource().getCode().equals("DISABLED")
+				|| chat.getLangTarget().getCode().equals("DISABLED")
+				|| chat.getMessages().getFormats().length == 0
+				|| chat.getMessages().getTexts().length == 0
+				|| chat.getTo().getMessages().getFormats().length == 0)
 			return;
 
-		for (int i = 0; i < event.getMessages().getTexts().length; i++) {
-			String message = event.getMessages().getText(i);
+		Formats.Builder builder = new Formats.Builder()
+			.setFormats(chat.getTo().getMessages().getFormats())
+			.setTexts(chat.getTo().getMessages().getTexts());
+
+		for (int i = 0; i < chat.getMessages().getTexts().length; i++) {
+			String message = chat.getMessages().getText(i);
 			Matcher matcher = Chat.mentions.matcher(message);
 
 			while (matcher.find()) {
@@ -96,18 +106,22 @@ public class MessageListener implements Listener {
 					continue;
 
 				String user_mention = user.getAsMention();
-				event.getTo().getMessages().setText(i, message.replace(matcher.group(), user_mention));
+				builder.setText(i, message.replace(matcher.group(), user_mention));
 			}
 		}
 
-		Message from = API.formatMessage(event);
+		chat = chat.clone().setTo(chat.getTo().clone()
+			.setMessages(builder)
+		).build();
 
-		if (event.getTo().getMessages().getFormats().length == 0)
+		Message to = API.formatMessage(chat).getTo();
+
+		if (chat.getTo().getMessages().getFormats().length == 0)
 			return;
 
 		DiscordChat.broadcast(channels,
-			String.join("\n", from.getTo().getMessages().getFormats())
-				+ "\n\t" + String.join("\n\t", from.getTo().getToolTips().getFormats())
+			String.join("\n", to.getMessages().getFormats())
+				+ "\n\t" + String.join("\n\t", to.getToolTips().getFormats())
 		);
 	}
 }

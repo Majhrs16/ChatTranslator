@@ -1,5 +1,6 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
@@ -223,7 +224,7 @@ public interface Core {
 
 	default Message formatMessage(Message original) {
 //		Se clona para evitar sobre-escrituras en el evento.
-		Message from              = original.clone();
+		Message from              = original.clone().build();
 		CommandSender from_player = from.getSender();
 
 		String[] from_tool_tips_formats = from.getToolTips().getFormats();
@@ -232,8 +233,8 @@ public interface Core {
 		String[] from_messages_texts    = from.getMessages().getTexts();
 		String[] from_sounds            = from.getSounds();
 
-		String from_lang_source = from.getLangSource().getCode();
-		String from_lang_target = from.getLangTarget().getCode();
+		TranslatorBase.LanguagesBase from_lang_source = from.getLangSource();
+		TranslatorBase.LanguagesBase from_lang_target = from.getLangTarget();
 
 
 		Message to              = from.getTo();
@@ -245,8 +246,8 @@ public interface Core {
 		String[] to_messages_texts    = to.getMessages().getTexts();
 		String[] to_sounds            = to.getSounds();
 
-		String to_lang_source = to.getLangSource().getCode();
-		String to_lang_target = to.getLangTarget().getCode();
+		TranslatorBase.LanguagesBase to_lang_source = to.getLangSource();
+		TranslatorBase.LanguagesBase to_lang_target = to.getLangTarget();
 
 
 		byte is_color          = from.isColor();
@@ -274,7 +275,7 @@ public interface Core {
 		to_messages_texts    = processEscapes(to_messages_texts, to_messages_escapes);
 
 		replaceFormats(
-			"\\%ct_lang_source\\%", from_lang_source,
+			"\\%ct_lang_source\\%", from_lang_source.getCode(),
 			from_tool_tips_formats,
 			from_messages_formats,
 			to_tool_tips_formats,
@@ -282,7 +283,7 @@ public interface Core {
 		);
 
 		replaceFormats(
-			"\\$ct_lang_source\\$", to_lang_source,
+			"\\$ct_lang_source\\$", to_lang_source.getCode(),
 			from_tool_tips_formats,
 			from_messages_formats,
 			to_tool_tips_formats,
@@ -290,7 +291,7 @@ public interface Core {
 		);
 
 		replaceFormats(
-			"\\%ct_lang_target\\%", from_lang_target,
+			"\\%ct_lang_target\\%", from_lang_target.getCode(),
 			from_tool_tips_formats,
 			from_messages_formats,
 			to_tool_tips_formats,
@@ -298,7 +299,7 @@ public interface Core {
 		);
 
 		replaceFormats(
-			"\\$ct_lang_target\\$", to_lang_target,
+			"\\$ct_lang_target\\$", to_lang_target.getCode(),
 			from_tool_tips_formats,
 			from_messages_formats,
 			to_tool_tips_formats,
@@ -323,10 +324,37 @@ public interface Core {
 
 		if (InternetCheckerAsync.isInternetAvailable()) {
 			TranslatorBase translator = ChatTranslatorAPI.getInstance().getTranslator();
-			from_tool_tips_texts = translateMessages(from_tool_tips_texts, from_tool_tips_formats, from_lang_source, from_lang_target, translator);
-			from_messages_texts  = translateMessages(from_messages_texts, from_messages_formats, from_lang_source, from_lang_target, translator);
-			to_tool_tips_texts   = translateMessages(to_tool_tips_texts, to_tool_tips_formats, to_lang_source, to_lang_target, translator);
-			to_messages_texts    = translateMessages(to_messages_texts, to_messages_formats, to_lang_source, to_lang_target, translator);
+			from_tool_tips_texts = translateMessages(
+				from_tool_tips_texts,
+				from_tool_tips_formats,
+				from_lang_source.getCode(),
+				from_lang_target.getCode(),
+				translator
+			);
+
+			from_messages_texts  = translateMessages(
+				from_messages_texts,
+				from_messages_formats,
+				from_lang_source.getCode(),
+				from_lang_target.getCode(),
+				translator
+			);
+
+			to_tool_tips_texts   = translateMessages(
+				to_tool_tips_texts,
+				to_tool_tips_formats,
+				to_lang_source.getCode(),
+				to_lang_target.getCode(),
+				translator
+			);
+
+			to_messages_texts    = translateMessages(
+				to_messages_texts,
+				to_messages_formats,
+				to_lang_source.getCode(),
+				to_lang_target.getCode(),
+				translator
+			);
 
 		} else {
 			from_tool_tips_formats = replaceArray(from_tool_tips_formats, "(.+)", "[!] $1");
@@ -454,18 +482,32 @@ public interface Core {
 		from_messages_formats = processExpand(from_messages_formats);
 		to_messages_formats   = processExpand(to_messages_formats);
 
-		from.getToolTips().setFormats(from_tool_tips_formats);
-		from.getMessages().setFormats(from_messages_formats);
-		from.getToolTips().setTexts(from_tool_tips_texts);
-		from.getMessages().setTexts(from_messages_texts);
-		from.setSounds(from_sounds);
+		return new Message.Builder()
+			.setSender(from_player)
+			.setMessages(new Formats.Builder()
+				.setFormats(from_messages_formats)
+				.setTexts(from_messages_texts))
 
-		to.getToolTips().setFormats(to_tool_tips_formats);
-		to.getMessages().setFormats(to_messages_formats);
-		to.getToolTips().setTexts(to_tool_tips_texts);
-		to.getMessages().setTexts(to_messages_texts);
-		to.setSounds(to_sounds);
+			.setToolTips(new Formats.Builder()
+				.setFormats(from_tool_tips_formats)
+				.setTexts(from_tool_tips_texts))
+			.setSounds(from_sounds)
+			.setLangSource(from_lang_source)
+			.setLangTarget(from_lang_target)
 
-		return from;
+			.setTo(new Message.Builder()
+				.setSender(to_player)
+				.setMessages(new Formats.Builder()
+					.setFormats(to_messages_formats)
+					.setTexts(to_messages_texts))
+
+				.setToolTips(new Formats.Builder()
+					.setFormats(to_tool_tips_formats)
+					.setTexts(to_tool_tips_texts))
+
+				.setSounds(to_sounds)
+				.setLangSource(to_lang_source)
+				.setLangTarget(to_lang_target)
+			).build();
 	}
 }

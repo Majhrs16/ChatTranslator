@@ -1,5 +1,6 @@
 package me.majhrs16.cht.util;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
@@ -73,27 +74,25 @@ public class util {
 		return cfg.contains(path) && cfg.getBoolean(path);
 	}
 
-	public static Message createGroupFormat(
+	public static Message.Builder createGroupFormat(
 			CommandSender sender,
 			String[] messages,
 			TranslatorBase.LanguagesBase langSource,
 			TranslatorBase.LanguagesBase langTarget,
 			String path) {
 
-		Message DC = new Message();
-			DC.setSender(sender);
-			DC.getMessages().setTexts(messages);
-			DC.getToolTips().setTexts(messages);
-			DC.setLangSource(langSource);
-			DC.setLangTarget(langTarget);
-			DC.setColor(0);
-			DC.setFormatPAPI(Config.FORMAT_PAPI.IF());
-			DC.format(path);
-
-		return DC;
+		return new Message.Builder()
+			.setSender(sender)
+			.setMessages(new Formats.Builder().setTexts(messages))
+			.setToolTips(new Formats.Builder().setTexts(messages))
+			.setLangSource(langSource)
+			.setLangTarget(langTarget)
+			.setColor(0)
+			.setFormatPAPI(Config.FORMAT_PAPI.IF())
+			.format(path);
 	}
 
-	public static Message createChat(
+	public static Message.Builder createChat(
 			CommandSender sender,
 			String[] messages,
 			TranslatorBase.LanguagesBase langSource,
@@ -102,14 +101,11 @@ public class util {
 
 		path = path == null ?  "" : "_" + path;
 
-		Message to   = createGroupFormat(sender, messages, langSource, langTarget, "to" + path);
-		Message from = createGroupFormat(sender, messages, langSource, langTarget, "from" + path);
-			from.setTo(to);
-
-		return from;
+		return createGroupFormat(sender, messages, langSource, langTarget, "from" + path)
+			.setTo(createGroupFormat(sender, messages, langSource, null, "to" + path));
 	}
 
-	public static void applySoundsFormat(Message original, String path) {
+	public static void applySoundsFormat(Message.Builder original, String path) {
 		FileConfiguration formats = plugin.formats.get();
 		String[] sounds           = new String[0];
 
@@ -135,7 +131,7 @@ public class util {
 		original.setSounds(sounds);
 	}
 
-	public static void applyToolTipsFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
+	public static void applyToolTipsFormat(Message.Builder original, String path, BiConsumer<List<String>, List<String>> preAction) {
 		String[] formats = Texts.get(path + ".toolTips.formats");
 		String[] texts   = Texts.get(path + ".toolTips.texts");
 
@@ -153,13 +149,13 @@ public class util {
 			texts   = textstList.toArray(new String[0]);
 		}
 
-		original.getToolTips().setFormats(formats);
-
-		if (texts.length > 0)
-			original.getToolTips().setTexts(texts);
+		original.setToolTips(new Formats.Builder()
+			.setFormats(formats)
+			.setTexts(texts.length > 0 ? texts : original.build().getToolTips().getTexts())
+		);
 	}
 
-	public static void applyMessagesFormat(Message original, String path, BiConsumer<List<String>, List<String>> preAction) {
+	public static void applyMessagesFormat(Message.Builder original, String path, BiConsumer<List<String>, List<String>> preAction) {
 		String[] formats = Texts.get(path + ".messages.formats");
 		String[] texts   = Texts.get(path + ".messages.texts");
 		String[] source  = Texts.get(path + ".sourceLang");
@@ -185,25 +181,15 @@ public class util {
 
 //		En caso de no existir el grupo de formato, usar los datos en memoria,
 //		if (formats.length > 0)
-		original.getMessages().setFormats(formats);
-
-		if (texts.length > 0)
-			original.getMessages().setTexts(texts);
+		original.setMessages(new Formats.Builder()
+			.setFormats(formats)
+			.setTexts(texts.length > 0 ? texts : original.build().getMessages().getTexts())
+		);
 
 		if (source.length > 0)
-			original.setLangSource(source[0]);
+			original.setLangSource(convertStringToLang(source[0]));
 
 		if (target.length > 0)
-			original.setLangTarget(target[0]);
-	}
-
-	@Deprecated
-	public static String convertColorHex(String text) {
-		Matcher matcher;
-		while ((matcher = API.COLOR_HEX.matcher(text)).find()) {
-			text = text.replace(matcher.group(0), net.md_5.bungee.api.ChatColor.of(matcher.group(0)).toString());
-		}
-
-		return text;
+			original.setLangTarget(convertStringToLang(target[0]));
 	}
 }

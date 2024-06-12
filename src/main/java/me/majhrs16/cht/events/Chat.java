@@ -42,9 +42,10 @@ public class Chat implements Listener {
 				API.getLang(Bukkit.getConsoleSender()),
 				"console")
 			.setSender(event.getPlayer())
-			.setCancelledThis(true); // Evitar duplicacion para el remitente.
+			.setShow(false) // Evitar duplicacion para el remitente.
+			.build();
 
-		Message model = util.createChat(
+		Message.Builder model = util.createChat(
 			event.getPlayer(),
 			new String[] { event.getMessage() },
 			from_lang,
@@ -65,17 +66,19 @@ public class Chat implements Listener {
 			players.add(to_player);
 		}
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
-			froms.add(console);
+		API.sendMessageAsync(console);
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), from -> {
+			if (from.getTo().getSender() instanceof Player
+					&& players.contains((Player) from.getTo().getSender())) {
 
-			API.broadcast(froms, from -> {
-				if (from.getTo().getSender() instanceof Player && players.contains((Player) from.getTo().getSender())) {
-					from.format("from_mention");
-					from.getTo().format("to_mention");
-				}
+				Message.Builder builder = from.clone();
+				builder.format("from_mention")
+					.setTo(from.getTo().clone()
+						.format("to_mention")
+					).build();
+			}
 
-				ChatLimiter.add(from);
-			});
+			ChatLimiter.add(from);
 		});
 
 		if (Config.NativeChat.CLEAR.IF())

@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.cht.events.custom.MessageEvent;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
@@ -23,22 +24,22 @@ public class ChatLimiter implements Listener {
 	private long ACTUAL_TICKS;
 
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
-	private static final Map<CommandSender, SpamTracker<Message>> spam = new ConcurrentHashMap<>();
+	private static final Map<CommandSender, SpamTracker<MessageEvent>> spam = new ConcurrentHashMap<>();
 
 	private void processor() {
 		if (plugin.isDisabled()) return;
 
 		FileConfiguration config = plugin.config.get();
 
-		for (Map.Entry<CommandSender, SpamTracker<Message>> entry : new ArrayList<>(spam.entrySet())) {
+		for (Map.Entry<CommandSender, SpamTracker<MessageEvent>> entry : new ArrayList<>(spam.entrySet())) {
 			CommandSender sender         = entry.getKey();
-			SpamTracker<Message> tracker = entry.getValue();
+			SpamTracker<MessageEvent> tracker = entry.getValue();
 
-			for (Message event : tracker.getChat(event -> event != null && !event._isProcessed())) {
-				if (sender instanceof Player && !event.isCancelled()) {
+			for (MessageEvent event : tracker.getChat(event -> event != null && !event._isProcessed())) {
+				if (sender instanceof Player && event.getChat().isShow()) {
 					tracker.setCount(tracker.getCount() + 1);
 
-					plugin.logger.debug("Player: %s, count: %s", event.getSender().getName(), tracker.getCount());
+					plugin.logger.debug("Player: %s, count: %s", event.getChat().getSender().getName(), tracker.getCount());
 
 					if (tracker.getCount() >= MAX_MESSAGES) {
 						Bukkit.getScheduler().runTaskLater(
@@ -104,26 +105,30 @@ public class ChatLimiter implements Listener {
 	}
 
 	public static void add(Message from) {
+		add(new MessageEvent(from));
+	}
+
+	public static void add(MessageEvent event) {
 		spam.computeIfAbsent(
-			from.getSender() == null ? Bukkit.getConsoleSender() : from.getSender(), // ARREGLAR ESTO!!
+			event.getChat().getSender() == null ? Bukkit.getConsoleSender() : event.getChat().getSender(), // ¡ARREGLAR ESTO!!
 			k -> new SpamTracker<>()
-		).getChat().add(from);
+		).getChat().add(event);
 	}
 
 	public static void clear() {
 		spam.clear();
 	}
 
-	public static Message get(UUID uuid) {
-		Optional<Message> optionalMessage = spam.values().stream().parallel()
+	public static MessageEvent get(UUID uuid) {
+		Optional<MessageEvent> optionalMessage = spam.values().stream().parallel()
 			.flatMap(tracker -> tracker.getChat().stream())
 			.filter(Objects::nonNull)
-			.filter(from -> from.getUUID().equals(uuid))
+			.filter(from -> from.getChat().getUUID().equals(uuid))
 			.findFirst();
 
 		if (optionalMessage.isPresent()) {
-			Message from = optionalMessage.get();
-			plugin.logger.debug("Found! %s, senderName: %s", from.getUUID(), from.getSenderName());
+			MessageEvent from = optionalMessage.get();
+			plugin.logger.debug("Found! %s, senderName: %s", from.getChat().getUUID(), from.getChat().getSenderName());
 			return from;
 
 		} else {

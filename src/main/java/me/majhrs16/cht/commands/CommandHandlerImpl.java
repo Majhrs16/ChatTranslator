@@ -5,6 +5,7 @@ import me.majhrs16.lib.storages.YAML;
 
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.util.util;
 
 import org.bukkit.command.CommandSender;
@@ -21,39 +22,40 @@ public class CommandHandlerImpl extends me.majhrs16.lib.minecraft.commands.Comma
 	protected void showCommandHelp(CommandSender sender, String text, String[] description, String suggest) {
 		ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
-		Message from = new Message();
-			from.setSender(sender);
-			from.setLangTarget(API.getLang(sender));
-			from.getMessages().setFormats(text);
+		Message.Builder from = new Message.Builder()
+			.setSender(sender)
+			.setLangTarget(API.getLang(sender));
+
+		Formats.Builder formatsBuilder = new Formats.Builder()
+			.setFormats(text);
 
 		if (description.length > 0) {
-			from.getToolTips().setFormats("%ct_toolTips%", "");
-			from.getToolTips().setTexts(description);
+			formatsBuilder.setFormats("%ct_toolTips%", "");
+			formatsBuilder.setTexts(description);
 		}
 
 		if (sender instanceof Player && util.getMinecraftVersion() >= 7.2) {
 			if (description.length > 0)
-				from.getToolTips().setFormats("%ct_toolTips%");
+				formatsBuilder.setFormats("%ct_toolTips%");
 
 			JSONObject jsonMessage = new JSONObject();
 
-			Message tmp = from.clone();
-				tmp.getMessages().setFormats(text, "/" + suggest);
-			tmp = API.formatMessage(tmp);
+			Message.Builder preBuilder = from.build().clone();
+				preBuilder.setMessages(new Formats.Builder().setFormats(text, "/" + suggest));
+			Message texts = API.formatMessage(preBuilder.build());
 
-			jsonMessage.put("text", tmp.getMessages().getFormat(0));
+			jsonMessage.put("text", texts.getMessages().getFormat(0));
 
 			if (suggest != null) {
 				JSONObject clickEvent = new JSONObject();
 					clickEvent.put("action", "suggest_command");
-					clickEvent.put("value", tmp.getMessages().getFormat(1));
+					clickEvent.put("value", texts.getMessages().getFormat(1));
 				jsonMessage.put("clickEvent", clickEvent);
 			}
 
-			from.getMessages().setFormats(jsonMessage.toString());
-			from.getMessages().setTexts();
+			formatsBuilder.setFormats(jsonMessage.toString()).setTexts();
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(from.setMessages(formatsBuilder).build());
 	}
 }

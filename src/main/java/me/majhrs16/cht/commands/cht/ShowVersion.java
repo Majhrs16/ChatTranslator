@@ -17,16 +17,16 @@ public class ShowVersion implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message from = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.cht.errors.noPermission"));
+			API.sendMessage(builder.format("commands.cht.errors.noPermission").build());
 			return true;
 		}
 
-		API.sendMessage(from.format("commands.cht.version"));
+		API.sendMessage(builder.format("commands.cht.version").build());
 		return true;
 	}
 }

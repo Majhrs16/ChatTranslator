@@ -22,31 +22,31 @@ public class DiscordLinker implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message from = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (Config.TranslateOthers.DISCORD.IF() && DiscordTranslator.getJDA() != null) {
-			if (from.getSender() instanceof Player) {
-				int code = AccountManager.preLink(util.getUUID(from.getSender()), () -> {
-					from.format("commands.cht.discordLinker.timeout");
-					API.sendMessage(from);
+			if (sender instanceof Player) {
+				int code = AccountManager.preLink(util.getUUID(sender), () -> {
+					builder.format("commands.cht.discordLinker.timeout");
+					API.sendMessage(builder.build());
 				});
 
-				from.format("commands.cht.discordLinker.done", s -> s
+				builder.format("commands.cht.discordLinker.done", s -> s
 					.replace("%code%", "" + code)
 					.replace("%discord_bot_name%", DiscordTranslator.getJDA().getSelfUser().getName())
 				);
 
 			} else {
-				from.format("commands.cht.discordLinker.onlyPlayer");
+				builder.format("commands.cht.discordLinker.onlyPlayer");
 			}
 
 		} else {
-			from.format("commands.cht.discordLinker.activateBot");
+			builder.format("commands.cht.discordLinker.activateBot");
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 		return true;
 	}
 }

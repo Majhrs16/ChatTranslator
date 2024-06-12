@@ -25,7 +25,7 @@ public class FormatsUpdater {
 
 	@FunctionalInterface
 	private interface Consumer {
-		void accept(FileConfiguration cfg, Message msg);
+		void accept(FileConfiguration cfg, Message.Builder msg);
 	}
 
 	public FormatsUpdater() {
@@ -38,11 +38,11 @@ public class FormatsUpdater {
 		version = formats.getInt(path);
 		int version_original = version;
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
 //		Inicializar el plugin por primera vez.
 		if (version_original == 0) {
-//			"Actualizar" a la ultima version disponible en el codigo.
+//			"Actualizar" a la última version disponible en el código.
 			version = applyFormatsVersions.length;
 		}
 
@@ -56,7 +56,7 @@ public class FormatsUpdater {
 
 		// Actualizar gradualmente por el historial de versiones.
 		for (int i = Math.max(0, version); i < applyFormatsVersions.length; i++) {
-			applyFormatsVersions[i].accept(formats, from);
+			applyFormatsVersions[i].accept(formats, builder);
 			version = i + 1;
 		}
 
@@ -64,10 +64,10 @@ public class FormatsUpdater {
 		plugin.formats.save();
 
 		if (version > version_original) {
-			API.sendMessage(from.format("updaters.formats.done", null, s -> s
+			API.sendMessage(builder.format("updaters.formats.done", null, s -> s
 				.replace("%original%", "" + version_original)
 				.replace("%new%", "" + version)
-			));
+			).build());
 		}
 	}
 
@@ -129,7 +129,7 @@ public class FormatsUpdater {
 		fixAccess(old_formats, key + ".toolTips", replacement);
 	}
 
-	void applyFormatsVersion1(FileConfiguration new_formats, Message from) {
+	void applyFormatsVersion1(FileConfiguration new_formats, Message.Builder builder) {
 		FileConfiguration config = plugin.config.get();
 		ConfigurationSection old_formats = config.getConfigurationSection("formats");
 
@@ -168,8 +168,8 @@ public class FormatsUpdater {
 
 		plugin.config.save();
 
-		API.sendMessage(from.format(
+		API.sendMessage(builder.format(
 			"updaters.formats.version9.unsupportedMessagesConfig"
-		));
+		).build());
 	}
 }

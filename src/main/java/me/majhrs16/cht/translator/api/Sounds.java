@@ -1,5 +1,6 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
@@ -23,9 +24,11 @@ public class Sounds {
 					player.playSound(player.getLocation(), sound, pitch, volume);
 
 				} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
-					Message from = new Message();
-					from.getMessages().setTexts("&eSonido &f'&bformats&f.&b" + formatted.getLastFormatPath() + "&f.&bsounds&f.&b" + parts[0] + "&f' &cinvalido&f.");
-					ChatTranslatorAPI.getInstance().sendMessage(from);
+					ChatTranslatorAPI.getInstance().sendMessage(new Message.Builder()
+						.setMessages(new Formats.Builder()
+							.setTexts("&eSonido &f'&bformats&f.&b" + formatted.getLastFormatPath() + "&f.&bsounds&f.&b" + parts[0] + "&f' &cinvalido&f.")
+						).build()
+					);
 				}
 			}
 		}

@@ -56,7 +56,7 @@ public class AccessPlayer implements Listener {
 
 		messageSetter.accept("");
 
-		Message model = util.createChat(
+		Message.Builder model = util.createChat(
 			player,
 			new String[] { originalMessage },
 			util.getNativeLang(),
@@ -71,12 +71,11 @@ public class AccessPlayer implements Listener {
 				API.getLang(Bukkit.getConsoleSender()),
 				MF + "_console")
 			.setSender(player)
-			.setCancelledThis(true); // Evitar duplicacion para el remitente.
+			.setShow(false) // Evitar duplicacion para el remitente.
+			.build();
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), froms -> {
-			froms.add(console);
-			API.broadcast(froms, API::sendMessageAsync); // Evitar el ChatLimiter para evitar ciertos bugs con CE.
-		});
+		API.sendMessageAsync(console);
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
 
 		notifyToDiscord(player, MF + "_discord", originalMessage);
 	}
@@ -85,7 +84,7 @@ public class AccessPlayer implements Listener {
 		if (!Config.TranslateOthers.DISCORD.IF())
 			return;
 
-		Message model_discord = util.createChat(
+		Message.Builder model_discord = util.createChat(
 			player,
 			new String[] { originalMessage },
 			util.getNativeLang(),
@@ -93,7 +92,7 @@ public class AccessPlayer implements Listener {
 			MF
 		);
 
-		Message to = API.formatMessage(model_discord).getTo();
+		Message to = API.formatMessage(model_discord.build()).getTo();
 
 		if (to.getMessages().getFormats().length == 0)
 			return;

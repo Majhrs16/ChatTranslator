@@ -1,5 +1,7 @@
 package me.majhrs16.cot;
 
+import me.majhrs16.cht.events.custom.Formats;
+import me.majhrs16.cht.events.custom.MessageEvent;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.ExpressionParser;
@@ -42,7 +44,8 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	@Override
 	public String onPlaceholderRequest(Player player, @NotNull String identifier) {
-		Message from;
+		MessageEvent event;
+		Message.Builder builder = new Message.Builder();
 
 		identifier = API.parseSubVariables(player, identifier)[0];
 
@@ -65,12 +68,11 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case TRANSLATE:
-						from = new Message()
-							.setSender(player)
-							.setLangSource(matcher.group(1))
-							.setLangTarget(matcher.group(2));
-							from.getMessages().setTexts(matcher.group(3));
-						result = API.formatMessage(from).getMessages().getFormat(0);
+						builder.setSender(player)
+							.setLangSource(util.convertStringToLang(matcher.group(1)))
+							.setLangTarget(util.convertStringToLang(matcher.group(2)))
+							.setMessages(new Formats.Builder().setTexts(matcher.group(3)));
+						result = API.formatMessage(builder.build()).getMessages().getFormat(0);
 						break;
 
 					case BROADCAST:
@@ -78,21 +80,19 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case CLONE:
-						from = ChatLimiter.get(UUID.fromString(matcher.group(1)));
-						if (from == null)
+						event = ChatLimiter.get(UUID.fromString(matcher.group(1)));
+						if (event == null)
 							return getMessageFormatted(player, "&cUUID &b" + matcher.group(1) + "&c no encontrado en el historial reciente&f.");;
 
-						from = from.clone();
+						event._setProcessed(true); // Evitar el procesado por ChatLimiter.
 
 						setVariable(
 							player,
 							matcher.group(2),                  // Key
-							result = from.getUUID().toString() // Value / UUID
+							result = event.getChat().getUUID().toString() // Value / UUID
 						);
 
-//						Evitar el procesado por ChatLimiter.
-						from._setProcessed(true);
-						ChatLimiter.add(from);
+						ChatLimiter.add(event.getChat());
 						break;
 
 					case SEND:
@@ -111,13 +111,10 @@ public class CoreTranslator extends PlaceholderExpansion {
 						break;
 
 					case NEW:
-						from = new Message().setTo(new Message());
-
-//						Evitar el procesado por ChatLimiter.
-						from._setProcessed(true);
-
-						ChatLimiter.add(from);
-						result = from.getUUID().toString();
+						event = new MessageEvent(new Message.Builder().build());
+						event._setProcessed(true); // Evitar el procesado por ChatLimiter.
+						ChatLimiter.add(event);
+						result = event.getChat().getUUID().toString();
 						break;
 
 					case SET:
@@ -159,10 +156,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 
 	public String expressionExecutor(Player player, String uuid, String expression) {
 		Object result;
-		Message from = ChatLimiter.get(UUID.fromString(uuid));
+		MessageEvent event = ChatLimiter.get(UUID.fromString(uuid));
 
-		if (from == null)
+		if (event == null)
 			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
+
+		Message from = event.getChat();
 
 		try {
 			ExpressionParser parser = new SpelExpressionParser();
@@ -185,10 +184,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String sendDiscord(Player player, String uuid, String channels) {
-		Message from = ChatLimiter.get(UUID.fromString(uuid));
+		MessageEvent event = ChatLimiter.get(UUID.fromString(uuid));
 
-		if (from == null)
+		if (event == null)
 			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
+
+		Message from = event.getChat();
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
@@ -202,10 +203,12 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String send(Player player, String uuid) {
-		Message from = ChatLimiter.get(UUID.fromString(uuid));
+		MessageEvent event = ChatLimiter.get(UUID.fromString(uuid));
 
-		if (from == null)
+		if (event == null)
 			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
+
+		Message from = event.getChat();
 
 		if (from.getSender() == null)
 			return getMessageFormatted(player, "&cJugador from no encontrado&f.");
@@ -218,19 +221,21 @@ public class CoreTranslator extends PlaceholderExpansion {
 	}
 
 	public String broadcast(Player player, String uuid) {
-		Message from = ChatLimiter.get(UUID.fromString(uuid));
+		MessageEvent event = ChatLimiter.get(UUID.fromString(uuid));
 
-		if (from == null)
+		if (event == null)
 			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
-		if (from.getSender() == null)
+		Message builder = event.getChat();
+
+		if (builder.getSender() == null)
 			return getMessageFormatted(player, "&4Error&f: &cJugador no encontrado&f.");
 
 		MessageListener listener = new MessageListener();
-		API.broadcast(from, BukkitUtils.getOnlinePlayers(), froms -> API.broadcast(froms, _from -> {
+		API.broadcast(builder.clone(), BukkitUtils.getOnlinePlayers(), _from -> {
 			listener.toMinecraft(_from);
-			_from.setCancelled(true);
-		}));
+			event.setCancelled(true);
+		});
 
 		return "ok";
 	}
@@ -244,14 +249,16 @@ public class CoreTranslator extends PlaceholderExpansion {
 			TranslatorBase.LanguagesBase lang_target,
 			String text) {
 
-		Message from = new Message();
-			from.setSender(player);
-			from.setLangSource(lang_source);
-			from.setLangTarget(lang_target);
-			from.getMessages().setTexts(text);
-			from.setColor(1);
+		return API.formatMessage(new Message.Builder()
+			.setSender(player)
+			.setLangSource(lang_source)
+			.setLangTarget(lang_target)
+			.setMessages(new Formats.Builder()
+				.setTexts(text)
+			).setColor(1)
+			.build()
 
-		return API.formatMessage(from).getMessages().getFormat(0);
+		).getMessages().getFormat(0);
 	}
 
 	public String getMessageFormatted(Player player, String text) {

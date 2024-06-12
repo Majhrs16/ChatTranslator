@@ -72,35 +72,35 @@ public class ChatTranslator extends PluginBase {
 	public void onEnable() {
 		super.onEnable();
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
-		API.sendMessage(from.format("plugin.separator.horizontal"));
-		API.sendMessage(from.format("plugin.separator.vertical"));
+		API.sendMessage(builder.format("plugin.separator.horizontal").build());
+		API.sendMessage(builder.format("plugin.separator.vertical").build());
 
 		if (Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
-			API.sendMessage(from.format("plugin.available-UTF-8.true"));
-			API.sendMessage(from.format("plugin.title.UTF-8"));
-			API.sendMessage(from.format("plugin.separator.vertical"));
+			API.sendMessage(builder.format("plugin.available-UTF-8.true").build());
+			API.sendMessage(builder.format("plugin.title.UTF-8").build());
+			API.sendMessage(builder.format("plugin.separator.vertical").build());
 
 		} else {
-			API.sendMessage(from.format("plugin.available-UTF-8.false"));
-			API.sendMessage(from.format("plugin.title.text"));
+			API.sendMessage(builder.format("plugin.available-UTF-8.false").build());
+			API.sendMessage(builder.format("plugin.title.text").build());
 		}
 
-		API.sendMessage(from.format("plugin.enable"));
+		API.sendMessage(builder.format("plugin.enable").build());
 
 		if (Config.CHECK_UPDATES.IF())
 			new UpdateChecker(Bukkit.getConsoleSender());
 
-		API.sendMessage(from.format("plugin.separator.vertical"));
-		API.sendMessage(from.format("plugin.separator.horizontal"));
+		API.sendMessage(builder.format("plugin.separator.vertical").build());
+		API.sendMessage(builder.format("plugin.separator.horizontal").build());
 
 		setDisabled(false);
 	}
 
 	public void onDisable() {
 		if (isDisabled()) // En caso de crashes,
-			return;       // evitar des-cargar algo que ni esta registrado.
+			return;       // evitar des-cargar algo que ni está registrado.
 
 		setDisabled(true);
 
@@ -109,25 +109,25 @@ public class ChatTranslator extends PluginBase {
 
 		ChatLimiter.clear();
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
-		API.sendMessage(from.format("plugin.separator.horizontal"));
-		API.sendMessage(from.format("plugin.separator.vertical"));
+		API.sendMessage(builder.format("plugin.separator.horizontal").build());
+		API.sendMessage(builder.format("plugin.separator.vertical").build());
 
 		if (Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
-			API.sendMessage(from.format("plugin.available-UTF-8.true"));
-			API.sendMessage(from.format("plugin.title.UTF-8"));
-			API.sendMessage(from.format("plugin.separator.vertical"));
+			API.sendMessage(builder.format("plugin.available-UTF-8.true").build());
+			API.sendMessage(builder.format("plugin.title.UTF-8").build());
+			API.sendMessage(builder.format("plugin.separator.vertical").build());
 
 		} else {
-			API.sendMessage(from.format("plugin.available-UTF-8.false"));
-			API.sendMessage(from.format("plugin.title.text"));
+			API.sendMessage(builder.format("plugin.available-UTF-8.false").build());
+			API.sendMessage(builder.format("plugin.title.text").build());
 		}
 
-		API.sendMessage(from.format("plugin.disable"));
+		API.sendMessage(builder.format("plugin.disable").build());
 
-		API.sendMessage(from.format("plugin.separator.vertical"));
-		API.sendMessage(from.format("plugin.separator.horizontal"));
+		API.sendMessage(builder.format("plugin.separator.vertical").build());
+		API.sendMessage(builder.format("plugin.separator.horizontal").build());
 
 		storage.unregister();
 	}
@@ -185,9 +185,9 @@ public class ChatTranslator extends PluginBase {
 		}
 
 		if (!rescueFiles.isEmpty()) {
-			API.sendMessage(new Message().format("plugin.rescue-mode", format -> format
+			API.sendMessage(new Message.Builder().format("plugin.rescue-mode", format -> format
 				.replace("%files%", String.join(", ", rescueFiles))
-			));
+			).build());
 		}
 
 		commandHandler = new CommandHandlerImpl(commandManager, commands);
@@ -283,7 +283,7 @@ public class ChatTranslator extends PluginBase {
 		if (!Config.TranslateOthers.DISCORD.IF())
 			return;
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
 		try {
 			discordTranslator.connect(
@@ -294,9 +294,9 @@ public class ChatTranslator extends PluginBase {
 			discordTranslator.registerCommands();
 
 			if (isDisabled()) {
-				from.format("discord-translator.load.done.discord");
+				builder.format("discord-translator.load.done.discord");
 
-				Message _from = API.formatMessage(from);
+				Message _from = API.formatMessage(builder.build());
 
 				DiscordChat.broadcastEmbed(
 					DiscordChat.getChannels("discord.channels.server-status"),
@@ -306,44 +306,44 @@ public class ChatTranslator extends PluginBase {
 				);
 			}
 
-			from.format("discord-translator.load.done.console");
+			builder.format("discord-translator.load.done.console");
 
 		} catch (InvalidTokenException e) {
 			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
-			from.format("discord-translator.load.error.token",
+			builder.format("discord-translator.load.error.token",
 				format -> format.replace("%reason%", e.toString())
 			);
 
 		} catch (IllegalStateException e) {
 			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
-			from.format("discord-translator.load.error.intents",
+			builder.format("discord-translator.load.error.intents",
 				format -> format.replace("%reason%", e.toString())
 			);
 
 		} catch (Throwable e) {
 			try { discordTranslator.disconnect(); } catch (InterruptedException ignored) {}
 
-			from.format("discord-translator.load.error",
+			builder.format("discord-translator.load.error",
 				format -> format.replace("%reason%", e.toString())
 			);
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 	}
 
 	public void unregisterDiscordBot() {
 		if (!Config.TranslateOthers.DISCORD.IF())
 			return;
 
-		Message from = new Message();
+		Message.Builder builder = new Message.Builder();
 
 		try {
 			if (isDisabled()) {
-				from.format("discord-translator.unload.done.discord");
+				builder.format("discord-translator.unload.done.discord");
 
-				Message _from = API.formatMessage(from);
+				Message _from = API.formatMessage(builder.build());
 
 				DiscordChat.broadcastEmbed(
 					DiscordChat.getChannels("discord.channels.server-status"),
@@ -358,15 +358,15 @@ public class ChatTranslator extends PluginBase {
 
 			discordTranslator.disconnect();
 
-			from.format("discord-translator.unload.done.console");
+			builder.format("discord-translator.unload.done.console");
 
 		} catch (Throwable e) {
-			from.format("discord-translator.unload.error",
+			builder.format("discord-translator.unload.error",
 				format -> format.replace("%reason%", e.toString())
 			);
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 	}
 
 	@SuppressFBWarnings("MS_EXPOSE_REP")

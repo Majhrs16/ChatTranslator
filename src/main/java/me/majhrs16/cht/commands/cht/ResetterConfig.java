@@ -18,19 +18,18 @@ public class ResetterConfig implements CommandExecutor {
 	private final ChatTranslatorAPI API = ChatTranslatorAPI.getInstance();
 
 	public boolean apply(CommandSender sender, String path, String[] args) {
-		Message from = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (!Permissions.ChatTranslator.ADMIN.IF(sender)) {
-			API.sendMessage(from.format("commands.cht.errors.noPermission"));
+			API.sendMessage(builder.format("commands.cht.errors.noPermission").build());
 
 //			Evitar mostrar el clasico unknown command.
 			return true;
 		}
 
-		from.format("commands.cht.resetterConfig");
-		API.sendMessage(from);
+		API.sendMessage(builder.format("commands.cht.resetterConfig").build());
 
 		try {
 			plugin.config.reset();
@@ -39,14 +38,14 @@ public class ResetterConfig implements CommandExecutor {
 
 			new ConfigUpdater();
 			new CommandsUpdater();
-			new Reloader().reloadAll(from);
-			from.format("commands.cht.resetterConfig.done");
+			new Reloader().reloadAll(builder);
+			builder.format("commands.cht.resetterConfig.done");
 
 		} catch (ParseYamlException e) {
-			from.format("commands.cht.resetterConfig.error");
+			builder.format("commands.cht.resetterConfig.error");
 		}
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 		return true;
 	}
 }

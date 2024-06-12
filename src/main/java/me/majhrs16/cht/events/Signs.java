@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.cht.events.custom.Formats;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -46,12 +47,13 @@ public class Signs implements Listener {
 			String path = String.format("%s_%s_%s_%s", block.getWorld().getName(), block.getX(), block.getY(), block.getZ());
 
 			FileConfiguration signs = plugin.signs.get();
-			Message from = new Message();
-				from.setSender((CommandSender) null);
-				from.setLangSource(util.convertStringToLang(signs.getString(path + ".lang")));
-				from.setLangTarget(API.getLang(event.getPlayer()));
-
-			from.getMessages().setTexts(signs.getStringList(path + ".text").toArray(new String[0]));
+			Message from = new Message.Builder()
+				.setSender(null)
+				.setLangSource(util.convertStringToLang(signs.getString(path + ".lang")))
+				.setLangTarget(API.getLang(event.getPlayer()))
+				.setMessages(new Formats.Builder()
+					.setTexts(signs.getStringList(path + ".text").toArray(new String[0]))
+				).build();
 			from = API.formatMessage(from);
 
 			if (from.getMessages().getFormats().length == 0)

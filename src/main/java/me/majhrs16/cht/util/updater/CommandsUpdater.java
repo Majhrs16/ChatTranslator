@@ -18,7 +18,7 @@ public class CommandsUpdater {
 		version = config.getInt("config-version");
 		int version_original = version;
 
-		Message from = new Message();;
+		Message.Builder builder = new Message.Builder();;
 
 		if (version < 2) {
 			ArrayList<String> linker_tool_tips = new ArrayList<>();
@@ -77,10 +77,10 @@ public class CommandsUpdater {
 		plugin.commands.save();
 
 		if (version > version_original) {
-			ChatTranslatorAPI.getInstance().sendMessage(from.format("updaters.commands.done", null, s -> s
-					.replace("%original%", "" + version_original)
-					.replace("%new%", "" + version)
-			));
+			ChatTranslatorAPI.getInstance().sendMessage(builder.format("updaters.commands.done", null, s -> s
+				.replace("%original%", "" + version_original)
+				.replace("%new%", "" + version)
+			).build());
 		}
 	}
 }

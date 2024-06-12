@@ -1,5 +1,6 @@
 package me.majhrs16.cht.events;
 
+import me.majhrs16.cht.events.custom.Formats;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.event.EventHandler;
@@ -46,16 +47,18 @@ public class Advancements implements Listener {
 
 		CACHE.put(advancement, data);
 
-		Message model = util.createChat(
+		Message.Builder model = util.createChat(
 			event.getPlayer(),
 			new String[] { data[0] },
 			util.convertStringToLang("en"),
 			API.getLang(event.getPlayer()),
 			"advancement");
 
-		model.getToolTips().setTexts(data[1]);
+		model.setToolTips(new Formats.Builder()
+			.setTexts(data[1])
+		);
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::broadcast);
+		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
 	}
 
 	private Object getAdvancementDisplay(Advancement advancement) {

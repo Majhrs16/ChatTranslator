@@ -1,5 +1,6 @@
 package me.majhrs16.cht.commands.cht;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.minecraft.commands.CommandExecutor;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.minecraft.BukkitUtils;
@@ -21,12 +22,12 @@ public class PrivateChat implements CommandExecutor {
 		if (plugin.isDisabled())
 			return false;
 
-		Message from = new Message()
+		Message.Builder builder = new Message.Builder()
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
 		if (args.length < 2) {
-			API.sendMessage(from.format("commands.cht.errors.unknown"));
+			API.sendMessage(builder.format("commands.cht.errors.unknown").build());
 			return true;
 		}
 
@@ -34,19 +35,25 @@ public class PrivateChat implements CommandExecutor {
 		CommandSender to_player = BukkitUtils.getSenderByName(player_name);
 
 		if (to_player == null) {
-			API.sendMessage(from.format("commands.cht.errors.noFoundPlayer"));
+			API.sendMessage(builder.format("commands.cht.errors.noFoundPlayer").build());
 			return true;
 		}
 
 		TranslatorBase.LanguagesBase from_lang = API.getLang(sender);
-		from.getMessages().setTexts(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-		from = util.createChat(sender, from.getMessages().getTexts(), from_lang, from_lang, "private");
+		builder = util.createChat(
+			sender,
+			new String[] { String.join(" ", Arrays.copyOfRange(args, 1, args.length)) },
+			from_lang,
+			from_lang,
+			"private"
+		);
 
-		from.getTo()
+		builder.setTo(builder.build().clone()
 			.setSender(to_player)
-			.setLangTarget(API.getLang(to_player));
+			.setLangTarget(API.getLang(to_player))
+		);
 
-		API.sendMessage(from);
+		API.sendMessage(builder.build());
 		return true;
 	}
 }

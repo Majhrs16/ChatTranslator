@@ -1,5 +1,6 @@
 package me.majhrs16.cht.translator.api;
 
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 public interface Lang {
 	default void setLang(Object sender, TranslatorBase.LanguagesBase lang) throws NullPointerException {
-//		Dependiendo del tipo de almacen usado, se guardara en su respectivo lugar.
+//		Dependiendo del tipo de almacén usado, se guardara en su respectivo lugar.
 //			setLang(player, GoogleTranslator.Languages.ES);         -> null,
 //			setLang(console,  GoogleTranslator.Languages.ES);       -> null,
 //			setLang(offlinePlayer,  GoogleTranslator.Languages.FR); -> null,
@@ -33,8 +34,8 @@ public interface Lang {
 	}
 
 	default TranslatorBase.LanguagesBase getLang(Object sender) {
-	//		Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
-	//		Ejemplo: getLang(Alejo09Games) -> String = "en"
+//		Ejemplo: getLang(Bukkit.getConsoleSender()) -> String = "es"
+//		Ejemplo: getLang(Alejo09Games) -> String = "en"
 
 		ChatTranslator plugin     = ChatTranslator.getInstance();
 		FileConfiguration config  = plugin.config.get();
@@ -73,9 +74,11 @@ public interface Lang {
 		TranslatorBase translator = getTranslator();
 		if (!translator.isSupport(lang)) {
 			if (!translator.isSupport(defaultLang)) {
-				Message from = new Message();
-					from.getMessages().setTexts("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.");
-					ChatTranslatorAPI.getInstance().sendMessage(from);
+				ChatTranslatorAPI.getInstance().sendMessage(new Message.Builder()
+					.setMessages(new Formats.Builder()
+						.setTexts("&eEl idioma &f'&b" + lang + "&f' &cno &eesta soportado&f.")
+					).build()
+				);
 
 				lang = defaultLang;
 
