@@ -26,36 +26,33 @@ public class CommandHandlerImpl extends me.majhrs16.lib.minecraft.commands.Comma
 			.setSender(sender)
 			.setLangTarget(API.getLang(sender));
 
-		Formats.Builder formatsBuilder = new Formats.Builder()
+		Formats.Builder tool_tips = new Formats.Builder()
+			.setFormats("%ct_toolTips%");
+
+		Formats.Builder messages = new Formats.Builder()
 			.setFormats(text);
 
-		if (description.length > 0) {
-			formatsBuilder.setFormats("%ct_toolTips%", "");
-			formatsBuilder.setTexts(description);
-		}
+		if (description.length > 0)
+			tool_tips.setTexts(description);
 
 		if (sender instanceof Player && util.getMinecraftVersion() >= 7.2) {
-			if (description.length > 0)
-				formatsBuilder.setFormats("%ct_toolTips%");
-
 			JSONObject jsonMessage = new JSONObject();
-
-			Message.Builder preBuilder = from.build().clone();
-				preBuilder.setMessages(new Formats.Builder().setFormats(text, "/" + suggest));
-			Message texts = API.formatMessage(preBuilder.build());
-
-			jsonMessage.put("text", texts.getMessages().getFormat(0));
+				jsonMessage.put("text", text);
 
 			if (suggest != null) {
 				JSONObject clickEvent = new JSONObject();
 					clickEvent.put("action", "suggest_command");
-					clickEvent.put("value", texts.getMessages().getFormat(1));
+					clickEvent.put("value", "/" + suggest);
 				jsonMessage.put("clickEvent", clickEvent);
 			}
 
-			formatsBuilder.setFormats(jsonMessage.toString()).setTexts();
+			messages.setFormats(jsonMessage.toString()).setTexts();
 		}
 
-		API.sendMessage(from.setMessages(formatsBuilder).build());
+		API.sendMessage(from
+			.setMessages(messages)
+			.setToolTips(tool_tips)
+			.build()
+		);
 	}
 }
