@@ -127,8 +127,8 @@ public interface Messages {
 		if (model.build().getTo() == null || model.build().getTo().isEmpty())
 			throw new IllegalArgumentException("The models from and to must be not empty.");
 
-		Message.Builder to_model = model.build().getTo().clone();
 		List<Message> froms = new ArrayList<>();
+		Message.Builder to_model = model.build().getTo().clone();
 		TranslatorBase.LanguagesBase to_lang_target_original = to_model.build().getLangTarget();
 
 		for (Player to_player : players) {
@@ -143,19 +143,15 @@ public interface Messages {
 				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 
 			model.setTo(to_model);
-			froms.add(model.build());
+			froms.add(model.build().clone().build());
 			model.setShow(false);
 		}
 
-		if (broadcastAction == null) {
-			for (Message from : froms) {
-				ChatLimiter.add(from);
-			}
-
-		} else {
-			for (Message from : froms) {
-				broadcastAction.accept(from);
-			}
+		Consumer<Message> action = broadcastAction == null ? ChatLimiter::add : broadcastAction;
+		for (Message from : froms) {
+			logger.warn("from.show 3: %s", from.isShow());
+			logger.warn("to.show 3:   %s", from.getTo().isShow());
+			action.accept(from);
 		}
 	}
 
