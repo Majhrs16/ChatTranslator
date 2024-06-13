@@ -40,8 +40,9 @@ public class Chat implements Listener {
 				new String[] { event.getMessage() },
 				from_lang,
 				API.getLang(Bukkit.getConsoleSender()),
-				"console")
-			.setSender(event.getPlayer())
+				"console"
+
+			).setSender(event.getPlayer())
 			.setShow(false) // Evitar duplicacion para el remitente.
 			.build();
 
@@ -52,6 +53,8 @@ public class Chat implements Listener {
 			from_lang,
 			null // null = chat normal por defecto.
 		);
+
+		model = model.setTo(model.build().getTo().clone().setLangTarget(null));
 
 		List<Player> players = new ArrayList<>();
 		Matcher matcher      = mentions.matcher(event.getMessage());
@@ -76,6 +79,7 @@ public class Chat implements Listener {
 					.setTo(from.getTo().clone()
 						.format("to_mention")
 					).build();
+				from = builder.build();
 			}
 
 			ChatLimiter.add(from);

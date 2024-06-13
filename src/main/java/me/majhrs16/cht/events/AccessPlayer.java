@@ -64,6 +64,8 @@ public class AccessPlayer implements Listener {
 			MF
 		);
 
+		model = model.setTo(model.build().getTo().clone().setLangTarget(null));
+
 		Message console = util.createChat(
 				Bukkit.getConsoleSender(),
 				new String[] { originalMessage },
