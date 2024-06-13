@@ -4,7 +4,7 @@ plugins {
 }
 
 group   = "me.majhrs16"
-version = project.version
+version = project.cht_version
 
 compileJava.options.encoding = 'UTF-8'
 
