@@ -96,15 +96,14 @@ public class SetterLang implements CommandExecutor {
 
 		if (!to_player.isOnline() && !to_player.hasPlayedBefore()) {
 			API.sendMessage(builder.format("commands.cht.errors.noFoundPlayer", s -> s
-					.replace("%player%", player)
+				.replace("%player%", player)
 			).build());
 			return;
 		}
 
 		API.setLang(to_player, util.convertStringToLang(lang));
-
-		Message.Builder model = new Message.Builder()
-			.format("commands.cht.setterLang.setLangAnother.builder", s -> s
+		API.broadcast(new Message.Builder()
+			.format("commands.cht.setterLang.setLangAnother.from", s -> s
 				.replace("%lang%", util.convertStringToLang(lang).getValue())
 				.replace("%from_player%", builder.build().getSenderName())
 				.replace("%to_player%", to_player.getName())
@@ -114,9 +113,11 @@ public class SetterLang implements CommandExecutor {
 					.replace("%lang%", util.convertStringToLang(lang).getValue())
 					.replace("%from_player%", builder.build().getSenderName())
 					.replace("%to_player%", to_player.getName())
-				)
-			);
 
-		API.broadcast(model, BukkitUtils.getOnlinePlayers(), API::sendMessageAsync);
+				).setLangTarget(null)
+			),
+			BukkitUtils.getOnlinePlayers(),
+			API::sendMessageAsync
+		);
 	}
 }
