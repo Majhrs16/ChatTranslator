@@ -1,6 +1,5 @@
 package me.majhrs16.cht.events;
 
-import me.majhrs16.cht.events.custom.MessageEvent;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitTask;
@@ -9,17 +8,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.*;
-
+import me.majhrs16.cht.events.custom.MessageEvent;
 import me.majhrs16.cht.util.cache.SpamTracker;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.ChatTranslator;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
+
 public class ChatLimiter implements Listener {
-	private BukkitTask task;
 	private int MAX_TICKS;
+	private BukkitTask task;
 	private int MAX_MESSAGES;
 	private long ACTUAL_TICKS;
 
@@ -36,7 +36,7 @@ public class ChatLimiter implements Listener {
 			SpamTracker<MessageEvent> tracker = entry.getValue();
 
 			for (MessageEvent event : tracker.getChat(event -> event != null && !event._isProcessed())) {
-				if (sender instanceof Player && event.getChat().isShow()) {
+				if (sender instanceof Player && !event.isCancelled()) {
 					tracker.setCount(tracker.getCount() + 1);
 
 					plugin.logger.debug("Player: %s, count: %s", event.getChat().getSender().getName(), tracker.getCount());
@@ -104,15 +104,17 @@ public class ChatLimiter implements Listener {
 		if (task != null) task.cancel();
 	}
 
-	public static void add(Message from) {
-		add(new MessageEvent(from));
-	}
-
 	public static void add(MessageEvent event) {
 		spam.computeIfAbsent(
-			event.getChat().getSender() == null ? Bukkit.getConsoleSender() : event.getChat().getSender(), // ¡ARREGLAR ESTO!!
+			event.getChat().getSender() == null
+				? Bukkit.getConsoleSender() // ¡ARREGLAR ESTO!!
+				: event.getChat().getSender(),
 			k -> new SpamTracker<>()
 		).getChat().add(event);
+	}
+
+	public static void add(Message from) {
+		add(new MessageEvent(from));
 	}
 
 	public static void clear() {
