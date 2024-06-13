@@ -1,10 +1,10 @@
 package me.majhrs16.cht.util.updater;
 
-import me.majhrs16.cht.events.InternetCheckerAsync;
-import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 
 import java.nio.charset.StandardCharsets;
 
@@ -68,7 +68,8 @@ public class UpdateChecker {
 						builder.build().getMessages().getFormats(),
 						"%latestVersion%",
 						latestVersion
-					))
+
+					)).setTexts(builder.build().getMessages().getTexts())
 				);
 
 			} else {
