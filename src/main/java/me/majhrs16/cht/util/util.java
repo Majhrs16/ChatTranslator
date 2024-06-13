@@ -1,6 +1,5 @@
 package me.majhrs16.cht.util;
 
-import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.network.translator.GoogleTranslator;
 import me.majhrs16.lib.network.translator.LibreTranslator;
 import me.majhrs16.lib.network.translator.TranslatorBase;
@@ -14,6 +13,7 @@ import org.bukkit.Bukkit;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
 import me.majhrs16.cht.util.cache.internal.Texts;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 
@@ -102,7 +102,7 @@ public class util {
 		path = path == null ?  "" : "_" + path;
 
 		return createGroupFormat(sender, messages, langSource, langTarget, "from" + path)
-			.setTo(createGroupFormat(sender, messages, langSource, null, "to" + path));
+			.setTo(createGroupFormat(sender, messages, langSource, langTarget, "to" + path));
 	}
 
 	public static void applySoundsFormat(Message.Builder original, String path) {
@@ -180,7 +180,6 @@ public class util {
 		}
 
 //		En caso de no existir el grupo de formato, usar los datos en memoria,
-//		if (formats.length > 0)
 		original.setMessages(new Formats.Builder()
 			.setFormats(formats)
 			.setTexts(texts.length > 0 ? texts : original.build().getMessages().getTexts())
