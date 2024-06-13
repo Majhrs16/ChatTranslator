@@ -1,9 +1,9 @@
 package me.majhrs16.cht.events;
 
-import me.majhrs16.cht.events.custom.Formats;
-import me.majhrs16.cht.events.custom.MessageEvent;
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.MessageEvent;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.util.cache.Config;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
@@ -32,10 +32,10 @@ public class MessageListener implements Listener {
 	@EventHandler (priority = EventPriority.LOWEST)
 	public void onMessage(MessageEvent event) {
 		Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
-			Message chat = event.getChat();
-			toMinecraft(chat);
+			if (!event.isCancelled()) {
+				Message chat = event.getChat();
+				toMinecraft(chat);
 
-			if (!event.isCancelled())
 				toDiscord(
 					chat.clone().setTo(chat.getTo().clone()
 						.setLangTarget(plugin.storage.getDefaultLang())
@@ -43,6 +43,7 @@ public class MessageListener implements Listener {
 					).build(),
 					DiscordChat.getChannels("discord.channels.chat")
 				);
+			}
 
 			event.setCancelled(true);
 		}, 1L);
@@ -57,7 +58,8 @@ public class MessageListener implements Listener {
 
 	@SuppressWarnings("deprecation")
 	public void toDiscord(Message chat, List<String> channels) {
-		if (chat.isEmpty()
+		if (chat.getTo().isShow()
+				|| chat.isEmpty()
 				|| !Config.TranslateOthers.DISCORD.IF()
 				|| chat.getLangSource() == null
 				|| chat.getLangTarget() == null
