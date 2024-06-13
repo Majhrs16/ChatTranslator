@@ -48,7 +48,7 @@ public class PrivateChat implements CommandExecutor {
 			"private"
 		);
 
-		builder.setTo(builder.build().clone()
+		builder.setTo(builder.build().getTo().clone()
 			.setSender(to_player)
 			.setLangTarget(API.getLang(to_player))
 		);
