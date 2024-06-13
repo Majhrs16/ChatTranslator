@@ -27,15 +27,15 @@ import java.util.UUID;
 @SuppressWarnings("unused")
 public class Message {
 	private Message to;
-	private String[] sounds;
-	private Formats messages;
-	private Formats tool_tips;
 	private String sender_name;
 	private CommandSender sender;
-	private SenderType sender_type;
 	private TranslatorBase.LanguagesBase lang_source;
 	private TranslatorBase.LanguagesBase lang_target;
 
+	private SenderType sender_type = SenderType.UNKNOWN;
+	private Formats messages       = new Formats();
+	private Formats tool_tips      = new Formats();
+	private String[] sounds        = new String[0];
 	private byte is_color          = 1; // -1 = Disable color, 0 color by permission, 1 force color;
 	private boolean showing        = true;
 	private boolean is_format_papi = true;
@@ -51,10 +51,14 @@ public class Message {
 	public static class Builder {
 		private final Message from;
 		private Message.Builder to;
-		private Formats.Builder messages;
-		private Formats.Builder tool_tips;
+		private Formats.Builder messages = new Formats.Builder();
+		private Formats.Builder tool_tips = new Formats.Builder();
 
-		public Builder(TranslatorBase.LanguagesBase langSource, TranslatorBase.LanguagesBase langTarget) {
+		private Builder(TranslatorBase.LanguagesBase langSource, TranslatorBase.LanguagesBase langTarget, int density) {
+			from = new Message();
+			if (density > 0)
+				to = new Message.Builder(langSource, langTarget, 0); // Avoid deep recursion, causes a stack overflow.
+
 			CommandSender term = Bukkit.getConsoleSender();
 			setSender(term);
 			if (term == null) { // 1.5.2 bug!
@@ -62,26 +66,24 @@ public class Message {
 				setSenderType(SenderType.CONSOLE);
 			}
 
-			from = new Message();
-			to   = new Message.Builder();
-
 			setLangSource(langSource);
 			setLangTarget(langTarget);
 		}
 
-		public Builder() {
-			this(
-				util.getNativeLang(),
-				ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender())
-			);
+		public Builder(TranslatorBase.LanguagesBase langSource, TranslatorBase.LanguagesBase langTarget) {
+			this(langSource, langTarget, 2); // Limited to 2 nested builders.
 		}
 
-		public Builder setTo(Message.Builder to) {
+		public Builder() {
+			this(util.getNativeLang(), ChatTranslatorAPI.getInstance().getLang(Bukkit.getConsoleSender()));
+		}
+
+		public Message.Builder setTo(Message.Builder to) {
 			this.to = to == null ? new Message.Builder() : to;
 			return this;
 		}
 
-		public Builder setSender(CommandSender sender) {
+		public Message.Builder setSender(CommandSender sender) {
 			from.sender = sender;
 			setSenderName(sender == null ? "UNKNOWN" : sender.getName());
 
@@ -94,61 +96,62 @@ public class Message {
 			return this;
 		}
 
-		private Builder setSenderType(SenderType type) {
+		private Message.Builder setSenderType(SenderType type) {
 			from.sender_type = type;
 			return this;
 		}
 
-		public Builder setSenderName(String name) {
+		public Message.Builder setSenderName(String name) {
 			from.sender_name = name;
 			return this;
 		}
 
-		public Builder setMessages(Formats.Builder formats) {
+		public Message.Builder setMessages(Formats.Builder formats) {
 			messages = formats;
 			return this;
 		}
-		public Builder setToolTips(Formats.Builder formats) {
+
+		public Message.Builder setToolTips(Formats.Builder formats) {
 			tool_tips = formats;
 			return this;
 		}
 
-		public Builder setSound(int index, String sounds) {
+		public Message.Builder setSound(int index, String sounds) {
 			from.sounds[index] = sounds;
 			return this;
 		}
 
-		public Builder setSounds(String... sounds) {
+		public Message.Builder setSounds(String... sounds) {
 			from.sounds = sounds;
 			return this;
 		}
 
-		public Builder setLangSource(TranslatorBase.LanguagesBase lang) {
+		public Message.Builder setLangSource(TranslatorBase.LanguagesBase lang) {
 			from.lang_source = lang;
 			return this;
 		}
 
-		public Builder setLangTarget(TranslatorBase.LanguagesBase lang) {
+		public Message.Builder setLangTarget(TranslatorBase.LanguagesBase lang) {
 			from.lang_target = lang;
 			return this;
 		}
 
-		public Builder setFormatPAPI(boolean formatPAPI) {
+		public Message.Builder setFormatPAPI(boolean formatPAPI) {
 			from.is_format_papi = formatPAPI;
 			return this;
 		}
 
-		public Builder setColor(byte color) {
+		public Message.Builder setColor(byte color) {
 			from.is_color = color;
 			return this;
 		}
 
-		public Builder setColor(@Range(from = -1, to = 1) int color) {
+		public Message.Builder setColor(@Range(from = -1, to = 1) int color) {
 			from.is_color = (byte) color;
 			return this;
 		}
 
-		public Builder format(String path, UnaryOperator<String> preFormats, UnaryOperator<String> preTexts) {
+		public Message.Builder format(String path, UnaryOperator<String> preFormats, UnaryOperator<String> preTexts) {
 			util.applyMessagesFormat(this, path, (formats, texts) -> {
 				if (preFormats != null) formats.replaceAll(preFormats);
 				if (preTexts != null) texts.replaceAll(preTexts);
@@ -166,28 +169,28 @@ public class Message {
 			return this;
 		}
 
-		public Builder format(String path, UnaryOperator<String> preFormats) {
+		public Message.Builder format(String path, UnaryOperator<String> preFormats) {
 			return format(path, preFormats, null);
 		}
 
-		public Builder format(String path) {
+		public Message.Builder format(String path) {
 			return format(path, null, null);
 		}
 
-		private Builder setLastFormatPath(String path) {
+		private Message.Builder setLastFormatPath(String path) {
 			from.last_format = path;
 			return this;
 		}
 
-		public Builder setShow(boolean show) {
+		public Message.Builder setShow(boolean show) {
 			from.showing = show;
 			return this;
 		}
 
 		public Message build() {
-			from.to        = to.build();
-			from.messages  = messages.build();
-			from.tool_tips = tool_tips.build();
+			if (tool_tips != null) from.tool_tips = tool_tips.build();
+			if (messages != null) from.messages  = messages.build();
+			if (to != null) from.to = to.build();
 			return from;
 		}
 	}
@@ -253,7 +256,7 @@ public class Message {
 	public void silent() {}
 
 	@SuppressWarnings("unused")
-	private void cloneFromTo(Message from, Message.Builder to) {
+	private void _clone(Message from, Message.Builder to) {
 		to.setSender(from.getSender())
 			.setSenderName(from.getSenderName())
 			.setSenderType(from.getSenderType())
@@ -269,20 +272,21 @@ public class Message {
 			.setLangSource(from.getLangSource())
 			.setLangTarget(from.getLangTarget())
 			.setColor(from.isColor())
+			.setShow(from.isShow())
 			.setFormatPAPI(from.getFormatPAPI())
 			.setLastFormatPath(from.getLastFormatPath());
 	}
 
 	@Override
 	public Message.Builder clone() {
-		Message.Builder builder = new Message.Builder();
+		Message.Builder builder = new Message.Builder(null, null);
 
 //		BUGAZO!! Hay que clonarlo manualmente o sino no copia completamente. O_o??
-		Message.Builder to = new Message.Builder();
-		if (getTo() != null) cloneFromTo(getTo(), to);
+		Message.Builder to = new Message.Builder(null, null);
+		if (getTo() != null) _clone(getTo(), to);
 		builder.setTo(to);
 
-		cloneFromTo(this, builder);
+		_clone(this, builder);
 
 		return builder;
 	}
@@ -415,7 +419,7 @@ public class Message {
 	}
 
 	public boolean isEmpty() {
-		return isEmpty(new Message());
+		return isEmpty(new Message.Builder().build());
 	}
 
 	public UUID getUUID() {
