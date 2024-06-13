@@ -45,7 +45,7 @@ public class Storage {
 		mysql  = new MySQL();
 
 		Message.Builder builder = new Message.Builder();
-		String storage_type = getType();
+		String storage_type     = getType();
 
 		try {
 			switch (storage_type) {
@@ -81,6 +81,7 @@ public class Storage {
 					throw new RuntimeException(String.join("\n", from.getMessages().getFormats()));
 			}
 
+		} catch (NullPointerException ignored) {
 		} catch (ParseYamlException  | SQLException | RuntimeException e) {
 			builder.format("storage.error.open", format -> format
 				.replace("%type%", storage_type)
@@ -127,6 +128,7 @@ public class Storage {
 				.replace("%type%", storage_type)
 			);
 
+		} catch (NullPointerException ignored) {
 		} catch (SQLException | RuntimeException e) {
 			builder.format("storage.error.close", format -> format
 				.replace("%reason%", e.toString())
@@ -138,8 +140,8 @@ public class Storage {
 	}
 
 	public void set(UUID uuid, String discordID, String lang) {
-		Message.Builder builder        = new Message.Builder();
-		String storage_type = getType();
+		Message.Builder builder = new Message.Builder();
+		String storage_type     = getType();
 
 		try {
 			switch (storage_type) {
@@ -178,6 +180,7 @@ public class Storage {
 				.replace("%type%", storage_type)
 			);
 
+		} catch (NullPointerException ignored) {
 		} catch (SQLException | RuntimeException e) {
 			builder.format("storage.error.write", format -> format
 				.replace("%reason%", e.toString())
@@ -191,8 +194,8 @@ public class Storage {
 	public String[] get(UUID uuid) {
 		String[] result = null;
 
-		Message.Builder builder = new Message.Builder();
-		String storage_type = getType();
+		String storage_type     = getType();
+		Message.Builder builder = new Message.Builder(util.getNativeLang(), getDefaultLang());
 
 		try {
 			switch (storage_type) {
@@ -226,13 +229,17 @@ public class Storage {
 				.replace("%type%", storage_type)
 			);
 
+		} catch (NullPointerException ignored) {
 		} catch (SQLException | RuntimeException e) {
 			builder.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
 				.replace("%type%", storage_type));
 		}
 
-		API.sendMessage(builder.build());
+///////////////////////////////////////////////
+//		EXPLOSIVO!
+//		Si se usara API.sendMessage, ocasiona un StackOverflowError a causa del Message.isEmpty.
+		API.showMessage(builder.build(), API.formatMessage(builder.build()));
 
 		return result;
 	}
@@ -277,6 +284,7 @@ public class Storage {
 			builder.format("storage.done.read", format -> format
 				.replace("%type%", storage_type));
 
+		} catch (NullPointerException ignored) {
 		} catch (SQLException | RuntimeException e) {
 			builder.format("storage.error.read", format -> format
 				.replace("%reason%", e.toString())
