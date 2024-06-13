@@ -482,7 +482,7 @@ public interface Core {
 		from_messages_formats = processExpand(from_messages_formats);
 		to_messages_formats   = processExpand(to_messages_formats);
 
-		return new Message.Builder()
+		return new Message.Builder(null, null)
 			.setSender(from_player)
 			.setMessages(new Formats.Builder()
 				.setFormats(from_messages_formats)
@@ -495,7 +495,7 @@ public interface Core {
 			.setLangSource(from_lang_source)
 			.setLangTarget(from_lang_target)
 
-			.setTo(new Message.Builder()
+			.setTo(new Message.Builder(null, null)
 				.setSender(to_player)
 				.setMessages(new Formats.Builder()
 					.setFormats(to_messages_formats)
