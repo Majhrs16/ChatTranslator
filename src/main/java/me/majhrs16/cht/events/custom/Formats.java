@@ -36,7 +36,7 @@ public class Formats {
 		}
 	}
 
-	private Formats() {}
+	Formats() {}
 
 	public String getFormat(int index) {
 		return formats[index];
