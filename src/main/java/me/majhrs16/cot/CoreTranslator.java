@@ -1,33 +1,35 @@
 package me.majhrs16.cot;
 
-import me.majhrs16.cht.events.custom.Formats;
-import me.majhrs16.cht.events.custom.MessageEvent;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.ExpressionParser;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-import me.majhrs16.lib.network.translator.TranslatorBase;
-import me.majhrs16.lib.minecraft.BukkitUtils;
-
 import me.majhrs16.cht.translator.ChatTranslatorAPI;
+import me.majhrs16.cht.events.custom.MessageEvent;
 import me.majhrs16.cht.events.MessageListener;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import me.majhrs16.lib.minecraft.BukkitUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.HashMap;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.Map;
 
 public class CoreTranslator extends PlaceholderExpansion {
 	private final ChatTranslator plugin = ChatTranslator.getInstance();
@@ -161,14 +163,27 @@ public class CoreTranslator extends PlaceholderExpansion {
 		if (event == null)
 			return getMessageFormatted(player, "&cUUID &b" + uuid + "&c no encontrado en el historial reciente&f.");;
 
-		Message from = event.getChat();
+		Message.Builder fromBuilder = event.getChat().clone();
+		Message.Builder toBuilder = event.getChat().getTo().clone();
 
 		try {
 			ExpressionParser parser = new SpelExpressionParser();
 
 			StandardEvaluationContext context = new StandardEvaluationContext();
-				context.setVariable("from", from);
-				context.setVariable("to", from.getTo());
+				context.setVariable("from", fromBuilder);
+				context.setVariable("to", toBuilder);
+
+				context.registerFunction("stripColor",
+					util.class.getMethod("stripColor", String[].class));
+
+				context.registerFunction("getMinecraftVersion",
+					util.class.getMethod("getMinecraftVersion"));
+
+				context.registerFunction("convertStringToLang",
+					util.class.getMethod("convertStringToLang", String.class));
+
+				context.registerFunction("getSenderByName",
+					BukkitUtils.class.getMethod("getSenderByName", String.class));
 
 			result = parser.parseExpression(expression).getValue(context);
 
@@ -177,8 +192,20 @@ public class CoreTranslator extends PlaceholderExpansion {
 			return null;
 		}
 
+		Message from = fromBuilder.setTo(toBuilder).build();
+
+		try {
+			Method method = MessageEvent.class.getDeclaredMethod("setChat", Message.class);
+			method.setAccessible(true);
+			method.invoke(event, from);
+
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			plugin.logger.error(e.toString());
+			return null;
+		}
+
 		if (result instanceof String[])
-			result = Arrays.asList((String[]) result); // List.asArray....
+			result = Arrays.asList((String[]) result);
 
 		return result == null ? "" : result.toString();
 	}
@@ -197,7 +224,7 @@ public class CoreTranslator extends PlaceholderExpansion {
 		if (from.getTo().getSender() == null)
 			return getMessageFormatted(player, "&cJugador to no encontrado&f.");
 
-		new MessageListener().toDiscord(from, Arrays.asList(channels.split("\\s*,\\s*")));
+		new MessageListener().toDiscord(from, channels.split("\\s*,\\s*"));
 
 		return "ok";
 	}
@@ -240,28 +267,19 @@ public class CoreTranslator extends PlaceholderExpansion {
 		return "ok";
 	}
 
-	////////////////
-	// UTILS!
+///////////////////////////////////////////////////////////////
+// UTILS!
 
-	public String getMessageFormatted(
-			Player player,
-			TranslatorBase.LanguagesBase lang_source,
-			TranslatorBase.LanguagesBase lang_target,
-			String text) {
-
+	public String getMessageFormatted(Player player, String text) {
 		return API.formatMessage(new Message.Builder()
 			.setSender(player)
-			.setLangSource(lang_source)
-			.setLangTarget(lang_target)
+			.setLangSource(util.convertStringToLang("es"))
+			.setLangTarget(API.getLang(player))
 			.setMessages(new Formats.Builder()
 				.setTexts(text)
 			).setColor(1)
 			.build()
 
 		).getMessages().getFormat(0);
-	}
-
-	public String getMessageFormatted(Player player, String text) {
-		return getMessageFormatted(player, util.convertStringToLang("es"), API.getLang(player), text);
 	}
 }
