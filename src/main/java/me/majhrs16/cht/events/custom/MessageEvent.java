@@ -15,7 +15,7 @@ public class MessageEvent extends Event implements Cancellable {
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	public MessageEvent(Message message) {
-		this.message = message;
+		setChat(message);
 	}
 
 	@SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
@@ -36,6 +36,10 @@ public class MessageEvent extends Event implements Cancellable {
 			.build();
 
 		is_cancelled = cancelled;
+	}
+
+	private void setChat(Message message) {
+		this.message = message;
 	}
 
 	public Message getChat() {
