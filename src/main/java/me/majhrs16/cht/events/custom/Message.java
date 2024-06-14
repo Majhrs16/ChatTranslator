@@ -40,7 +40,7 @@ public class Message {
 	private boolean showing        = true;
 	private boolean is_format_papi = true;
 	private String last_format     = "UNKNOWN";
-	private final UUID uuid        = UUID.randomUUID();
+	private UUID uuid              = UUID.randomUUID();
 
 	public enum SenderType {
 		UNKNOWN,
@@ -187,6 +187,11 @@ public class Message {
 			return this;
 		}
 
+		private Message.Builder setUUID(UUID uuid) {
+			from.uuid = uuid;
+			return this;
+		}
+
 		public Message build() {
 			if (tool_tips != null) from.tool_tips = tool_tips.build();
 			if (messages != null) from.messages  = messages.build();
@@ -273,6 +278,7 @@ public class Message {
 			.setLangTarget(from.getLangTarget())
 			.setColor(from.isColor())
 			.setShow(from.isShow())
+			.setUUID(from.getUUID())
 			.setFormatPAPI(from.getFormatPAPI())
 			.setLastFormatPath(from.getLastFormatPath());
 	}
