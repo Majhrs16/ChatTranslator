@@ -177,9 +177,10 @@ public class TerminalLogger {
 	}
 
 	private void sendToDiscord(String message) {
-		List<String> channels = DiscordChat.getChannels("discord.channels.console");
+		String[] channels = DiscordChat.getChannels("discord.channels.console");
+		message = replaceAnsiCodes(message).replaceAll("\n+", "\n");
 
-		if (DiscordChat.broadcast(channels, "```ansi\n" + replaceAnsiCodes(message).replaceAll("\n+", "\n") + "```") < channels.size())
+		if (DiscordChat.broadcast(channels, "```ansi\n" + message + "```") < channels.length)
 			API.sendMessage(new Message.Builder()
 				.format("discord-translator.terminalLogger.sendDiscord")
 				.build()
