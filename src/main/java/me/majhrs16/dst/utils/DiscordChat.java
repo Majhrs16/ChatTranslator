@@ -14,11 +14,11 @@ import java.util.List;
 public class DiscordChat {
 	private static final ChatTranslator plugin = ChatTranslator.getInstance();
 
-	public static List<String> getChannels(String path) {
-		return plugin.config.get().getStringList(path);
+	public static String[] getChannels(String path) {
+		return plugin.config.get().getStringList(path).toArray(new String[0]);
 	}
 
-	public static int broadcast(List<String> channels, Consumer<TextChannel> action) {
+	public static int broadcast(String[] channels, Consumer<TextChannel> action) {
 		int oks = 0;
 
 		if (DiscordTranslator.getJDA() == null)
@@ -44,7 +44,7 @@ public class DiscordChat {
 		return oks;
 	}
 
-	public static int broadcast(List<String> channels, String... messages) {
+	public static int broadcast(String[] channels, String... messages) {
 		return broadcast(channels, channel -> {
 			for (String message : messages) {
 				if (message == null)
@@ -55,7 +55,7 @@ public class DiscordChat {
 		});
 	}
 
-	public static int broadcastEmbed(List<String> channels, String[] title, String[] description, int color) {
+	public static int broadcastEmbed(String[] channels, String[] title, String[] description, int color) {
 		return broadcast(channels, channel -> {
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 				embedBuilder.setColor(color);
