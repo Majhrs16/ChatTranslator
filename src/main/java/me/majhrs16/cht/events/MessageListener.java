@@ -57,7 +57,7 @@ public class MessageListener implements Listener {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void toDiscord(Message chat, List<String> channels) {
+	public void toDiscord(Message chat, String... channels) {
 		if (chat.getTo().isShow()
 				|| chat.isEmpty()
 				|| !Config.TranslateOthers.DISCORD.IF()
