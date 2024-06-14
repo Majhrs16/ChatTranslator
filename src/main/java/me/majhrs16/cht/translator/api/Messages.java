@@ -148,11 +148,7 @@ public interface Messages {
 		}
 
 		Consumer<Message> action = broadcastAction == null ? ChatLimiter::add : broadcastAction;
-		for (Message from : froms) {
-			logger.warn("from.show 3: %s", from.isShow());
-			logger.warn("to.show 3:   %s", from.getTo().isShow());
-			action.accept(from);
-		}
+		for (Message from : froms) action.accept(from);
 	}
 
 	default void broadcast(Message.Builder model, Player[] players) {
