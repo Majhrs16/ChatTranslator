@@ -15,6 +15,7 @@ import me.majhrs16.cht.util.cache.Dependencies;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.cache.Config;
+import me.majhrs16.cht.util.TimerLapser;
 import me.majhrs16.cht.storage.Storage;
 import me.majhrs16.cht.events.Metrics;
 import me.majhrs16.cht.commands.cht.*;
@@ -50,19 +51,20 @@ public class ChatTranslator extends PluginBase {
 	private ChatTranslatorAPI API;
 	private ChatLimiter chatLimiter;
 	private CoreTranslator coreTranslator;
-	private static ChatTranslator instance;
 	private CommandHandlerImpl commandHandler;
+	private LoggerListenerImpl loggerListener;
 	private DiscordTranslator discordTranslator;
 	private InternetCheckerAsync internetCheckerAsync;
 
+	private static ChatTranslator instance;
+
 	private boolean is_disabled = true;
-	private final LoggerListenerImpl loggerListener = new LoggerListenerImpl();
 
 	@SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 	public void onLoad() {
 		instance       = this;
 		metrics        = new Metrics(instance, 20251);
-		logger.registerLogger(loggerListener);
+		logger.registerLogger(loggerListener = new LoggerListenerImpl());
 
 		API = ChatTranslatorAPI.getInstance();
 
@@ -70,7 +72,13 @@ public class ChatTranslator extends PluginBase {
 	}
 
 	public void onEnable() {
-		super.onEnable();
+		TimerLapser timer = new TimerLapser();
+
+		timer.analyzeCode(super::onEnable);
+		logger.debug(timer.getResults());
+
+		timer.start();
+		loggerListener.start();
 
 		Message.Builder builder = new Message.Builder();
 
@@ -95,6 +103,9 @@ public class ChatTranslator extends PluginBase {
 		API.sendMessage(builder.format("plugin.separator.vertical").build());
 		API.sendMessage(builder.format("plugin.separator.horizontal").build());
 
+		timer.stop();
+		logger.debug(timer.getResults());
+
 		setDisabled(false);
 	}
 
@@ -102,8 +113,10 @@ public class ChatTranslator extends PluginBase {
 		if (isDisabled()) // En caso de crashes,
 			return;       // evitar des-cargar algo que ni está registrado.
 
+
 		setDisabled(true);
 
+		TimerLapser timer = new TimerLapser();
 		unregisterEvents();
 		unregisterCommands();
 
@@ -130,6 +143,11 @@ public class ChatTranslator extends PluginBase {
 		API.sendMessage(builder.format("plugin.separator.horizontal").build());
 
 		storage.unregister();
+
+		timer.stop();
+		logger.debug(timer.getResults());
+
+		loggerListener.stop();
 	}
 
 	public boolean isDisabled() {
