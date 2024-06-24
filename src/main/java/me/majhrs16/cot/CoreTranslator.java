@@ -12,6 +12,7 @@ import me.majhrs16.cht.events.MessageListener;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.events.ChatLimiter;
+import me.majhrs16.cht.util.TimerLapser;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
@@ -49,10 +50,14 @@ public class CoreTranslator extends PlaceholderExpansion {
 		MessageEvent event;
 		Message.Builder builder = new Message.Builder();
 
+		TimerLapser timer = new TimerLapser();
 		identifier = API.parseSubVariables(player, identifier)[0];
+		timer.stop();
+		plugin.logger.debug(timer.getResults());
 
 		String result = null;
 
+		timer.start();
 		for (CommandsPAPI command : CommandsPAPI.values()) {
 			Matcher matcher = command.getPattern().matcher(identifier);
 			if (matcher.find()) {
@@ -132,6 +137,10 @@ public class CoreTranslator extends PlaceholderExpansion {
 						result = map_variables.getOrDefault(player, new HashMap<>()).get(matcher.group(1));
 						break;
 				}
+
+				timer.stop();
+				plugin.logger.debug("CoT: COMMAND: %s\n\t%s", command, timer.getResults());
+				break;
 			}
 		}
 
