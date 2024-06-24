@@ -29,7 +29,7 @@ public class SetterLang implements CommandExecutor {
 		switch (args.length) {
 //			/cht lang
 			case 0:
-				API.sendMessage(builder.format("commands.cht.setterLang.getLang", s -> s
+				API.sendMessage(builder.format("commands.cht.setterLang.getLang", format -> format
 					.replace("%lang%", builder.build().getLangTarget().getValue())
 				).build());
 				break;
@@ -60,7 +60,7 @@ public class SetterLang implements CommandExecutor {
 
 	public void setLang(Message.Builder builder, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			API.sendMessage(builder.format("commands.cht.setterLang.error.unsupported", s -> s
+			API.sendMessage(builder.format("commands.cht.setterLang.error.unsupported", format -> format
 				.replace("%lang%", lang)
 			).build());
 			return;
@@ -86,7 +86,7 @@ public class SetterLang implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void setLangAnother(Message.Builder builder, String player, String lang) {
 		if (!API.getTranslator().isSupport(lang)) {
-			API.sendMessage(builder.format("commands.cht.setterLang.error", s -> s
+			API.sendMessage(builder.format("commands.cht.setterLang.error", format -> format
 				.replace("%lang%", lang)
 			).build());
 			return;
@@ -95,7 +95,7 @@ public class SetterLang implements CommandExecutor {
 		OfflinePlayer to_player = Bukkit.getOfflinePlayer(player);
 
 		if (!to_player.isOnline() && !to_player.hasPlayedBefore()) {
-			API.sendMessage(builder.format("commands.cht.errors.noFoundPlayer", s -> s
+			API.sendMessage(builder.format("commands.cht.errors.noFoundPlayer", format -> format
 				.replace("%player%", player)
 			).build());
 			return;
