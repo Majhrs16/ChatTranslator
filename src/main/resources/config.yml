@@ -3,8 +3,8 @@ auto-translate-others:
   discord: false
   access: true
   signs:
-    enable: true
-    wrap-text: false
+    enable: false
+    wrap-text: true
 
 show-native-chat:
   cancel-event: true
