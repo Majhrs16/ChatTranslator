@@ -10,6 +10,7 @@ import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
 import me.majhrs16.cht.events.ChatLimiter;
 import me.majhrs16.cht.util.JsonFormatter;
+import me.majhrs16.cht.util.TimerLapser;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
 
@@ -93,16 +94,29 @@ public interface Messages {
 	default void sendMessage(Message original) {
 //			Envia los mensajes especificados en el from(Objeto Message actual) y to.
 
-		if (original == null || original.isEmpty())
+		TimerLapser timer = new TimerLapser();
+
+		if (original == null || original.isEmpty()) {
+			timer.stop();
+			logger.debug(timer.getResults());
 			return;
+		}
 
 		try {
 			logger.debug("PRE:  %s", JsonFormatter.format(original.toJson()));
-			Message formatted = ChatTranslatorAPI.getInstance().formatMessage(original);
+
+			timer.start();
+				Message formatted = ChatTranslatorAPI.getInstance().formatMessage(original);
+			timer.stop();
+			logger.debug(timer.getResults());
 
 			logger.debug("POST: %s", JsonFormatter.format(formatted.toJson()));
-			showMessage(original, formatted);
-			showMessage(original.getTo(), formatted.getTo());
+
+			timer.analyzeCode(() -> showMessage(original, formatted));
+			logger.debug(timer.getResults());
+
+			timer.analyzeCode(() -> showMessage(original.getTo(), formatted.getTo()));
+			logger.debug(timer.getResults());
 
 			logger.debug("SEP:  ------------------------------------------------");
 
@@ -114,15 +128,23 @@ public interface Messages {
 	default void sendMessageAsync(Message original) {
 		Message backup = original.clone().build();
 
-		new Thread(() -> sendMessage(backup)).start();
+		Thread thread = new Thread(() -> sendMessage(backup));
+		thread.setName("ChatTranslator.API.sendMessageAsync: " + original.getUUID());
+		thread.start();
 	}
 
 	default void broadcast(Message.Builder model, Player[] players, Consumer<Message> broadcastAction) {
+		TimerLapser timer = new TimerLapser();
+
 		if (model == null
 				|| model.build().isEmpty()
 				|| players == null
-				|| players.length == 0)
+				|| players.length == 0) {
+
+			timer.stop();
+			logger.debug(timer.getResults());
 			return;
+		}
 
 		if (model.build().getTo() == null || model.build().getTo().isEmpty())
 			throw new IllegalArgumentException("The models from and to must be not empty.");
@@ -131,24 +153,29 @@ public interface Messages {
 		Message.Builder to_model = model.build().getTo().clone();
 		TranslatorBase.LanguagesBase to_lang_target_original = to_model.build().getLangTarget();
 
-		for (Player to_player : players) {
-			to_model.setSender(to_player);
+		timer.analyzeCode(() -> {
+			for (Player to_player : players) {
+				to_model.setSender(to_player);
 
-			if (to_player.equals(model.build().getSender()) && players.length > 1)
-				continue;
+				if (to_player.equals(model.build().getSender()) && players.length > 1)
+					continue;
 
-			to_model.setShow(!to_player.equals(model.build().getSender()));
+				to_model.setShow(!to_player.equals(model.build().getSender()));
 
-			if (to_lang_target_original == null)
-				to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
+				if (to_lang_target_original == null)
+					to_model.setLangTarget(ChatTranslatorAPI.getInstance().getLang(to_player));
 
-			model.setTo(to_model);
-			froms.add(model.build().clone().build());
-			model.setShow(false);
-		}
+				model.setTo(to_model);
+				froms.add(model.build().clone().build());
+				model.setShow(false);
+		}});
+		logger.debug(timer.getResults());
 
-		Consumer<Message> action = broadcastAction == null ? ChatLimiter::add : broadcastAction;
-		for (Message from : froms) action.accept(from);
+		timer.analyzeCode(() -> {
+			Consumer<Message> action = broadcastAction == null ? ChatLimiter::add : broadcastAction;
+			for (Message from : froms) action.accept(from);
+		});
+		logger.debug(timer.getResults());
 	}
 
 	default void broadcast(Message.Builder model, Player[] players) {
