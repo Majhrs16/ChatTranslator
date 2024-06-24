@@ -1,6 +1,5 @@
 package me.majhrs16.cht.translator.api;
 
-import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.lib.network.translator.TranslatorBase;
 import me.majhrs16.lib.logger.Logger;
 import me.majhrs16.lib.utils.Str;
@@ -10,18 +9,22 @@ import me.majhrs16.cht.events.InternetCheckerAsync;
 import me.majhrs16.cht.util.cache.Dependencies;
 import me.majhrs16.cht.util.cache.Permissions;
 import me.majhrs16.cht.events.custom.Message;
+import me.majhrs16.cht.events.custom.Formats;
 import me.majhrs16.cht.ChatTranslator;
 import me.majhrs16.cht.util.util;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 public interface Core {
 	Pattern SUB_VARIABLES = Pattern.compile("\\{([a-zA-Z0-9_]+)}");
@@ -33,86 +36,91 @@ public interface Core {
 	Logger logger         = ChatTranslator.getInstance().logger;
 
 	default String[] translateMessages(
-			String[] messages, String[] formats,
+			String[] texts, String[] formats,
 			String sourceLang, String targetLang,
 			TranslatorBase translator) {
-		String[] newArray = messages.clone();
 
-		if (formats.length > 0
-				&& !sourceLang.equals("OFF")
-				&& !targetLang.equals("OFF")
-				&& !sourceLang.equals(targetLang)) {
+		if (formats.length == 0
+				|| sourceLang.equals("OFF")
+				|| targetLang.equals("OFF")
+				|| sourceLang.equals(targetLang))
+			return texts;
 
-			for (int i = 0; i < newArray.length; i++) {
-				if (newArray[i].isEmpty())
-					continue;
+		String[] newTexts = new String[texts.length];
 
-				newArray[i] = translator.translate(newArray[i], sourceLang, targetLang);
-			}
-		}
+		IntStream.range(0, texts.length)
+			.parallel()
+			.forEach(i -> {
+				String text = texts[i];
+				newTexts[i] = text.isEmpty() ? text : translator.translate(text, sourceLang, targetLang);
+			});
 
-		return newArray;
+		return newTexts;
 	}
 
-	default String[] processExpand(String... messageFormats) {
-		String[] newArray = messageFormats.clone();
-
-		for (int i = 0; i < newArray.length; i++) {
-			int count = Str.count(newArray[i], "%ct_expand%");
-			for (int i2 = count; i2 > 0; i2--) {
-				int padding = (70 - util.stripColor(newArray[i].replace("%ct_expand%", ""))[0].length()) / i2;
-
-				if (padding <= 0)
-					padding = 1;
-
-				logger.debug("padding: %s", padding);
-				logger.debug("i2:      %s", i2);
-
-				newArray[i] = newArray[i].replaceFirst("%ct_expand%", Str.repeat(" ", padding));
+	default String[] processExpand(String... formats) {
+		return Arrays.stream(formats).map(format -> {
+			StringBuilder builder = new StringBuilder(format);
+			int count = Str.count(format, "%ct_expand%");
+			for (int i = count; i > 0; i--) {
+				int padding = Math.max(1, (70 - util.stripColor(builder.toString().replace("%ct_expand%", ""))[0].length()) / i);
+				logger.debug("padding = %s, i = %s", padding, i);
+				int index = builder.indexOf("%ct_expand%");
+				if (index != -1) {
+					builder.replace(index, index + 11, Str.repeat(" ", padding));
+				}
 			}
-		}
 
-		return newArray;
+			return builder.toString();
+
+		}).toArray(String[]::new);
 	}
 
 	default String[] processEscapes(String[] messages, ArrayList<String> escapesList) {
-		String[] newArray = messages.clone();
+		AtomicInteger escapeCounter = new AtomicInteger(10);
 
-		int escapeCounter = 10;
-		for (int i = 0; i < newArray.length; i++) {
-			Matcher matcher = LITERAL.matcher(newArray[i]);
+		return Arrays.stream(messages).map(message -> {
+			StringBuilder builder = new StringBuilder(message);
+			Matcher matcher = LITERAL.matcher(builder);
 			while (matcher.find()) {
-				if (!escapesList.contains(matcher.group(1))) {
-					escapesList.add(matcher.group(1));
-					newArray[i] = newArray[i].replace(matcher.group(0),
-						"[" + Str.rjust(Integer.toHexString(escapeCounter), 2, "0") + "]");
-					escapeCounter++;
+				String group = matcher.group(1);
+				if (!escapesList.contains(group)) {
+					escapesList.add(group);
+					String replacement = "[" + Str.rjust(Integer.toHexString(escapeCounter.getAndIncrement()), 2, "0") + "]";
+					builder.replace(matcher.start(), matcher.end(), replacement);
+					matcher.reset(builder);
 				}
 			}
-		}
 
-		return newArray;
+			return builder.toString();
+
+		}).toArray(String[]::new);
 	}
 
 	default String[] revertEscapes(String[] messages, ArrayList<String> escapes) {
-		String[] newArray = messages.clone();
+		AtomicInteger counter = new AtomicInteger(10);
 
-		int i = 10;
-		for (String escape : escapes) {
-			newArray = replaceArray(newArray, "\\[" + Str.rjust(Integer.toHexString(i), 2, "0") + "]", escape);
-			i++;
-		}
+		return Arrays.stream(messages).map(message -> {
+			StringBuilder sb = new StringBuilder(message);
+			for (String escape : escapes) {
+				String pattern = "\\[" + Str.rjust(Integer.toHexString(counter.getAndIncrement()), 2, "0") + "]";
+				int index;
+				while ((index = sb.indexOf(pattern)) != -1) {
+					sb.replace(index, index + pattern.length(), escape);
+				}
+			}
 
-		return newArray;
+			return sb.toString();
+
+		}).toArray(String[]::new);
 	}
 
 	default String[] replaceArray(String[] array, String target, String replacement, int max) {
-		String[] newArray = array.clone();
-
-		for (int i = 0; i < max; i++)
-			newArray[i] = newArray[i].replaceAll(target, replacement);
-
-		return newArray;
+		if (max == 0 || array.length == 0) return array;
+		return Arrays.stream(array)
+			.limit(max)
+			.map(format -> format.replaceAll(target, replacement))
+			.toArray(String[]::new);
 	}
 
 	default String[] replaceArray(String[] array, String target, String replacement) {
@@ -124,66 +132,65 @@ public interface Core {
 	}
 
 	default String[] parseSubVariables(Player player, String... formats) {
-		String[] newArray = formats.clone();
+		return Arrays.stream(formats).map(format -> {
+			StringBuilder builder = new StringBuilder(format);
+			Matcher matcher = SUB_VARIABLES.matcher(builder);
+			while (matcher.find()) {
+				String placeholder = "%" + matcher.group(1) + "%";
+				String replacement = PlaceholderAPI.setPlaceholders(player, placeholder);
+				builder.replace(
+					matcher.start(),
+					matcher.end(),
+					replacement
+				);
+				matcher.reset(builder);
+			}
+			return PlaceholderAPI.setPlaceholders(player, builder.toString());
 
-		for (int i = 0; i < newArray.length; i++) {
-			String input = newArray[i];
-
-			Matcher matcher = SUB_VARIABLES.matcher(input);
-			while (matcher.find())
-				input = input.replace(matcher.group(0), PlaceholderAPI.setPlaceholders(player, "%" + matcher.group(1) + "%"));
-
-			newArray[i] = PlaceholderAPI.setPlaceholders(player, input);
-		}
-
-		return newArray;
+		}).toArray(String[]::new);
 	}
 
 	default String[] convertVariablesToLowercase(String... formats) {
-		String[] newArray = formats.clone();
+		return Arrays.stream(formats).map(format -> {
+			StringBuilder sb = new StringBuilder(format);
+			Matcher matcher = VARIABLES.matcher(sb);
+			while (matcher.find()) {
+				sb.replace(
+					matcher.start(),
+					matcher.end(),
+					matcher.group().toLowerCase()
+				);
+			}
+			return sb.toString();
 
-		for (int i = 0; i < newArray.length; i++) {
-			Matcher matcher;
-			while ((matcher = VARIABLES.matcher(newArray[i])).find())
-				newArray[i] = newArray[i].replace(matcher.group(0), matcher.group(0).toLowerCase());
-		}
-
-		return newArray;
+		}).toArray(String[]::new);
 	}
 
-	default String[] convertColor(String... inputs) {
-		String[] newArray = inputs.clone();
-
-		for (int i = 0; i < newArray.length; i++)
-			newArray[i] = ChatColor.translateAlternateColorCodes('&', newArray[i]);
-
-		return newArray;
+	default String[] convertColor(String... formats) {
+		return Arrays.stream(formats)
+			.map(format -> ChatColor.translateAlternateColorCodes('&', format))
+			.toArray(String[]::new);
 	}
 
 	default String[] processFormatIndex(String[] formats, String[] texts) {
-		String[] newArray = formats.clone();
-
-		for (int i = 0; i < newArray.length; i++) {
-			String input = newArray[i];
-
-
-			Matcher matcher = FORMAT_INDEX.matcher(input);
+		return Arrays.stream(formats).map(format -> {
+			StringBuilder builder = new StringBuilder(format);
+			Matcher matcher = FORMAT_INDEX.matcher(builder);
 			while (matcher.find()) {
 				try {
-					input = input.replace(
-						matcher.group(0),
-						texts[Integer.parseInt(matcher.group(1))]
-					);
+					int index = Integer.parseInt(matcher.group(1));
+					String replacement = texts[index];
+					builder.replace(matcher.start(), matcher.end(), replacement);
+					matcher.reset(builder); // Espero esto no traiga problemas...
 
-				} catch (IndexOutOfBoundsException e) {
-					logger.debug("IndexOutOfBoundsException: %s", e.toString());
+				} catch (IndexOutOfBoundsException | NumberFormatException e) {
+					logger.warn(e.toString());
 				}
 			}
 
-			newArray[i] = input;
-		}
+			return builder.toString();
 
-		return newArray;
+		}).toArray(String[]::new);
 	}
 
 	default String[] preFormatIndexes(String... formats) {
@@ -194,32 +201,32 @@ public interface Core {
 		return replaceArray(formats, "[%$].+[%$]", "`$0`");
 	}
 
-	default void replaceFormats(String oldStr, String newStr, String[]... formats) {
+	default void replaceFormats(String oldStr, String newStr, String[]... formatsArray) {
 		if (newStr == null)
 			return;
 
-		for (String[] format : formats) {
-			String[] newFormat = replaceArray(format, oldStr, newStr);
+		Arrays.stream(formatsArray).forEach(formats -> {
+			String[] newFormats = replaceArray(formats, oldStr, newStr);
 			System.arraycopy(
-				newFormat, 0,
-				format, 0,
-				format.length
+				newFormats, 0,
+				formats, 0,
+				formats.length
 			);
-		}
+		});
 	}
 
-	default void replaceFormats(String oldStr, String[] newStr, String[]... formats) {
-		if (newStr == null)
+	default void replaceFormats(String oldStr, String[] newStr, String[]... formatsArray) {
+		if (oldStr == null || newStr == null)
 			return;
 
-		for (String[] format : formats) {
-			String[] newFormat = replaceArray(format, oldStr, newStr);
+		Arrays.stream(formatsArray).forEach(formats -> {
+			String[] newFormats = replaceArray(formats, oldStr, newStr);
 			System.arraycopy(
-				newFormat, 0,
-				format, 0,
-				format.length
+				newFormats, 0,
+				formats, 0,
+				formats.length
 			);
-		}
+		});
 	}
 
 	default Message formatMessage(Message original) {
@@ -486,11 +493,13 @@ public interface Core {
 			.setSender(from_player)
 			.setMessages(new Formats.Builder()
 				.setFormats(from_messages_formats)
-				.setTexts(from_messages_texts))
+				.setTexts(from_messages_texts)
 
-			.setToolTips(new Formats.Builder()
+			).setToolTips(new Formats.Builder()
 				.setFormats(from_tool_tips_formats)
-				.setTexts(from_tool_tips_texts))
+				.setTexts(from_tool_tips_texts)
+
+			).setColor(is_color)
 			.setSounds(from_sounds)
 			.setLangSource(from_lang_source)
 			.setLangTarget(from_lang_target)
@@ -499,12 +508,13 @@ public interface Core {
 				.setSender(to_player)
 				.setMessages(new Formats.Builder()
 					.setFormats(to_messages_formats)
-					.setTexts(to_messages_texts))
+					.setTexts(to_messages_texts)
 
-				.setToolTips(new Formats.Builder()
+				).setToolTips(new Formats.Builder()
 					.setFormats(to_tool_tips_formats)
-					.setTexts(to_tool_tips_texts))
+					.setTexts(to_tool_tips_texts)
 
+				).setColor(is_color)
 				.setSounds(to_sounds)
 				.setLangSource(to_lang_source)
 				.setLangTarget(to_lang_target)
