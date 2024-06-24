@@ -60,7 +60,7 @@ public class TerminalLogger {
 	}
 
 	public void start() {
-		timer = new Timer(true);
+		timer = new Timer("ChatTranslator.DST.TerminalLogger", true);
 		timer.scheduleAtFixedRate(new LogReaderTask(), 0, 6000);
 	}
 
