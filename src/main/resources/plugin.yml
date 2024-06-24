@@ -1,12 +1,14 @@
 main: me.majhrs16.cht.ChatTranslator
 name: ${name}
 description: ${description}
-version: ${cht_version.substring(1)}
+api-version: 1.16
 author: ${author}
+version: ${cht_version.substring(1)}
 load: STARTUP
 prefix: ChT
 
 softdepend:
+- LuckPerms
 - PlaceholderAPI
 - ConditionalEvents
 
