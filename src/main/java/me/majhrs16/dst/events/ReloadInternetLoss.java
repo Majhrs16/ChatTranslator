@@ -38,7 +38,7 @@ public class ReloadInternetLoss {
 	}
 
 	public void start() {
-		timer = new Timer(true);
+		timer = new Timer("ChatTranslator.DST.ReloadInternetLoss", true);
 		timer.scheduleAtFixedRate(new ReloadInternetLossTask(), 0, 1000);
 	}
 
