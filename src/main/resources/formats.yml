@@ -602,7 +602,7 @@ commands:
             - "no esta disponible"
 
           formats:
-            - "&7{0} &f'&b%player%&f' &c{1}&f."
+            - "&c{0} &f'&b%player%&f' &c{1}&f."
 
     version:
       messages:
